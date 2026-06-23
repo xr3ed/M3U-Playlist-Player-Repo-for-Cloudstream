@@ -1,6 +1,9 @@
 package com.cncverse.M3UPlaylistPlayer
 
 import android.content.Context
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
@@ -34,17 +37,65 @@ class M3UPlaylistPlayer : MainAPI() {
         return "📺 $rawName"
     }
 
-    private suspend fun fetchPlaylist(): Playlist {
-        val url = getM3uUrl()
-        if (url.isNullOrBlank()) {
-            return Playlist(emptyList())
+    private fun getSavedPlaylists(): List<Pair<String, String>> {
+        val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
+        val raw = prefs?.getString("saved_playlists_list", "") ?: ""
+        val list = if (raw.isBlank()) mutableListOf() else raw.split("\n").mapNotNull { line ->
+            val parts = line.split("||", limit = 2)
+            if (parts.size == 2) {
+                parts[0].trim() to parts[1].trim()
+            } else null
+        }.toMutableList()
+
+        // Also add the active m3u_url if it's not in the list yet
+        val activeUrl = prefs?.getString("m3u_url", "") ?: ""
+        val activeName = prefs?.getString("m3u_name", "M3U Playlist Player") ?: "M3U Playlist Player"
+        if (activeUrl.isNotBlank() && list.none { it.second == activeUrl }) {
+            list.add(0, activeName to activeUrl)
         }
-        return try {
-            val content = app.get(url).text
-            IptvPlaylistParser().parseM3U(content)
-        } catch (e: Exception) {
-            Playlist(emptyList())
+        return list
+    }
+
+    private suspend fun fetchPlaylist(): Playlist = coroutineScope {
+        val saved = getSavedPlaylists()
+        if (saved.isEmpty()) {
+            return@coroutineScope Playlist(emptyList())
         }
+        
+        val deferredPlaylists = saved.map { (playlistName, url) ->
+            async {
+                try {
+                    val content = app.get(url).text
+                    val parsed = IptvPlaylistParser().parseM3U(content)
+                    playlistName to parsed
+                } catch (e: Exception) {
+                    playlistName to Playlist(emptyList())
+                }
+            }
+        }
+        
+        val parsedPlaylists = deferredPlaylists.awaitAll()
+        val allItems = mutableListOf<PlaylistItem>()
+        
+        parsedPlaylists.forEach { (playlistName, playlist) ->
+            playlist.items.forEach { item ->
+                val originalGroup = item.attributes["group-title"]
+                val newGroup = if (originalGroup.isNullOrBlank()) {
+                    playlistName
+                } else {
+                    "$playlistName - $originalGroup"
+                }
+                
+                // Create a new map with the updated group-title so that they are categorized correctly on home screen
+                val newAttributes = item.attributes.toMutableMap().apply {
+                    put("group-title", newGroup)
+                }
+                
+                allItems.add(item.copy(attributes = newAttributes))
+            }
+        }
+        
+        Playlist(allItems)
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -53,7 +104,7 @@ class M3UPlaylistPlayer : MainAPI() {
             return newHomePageResponse(
                 listOf(
                     HomePageList(
-                        "Please configure M3U URL in settings",
+                        "Silakan konfigurasi URL M3U di pengaturan",
                         emptyList()
                     )
                 ),
@@ -61,7 +112,7 @@ class M3UPlaylistPlayer : MainAPI() {
             )
         }
 
-        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: getM3uName() }
+        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: "Channels" }
 
         val lists = grouped.map { (group, items) ->
             HomePageList(
