@@ -16,7 +16,7 @@ class M3UPlaylistPlayer : MainAPI() {
         get() = getM3uName()
         set(value) {}
     override val hasMainPage = true
-    override var lang = "id"
+    override var lang = ""
     override val supportedTypes = setOf(TvType.Live)
 
     companion object {
@@ -30,7 +30,8 @@ class M3UPlaylistPlayer : MainAPI() {
 
     private fun getM3uName(): String {
         val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
-        return prefs?.getString("m3u_name", "IPTV Channels") ?: "IPTV Channels"
+        val rawName = prefs?.getString("m3u_name", "M3U Playlist Player") ?: "M3U Playlist Player"
+        return "📺 $rawName"
     }
 
     private suspend fun fetchPlaylist(): Playlist {

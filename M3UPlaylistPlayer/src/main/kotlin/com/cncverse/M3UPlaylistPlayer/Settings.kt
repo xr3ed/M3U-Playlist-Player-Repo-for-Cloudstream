@@ -1,6 +1,7 @@
 package com.cncverse.M3UPlaylistPlayer
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -70,15 +71,83 @@ class Settings(
         }
         rootScroll.addView(root)
 
+        // Header Layout (Horizontal) with Title and Simpan & Restart button
+        val headerLayout = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setPadding(0, 0, 0, 32)
+            }
+        }
+
         // Title
         val title = TextView(context).apply {
-            text = "Pengaturan M3U Playlist"
+            text = "Pengaturan M3U"
             textSize = 20f
             setTextColor(Color.WHITE)
             setTypeface(null, android.graphics.Typeface.BOLD)
-            setPadding(0, 0, 0, 32)
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
         }
-        root.addView(title)
+        headerLayout.addView(title)
+
+        // Save & Restart Button
+        val restartButton = Button(context).apply {
+            text = "Simpan & Restart"
+            textSize = 12f
+            setTextColor(Color.WHITE)
+            setPadding(24, 12, 24, 12)
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#34C759")) // Beautiful Green accent
+                cornerRadius = 24f // pill shaped
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+        restartButton.setOnClickListener {
+            // Save current inputs if they are not blank
+            val name = nameInput.text.toString().trim()
+            val url = urlInput.text.toString().trim()
+            
+            if (name.isNotBlank() && url.isNotBlank()) {
+                val list = getSavedPlaylists().toMutableList()
+                if (!list.any { it.url == url }) {
+                    list.add(SavedPlaylist(name, url))
+                    savePlaylists(list)
+                }
+                sharedPref?.edit()
+                    ?.putString("m3u_url", url)
+                    ?.putString("m3u_name", name)
+                    ?.apply()
+            }
+            
+            Toast.makeText(context, "Menyimpan & Memulai Ulang Aplikasi...", Toast.LENGTH_SHORT).show()
+            
+            // Restart the app
+            try {
+                val packageManager = context.packageManager
+                val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+                if (intent != null) {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    context.startActivity(intent)
+                    Runtime.getRuntime().exit(0)
+                } else {
+                    activity?.recreate()
+                }
+            } catch (e: Exception) {
+                activity?.recreate()
+            }
+        }
+        headerLayout.addView(restartButton)
+        root.addView(headerLayout)
 
         // --- SECTION 1: ADD PLAYLIST ---
         val sectionTitleAdd = TextView(context).apply {
