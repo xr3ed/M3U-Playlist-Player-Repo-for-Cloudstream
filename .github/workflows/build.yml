@@ -81,7 +81,7 @@ jobs:
             node prebuilts/merge_plugins.cjs
             
             # Buat file index repositori xr3ed.json yang sesungguhnya yang mengarah ke plugins.json secara aman
-            echo '{"name": "M3U Playlist Player Repo", "iconUrl": "https://raw.githubusercontent.com/xr3ed/CNCVerse-Cloud-Stream-Extension/refs/heads/builds/cnc.png", "description": "M3U Playlist Player extension for Cloudstream", "manifestVersion": 1, "pluginLists": ["https://raw.githubusercontent.com/xr3ed/CNCVerse-Cloud-Stream-Extension/builds/plugins.json"]}' > build-out/xr3ed.json
+            echo '{"name": "M3U Playlist Player Repo", "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/cnc.png", "description": "M3U Playlist Player extension for Cloudstream", "manifestVersion": 1, "pluginLists": ["https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/plugins.json"]}' > build-out/xr3ed.json
             echo "Artifacts collected successfully!"
           else
             echo "Error: plugins.json not found in build/ directory!" && exit 1

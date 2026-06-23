@@ -13,8 +13,8 @@ class M3UPlaylistPlayerPlugin : Plugin() {
 
         val sharedPref = context.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
 
-        openSettings = {
-            val activity = it as? AppCompatActivity ?: return@openSettings
+        openSettings = openSettingsLabel@{
+            val activity = it as? AppCompatActivity ?: return@openSettingsLabel
             val settings = Settings(this, sharedPref)
             settings.show(activity.supportFragmentManager, "M3USettings")
         }

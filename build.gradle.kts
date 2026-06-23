@@ -53,7 +53,7 @@ subprojects {
     apply(plugin = "com.lagradost.cloudstream3.gradle")
 
     cloudstream {
-        setRepo("https://github.com/xr3ed/CNCVerse-Cloud-Stream-Extension")
+        setRepo("https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream")
         authors = listOf("NivinCNC")
     }
 
@@ -125,6 +125,8 @@ subprojects {
 
         // Other dependencies
         implementation(kotlin("stdlib"))
+        implementation("androidx.appcompat:appcompat:1.6.1")
+        implementation("com.google.android.material:material:1.11.0")
         implementation("com.github.Blatzar:NiceHttp:0.4.16")
         implementation("org.jsoup:jsoup:1.22.1")
         implementation("androidx.annotation:annotation:1.9.1")

@@ -4,7 +4,7 @@ Repositori khusus untuk memasang ekstensi **M3U Playlist Player** di Cloudstream
 
 ### Cara Memasang di Cloudstream:
 1. Salin tautan berikut:
-   `https://raw.githubusercontent.com/xr3ed/CNCVerse-Cloud-Stream-Extension/refs/heads/builds/xr3ed.json`
+   `https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/xr3ed.json`
 2. Buka aplikasi **Cloudstream** > **Settings** > **Extensions** > **Add Repository**.
 3. Tempel tautan di atas lalu klik **Add**.
 4. Cari ekstensi **M3U Playlist Player** dan klik pasang (install).

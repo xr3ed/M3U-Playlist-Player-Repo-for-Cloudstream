@@ -38,7 +38,7 @@ class M3UPlaylistPlayer : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val playlist = fetchPlaylist()
         if (playlist.items.isEmpty()) {
-            return HomePageResponse(
+            return newHomePageResponse(
                 listOf(
                     HomePageList(
                         "Please configure M3U URL in settings",
@@ -66,7 +66,7 @@ class M3UPlaylistPlayer : MainAPI() {
             )
         }
 
-        return HomePageResponse(lists, hasNext = false)
+        return newHomePageResponse(lists, hasNext = false)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
