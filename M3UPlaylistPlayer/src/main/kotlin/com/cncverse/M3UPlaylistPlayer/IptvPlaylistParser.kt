@@ -10,7 +10,8 @@ data class PlaylistItem(
     val title: String,
     val url: String,
     val attributes: Map<String, String> = emptyMap(),
-    val headers: Map<String, String> = emptyMap()
+    val headers: Map<String, String> = emptyMap(),
+    val kodiProps: Map<String, String> = emptyMap()
 )
 
 class IptvPlaylistParser {
@@ -26,6 +27,7 @@ class IptvPlaylistParser {
         var bufferedTitle: String? = null
         var bufferedAttributes = emptyMap<String, String>()
         var bufferedHeaders = emptyMap<String, String>()
+        var bufferedKodiProps = emptyMap<String, String>()
 
         while (i < allLines.size) {
             val line = allLines[i].trim()
@@ -47,6 +49,15 @@ class IptvPlaylistParser {
                             bufferedHeaders = bufferedHeaders + mapOf("Referer" to referrer)
                         }
                     }
+                    line.startsWith("#KODIPROP:") -> {
+                        val propValue = line.substringAfter("#KODIPROP:").trim()
+                        val parts = propValue.split('=', limit = 2)
+                        if (parts.size == 2) {
+                            val key = parts[0].trim()
+                            val value = parts[1].trim()
+                            bufferedKodiProps = bufferedKodiProps + mapOf(key to value)
+                        }
+                    }
                     !line.startsWith("#") -> {
                         if (bufferedTitle != null) {
                             playlistItems.add(
@@ -54,13 +65,15 @@ class IptvPlaylistParser {
                                     title = bufferedTitle,
                                     url = line,
                                     attributes = bufferedAttributes,
-                                    headers = bufferedHeaders
+                                    headers = bufferedHeaders,
+                                    kodiProps = bufferedKodiProps
                                 )
                             )
                         }
                         bufferedTitle = null
                         bufferedAttributes = emptyMap()
                         bufferedHeaders = emptyMap()
+                        bufferedKodiProps = emptyMap()
                     }
                 }
             }

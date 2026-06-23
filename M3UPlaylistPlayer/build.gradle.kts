@@ -21,3 +21,20 @@ dependencies {
     val cloudstream by configurations
     cloudstream("com.lagradost:cloudstream3:pre-release")
 }
+
+project.afterEvaluate {
+    tasks.register("printClassFields") {
+        doLast {
+            val extension = project.extensions.getByName("android") as com.android.build.gradle.LibraryExtension
+            extension.libraryVariants.forEach { variant ->
+                if (variant.name == "debug") {
+                    variant.compileConfiguration.files.forEach { file ->
+                        if (file.absolutePath.contains("cloudstream") || file.absolutePath.contains("lagradost")) {
+                            println("CLOUDSTREAM_JAR: ${file.absolutePath}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

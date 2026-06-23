@@ -6,11 +6,15 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.newExtractorLink
+import com.lagradost.cloudstream3.utils.CLEARKEY_UUID
+import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
+import com.lagradost.cloudstream3.utils.newDrmExtractorLink
+import com.lagradost.cloudstream3.utils.DrmExtractorLink
 
 class M3UPlaylistPlayer : MainAPI() {
     override var name = "M3U Playlist Player"
     override val hasMainPage = true
-    override var lang = "en"
+    override var lang = "id"
     override val supportedTypes = setOf(TvType.Live)
 
     companion object {
@@ -20,6 +24,11 @@ class M3UPlaylistPlayer : MainAPI() {
     private fun getM3uUrl(): String? {
         val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
         return prefs?.getString("m3u_url", null)
+    }
+
+    private fun getM3uName(): String {
+        val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
+        return prefs?.getString("m3u_name", "IPTV Channels") ?: "IPTV Channels"
     }
 
     private suspend fun fetchPlaylist(): Playlist {
@@ -49,7 +58,7 @@ class M3UPlaylistPlayer : MainAPI() {
             )
         }
 
-        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: "IPTV Channels" }
+        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: getM3uName() }
 
         val lists = grouped.map { (group, items) ->
             HomePageList(
@@ -109,24 +118,62 @@ class M3UPlaylistPlayer : MainAPI() {
         val item = playlist.items.firstOrNull { it.url == data }
         val url = item?.url ?: data
 
-        val isM3u8 = url.contains(".m3u8") || url.contains("m3u8")
-        val type = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+        val isM3u8 = url.contains(".m3u8", ignoreCase = true) || url.contains("m3u8", ignoreCase = true)
+        val isDash = url.contains(".mpd", ignoreCase = true) || url.contains("mpd", ignoreCase = true)
+        val type = when {
+            isM3u8 -> ExtractorLinkType.M3U8
+            isDash -> ExtractorLinkType.DASH
+            else -> ExtractorLinkType.VIDEO
+        }
 
         val headers = item?.headers ?: emptyMap()
+        val kodiProps = item?.kodiProps ?: emptyMap()
+        val licenseType = kodiProps["inputstream.adaptive.license_type"]
+        val licenseKey = kodiProps["inputstream.adaptive.license_key"]
 
-        callback.invoke(
-            newExtractorLink(
-                this.name,
-                this.name,
-                url,
-                type
-            ) {
-                this.quality = Qualities.Unknown.value
-                if (headers.isNotEmpty()) {
-                    this.headers = headers
-                }
+        if (licenseType != null || licenseKey != null) {
+            val drmUuid = when {
+                licenseType?.contains("clearkey", ignoreCase = true) == true -> CLEARKEY_UUID
+                licenseType?.contains("widevine", ignoreCase = true) == true -> WIDEVINE_UUID
+                else -> CLEARKEY_UUID
             }
-        )
+
+            callback.invoke(
+                newDrmExtractorLink(
+                    this.name,
+                    this.name,
+                    url,
+                    type,
+                    drmUuid
+                ) {
+                    this.quality = Qualities.Unknown.value
+                    if (headers.isNotEmpty()) {
+                        this.headers = headers
+                    }
+                    if (licenseKey != null) {
+                        this.key = licenseKey
+                    }
+                    val licenseUrl = kodiProps["inputstream.adaptive.license_url"]
+                    if (licenseUrl != null) {
+                        this.licenseUrl = licenseUrl
+                    }
+                }
+            )
+        } else {
+            callback.invoke(
+                newExtractorLink(
+                    this.name,
+                    this.name,
+                    url,
+                    type
+                ) {
+                    this.quality = Qualities.Unknown.value
+                    if (headers.isNotEmpty()) {
+                        this.headers = headers
+                    }
+                }
+            )
+        }
         return true
     }
 }
