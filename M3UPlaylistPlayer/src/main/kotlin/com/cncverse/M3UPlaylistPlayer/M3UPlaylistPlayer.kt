@@ -108,6 +108,21 @@ class M3UPlaylistPlayer : MainAPI() {
         }
     }
 
+    private fun hexToBase64Url(str: String): String {
+        val clean = str.replace(" ", "").trim()
+        val isHex = clean.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' } && clean.length % 2 == 0
+        if (!isHex || clean.isEmpty()) return clean
+        return try {
+            val bytes = ByteArray(clean.length / 2)
+            for (i in bytes.indices) {
+                bytes[i] = clean.substring(i * 2, i * 2 + 2).toInt(16).toByte()
+            }
+            android.util.Base64.encodeToString(bytes, android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP or android.util.Base64.NO_PADDING)
+        } catch (e: Exception) {
+            clean
+        }
+    }
+
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
@@ -150,8 +165,15 @@ class M3UPlaylistPlayer : MainAPI() {
                     if (headers.isNotEmpty()) {
                         this.headers = headers
                     }
+                    this.kty = "oct"
                     if (licenseKey != null) {
-                        this.key = licenseKey
+                        val parts = licenseKey.split(':')
+                        if (parts.size == 2) {
+                            this.kid = hexToBase64Url(parts[0].trim())
+                            this.key = hexToBase64Url(parts[1].trim())
+                        } else {
+                            this.key = hexToBase64Url(licenseKey.trim())
+                        }
                     }
                     val licenseUrl = kodiProps["inputstream.adaptive.license_url"]
                     if (licenseUrl != null) {
