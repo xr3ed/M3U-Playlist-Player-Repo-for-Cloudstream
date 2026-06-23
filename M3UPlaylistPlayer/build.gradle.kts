@@ -1,0 +1,23 @@
+version = 7
+
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+cloudstream {
+    language = "en"
+    description = "Add your own m3u playlists"
+    authors = listOf("xr3ed")
+    status = 1
+    tvTypes = listOf(
+        "Live"
+    )
+    iconUrl = "https://play-lh.googleusercontent.com/V4t4JeQV2Cu9u72hKuqOW5c0IfwcZuuVS1d9PF2uJsW3rlIq-aOMTrT5bABVGaAFTcM=w480-h960-rw"
+}
+
+dependencies {
+    val cloudstream by configurations
+    cloudstream("com.lagradost:cloudstream3:pre-release")
+}

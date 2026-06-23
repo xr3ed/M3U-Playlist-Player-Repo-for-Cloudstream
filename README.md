@@ -1,11 +1,14 @@
-<div align="center">
+# M3U Playlist Player Repo for Cloudstream
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Repositori khusus untuk memasang ekstensi **M3U Playlist Player** di Cloudstream secara bersih, aman, dan tanpa iklan/popup Telegram.
 
-  <h1>Built with AI Studio</h2>
+### Cara Memasang di Cloudstream:
+1. Salin tautan berikut:
+   `https://raw.githubusercontent.com/xr3ed/CNCVerse-Cloud-Stream-Extension/refs/heads/builds/xr3ed.json`
+2. Buka aplikasi **Cloudstream** > **Settings** > **Extensions** > **Add Repository**.
+3. Tempel tautan di atas lalu klik **Add**.
+4. Cari ekstensi **M3U Playlist Player** dan klik pasang (install).
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+### Lisensi
+Ekstensi ini didistribusikan di bawah lisensi GNU General Public License v3.0 atau yang lebih baru.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
