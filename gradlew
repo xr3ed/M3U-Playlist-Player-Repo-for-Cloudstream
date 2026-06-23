@@ -143,14 +143,14 @@ fi
 if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
     case $MAX_FD in #(
       max*)
-        MAX_FD=$( ulimit -H -n ) ||
-            warn "Could not query maximum file descriptor limit"
+          MAX_FD=$( ulimit -H -n ) ||
+              warn "Could not query maximum file descriptor limit"
     esac
     case $MAX_FD in  #(
       '' | soft) :;; #(
       *)
-        ulimit -n "$MAX_FD" ||
-            warn "Could not set maximum file descriptor limit to $MAX_FD"
+          ulimit -n "$MAX_FD" ||
+              warn "Could not set maximum file descriptor limit to $MAX_FD"
     esac
 fi
 
