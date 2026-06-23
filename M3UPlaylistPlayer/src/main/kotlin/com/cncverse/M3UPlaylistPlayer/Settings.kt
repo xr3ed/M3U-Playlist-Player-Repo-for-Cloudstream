@@ -120,7 +120,7 @@ class Settings(
             if (name.isNotBlank() && url.isNotBlank()) {
                 val list = getSavedPlaylists().toMutableList()
                 if (!list.any { it.url == url }) {
-                    list.add(SavedPlaylist(name, url))
+                    list.add(0, SavedPlaylist(name, url))
                     savePlaylists(list)
                 }
                 sharedPref?.edit()
@@ -221,7 +221,7 @@ class Settings(
                 return@setOnClickListener
             }
 
-            list.add(SavedPlaylist(name, url))
+            list.add(0, SavedPlaylist(name, url))
             savePlaylists(list)
             
             // Set as active if it's the only one
@@ -260,7 +260,7 @@ class Settings(
         val initialList = getSavedPlaylists().toMutableList()
         val activeUrl = sharedPref?.getString("m3u_url", "") ?: ""
         if (activeUrl.isNotBlank() && initialList.none { it.url == activeUrl }) {
-            initialList.add(SavedPlaylist("Default Playlist", activeUrl))
+            initialList.add(0, SavedPlaylist("Default Playlist", activeUrl))
             savePlaylists(initialList)
         }
 
