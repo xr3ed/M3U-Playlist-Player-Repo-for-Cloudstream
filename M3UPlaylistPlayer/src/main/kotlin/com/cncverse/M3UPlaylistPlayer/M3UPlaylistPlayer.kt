@@ -12,7 +12,9 @@ import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import com.lagradost.cloudstream3.utils.DrmExtractorLink
 
 class M3UPlaylistPlayer : MainAPI() {
-    override var name = "M3U Playlist Player"
+    override var name: String
+        get() = getM3uName()
+        set(value) {}
     override val hasMainPage = true
     override var lang = "id"
     override val supportedTypes = setOf(TvType.Live)
@@ -147,11 +149,57 @@ class M3UPlaylistPlayer : MainAPI() {
         val licenseKey = kodiProps["inputstream.adaptive.license_key"]
 
         if (licenseType != null || licenseKey != null) {
-            val drmUuid = when {
-                licenseType?.contains("clearkey", ignoreCase = true) == true -> CLEARKEY_UUID
-                licenseType?.contains("widevine", ignoreCase = true) == true -> WIDEVINE_UUID
-                else -> CLEARKEY_UUID
+            var finalLicenseUrl: String? = kodiProps["inputstream.adaptive.license_url"]
+            val keyRequestHeaders = java.util.HashMap<String, String>()
+
+            // Copy stream headers to key request headers (very useful for User-Agent, Origin, authorization tokens)
+            headers.forEach { (k, v) ->
+                keyRequestHeaders[k] = v
             }
+
+            var isClearkeyDrm = false
+            var clearkeyKid: String? = null
+            var clearkeyKey: String? = null
+
+            if (licenseKey != null) {
+                val trimmedKey = licenseKey.trim()
+                if (trimmedKey.startsWith("http://", ignoreCase = true) || 
+                    trimmedKey.startsWith("https://", ignoreCase = true) || 
+                    trimmedKey.contains("://")) {
+                    
+                    // It is a license server URL (Widevine/Clearkey URL)
+                    val pipeIndex = trimmedKey.indexOf('|')
+                    val rawUrl = if (pipeIndex != -1) trimmedKey.substring(0, pipeIndex).trim() else trimmedKey
+                    if (finalLicenseUrl == null) {
+                        finalLicenseUrl = rawUrl
+                    }
+                    
+                    if (pipeIndex != -1) {
+                        val headersStr = trimmedKey.substring(pipeIndex + 1).trim()
+                        headersStr.split('&').forEach { pair ->
+                            val parts = pair.split('=', limit = 2)
+                            if (parts.size == 2) {
+                                val name = parts[0].trim()
+                                val value = parts[1].trim()
+                                keyRequestHeaders[name] = value
+                            }
+                        }
+                    }
+                } else {
+                    // Clearkey inline kid:key
+                    isClearkeyDrm = true
+                    val parts = trimmedKey.split(':')
+                    if (parts.size == 2) {
+                        clearkeyKid = hexToBase64Url(parts[0].trim())
+                        clearkeyKey = hexToBase64Url(parts[1].trim())
+                    } else {
+                        clearkeyKey = hexToBase64Url(trimmedKey)
+                    }
+                }
+            }
+
+            val isClearkey = isClearkeyDrm || licenseType?.contains("clearkey", ignoreCase = true) == true
+            val drmUuid = if (isClearkey) CLEARKEY_UUID else WIDEVINE_UUID
 
             callback.invoke(
                 newDrmExtractorLink(
@@ -165,19 +213,20 @@ class M3UPlaylistPlayer : MainAPI() {
                     if (headers.isNotEmpty()) {
                         this.headers = headers
                     }
-                    this.kty = "oct"
-                    if (licenseKey != null) {
-                        val parts = licenseKey.split(':')
-                        if (parts.size == 2) {
-                            this.kid = hexToBase64Url(parts[0].trim())
-                            this.key = hexToBase64Url(parts[1].trim())
-                        } else {
-                            this.key = hexToBase64Url(licenseKey.trim())
+                    if (isClearkey) {
+                        this.kty = "oct"
+                        if (clearkeyKid != null) {
+                            this.kid = clearkeyKid
+                        }
+                        if (clearkeyKey != null) {
+                            this.key = clearkeyKey
                         }
                     }
-                    val licenseUrl = kodiProps["inputstream.adaptive.license_url"]
-                    if (licenseUrl != null) {
-                        this.licenseUrl = licenseUrl
+                    if (finalLicenseUrl != null) {
+                        this.licenseUrl = finalLicenseUrl
+                    }
+                    if (keyRequestHeaders.isNotEmpty()) {
+                        this.keyRequestParameters = keyRequestHeaders
                     }
                 }
             )
