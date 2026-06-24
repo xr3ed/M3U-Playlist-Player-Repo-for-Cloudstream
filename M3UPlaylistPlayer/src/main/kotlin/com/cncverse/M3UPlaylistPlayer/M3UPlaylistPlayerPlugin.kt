@@ -15,7 +15,16 @@ class M3UPlaylistPlayerPlugin : Plugin() {
         // Migrate legacy SharedPreferences playlists to DataStore (Ultima-compatible)
         migrateIfNeeded(context)
         
-        registerMainAPI(M3UPlaylistPlayer())
+        val playlists = PlaylistHelper.getSavedPlaylists(context)
+        val enabledPlaylists = playlists.filter { it.enabled }
+        
+        if (enabledPlaylists.isEmpty()) {
+            registerMainAPI(M3UPlaylistPlayer("M3U Playlist Player", ""))
+        } else {
+            enabledPlaylists.forEach { playlist ->
+                registerMainAPI(M3UPlaylistPlayer(playlist.name, playlist.url))
+            }
+        }
 
         openSettings = openSettingsLabel@{
             val activity = it as? AppCompatActivity ?: return@openSettingsLabel

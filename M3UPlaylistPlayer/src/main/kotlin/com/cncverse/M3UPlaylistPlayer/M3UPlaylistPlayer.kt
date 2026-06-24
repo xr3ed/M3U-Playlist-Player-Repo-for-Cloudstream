@@ -13,14 +13,12 @@ import com.lagradost.cloudstream3.utils.CLEARKEY_UUID
 import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
 import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import com.lagradost.cloudstream3.utils.DrmExtractorLink
-import com.lagradost.cloudstream3.utils.DataStore
-import com.lagradost.cloudstream3.utils.DataStore.setKey
-import com.lagradost.cloudstream3.utils.DataStore.getKey
 
-class M3UPlaylistPlayer : MainAPI() {
-    override var name: String
-        get() = getM3uName()
-        set(value) {}
+class M3UPlaylistPlayer(
+    private val playlistName: String,
+    private val playlistUrl: String
+) : MainAPI() {
+    override var name: String = "📺 $playlistName"
     override val hasMainPage = true
     override var lang = ""
     override val supportedTypes = setOf(TvType.Live)
@@ -29,79 +27,34 @@ class M3UPlaylistPlayer : MainAPI() {
         var context: Context? = null
     }
  
-    private fun getM3uUrl(): String? {
-        return context?.getKey<String>("m3u_url")
-    }
- 
-    private fun getM3uName(): String {
-        val rawName = context?.getKey<String>("provider_name")
-            ?: context?.getKey<String>("m3u_name")
-            ?: "M3U Playlist Player"
-        return " 📺 $rawName"
-    }
- 
-    private fun getSavedPlaylists(): List<Pair<String, String>> {
-        val raw = context?.getKey<String>("saved_playlists_list") ?: ""
-        val list = if (raw.isBlank()) mutableListOf() else raw.split("\n").mapNotNull { line ->
-            val parts = line.split("||")
-            if (parts.size >= 2) {
-                val name = parts[0].trim()
-                val url = parts[1].trim()
-                val enabled = if (parts.size >= 3) parts[2].trim().toBoolean() else true
-                if (enabled) name to url else null
-            } else null
-        }.toMutableList()
- 
-        if (list.isEmpty()) {
-            val activeUrl = context?.getKey<String>("m3u_url") ?: ""
-            val activeName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
-            if (activeUrl.isNotBlank()) {
-                list.add(activeName to activeUrl)
-            }
-        }
-        return list
-    }
-
     private suspend fun fetchPlaylist(): Playlist = coroutineScope {
-        val saved = getSavedPlaylists()
-        if (saved.isEmpty()) {
+        if (playlistUrl.isBlank()) {
             return@coroutineScope Playlist(emptyList())
         }
         
-        val deferredPlaylists = saved.map { (playlistName, url) ->
-            async {
-                try {
-                    val content = app.get(url).text
-                    val parsed = IptvPlaylistParser().parseM3U(content)
-                    playlistName to parsed
-                } catch (e: Exception) {
-                    playlistName to Playlist(emptyList())
-                }
-            }
-        }
-        
-        val parsedPlaylists = deferredPlaylists.awaitAll()
-        val allItems = mutableListOf<PlaylistItem>()
-        
-        parsedPlaylists.forEach { (playlistName, playlist) ->
-            playlist.items.forEach { item ->
+        try {
+            val content = app.get(playlistUrl).text
+            val parsed = IptvPlaylistParser().parseM3U(content)
+            
+            // Clean up group-title so we don't prepend the playlist name (fixes image 3)
+            val cleanedItems = parsed.items.map { item ->
                 val originalGroup = item.attributes["group-title"]
                 val newGroup = if (originalGroup.isNullOrBlank()) {
-                    playlistName
+                    "Live Channels"
                 } else {
-                    "$playlistName - $originalGroup"
+                    originalGroup.trim()
                 }
                 
-                // Create a new map with the updated group-title so that they are categorized correctly on home screen
                 val newAttributes = item.attributes.toMutableMap().apply {
                     put("group-title", newGroup)
                 }
                 
-                allItems.add(item.copy(attributes = newAttributes))
+                item.copy(attributes = newAttributes)
             }
+            Playlist(cleanedItems)
+        } catch (e: Exception) {
+            Playlist(emptyList())
         }
-        
-        Playlist(allItems)
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
@@ -118,7 +71,7 @@ class M3UPlaylistPlayer : MainAPI() {
             )
         }
 
-        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: "Channels" }
+        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: "Live Channels" }
 
         val lists = grouped.map { (group, items) ->
             HomePageList(
@@ -210,7 +163,6 @@ class M3UPlaylistPlayer : MainAPI() {
             var finalLicenseUrl: String? = kodiProps["inputstream.adaptive.license_url"]
             val keyRequestHeaders = java.util.HashMap<String, String>()
 
-            // Copy stream headers to key request headers (very useful for User-Agent, Origin, authorization tokens)
             headers.forEach { (k, v) ->
                 keyRequestHeaders[k] = v
             }
@@ -225,7 +177,6 @@ class M3UPlaylistPlayer : MainAPI() {
                     trimmedKey.startsWith("https://", ignoreCase = true) || 
                     trimmedKey.contains("://")) {
                     
-                    // It is a license server URL (Widevine/Clearkey URL)
                     val pipeIndex = trimmedKey.indexOf('|')
                     val rawUrl = if (pipeIndex != -1) trimmedKey.substring(0, pipeIndex).trim() else trimmedKey
                     if (finalLicenseUrl == null) {
@@ -244,7 +195,6 @@ class M3UPlaylistPlayer : MainAPI() {
                         }
                     }
                 } else {
-                    // Clearkey inline kid:key
                     isClearkeyDrm = true
                     val parts = trimmedKey.split(':')
                     if (parts.size == 2) {

@@ -3,8 +3,6 @@ package com.cncverse.M3UPlaylistPlayer
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import com.lagradost.cloudstream3.utils.DataStore.setKey
-import com.lagradost.cloudstream3.utils.DataStore.getKey
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -22,30 +20,6 @@ class Settings(
     private lateinit var playlistsContainer: LinearLayout
     private lateinit var nameInput: EditText
     private lateinit var urlInput: EditText
-    private lateinit var providerNameInput: EditText
-
-    data class SavedPlaylist(
-        var name: String,
-        val url: String,
-        var enabled: Boolean = true
-    )
-
-    private fun getSavedPlaylists(): List<SavedPlaylist> {
-        val raw = context?.getKey<String>("saved_playlists_list") ?: ""
-        if (raw.isBlank()) return emptyList()
-        return raw.split("\n").mapNotNull { line ->
-            val parts = line.split("||")
-            if (parts.size >= 2) {
-                val enabled = if (parts.size >= 3) parts[2].trim().toBoolean() else true
-                SavedPlaylist(parts[0].trim(), parts[1].trim(), enabled)
-            } else null
-        }
-    }
-
-    private fun savePlaylists(list: List<SavedPlaylist>) {
-        val raw = list.joinToString("\n") { "${it.name}||${it.url}||${it.enabled}" }
-        context?.setKey("saved_playlists_list", raw)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,24 +90,16 @@ class Settings(
             )
         }
         restartButton.setOnClickListener {
-            // Save provider name
-            val providerName = providerNameInput.text.toString().trim()
-            if (providerName.isNotBlank()) {
-                context?.setKey("provider_name", providerName)
-            }
-
             // Save current inputs if they are not blank
             val name = nameInput.text.toString().trim()
             val url = urlInput.text.toString().trim()
             
             if (name.isNotBlank() && url.isNotBlank()) {
-                val list = getSavedPlaylists().toMutableList()
+                val list = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                 if (!list.any { it.url == url }) {
                     list.add(0, SavedPlaylist(name, url, true))
-                    savePlaylists(list)
+                    PlaylistHelper.savePlaylists(context, list)
                 }
-                context?.setKey("m3u_url", url)
-                context?.setKey("m3u_name", name)
             }
             
             Toast.makeText(context, "Menyimpan & Memulai Ulang Aplikasi...", Toast.LENGTH_SHORT).show()
@@ -155,37 +121,6 @@ class Settings(
         }
         headerLayout.addView(restartButton)
         root.addView(headerLayout)
-
-        // --- SECTION 0: PROVIDER NAME ---
-        val sectionTitleProvider = TextView(context).apply {
-            text = "Nama Tampilan Provider (Menu Utama):"
-            textSize = 14f
-            setTextColor(Color.parseColor("#FF9500")) // Orange color accent
-            setTypeface(null, android.graphics.Typeface.BOLD)
-            setPadding(0, 16, 0, 16)
-        }
-        root.addView(sectionTitleProvider)
-
-        providerNameInput = EditText(context).apply {
-            val currentProviderName = context.getKey<String>("provider_name") 
-                ?: context.getKey<String>("m3u_name") 
-                ?: "M3U Playlist Player"
-            setText(currentProviderName)
-            hint = "Masukan nama provider (misal: *TV INDONESIA🇲🇨)"
-            setHintTextColor(Color.DKGRAY)
-            setTextColor(Color.WHITE)
-            setPadding(24, 24, 24, 24)
-            background = GradientDrawable().apply {
-                setColor(Color.parseColor("#2C2C2E"))
-                cornerRadius = 12f
-            }
-        }
-        root.addView(providerNameInput)
-
-        // Spacer
-        root.addView(View(context).apply {
-            layoutParams = LinearLayout.LayoutParams(1, 24)
-        })
 
         // --- SECTION 1: ADD PLAYLIST ---
         val sectionTitleAdd = TextView(context).apply {
@@ -253,14 +188,14 @@ class Settings(
                 return@setOnClickListener
             }
 
-            val list = getSavedPlaylists().toMutableList()
+            val list = PlaylistHelper.getSavedPlaylists(context).toMutableList()
             if (list.any { it.url == url }) {
                 Toast.makeText(context, "URL Playlist ini sudah ada!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             list.add(0, SavedPlaylist(name, url, true))
-            savePlaylists(list)
+            PlaylistHelper.savePlaylists(context, list)
 
             nameInput.text.clear()
             urlInput.text.clear()
@@ -289,14 +224,6 @@ class Settings(
         }
         root.addView(playlistsContainer)
 
-        // Import current m3u_url if list is empty
-        val initialList = getSavedPlaylists().toMutableList()
-        val activeUrl = context?.getKey<String>("m3u_url") ?: ""
-        if (activeUrl.isNotBlank() && initialList.none { it.url == activeUrl }) {
-            initialList.add(0, SavedPlaylist("Default Playlist", activeUrl, true))
-            savePlaylists(initialList)
-        }
-
         refreshPlaylistsList(context)
 
         return rootScroll
@@ -304,7 +231,7 @@ class Settings(
 
     private fun refreshPlaylistsList(context: Context) {
         playlistsContainer.removeAllViews()
-        val playlists = getSavedPlaylists()
+        val playlists = PlaylistHelper.getSavedPlaylists(context)
 
         if (playlists.isEmpty()) {
             val emptyText = TextView(context).apply {
@@ -375,10 +302,10 @@ class Settings(
                 }
             }
             activeSwitch.setOnCheckedChangeListener { _, isChecked ->
-                val currentList = getSavedPlaylists().toMutableList()
+                val currentList = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                 if (index < currentList.size) {
                     currentList[index].enabled = isChecked
-                    savePlaylists(currentList)
+                    PlaylistHelper.savePlaylists(context, currentList)
                     Toast.makeText(context, "${playlist.name} ${if (isChecked) "diaktifkan" else "dinonaktifkan"}", Toast.LENGTH_SHORT).show()
                     refreshPlaylistsList(context)
                 }
@@ -443,10 +370,10 @@ class Settings(
                 builder.setPositiveButton("Simpan") { _, _ ->
                     val newName = inputEdit.text.toString().trim()
                     if (newName.isNotBlank()) {
-                        val currentList = getSavedPlaylists().toMutableList()
+                        val currentList = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                         if (index < currentList.size) {
                             currentList[index].name = newName
-                            savePlaylists(currentList)
+                            PlaylistHelper.savePlaylists(context, currentList)
                             Toast.makeText(context, "Nama playlist berhasil diubah!", Toast.LENGTH_SHORT).show()
                             refreshPlaylistsList(context)
                         }
@@ -478,10 +405,10 @@ class Settings(
                 builder.setTitle("Hapus Playlist")
                 builder.setMessage("Apakah Anda yakin ingin menghapus playlist '${playlist.name}'?")
                 builder.setPositiveButton("Hapus") { _, _ ->
-                    val currentList = getSavedPlaylists().toMutableList()
+                    val currentList = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                     if (index < currentList.size) {
                         currentList.removeAt(index)
-                        savePlaylists(currentList)
+                        PlaylistHelper.savePlaylists(context, currentList)
                         Toast.makeText(context, "Playlist berhasil dihapus!", Toast.LENGTH_SHORT).show()
                         refreshPlaylistsList(context)
                     }
