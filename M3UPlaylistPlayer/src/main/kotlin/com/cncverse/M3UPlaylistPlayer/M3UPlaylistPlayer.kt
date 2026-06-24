@@ -13,6 +13,9 @@ import com.lagradost.cloudstream3.utils.CLEARKEY_UUID
 import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
 import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import com.lagradost.cloudstream3.utils.DrmExtractorLink
+import com.lagradost.cloudstream3.utils.DataStore
+import com.lagradost.cloudstream3.utils.DataStore.setKey
+import com.lagradost.cloudstream3.utils.DataStore.getKey
 
 class M3UPlaylistPlayer : MainAPI() {
     override var name: String
@@ -21,35 +24,32 @@ class M3UPlaylistPlayer : MainAPI() {
     override val hasMainPage = true
     override var lang = ""
     override val supportedTypes = setOf(TvType.Live)
-
+ 
     companion object {
         var context: Context? = null
     }
-
+ 
     private fun getM3uUrl(): String? {
-        val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
-        return prefs?.getString("m3u_url", null)
+        return context?.getKey<String>("m3u_url")
     }
-
+ 
     private fun getM3uName(): String {
-        val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
-        val rawName = prefs?.getString("m3u_name", "M3U Playlist Player") ?: "M3U Playlist Player"
+        val rawName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
         return "📺 $rawName"
     }
-
+ 
     private fun getSavedPlaylists(): List<Pair<String, String>> {
-        val prefs = context?.getSharedPreferences("M3UPlaylistPlayer", Context.MODE_PRIVATE)
-        val raw = prefs?.getString("saved_playlists_list", "") ?: ""
+        val raw = context?.getKey<String>("saved_playlists_list") ?: ""
         val list = if (raw.isBlank()) mutableListOf() else raw.split("\n").mapNotNull { line ->
             val parts = line.split("||", limit = 2)
             if (parts.size == 2) {
                 parts[0].trim() to parts[1].trim()
             } else null
         }.toMutableList()
-
+ 
         // Also add the active m3u_url if it's not in the list yet
-        val activeUrl = prefs?.getString("m3u_url", "") ?: ""
-        val activeName = prefs?.getString("m3u_name", "M3U Playlist Player") ?: "M3U Playlist Player"
+        val activeUrl = context?.getKey<String>("m3u_url") ?: ""
+        val activeName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
         if (activeUrl.isNotBlank() && list.none { it.second == activeUrl }) {
             list.add(0, activeName to activeUrl)
         }

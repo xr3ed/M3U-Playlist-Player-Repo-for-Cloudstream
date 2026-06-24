@@ -2,8 +2,9 @@ package com.cncverse.M3UPlaylistPlayer
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
+import com.lagradost.cloudstream3.utils.DataStore.setKey
+import com.lagradost.cloudstream3.utils.DataStore.getKey
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -15,8 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class Settings(
-    private val plugin: M3UPlaylistPlayerPlugin,
-    private val sharedPref: SharedPreferences?
+    private val plugin: M3UPlaylistPlayerPlugin
 ) : BottomSheetDialogFragment() {
 
     private lateinit var playlistsContainer: LinearLayout
@@ -29,7 +29,7 @@ class Settings(
     )
 
     private fun getSavedPlaylists(): List<SavedPlaylist> {
-        val raw = sharedPref?.getString("saved_playlists_list", "") ?: ""
+        val raw = context?.getKey<String>("saved_playlists_list") ?: ""
         if (raw.isBlank()) return emptyList()
         return raw.split("\n").mapNotNull { line ->
             val parts = line.split("||", limit = 2)
@@ -41,7 +41,7 @@ class Settings(
 
     private fun savePlaylists(list: List<SavedPlaylist>) {
         val raw = list.joinToString("\n") { "${it.name}||${it.url}" }
-        sharedPref?.edit()?.putString("saved_playlists_list", raw)?.apply()
+        context?.setKey("saved_playlists_list", raw)
     }
 
     override fun onCreateView(
@@ -123,10 +123,8 @@ class Settings(
                     list.add(0, SavedPlaylist(name, url))
                     savePlaylists(list)
                 }
-                sharedPref?.edit()
-                    ?.putString("m3u_url", url)
-                    ?.putString("m3u_name", name)
-                    ?.apply()
+                context?.setKey("m3u_url", url)
+                context?.setKey("m3u_name", name)
             }
             
             Toast.makeText(context, "Menyimpan & Memulai Ulang Aplikasi...", Toast.LENGTH_SHORT).show()
@@ -226,7 +224,8 @@ class Settings(
             
             // Set as active if it's the only one
             if (list.size == 1) {
-                sharedPref?.edit()?.putString("m3u_url", url)?.putString("m3u_name", name)?.apply()
+                context?.setKey("m3u_url", url)
+                context?.setKey("m3u_name", name)
             }
 
             nameInput.text.clear()
@@ -258,7 +257,7 @@ class Settings(
 
         // Import current m3u_url if list is empty
         val initialList = getSavedPlaylists().toMutableList()
-        val activeUrl = sharedPref?.getString("m3u_url", "") ?: ""
+        val activeUrl = context?.getKey<String>("m3u_url") ?: ""
         if (activeUrl.isNotBlank() && initialList.none { it.url == activeUrl }) {
             initialList.add(0, SavedPlaylist("Default Playlist", activeUrl))
             savePlaylists(initialList)
@@ -285,7 +284,7 @@ class Settings(
             return
         }
 
-        val activeUrl = sharedPref?.getString("m3u_url", "") ?: ""
+        val activeUrl = context.getKey<String>("m3u_url") ?: ""
 
         playlists.forEachIndexed { index, playlist ->
             val isActive = playlist.url == activeUrl
@@ -382,10 +381,8 @@ class Settings(
                     }
                 }
                 useBtn.setOnClickListener {
-                    sharedPref?.edit()
-                        ?.putString("m3u_url", playlist.url)
-                        ?.putString("m3u_name", playlist.name)
-                        ?.apply()
+                    context.setKey("m3u_url", playlist.url)
+                    context.setKey("m3u_name", playlist.name)
                     Toast.makeText(context, "Playlist aktif: ${playlist.name}", Toast.LENGTH_SHORT).show()
                     refreshPlaylistsList(context)
                 }
@@ -433,7 +430,7 @@ class Settings(
                             currentList[index].name = newName
                             savePlaylists(currentList)
                             if (isActive) {
-                                sharedPref?.edit()?.putString("m3u_name", newName)?.apply()
+                                context.setKey("m3u_name", newName)
                             }
                             Toast.makeText(context, "Nama playlist berhasil diubah!", Toast.LENGTH_SHORT).show()
                             refreshPlaylistsList(context)
@@ -474,15 +471,11 @@ class Settings(
                         // If we deleted the active playlist, clear active settings or set first item as active
                         if (isActive) {
                             if (currentList.isNotEmpty()) {
-                                sharedPref?.edit()
-                                    ?.putString("m3u_url", currentList[0].url)
-                                    ?.putString("m3u_name", currentList[0].name)
-                                    ?.apply()
+                                context.setKey("m3u_url", currentList[0].url)
+                                context.setKey("m3u_name", currentList[0].name)
                             } else {
-                                sharedPref?.edit()
-                                    ?.remove("m3u_url")
-                                    ?.remove("m3u_name")
-                                    ?.apply()
+                                context.setKey("m3u_url", "")
+                                context.setKey("m3u_name", "")
                             }
                         }
                         
