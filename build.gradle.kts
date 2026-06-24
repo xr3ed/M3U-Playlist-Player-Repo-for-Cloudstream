@@ -144,3 +144,53 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+tasks.register("testFetch") {
+    doLast {
+        val urlStr = "https://playlist.xtv.biz.id/?user=gratis"
+        println("[DIAGNOSTIC] Fetching $urlStr ...")
+        val userAgents = listOf(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+            "OTTNavigator/1.6.8.2 (Linux;Android 11)",
+            "TiviMate/4.7.0 (Linux;Android 11)",
+            "VLC/3.0.18",
+            "okhttp/4.9.2"
+        )
+        for (ua in userAgents) {
+            println("[DIAGNOSTIC] Trying User-Agent: $ua")
+            try {
+                val url = java.net.URL(urlStr)
+                val connection = url.openConnection() as java.net.HttpURLConnection
+                connection.instanceFollowRedirects = true
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("User-Agent", ua)
+                connection.setRequestProperty("Accept", "*/*")
+                connection.connectTimeout = 10000
+                connection.readTimeout = 10000
+                connection.connect()
+                val code = connection.responseCode
+                println("[DIAGNOSTIC] Response Code: $code")
+                println("[DIAGNOSTIC] Response Message: ${connection.responseMessage}")
+                println("[DIAGNOSTIC] Headers: " + connection.headerFields)
+                val isError = code >= 400
+                val stream = if (isError) connection.errorStream else connection.inputStream
+                if (stream != null) {
+                    val body = stream.bufferedReader().use { it.readText() }
+                    println("[DIAGNOSTIC] Body length: ${body.length}")
+                    if (ua.contains("Mozilla")) {
+                        println("[DIAGNOSTIC] Full HTML Body:")
+                        println(body)
+                    } else {
+                        println("[DIAGNOSTIC] Body start: ${body.take(500)}")
+                    }
+                } else {
+                    println("[DIAGNOSTIC] Body stream is null")
+                }
+            } catch (e: Exception) {
+                println("[DIAGNOSTIC] Error: ${e.message}")
+                e.printStackTrace()
+            }
+            println("[DIAGNOSTIC] ---------------------------------------------")
+        }
+    }
+}
