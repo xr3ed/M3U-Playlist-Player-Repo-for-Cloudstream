@@ -25,6 +25,7 @@ class M3UPlaylistPlayer(
  
     companion object {
         var context: Context? = null
+        var lastWorkingUserAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
     }
 
     override val mainPage: List<MainPageData>
@@ -35,20 +36,56 @@ class M3UPlaylistPlayer(
             }
             return groups.map { MainPageData(it, it) }
         }
- 
+  
     private suspend fun fetchPlaylist(): Playlist = coroutineScope {
         if (playlistUrl.isBlank()) {
             return@coroutineScope Playlist(emptyList())
         }
         
+        val userAgents = listOf(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+            "OTTNavigator/1.6.8.2 (Linux;Android 11)",
+            "TiviMate/4.7.0 (Linux;Android 11)",
+            "VLC/3.0.18",
+            "okhttp/4.9.2"
+        )
+        
+        var content = ""
+        var success = false
+        var fallbackContent = ""
+        
+        for (ua in userAgents) {
+            try {
+                val headers = mapOf(
+                    "User-Agent" to ua,
+                    "Accept" to "*/*"
+                )
+                val response = app.get(playlistUrl, headers = headers, timeout = 15)
+                val text = response.text
+                if (text.isNotBlank()) {
+                    val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
+                    val trimmed = clean.trim()
+                    if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
+                        content = clean
+                        success = true
+                        lastWorkingUserAgent = ua
+                        android.util.Log.d("M3UPlayer", "Successfully fetched playlist using User-Agent: $ua")
+                        break
+                    } else if (fallbackContent.isBlank()) {
+                        fallbackContent = clean
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("M3UPlayer", "Failed to fetch playlist using User-Agent: $ua", e)
+            }
+        }
+        
+        val cleanContent = if (success) content else fallbackContent
+        if (cleanContent.isBlank()) {
+            return@coroutineScope Playlist(emptyList())
+        }
+        
         try {
-            val headers = mapOf(
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-                "Accept" to "*/*"
-            )
-            val response = app.get(playlistUrl, headers = headers)
-            val content = response.text
-            val cleanContent = if (content.startsWith("\uFEFF")) content.substring(1) else content
             val parsed = IptvPlaylistParser().parseM3U(cleanContent)
             
             // Clean up group-title so we don't prepend the playlist name (fixes image 3)
@@ -72,7 +109,7 @@ class M3UPlaylistPlayer(
             
             Playlist(cleanedItems)
         } catch (e: Exception) {
-            android.util.Log.e("M3UPlayer", "Error fetching playlist from $playlistUrl", e)
+            android.util.Log.e("M3UPlayer", "Error parsing playlist from $playlistUrl", e)
             Playlist(emptyList())
         }
     }
@@ -179,7 +216,12 @@ class M3UPlaylistPlayer(
             else -> ExtractorLinkType.VIDEO
         }
 
-        val headers = item?.headers ?: emptyMap()
+        val parsedHeaders = item?.headers ?: emptyMap()
+        val headers = if (parsedHeaders.keys.any { it.equals("User-Agent", ignoreCase = true) }) {
+            parsedHeaders
+        } else {
+            parsedHeaders + mapOf("User-Agent" to lastWorkingUserAgent)
+        }
         val kodiProps = item?.kodiProps ?: emptyMap()
         val licenseType = kodiProps["inputstream.adaptive.license_type"]
         val licenseKey = kodiProps["inputstream.adaptive.license_key"]
