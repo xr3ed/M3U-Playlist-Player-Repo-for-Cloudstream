@@ -137,11 +137,18 @@ class M3UPlaylistPlayer(
             return newHomePageResponse(emptyList(), hasNext = false)
         }
 
+        // Fetch EPG data
+        val (epgData, nameToIdMap) = EpgHelper.getEpg()
+
         val homePageList = HomePageList(
             groupName,
             items.map { item ->
+                val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
+                val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+                val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
+                
                 newLiveSearchResponse(
-                    item.title,
+                    displayName,
                     item.url,
                     TvType.Live
                 ) {
@@ -155,11 +162,16 @@ class M3UPlaylistPlayer(
 
     override suspend fun search(query: String): List<SearchResponse> {
         val playlist = fetchPlaylist()
+        val (epgData, nameToIdMap) = EpgHelper.getEpg()
         return playlist.items
             .filter { it.title.contains(query, ignoreCase = true) }
             .map { item ->
+                val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
+                val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+                val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
+                
                 newLiveSearchResponse(
-                    item.title,
+                    displayName,
                     item.url,
                     TvType.Live
                 ) {
@@ -174,12 +186,21 @@ class M3UPlaylistPlayer(
         val title = item?.title ?: "Live Channel"
         val logoUrl = item?.attributes["tvg-logo"]
 
+        var description = "Siaran Langsung"
+        if (item != null) {
+            val (epgData, nameToIdMap) = EpgHelper.getEpg()
+            val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
+            val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+            description = currentAndUpcoming.second
+        }
+
         return newLiveStreamLoadResponse(
             title,
             url,
             url
         ) {
             this.posterUrl = logoUrl
+            this.plot = description
         }
     }
 
