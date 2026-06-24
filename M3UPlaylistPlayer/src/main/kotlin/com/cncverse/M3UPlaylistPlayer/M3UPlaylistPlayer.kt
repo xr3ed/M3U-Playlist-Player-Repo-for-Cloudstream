@@ -18,7 +18,7 @@ class M3UPlaylistPlayer(
     private val playlistName: String,
     private val playlistUrl: String
 ) : MainAPI() {
-    override var name: String = "📺 $playlistName"
+    override var name: String = playlistName
     override val hasMainPage = true
     override var lang = ""
     override val supportedTypes = setOf(TvType.Live)
@@ -26,6 +26,15 @@ class M3UPlaylistPlayer(
     companion object {
         var context: Context? = null
     }
+
+    override val mainPage: List<MainPageData>
+        get() {
+            val groups = PlaylistHelper.getCachedGroups(context, playlistUrl)
+            if (groups.isEmpty()) {
+                return listOf(MainPageData("Live Channels", "Live Channels"))
+            }
+            return groups.map { MainPageData(it, it) }
+        }
  
     private suspend fun fetchPlaylist(): Playlist = coroutineScope {
         if (playlistUrl.isBlank()) {
@@ -51,6 +60,10 @@ class M3UPlaylistPlayer(
                 
                 item.copy(attributes = newAttributes)
             }
+            
+            val groups = cleanedItems.map { it.attributes["group-title"] ?: "Live Channels" }.distinct()
+            PlaylistHelper.saveCachedGroups(context, playlistUrl, groups)
+            
             Playlist(cleanedItems)
         } catch (e: Exception) {
             Playlist(emptyList())
@@ -72,23 +85,28 @@ class M3UPlaylistPlayer(
         }
 
         val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: "Live Channels" }
-
-        val lists = grouped.map { (group, items) ->
-            HomePageList(
-                group,
-                items.map { item ->
-                    newLiveSearchResponse(
-                        item.title,
-                        item.url,
-                        TvType.Live
-                    ) {
-                        this.posterUrl = item.attributes["tvg-logo"]
-                    }
-                }
-            )
+        
+        val groupName = request.data
+        val items = grouped[groupName] ?: emptyList()
+        
+        if (items.isEmpty()) {
+            return newHomePageResponse(emptyList(), hasNext = false)
         }
 
-        return newHomePageResponse(lists, hasNext = false)
+        val homePageList = HomePageList(
+            groupName,
+            items.map { item ->
+                newLiveSearchResponse(
+                    item.title,
+                    item.url,
+                    TvType.Live
+                ) {
+                    this.posterUrl = item.attributes["tvg-logo"]
+                }
+            }
+        )
+
+        return newHomePageResponse(listOf(homePageList), hasNext = false)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {

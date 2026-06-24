@@ -36,4 +36,17 @@ object PlaylistHelper {
         val raw = list.joinToString("\n") { "${it.name}||${it.url}||${it.enabled}" }
         context.setKey("saved_playlists_list", raw)
     }
+
+    fun getCachedGroups(context: Context?, url: String): List<String> {
+        if (context == null) return emptyList()
+        val raw = context.getKey<String>("cached_groups_${url.hashCode()}") ?: ""
+        if (raw.isBlank()) return emptyList()
+        return raw.split("\n").filter { it.isNotBlank() }
+    }
+
+    fun saveCachedGroups(context: Context?, url: String, groups: List<String>) {
+        if (context == null) return
+        val raw = groups.filter { it.isNotBlank() }.joinToString("\n")
+        context.setKey("cached_groups_${url.hashCode()}", raw)
+    }
 }
