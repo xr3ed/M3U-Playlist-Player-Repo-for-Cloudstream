@@ -34,7 +34,7 @@ class IptvPlaylistParser {
 
             if (line.isNotEmpty()) {
                 when {
-                    line.startsWith("#EXTINF:") -> {
+                    line.startsWith("#EXTINF:", ignoreCase = true) || line.startsWith("#EXTINF ", ignoreCase = true) -> {
                         bufferedTitle = getTitle(line)
                         bufferedAttributes = getAttributes(line)
                     }
@@ -83,12 +83,18 @@ class IptvPlaylistParser {
     }
 
     private fun getTitle(line: String): String {
-        return line.substringAfterLast(",").trim()
+        val lastQuoteIndex = line.lastIndexOf('"')
+        return if (lastQuoteIndex != -1 && lastQuoteIndex < line.length - 1) {
+            val afterQuote = line.substring(lastQuoteIndex + 1)
+            afterQuote.substringAfter(",").trim()
+        } else {
+            line.substringAfterLast(",").trim()
+        }
     }
 
     private fun getAttributes(line: String): Map<String, String> {
         val attributes = mutableMapOf<String, String>()
-        val regex = Regex("(\\S+?)=\"(.+?)\"")
+        val regex = Regex("(\\S+?)=\"([^\"]*)\"")
         regex.findAll(line).forEach { match ->
             val key = match.groupValues[1]
             val value = match.groupValues[2]

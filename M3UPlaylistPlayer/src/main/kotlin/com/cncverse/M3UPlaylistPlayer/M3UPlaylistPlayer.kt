@@ -42,8 +42,14 @@ class M3UPlaylistPlayer(
         }
         
         try {
-            val content = app.get(playlistUrl).text
-            val parsed = IptvPlaylistParser().parseM3U(content)
+            val headers = mapOf(
+                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+                "Accept" to "*/*"
+            )
+            val response = app.get(playlistUrl, headers = headers)
+            val content = response.text
+            val cleanContent = if (content.startsWith("\uFEFF")) content.substring(1) else content
+            val parsed = IptvPlaylistParser().parseM3U(cleanContent)
             
             // Clean up group-title so we don't prepend the playlist name (fixes image 3)
             val cleanedItems = parsed.items.map { item ->
@@ -66,6 +72,7 @@ class M3UPlaylistPlayer(
             
             Playlist(cleanedItems)
         } catch (e: Exception) {
+            android.util.Log.e("M3UPlayer", "Error fetching playlist from $playlistUrl", e)
             Playlist(emptyList())
         }
     }
