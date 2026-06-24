@@ -22,25 +22,28 @@ class Settings(
     private lateinit var playlistsContainer: LinearLayout
     private lateinit var nameInput: EditText
     private lateinit var urlInput: EditText
+    private lateinit var providerNameInput: EditText
 
     data class SavedPlaylist(
         var name: String,
-        val url: String
+        val url: String,
+        var enabled: Boolean = true
     )
 
     private fun getSavedPlaylists(): List<SavedPlaylist> {
         val raw = context?.getKey<String>("saved_playlists_list") ?: ""
         if (raw.isBlank()) return emptyList()
         return raw.split("\n").mapNotNull { line ->
-            val parts = line.split("||", limit = 2)
-            if (parts.size == 2) {
-                SavedPlaylist(parts[0].trim(), parts[1].trim())
+            val parts = line.split("||")
+            if (parts.size >= 2) {
+                val enabled = if (parts.size >= 3) parts[2].trim().toBoolean() else true
+                SavedPlaylist(parts[0].trim(), parts[1].trim(), enabled)
             } else null
         }
     }
 
     private fun savePlaylists(list: List<SavedPlaylist>) {
-        val raw = list.joinToString("\n") { "${it.name}||${it.url}" }
+        val raw = list.joinToString("\n") { "${it.name}||${it.url}||${it.enabled}" }
         context?.setKey("saved_playlists_list", raw)
     }
 
@@ -113,6 +116,12 @@ class Settings(
             )
         }
         restartButton.setOnClickListener {
+            // Save provider name
+            val providerName = providerNameInput.text.toString().trim()
+            if (providerName.isNotBlank()) {
+                context?.setKey("provider_name", providerName)
+            }
+
             // Save current inputs if they are not blank
             val name = nameInput.text.toString().trim()
             val url = urlInput.text.toString().trim()
@@ -120,7 +129,7 @@ class Settings(
             if (name.isNotBlank() && url.isNotBlank()) {
                 val list = getSavedPlaylists().toMutableList()
                 if (!list.any { it.url == url }) {
-                    list.add(0, SavedPlaylist(name, url))
+                    list.add(0, SavedPlaylist(name, url, true))
                     savePlaylists(list)
                 }
                 context?.setKey("m3u_url", url)
@@ -146,6 +155,37 @@ class Settings(
         }
         headerLayout.addView(restartButton)
         root.addView(headerLayout)
+
+        // --- SECTION 0: PROVIDER NAME ---
+        val sectionTitleProvider = TextView(context).apply {
+            text = "Nama Tampilan Provider (Menu Utama):"
+            textSize = 14f
+            setTextColor(Color.parseColor("#FF9500")) // Orange color accent
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setPadding(0, 16, 0, 16)
+        }
+        root.addView(sectionTitleProvider)
+
+        providerNameInput = EditText(context).apply {
+            val currentProviderName = context.getKey<String>("provider_name") 
+                ?: context.getKey<String>("m3u_name") 
+                ?: "M3U Playlist Player"
+            setText(currentProviderName)
+            hint = "Masukan nama provider (misal: *TV INDONESIA🇲🇨)"
+            setHintTextColor(Color.DKGRAY)
+            setTextColor(Color.WHITE)
+            setPadding(24, 24, 24, 24)
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#2C2C2E"))
+                cornerRadius = 12f
+            }
+        }
+        root.addView(providerNameInput)
+
+        // Spacer
+        root.addView(View(context).apply {
+            layoutParams = LinearLayout.LayoutParams(1, 24)
+        })
 
         // --- SECTION 1: ADD PLAYLIST ---
         val sectionTitleAdd = TextView(context).apply {
@@ -219,14 +259,8 @@ class Settings(
                 return@setOnClickListener
             }
 
-            list.add(0, SavedPlaylist(name, url))
+            list.add(0, SavedPlaylist(name, url, true))
             savePlaylists(list)
-            
-            // Set as active if it's the only one
-            if (list.size == 1) {
-                context?.setKey("m3u_url", url)
-                context?.setKey("m3u_name", name)
-            }
 
             nameInput.text.clear()
             urlInput.text.clear()
@@ -259,7 +293,7 @@ class Settings(
         val initialList = getSavedPlaylists().toMutableList()
         val activeUrl = context?.getKey<String>("m3u_url") ?: ""
         if (activeUrl.isNotBlank() && initialList.none { it.url == activeUrl }) {
-            initialList.add(0, SavedPlaylist("Default Playlist", activeUrl))
+            initialList.add(0, SavedPlaylist("Default Playlist", activeUrl, true))
             savePlaylists(initialList)
         }
 
@@ -284,10 +318,8 @@ class Settings(
             return
         }
 
-        val activeUrl = context.getKey<String>("m3u_url") ?: ""
-
         playlists.forEachIndexed { index, playlist ->
-            val isActive = playlist.url == activeUrl
+            val isActive = playlist.enabled
 
             // Row Container
             val row = LinearLayout(context).apply {
@@ -297,7 +329,7 @@ class Settings(
                     setColor(Color.parseColor("#2C2C2E"))
                     cornerRadius = 12f
                     if (isActive) {
-                        setStroke(4, Color.parseColor("#34C759")) // Darker green stroke for active row
+                        setStroke(4, Color.parseColor("#34C759")) // Green stroke for active row
                     }
                 }
                 layoutParams = LinearLayout.LayoutParams(
@@ -308,9 +340,10 @@ class Settings(
                 }
             }
 
-            // Title & Status Layout
+            // Title & Switch Layout
             val titleLayout = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -330,16 +363,27 @@ class Settings(
             }
             titleLayout.addView(nameText)
 
-            if (isActive) {
-                val activeBadge = TextView(context).apply {
-                    text = "AKTIF"
-                    textSize = 12f
-                    setTextColor(Color.parseColor("#34C759")) // Green text badge
-                    setTypeface(null, android.graphics.Typeface.BOLD)
-                    setPadding(16, 0, 0, 0)
+            // Switch to toggle active status
+            val activeSwitch = Switch(context).apply {
+                isChecked = playlist.enabled
+                // Layout margins
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(16, 0, 0, 0)
                 }
-                titleLayout.addView(activeBadge)
             }
+            activeSwitch.setOnCheckedChangeListener { _, isChecked ->
+                val currentList = getSavedPlaylists().toMutableList()
+                if (index < currentList.size) {
+                    currentList[index].enabled = isChecked
+                    savePlaylists(currentList)
+                    Toast.makeText(context, "${playlist.name} ${if (isChecked) "diaktifkan" else "dinonaktifkan"}", Toast.LENGTH_SHORT).show()
+                    refreshPlaylistsList(context)
+                }
+            }
+            titleLayout.addView(activeSwitch)
             row.addView(titleLayout)
 
             // URL subtitle text
@@ -361,32 +405,6 @@ class Settings(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-            }
-
-            // Use/Select Button
-            if (!isActive) {
-                val useBtn = Button(context).apply {
-                    text = "Pakai"
-                    textSize = 12f
-                    setTextColor(Color.WHITE)
-                    background = GradientDrawable().apply {
-                        setColor(Color.parseColor("#34C759")) // Green color
-                        cornerRadius = 8f
-                    }
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        setMargins(8, 0, 8, 0)
-                    }
-                }
-                useBtn.setOnClickListener {
-                    context.setKey("m3u_url", playlist.url)
-                    context.setKey("m3u_name", playlist.name)
-                    Toast.makeText(context, "Playlist aktif: ${playlist.name}", Toast.LENGTH_SHORT).show()
-                    refreshPlaylistsList(context)
-                }
-                btnLayout.addView(useBtn)
             }
 
             // Rename Button
@@ -429,9 +447,6 @@ class Settings(
                         if (index < currentList.size) {
                             currentList[index].name = newName
                             savePlaylists(currentList)
-                            if (isActive) {
-                                context.setKey("m3u_name", newName)
-                            }
                             Toast.makeText(context, "Nama playlist berhasil diubah!", Toast.LENGTH_SHORT).show()
                             refreshPlaylistsList(context)
                         }
@@ -467,18 +482,6 @@ class Settings(
                     if (index < currentList.size) {
                         currentList.removeAt(index)
                         savePlaylists(currentList)
-                        
-                        // If we deleted the active playlist, clear active settings or set first item as active
-                        if (isActive) {
-                            if (currentList.isNotEmpty()) {
-                                context.setKey("m3u_url", currentList[0].url)
-                                context.setKey("m3u_name", currentList[0].name)
-                            } else {
-                                context.setKey("m3u_url", "")
-                                context.setKey("m3u_name", "")
-                            }
-                        }
-                        
                         Toast.makeText(context, "Playlist berhasil dihapus!", Toast.LENGTH_SHORT).show()
                         refreshPlaylistsList(context)
                     }

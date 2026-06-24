@@ -34,24 +34,30 @@ class M3UPlaylistPlayer : MainAPI() {
     }
  
     private fun getM3uName(): String {
-        val rawName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
+        val rawName = context?.getKey<String>("provider_name")
+            ?: context?.getKey<String>("m3u_name")
+            ?: "M3U Playlist Player"
         return " 📺 $rawName"
     }
  
     private fun getSavedPlaylists(): List<Pair<String, String>> {
         val raw = context?.getKey<String>("saved_playlists_list") ?: ""
         val list = if (raw.isBlank()) mutableListOf() else raw.split("\n").mapNotNull { line ->
-            val parts = line.split("||", limit = 2)
-            if (parts.size == 2) {
-                parts[0].trim() to parts[1].trim()
+            val parts = line.split("||")
+            if (parts.size >= 2) {
+                val name = parts[0].trim()
+                val url = parts[1].trim()
+                val enabled = if (parts.size >= 3) parts[2].trim().toBoolean() else true
+                if (enabled) name to url else null
             } else null
         }.toMutableList()
  
-        // Also add the active m3u_url if it's not in the list yet
-        val activeUrl = context?.getKey<String>("m3u_url") ?: ""
-        val activeName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
-        if (activeUrl.isNotBlank() && list.none { it.second == activeUrl }) {
-            list.add(0, activeName to activeUrl)
+        if (list.isEmpty()) {
+            val activeUrl = context?.getKey<String>("m3u_url") ?: ""
+            val activeName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
+            if (activeUrl.isNotBlank()) {
+                list.add(activeName to activeUrl)
+            }
         }
         return list
     }
