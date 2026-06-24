@@ -20,6 +20,7 @@ class Settings(
     private lateinit var playlistsContainer: LinearLayout
     private lateinit var nameInput: EditText
     private lateinit var urlInput: EditText
+    private lateinit var epgInput: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,11 +94,12 @@ class Settings(
             // Save current inputs if they are not blank
             val name = nameInput.text.toString().trim()
             val url = urlInput.text.toString().trim()
+            val epg = epgInput.text.toString().trim().let { if (it.isBlank()) null else it }
             
             if (name.isNotBlank() && url.isNotBlank()) {
                 val list = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                 if (!list.any { it.url == url }) {
-                    list.add(0, SavedPlaylist(name, url, true))
+                    list.add(0, SavedPlaylist(name, url, true, epg))
                     PlaylistHelper.savePlaylists(context, list)
                 }
             }
@@ -163,6 +165,24 @@ class Settings(
         }
         root.addView(urlInput)
 
+        // Spacer
+        root.addView(View(context).apply {
+            layoutParams = LinearLayout.LayoutParams(1, 16)
+        })
+
+        // Playlist EPG URL Input
+        epgInput = EditText(context).apply {
+            hint = "URL EPG XML kustom (Opsional - misal: http://...)"
+            setHintTextColor(Color.DKGRAY)
+            setTextColor(Color.WHITE)
+            setPadding(24, 24, 24, 24)
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#2C2C2E"))
+                cornerRadius = 12f
+            }
+        }
+        root.addView(epgInput)
+
         // Add Playlist Button
         val addButton = Button(context).apply {
             text = "Tambah Playlist"
@@ -182,6 +202,7 @@ class Settings(
         addButton.setOnClickListener {
             val name = nameInput.text.toString().trim()
             val url = urlInput.text.toString().trim()
+            val epg = epgInput.text.toString().trim().let { if (it.isBlank()) null else it }
 
             if (name.isBlank() || url.isBlank()) {
                 Toast.makeText(context, "Nama dan URL harus diisi!", Toast.LENGTH_SHORT).show()
@@ -194,11 +215,12 @@ class Settings(
                 return@setOnClickListener
             }
 
-            list.add(0, SavedPlaylist(name, url, true))
+            list.add(0, SavedPlaylist(name, url, true, epg))
             PlaylistHelper.savePlaylists(context, list)
 
             nameInput.text.clear()
             urlInput.text.clear()
+            epgInput.text.clear()
             Toast.makeText(context, "Playlist berhasil ditambahkan!", Toast.LENGTH_SHORT).show()
             refreshPlaylistsList(context)
         }
@@ -334,9 +356,9 @@ class Settings(
                 )
             }
 
-            // Rename Button
-            val renameBtn = Button(context).apply {
-                text = "Ubah Nama"
+            // Edit Button
+            val editBtn = Button(context).apply {
+                text = "Edit Detail"
                 textSize = 12f
                 setTextColor(Color.WHITE)
                 background = GradientDrawable().apply {
@@ -350,39 +372,97 @@ class Settings(
                     setMargins(8, 0, 8, 0)
                 }
             }
-            renameBtn.setOnClickListener {
+            editBtn.setOnClickListener {
                 val builder = AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                builder.setTitle("Ubah Nama Playlist")
+                builder.setTitle("Ubah Detail Playlist")
 
-                val inputEdit = EditText(context).apply {
-                    setText(playlist.name)
-                    setTextColor(Color.WHITE)
-                    setPadding(24, 24, 24, 24)
-                }
-                
                 val dialogLayout = LinearLayout(context).apply {
                     orientation = LinearLayout.VERTICAL
-                    setPadding(32, 16, 32, 16)
-                    addView(inputEdit)
+                    setPadding(48, 24, 48, 24)
                 }
+
+                val nameLabel = TextView(context).apply {
+                    text = "Nama Playlist"
+                    setTextColor(Color.GRAY)
+                    textSize = 12f
+                    setPadding(0, 8, 0, 4)
+                }
+                val nameEdit = EditText(context).apply {
+                    setText(playlist.name)
+                    setTextColor(Color.WHITE)
+                    setPadding(16, 16, 16, 16)
+                    background = GradientDrawable().apply {
+                        setColor(Color.parseColor("#2C2C2E"))
+                        cornerRadius = 8f
+                    }
+                }
+
+                val urlLabel = TextView(context).apply {
+                    text = "URL Playlist"
+                    setTextColor(Color.GRAY)
+                    textSize = 12f
+                    setPadding(0, 16, 0, 4)
+                }
+                val urlEdit = EditText(context).apply {
+                    setText(playlist.url)
+                    setTextColor(Color.WHITE)
+                    setPadding(16, 16, 16, 16)
+                    background = GradientDrawable().apply {
+                        setColor(Color.parseColor("#2C2C2E"))
+                        cornerRadius = 8f
+                    }
+                }
+
+                val epgLabel = TextView(context).apply {
+                    text = "URL EPG (Opsional)"
+                    setTextColor(Color.GRAY)
+                    textSize = 12f
+                    setPadding(0, 16, 0, 4)
+                }
+                val epgEdit = EditText(context).apply {
+                    setText(playlist.epgUrl ?: "")
+                    setHintTextColor(Color.DKGRAY)
+                    hint = "http://..."
+                    setTextColor(Color.WHITE)
+                    setPadding(16, 16, 16, 16)
+                    background = GradientDrawable().apply {
+                        setColor(Color.parseColor("#2C2C2E"))
+                        cornerRadius = 8f
+                    }
+                }
+
+                dialogLayout.addView(nameLabel)
+                dialogLayout.addView(nameEdit)
+                dialogLayout.addView(urlLabel)
+                dialogLayout.addView(urlEdit)
+                dialogLayout.addView(epgLabel)
+                dialogLayout.addView(epgEdit)
+
                 builder.setView(dialogLayout)
 
                 builder.setPositiveButton("Simpan") { _, _ ->
-                    val newName = inputEdit.text.toString().trim()
-                    if (newName.isNotBlank()) {
+                    val newName = nameEdit.text.toString().trim()
+                    val newUrl = urlEdit.text.toString().trim()
+                    val newEpg = epgEdit.text.toString().trim().let { if (it.isBlank()) null else it }
+
+                    if (newName.isNotBlank() && newUrl.isNotBlank()) {
                         val currentList = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                         if (index < currentList.size) {
                             currentList[index].name = newName
+                            currentList[index].url = newUrl
+                            currentList[index].epgUrl = newEpg
                             PlaylistHelper.savePlaylists(context, currentList)
-                            Toast.makeText(context, "Nama playlist berhasil diubah!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Detail playlist berhasil diperbarui!", Toast.LENGTH_SHORT).show()
                             refreshPlaylistsList(context)
                         }
+                    } else {
+                        Toast.makeText(context, "Nama dan URL tidak boleh kosong!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 builder.setNegativeButton("Batal") { dialog, _ -> dialog.cancel() }
                 builder.show()
             }
-            btnLayout.addView(renameBtn)
+            btnLayout.addView(editBtn)
 
             // Delete Button
             val deleteBtn = Button(context).apply {

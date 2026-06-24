@@ -13,6 +13,8 @@ import com.lagradost.cloudstream3.utils.CLEARKEY_UUID
 import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
 import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import com.lagradost.cloudstream3.utils.DrmExtractorLink
+import com.lagradost.cloudstream3.utils.DataStore.getKey
+import com.lagradost.cloudstream3.utils.DataStore.setKey
 
 class M3UPlaylistPlayer(
     private val playlistName: String,
@@ -26,6 +28,37 @@ class M3UPlaylistPlayer(
     companion object {
         var context: Context? = null
         var lastWorkingUserAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+    }
+
+    private fun extractEpgUrl(m3uContent: String): String? {
+        val firstLine = m3uContent.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) } ?: return null
+        val regex = Regex("""(?:x-tvg-url|url-tvg)\s*=\s*["']?([^"'\s>]+)["']?""", RegexOption.IGNORE_CASE)
+        val match = regex.find(firstLine)
+        if (match != null) {
+            val urls = match.groupValues[1]
+            return urls.split(',').firstOrNull { it.isNotBlank() }?.trim()
+        }
+        return null
+    }
+
+    private fun getEpgUrlToUse(): String {
+        val ctx = context ?: return "https://raw.githubusercontent.com/dhasap/dhanytv/main/epg.xml"
+        
+        // 1. Try custom EPG URL from settings
+        val playlists = PlaylistHelper.getSavedPlaylists(ctx)
+        val savedPlaylist = playlists.firstOrNull { it.url == playlistUrl }
+        if (savedPlaylist != null && !savedPlaylist.epgUrl.isNullOrBlank()) {
+            return savedPlaylist.epgUrl!!
+        }
+        
+        // 2. Try extracted EPG URL from M3U header
+        val extracted = ctx.getKey<String>("extracted_epg_${playlistUrl.hashCode()}")
+        if (!extracted.isNullOrBlank()) {
+            return extracted
+        }
+        
+        // 3. Default fallback
+        return "https://raw.githubusercontent.com/dhasap/dhanytv/main/epg.xml"
     }
 
     override val mainPage: List<MainPageData>
@@ -85,6 +118,13 @@ class M3UPlaylistPlayer(
             return@coroutineScope Playlist(emptyList())
         }
         
+        // Extract EPG URL from M3U header
+        val extractedUrl = extractEpgUrl(cleanContent)
+        if (extractedUrl != null) {
+            context?.setKey("extracted_epg_${playlistUrl.hashCode()}", extractedUrl)
+            android.util.Log.d("M3UPlayer", "Extracted EPG URL from M3U: $extractedUrl")
+        }
+        
         try {
             val parsed = IptvPlaylistParser().parseM3U(cleanContent)
             
@@ -138,7 +178,8 @@ class M3UPlaylistPlayer(
         }
 
         // Fetch EPG data
-        val (epgData, nameToIdMap) = EpgHelper.getEpg()
+        val epgUrl = getEpgUrlToUse()
+        val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
 
         val homePageList = HomePageList(
             groupName,
@@ -162,7 +203,8 @@ class M3UPlaylistPlayer(
 
     override suspend fun search(query: String): List<SearchResponse> {
         val playlist = fetchPlaylist()
-        val (epgData, nameToIdMap) = EpgHelper.getEpg()
+        val epgUrl = getEpgUrlToUse()
+        val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
         return playlist.items
             .filter { it.title.contains(query, ignoreCase = true) }
             .map { item ->
@@ -188,7 +230,8 @@ class M3UPlaylistPlayer(
 
         var description = "Siaran Langsung"
         if (item != null) {
-            val (epgData, nameToIdMap) = EpgHelper.getEpg()
+            val epgUrl = getEpgUrlToUse()
+            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
             val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
             val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
             description = currentAndUpcoming.second

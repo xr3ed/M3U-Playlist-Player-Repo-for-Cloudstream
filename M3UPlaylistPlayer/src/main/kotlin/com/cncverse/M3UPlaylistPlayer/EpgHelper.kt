@@ -14,9 +14,9 @@ data class EpgProgram(
 )
 
 object EpgHelper {
-    private var cachedPrograms: Map<String, List<EpgProgram>>? = null
-    private var cachedChannelNames: Map<String, String>? = null // Maps display name to channel ID
-    private var lastFetchTime: Long = 0L
+    private val cachedProgramsMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, List<EpgProgram>>>()
+    private val cachedChannelNamesMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, String>>()
+    private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
 
     private fun parseXmltvDate(dateStr: String): Long {
@@ -39,31 +39,31 @@ object EpgHelper {
         return 0L
     }
 
-    suspend fun getEpg(): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
+    suspend fun getEpg(context: Context?, epgUrl: String): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
         val now = System.currentTimeMillis()
-        val cachedProgs = cachedPrograms
-        val cachedNames = cachedChannelNames
-        if (cachedProgs != null && cachedNames != null && (now - lastFetchTime) < cacheDurationMs) {
+        val cachedProgs = cachedProgramsMap[epgUrl]
+        val cachedNames = cachedChannelNamesMap[epgUrl]
+        val lastFetch = lastFetchTimeMap[epgUrl] ?: 0L
+        if (cachedProgs != null && cachedNames != null && (now - lastFetch) < cacheDurationMs) {
             return Pair(cachedProgs, cachedNames)
         }
 
-        val epgUrl = "https://raw.githubusercontent.com/dhasap/dhanytv/main/epg.xml"
         try {
             android.util.Log.d("EpgHelper", "Fetching EPG XML from $epgUrl ...")
             val response = app.get(epgUrl, timeout = 30)
             val xmlText = response.text
             if (xmlText.isNotBlank()) {
                 val (progs, names) = parseEpgXml(xmlText)
-                cachedPrograms = progs
-                cachedChannelNames = names
-                lastFetchTime = now
-                android.util.Log.d("EpgHelper", "Successfully loaded EPG: ${progs.size} channels mapped.")
+                cachedProgramsMap[epgUrl] = progs
+                cachedChannelNamesMap[epgUrl] = names
+                lastFetchTimeMap[epgUrl] = now
+                android.util.Log.d("EpgHelper", "Successfully loaded EPG from $epgUrl: ${progs.size} channels mapped.")
                 return Pair(progs, names)
             }
         } catch (e: Exception) {
             android.util.Log.e("EpgHelper", "Error loading EPG from $epgUrl", e)
         }
-        return Pair(cachedPrograms ?: emptyMap(), cachedChannelNames ?: emptyMap())
+        return Pair(cachedProgramsMap[epgUrl] ?: emptyMap(), cachedChannelNamesMap[epgUrl] ?: emptyMap())
     }
 
     fun parseEpgXml(xmlText: String): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
