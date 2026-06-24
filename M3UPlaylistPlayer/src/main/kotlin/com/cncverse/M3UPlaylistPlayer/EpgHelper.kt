@@ -2,8 +2,6 @@ package com.cncverse.M3UPlaylistPlayer
 
 import android.content.Context
 import com.lagradost.cloudstream3.app
-import org.jsoup.Jsoup
-import org.jsoup.parser.Parser
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -73,39 +71,42 @@ object EpgHelper {
         val nameToIdMap = mutableMapOf<String, String>()
 
         try {
-            val doc = Jsoup.parse(xmlText, "", Parser.xmlParser())
+            // Parse <channel id="..."> ... </channel>
+            val channelRegex = Regex("<channel\\s+id=\"([^\"]+)\">(.*?)</channel>", RegexOption.DOT_MATCHES_ALL)
+            val displayNameRegex = Regex("<display-name[^>]*>(.*?)</display-name>", RegexOption.DOT_MATCHES_ALL)
             
-            // 1. Parse channels
-            val channels = doc.select("channel")
-            for (c in channels) {
-                val channelId = c.attr("id")
-                if (channelId.isBlank()) continue
-                
-                // Add id itself as a mapping
+            channelRegex.findAll(xmlText).forEach { match ->
+                val channelId = match.groupValues[1]
+                val content = match.groupValues[2]
                 nameToIdMap[channelId.lowercase()] = channelId
                 
-                val displayNames = c.select("display-name")
-                for (dn in displayNames) {
-                    val name = dn.text().trim()
+                displayNameRegex.findAll(content).forEach { dnMatch ->
+                    val name = dnMatch.groupValues[1].trim()
                     if (name.isNotEmpty()) {
                         nameToIdMap[name.lowercase()] = channelId
                     }
                 }
             }
 
-            // 2. Parse programmes
-            val programs = doc.select("programme")
-            for (p in programs) {
-                val channelId = p.attr("channel")
-                if (channelId.isBlank()) continue
+            // Parse <programme start="..." stop="..." channel="..."> ... </programme>
+            val programmeRegex = Regex("<programme\\s+start=\"([^\"]+)\"\\s+stop=\"([^\"]+)\"\\s+channel=\"([^\"]+)\">(.*?)</programme>", RegexOption.DOT_MATCHES_ALL)
+            val titleRegex = Regex("<title[^>]*>(.*?)</title>", RegexOption.DOT_MATCHES_ALL)
+            val descRegex = Regex("<desc[^>]*>(.*?)</desc>", RegexOption.DOT_MATCHES_ALL)
 
-                val startStr = p.attr("start")
-                val stopStr = p.attr("stop")
-                val title = p.select("title").text().trim()
-                val desc = p.select("desc").text().trim()
+            programmeRegex.findAll(xmlText).forEach { match ->
+                val start = match.groupValues[1]
+                val stop = match.groupValues[2]
+                val channelId = match.groupValues[3]
+                val content = match.groupValues[4]
 
-                val startMs = parseXmltvDate(startStr)
-                val stopMs = parseXmltvDate(stopStr)
+                val titleMatch = titleRegex.find(content)
+                val title = titleMatch?.groupValues?.get(1)?.trim() ?: ""
+                
+                val descMatch = descRegex.find(content)
+                val desc = descMatch?.groupValues?.get(1)?.trim() ?: ""
+
+                val startMs = parseXmltvDate(start)
+                val stopMs = parseXmltvDate(stop)
 
                 val epgProg = EpgProgram(title, desc, startMs, stopMs)
                 programMap.getOrPut(channelId) { mutableListOf() }.add(epgProg)
@@ -115,8 +116,8 @@ object EpgHelper {
             for (entry in programMap) {
                 entry.value.sortBy { it.startUnixMs }
             }
-        } catch (e: Exception) {
-            android.util.Log.e("EpgHelper", "Error parsing EPG XML details", e)
+        } catch (t: Throwable) {
+            android.util.Log.e("EpgHelper", "Error parsing EPG XML details", t)
         }
         return Pair(programMap, nameToIdMap)
     }
