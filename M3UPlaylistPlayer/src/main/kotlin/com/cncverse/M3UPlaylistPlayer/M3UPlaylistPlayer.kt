@@ -35,7 +35,7 @@ class M3UPlaylistPlayer : MainAPI() {
  
     private fun getM3uName(): String {
         val rawName = context?.getKey<String>("m3u_name") ?: "M3U Playlist Player"
-        return "📺 $rawName"
+        return " 📺 $rawName"
     }
  
     private fun getSavedPlaylists(): List<Pair<String, String>> {
