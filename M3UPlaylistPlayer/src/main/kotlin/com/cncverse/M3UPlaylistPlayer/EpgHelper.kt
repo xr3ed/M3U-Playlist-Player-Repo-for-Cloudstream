@@ -352,17 +352,53 @@ object EpgHelper {
         var currentProgram: EpgProgram? = null
         val upcomingPrograms = mutableListOf<EpgProgram>()
 
-        for (p in programs) {
-            if (now in p.startUnixMs until p.stopUnixMs) {
-                currentProgram = p
-            } else if (p.startUnixMs >= now) {
-                upcomingPrograms.add(p)
+        var low = 0
+        var high = programs.size - 1
+        var latestBeforeOrAtNow = -1
+
+        while (low <= high) {
+            val mid = low + (high - low) / 2
+            if (programs[mid].startUnixMs <= now) {
+                latestBeforeOrAtNow = mid
+                low = mid + 1
+            } else {
+                high = mid - 1
             }
         }
 
-        // If no program matched exactly (e.g. gap or slightly outdated), find the latest one before now
-        if (currentProgram == null) {
-            currentProgram = programs.lastOrNull { it.stopUnixMs <= now }
+        if (latestBeforeOrAtNow != -1) {
+            for (i in latestBeforeOrAtNow downTo 0) {
+                val p = programs[i]
+                if (now in p.startUnixMs until p.stopUnixMs) {
+                    currentProgram = p
+                    break
+                }
+            }
+
+            // If no program matched exactly (e.g. gap or slightly outdated), find the latest one before now
+            if (currentProgram == null) {
+                for (i in latestBeforeOrAtNow downTo 0) {
+                    val p = programs[i]
+                    if (p.stopUnixMs <= now) {
+                        currentProgram = p
+                        break
+                    }
+                }
+            }
+        }
+
+        var startIndex = if (latestBeforeOrAtNow != -1) latestBeforeOrAtNow else 0
+        while (startIndex > 0 && programs[startIndex - 1].startUnixMs >= now) {
+            startIndex--
+        }
+
+        for (i in startIndex until programs.size) {
+            val p = programs[i]
+            if (now in p.startUnixMs until p.stopUnixMs) {
+                continue
+            } else if (p.startUnixMs >= now) {
+                upcomingPrograms.add(p)
+            }
         }
 
         val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())

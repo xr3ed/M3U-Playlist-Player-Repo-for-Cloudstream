@@ -11,4 +11,7 @@
 .cxx
 local.properties
 .vscode
-/dist
+/distkotlinc/
+kotlin.zip
+test.jar
+test.kt
