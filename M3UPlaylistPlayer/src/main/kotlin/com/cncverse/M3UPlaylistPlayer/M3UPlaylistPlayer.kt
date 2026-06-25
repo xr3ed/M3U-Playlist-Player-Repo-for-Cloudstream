@@ -318,7 +318,7 @@ class M3UPlaylistPlayer(
                               "• Cocok via Nama/Fuzzy di EPG: ${nameToIdMap.containsKey(title.lowercase()) || nameToIdMap.containsKey(cleanTitle)}"
             } else {
                 val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                description = currentAndUpcoming.second
+                description = "Pesbuk: https://www.facebook.com/pesbuk.ibal"
                 
                 val now = System.currentTimeMillis()
                 val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
