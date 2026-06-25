@@ -30,23 +30,30 @@ class Settings(
     private suspend fun checkAndExtractEpg(url: String): String? {
         if (url.isBlank()) return null
         return withContext(Dispatchers.IO) {
-            try {
-                val response = app.get(url, timeout = 10)
-                val text = response.text
-                if (text.isNotBlank()) {
-                    val firstLine = text.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) }
-                    if (firstLine != null) {
-                        val regex = Regex("""(?:x-tvg-url|url-tvg)\s*=\s*["']?([^"'\s>]+)["']?""", RegexOption.IGNORE_CASE)
-                        val match = regex.find(firstLine)
-                        if (match != null) {
-                            val urls = match.groupValues[1]
-                            urls.split(',').firstOrNull { it.isNotBlank() }?.trim()
-                        } else null
-                    } else null
-                } else null
-            } catch (e: Exception) {
-                null
+            val urlsToTry = EpgHelper.getGithubMirrors(url)
+            for (targetUrl in urlsToTry) {
+                try {
+                    val response = app.get(targetUrl, timeout = 10)
+                    val text = response.text
+                    if (text.isNotBlank()) {
+                        val firstLine = text.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) }
+                        if (firstLine != null) {
+                            val regex = Regex("""(?:x-tvg-url|url-tvg)\s*=\s*["']?([^"'\s>]+)["']?""", RegexOption.IGNORE_CASE)
+                            val match = regex.find(firstLine)
+                            if (match != null) {
+                                val urls = match.groupValues[1]
+                                val found = urls.split(',').firstOrNull { it.isNotBlank() }?.trim()
+                                if (found != null) {
+                                    return@withContext found
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("Settings", "Failed to check playlist from $targetUrl", e)
+                }
             }
+            null
         }
     }
 

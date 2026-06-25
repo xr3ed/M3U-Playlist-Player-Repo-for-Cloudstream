@@ -83,33 +83,37 @@ class M3UPlaylistPlayer(
             "okhttp/4.9.2"
         )
         
+        val urlsToTry = EpgHelper.getGithubMirrors(playlistUrl)
         var content = ""
         var success = false
         var fallbackContent = ""
         
-        for (ua in userAgents) {
-            try {
-                val headers = mapOf(
-                    "User-Agent" to ua,
-                    "Accept" to "*/*"
-                )
-                val response = app.get(playlistUrl, headers = headers, timeout = 15)
-                val text = response.text
-                if (text.isNotBlank()) {
-                    val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
-                    val trimmed = clean.trim()
-                    if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
-                        content = clean
-                        success = true
-                        lastWorkingUserAgent = ua
-                        android.util.Log.d("M3UPlayer", "Successfully fetched playlist using User-Agent: $ua")
-                        break
-                    } else if (fallbackContent.isBlank()) {
-                        fallbackContent = clean
+        for (url in urlsToTry) {
+            if (success) break
+            for (ua in userAgents) {
+                try {
+                    val headers = mapOf(
+                        "User-Agent" to ua,
+                        "Accept" to "*/*"
+                    )
+                    val response = app.get(url, headers = headers, timeout = 12)
+                    val text = response.text
+                    if (text.isNotBlank()) {
+                        val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
+                        val trimmed = clean.trim()
+                        if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
+                            content = clean
+                            success = true
+                            lastWorkingUserAgent = ua
+                            android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
+                            break
+                        } else if (fallbackContent.isBlank()) {
+                            fallbackContent = clean
+                        }
                     }
+                } catch (e: Exception) {
+                    android.util.Log.e("M3UPlayer", "Failed to fetch playlist from $url using User-Agent: $ua", e)
                 }
-            } catch (e: Exception) {
-                android.util.Log.e("M3UPlayer", "Failed to fetch playlist using User-Agent: $ua", e)
             }
         }
         

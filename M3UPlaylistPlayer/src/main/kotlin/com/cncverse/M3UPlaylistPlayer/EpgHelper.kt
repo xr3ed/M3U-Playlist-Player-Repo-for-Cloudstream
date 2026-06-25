@@ -50,6 +50,26 @@ object EpgHelper {
         return 0L
     }
 
+    fun getGithubMirrors(url: String): List<String> {
+        if (!url.contains("raw.githubusercontent.com", ignoreCase = true)) {
+            return listOf(url)
+        }
+        val cleanUrl = url.trim()
+        val parts = cleanUrl.removePrefix("https://").removePrefix("http://").split('/')
+        if (parts.size >= 4 && parts[0].equals("raw.githubusercontent.com", ignoreCase = true)) {
+            val username = parts[1]
+            val repo = parts[2]
+            val branch = parts[3]
+            val path = parts.drop(4).joinToString("/")
+            
+            val jsdelivr = "https://cdn.jsdelivr.net/gh/$username/$repo@$branch/$path"
+            val githack = "https://raw.githack.com/$username/$repo/$branch/$path"
+            
+            return listOf(cleanUrl, jsdelivr, githack)
+        }
+        return listOf(url)
+    }
+
     suspend fun getEpg(context: Context?, epgUrl: String): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
         val now = System.currentTimeMillis()
         val cachedProgs = cachedProgramsMap[epgUrl]
@@ -59,25 +79,30 @@ object EpgHelper {
             return Pair(cachedProgs, cachedNames)
         }
 
-        try {
-            android.util.Log.d("EpgHelper", "Fetching EPG XML from $epgUrl ...")
-            // Gunakan User-Agent browser agar request tidak diblokir oleh server EPG kustom/Cloudflare
-            val response = app.get(
-                epgUrl,
-                headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
-                timeout = 30
-            )
-            val xmlText = response.text
-            if (xmlText.isNotBlank()) {
-                val (progs, names) = parseEpgXml(xmlText)
-                cachedProgramsMap[epgUrl] = progs
-                cachedChannelNamesMap[epgUrl] = names
-                lastFetchTimeMap[epgUrl] = now
-                android.util.Log.d("EpgHelper", "Successfully loaded EPG from $epgUrl: ${progs.size} channels mapped.")
-                return Pair(progs, names)
+        val urlsToTry = getGithubMirrors(epgUrl)
+        for (url in urlsToTry) {
+            try {
+                android.util.Log.d("EpgHelper", "Fetching EPG XML from $url ...")
+                // Gunakan User-Agent browser agar request tidak diblokir oleh server EPG kustom/Cloudflare
+                val response = app.get(
+                    url,
+                    headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
+                    timeout = 25
+                )
+                val xmlText = response.text
+                if (xmlText.isNotBlank()) {
+                    val (progs, names) = parseEpgXml(xmlText)
+                    if (progs.isNotEmpty() || names.isNotEmpty()) {
+                        cachedProgramsMap[epgUrl] = progs
+                        cachedChannelNamesMap[epgUrl] = names
+                        lastFetchTimeMap[epgUrl] = now
+                        android.util.Log.d("EpgHelper", "Successfully loaded EPG from $url: ${progs.size} channels mapped.")
+                        return Pair(progs, names)
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("EpgHelper", "Error loading EPG from $url", e)
             }
-        } catch (e: Exception) {
-            android.util.Log.e("EpgHelper", "Error loading EPG from $epgUrl", e)
         }
         return Pair(cachedProgramsMap[epgUrl] ?: emptyMap(), cachedChannelNamesMap[epgUrl] ?: emptyMap())
     }
