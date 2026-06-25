@@ -20,18 +20,15 @@ class IptvPlaylistParser {
     }
 
     fun parseM3U(input: InputStream): Playlist {
-        val allLines = input.bufferedReader().readLines()
         val playlistItems = mutableListOf<PlaylistItem>()
-        var i = 0
 
         var bufferedTitle: String? = null
         var bufferedAttributes = emptyMap<String, String>()
         var bufferedHeaders = emptyMap<String, String>()
         var bufferedKodiProps = emptyMap<String, String>()
 
-        while (i < allLines.size) {
-            val line = allLines[i].trim()
-
+        input.bufferedReader().forEachLine { rawLine ->
+            val line = rawLine.trim()
             if (line.isNotEmpty()) {
                 when {
                     line.startsWith("#EXTINF:", ignoreCase = true) || line.startsWith("#EXTINF ", ignoreCase = true) -> {
@@ -59,10 +56,11 @@ class IptvPlaylistParser {
                         }
                     }
                     !line.startsWith("#") -> {
-                        if (bufferedTitle != null) {
+                        val currentTitle = bufferedTitle
+                        if (currentTitle != null) {
                             playlistItems.add(
                                 PlaylistItem(
-                                    title = bufferedTitle,
+                                    title = currentTitle,
                                     url = line,
                                     attributes = bufferedAttributes,
                                     headers = bufferedHeaders,
@@ -77,7 +75,6 @@ class IptvPlaylistParser {
                     }
                 }
             }
-            i++
         }
         return Playlist(playlistItems)
     }
@@ -94,11 +91,66 @@ class IptvPlaylistParser {
 
     private fun getAttributes(line: String): Map<String, String> {
         val attributes = mutableMapOf<String, String>()
-        val regex = Regex("(\\S+?)=\"([^\"]*)\"")
-        regex.findAll(line).forEach { match ->
-            val key = match.groupValues[1]
-            val value = match.groupValues[2]
-            attributes[key] = value
+        val limitIndex = line.lastIndexOf(',')
+        val attrPart = if (limitIndex != -1) line.substring(0, limitIndex) else line
+        
+        var i = 0
+        val len = attrPart.length
+        while (i < len) {
+            // Lewati spasi
+            while (i < len && attrPart[i].isWhitespace()) {
+                i++
+            }
+            if (i >= len) break
+            
+            // Cari kunci (key)
+            val keyStart = i
+            while (i < len && attrPart[i] != '=' && !attrPart[i].isWhitespace()) {
+                i++
+            }
+            val keyEnd = i
+            if (keyStart == keyEnd) {
+                i++
+                continue
+            }
+            val key = attrPart.substring(keyStart, keyEnd).trim()
+            
+            // Lewati spasi atau '='
+            while (i < len && attrPart[i].isWhitespace()) {
+                i++
+            }
+            if (i < len && attrPart[i] == '=') {
+                i++
+            } else {
+                continue
+            }
+            while (i < len && attrPart[i].isWhitespace()) {
+                i++
+            }
+            
+            // Cari nilai (value) di dalam tanda kutip "value"
+            if (i < len && attrPart[i] == '"') {
+                i++ // lewati kutip buka
+                val valStart = i
+                while (i < len && attrPart[i] != '"') {
+                    i++
+                }
+                val valEnd = i
+                val value = attrPart.substring(valStart, valEnd)
+                if (i < len && attrPart[i] == '"') {
+                    i++ // lewati kutip tutup
+                }
+                attributes[key] = value
+            } else {
+                // Nilai tanpa tanda kutip (misal key=val)
+                val valStart = i
+                while (i < len && !attrPart[i].isWhitespace()) {
+                    i++
+                }
+                val valEnd = i
+                val value = attrPart.substring(valStart, valEnd)
+                attributes[key] = value
+            }
         }
         return attributes
     }
