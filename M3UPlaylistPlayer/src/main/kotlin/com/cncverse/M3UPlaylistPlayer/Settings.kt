@@ -49,6 +49,10 @@ class Settings(
         return withContext(Dispatchers.IO) {
             val urlsToTry = EpgHelper.getGithubMirrors(url)
             for (targetUrl in urlsToTry) {
+                if (!EpgHelper.isSafeUrl(targetUrl)) {
+                    android.util.Log.w("Settings", "Skipping unsafe URL: $targetUrl")
+                    continue
+                }
                 try {
                     val response = app.get(targetUrl, timeout = 10)
                     val text = response.textLarge

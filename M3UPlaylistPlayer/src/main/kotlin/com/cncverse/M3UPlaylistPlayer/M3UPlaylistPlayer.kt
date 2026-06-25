@@ -133,6 +133,10 @@ class M3UPlaylistPlayer(
             
             for (url in urlsToTry) {
                 if (success) break
+                if (!EpgHelper.isSafeUrl(url)) {
+                    android.util.Log.w("M3UPlayer", "Skipping unsafe URL: $url")
+                    continue
+                }
                 for (ua in userAgents) {
                     try {
                         val headers = mapOf(

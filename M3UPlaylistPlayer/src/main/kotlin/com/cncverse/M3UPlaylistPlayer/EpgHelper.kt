@@ -10,6 +10,8 @@ import com.lagradost.cloudstream3.app
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
+import java.net.InetAddress
+import java.net.URI
 
 data class EpgProgram(
     val title: String,
@@ -29,6 +31,27 @@ object EpgHelper {
         cachedProgramsMap.clear()
         cachedChannelNamesMap.clear()
         lastFetchTimeMap.clear()
+    }
+
+    fun isSafeUrl(urlString: String): Boolean {
+        try {
+            val uri = URI(urlString)
+            val host = uri.host ?: return false
+            val addresses = InetAddress.getAllByName(host)
+
+            for (address in addresses) {
+                if (address.isAnyLocalAddress ||
+                    address.isLoopbackAddress ||
+                    address.isLinkLocalAddress ||
+                    address.isSiteLocalAddress ||
+                    address.isMulticastAddress) {
+                    return false
+                }
+            }
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
 
     private fun parseXmltvDate(dateStr: String): Long {
@@ -113,6 +136,10 @@ object EpgHelper {
         val urlsToTry = getGithubMirrors(epgUrl)
         var errorBuilder = StringBuilder()
         for (url in urlsToTry) {
+            if (!isSafeUrl(url)) {
+                android.util.Log.w("EpgHelper", "Skipping unsafe EPG URL: $url")
+                continue
+            }
             try {
                 android.util.Log.d("EpgHelper", "Fetching EPG XML from $url ...")
                 // Gunakan User-Agent browser agar request tidak diblokir oleh server EPG kustom/Cloudflare
