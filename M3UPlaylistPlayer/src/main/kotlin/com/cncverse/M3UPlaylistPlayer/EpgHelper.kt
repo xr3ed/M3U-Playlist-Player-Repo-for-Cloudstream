@@ -248,9 +248,12 @@ object EpgHelper {
                 eventType = parser.next()
             }
 
-            // Sortir program berdasarkan waktu mulai
-            for (entry in programMap) {
-                entry.value.sortBy { it.startUnixMs }
+            // Sortir program berdasarkan waktu mulai dan bersihkan data duplikat
+            for (key in programMap.keys) {
+                val uniqueSorted = programMap[key].orEmpty()
+                    .distinctBy { it.startUnixMs to it.title }
+                    .sortedBy { it.startUnixMs }
+                programMap[key] = uniqueSorted.toMutableList()
             }
         } catch (t: Throwable) {
             lastError = "Parser crash: " + t.toString() + "\n" + t.stackTrace.take(4).joinToString("\n")
@@ -336,35 +339,42 @@ object EpgHelper {
         val currentText = currentProgram?.let { p ->
             val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
             val stopStr = if (p.stopUnixMs > 0) timeSdf.format(p.stopUnixMs) else "--:--"
-            "Sedang Tayang: ${p.title} ($startStr - $stopStr)"
+            val remainingMs = p.stopUnixMs - now
+            val remainingMin = remainingMs / (60 * 1000)
+            val remainingText = if (remainingMin > 0) " (Sisa ${remainingMin}m)" else ""
+            "Sedang Tayang: ${p.title} ($startStr - $stopStr)$remainingText"
         }
 
         val scheduleBuilder = StringBuilder()
-        scheduleBuilder.append("--- JADWAL ACARA ---\n\n")
-
+        
         if (currentProgram != null) {
             val startStr = if (currentProgram.startUnixMs > 0) timeSdf.format(currentProgram.startUnixMs) else "--:--"
             val stopStr = if (currentProgram.stopUnixMs > 0) timeSdf.format(currentProgram.stopUnixMs) else "--:--"
-            scheduleBuilder.append("• [SEDANG TAYANG] $startStr - $stopStr : ${currentProgram.title}\n")
+            val remainingMs = currentProgram.stopUnixMs - now
+            val remainingMin = remainingMs / (60 * 1000)
+            val remainingText = if (remainingMin > 0) " [Sisa ${remainingMin} menit]" else ""
+            
+            scheduleBuilder.append("📺 SEDANG TAYANG:\n")
+            scheduleBuilder.append("• $startStr - $stopStr : ${currentProgram.title}$remainingText\n")
             if (currentProgram.desc.isNotEmpty()) {
-                scheduleBuilder.append("  Deskripsi: ${currentProgram.desc}\n")
+                scheduleBuilder.append("  📝 Deskripsi: ${currentProgram.desc}\n")
             }
             scheduleBuilder.append("\n")
         }
 
         if (upcomingPrograms.isNotEmpty()) {
-            scheduleBuilder.append("Acara Selanjutnya:\n")
+            scheduleBuilder.append("⏰ ACARA SELANJUTNYA:\n")
             // Show up to 8 upcoming programs
             for (p in upcomingPrograms.take(8)) {
                 val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
                 val stopStr = if (p.stopUnixMs > 0) timeSdf.format(p.stopUnixMs) else "--:--"
                 scheduleBuilder.append("• $startStr - $stopStr : ${p.title}\n")
                 if (p.desc.isNotEmpty()) {
-                    scheduleBuilder.append("  ${p.desc}\n")
+                    scheduleBuilder.append("  📝 ${p.desc}\n")
                 }
             }
         } else {
-            scheduleBuilder.append("Tidak ada jadwal acara selanjutnya untuk hari ini.")
+            scheduleBuilder.append("⏰ Tidak ada jadwal acara selanjutnya untuk hari ini.")
         }
 
         return Pair(currentText, scheduleBuilder.toString())
