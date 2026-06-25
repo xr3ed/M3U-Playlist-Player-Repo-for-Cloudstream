@@ -17,6 +17,10 @@ import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import com.lagradost.cloudstream3.utils.DrmExtractorLink
 import com.lagradost.cloudstream3.utils.DataStore.getKey
 import com.lagradost.cloudstream3.utils.DataStore.setKey
+import java.text.SimpleDateFormat
+import java.util.Locale
+import com.lagradost.cloudstream3.Actor
+import com.lagradost.cloudstream3.ActorData
 
 class M3UPlaylistPlayer(
     private val playlistName: String,
@@ -289,6 +293,8 @@ class M3UPlaylistPlayer(
         val logoUrl = item?.attributes["tvg-logo"]
 
         var description = "Siaran Langsung"
+        val actorsList = mutableListOf<ActorData>()
+
         if (item != null) {
             val epgUrl = getEpgUrlToUse()
             val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
@@ -313,6 +319,60 @@ class M3UPlaylistPlayer(
             } else {
                 val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
                 description = currentAndUpcoming.second
+                
+                val now = System.currentTimeMillis()
+                val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                
+                var currentProgram: EpgProgram? = null
+                val upcomingPrograms = mutableListOf<EpgProgram>()
+                for (p in progs) {
+                    if (now in p.startUnixMs until p.stopUnixMs) {
+                        currentProgram = p
+                    } else if (p.startUnixMs >= now) {
+                        upcomingPrograms.add(p)
+                    }
+                }
+                if (currentProgram == null) {
+                    currentProgram = progs.lastOrNull { it.stopUnixMs <= now }
+                }
+                
+                val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
+                val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
+                
+                if (currentProgram != null) {
+                    val startStr = if (currentProgram.startUnixMs > 0) timeSdf.format(currentProgram.startUnixMs) else "--:--"
+                    val stopStr = if (currentProgram.stopUnixMs > 0) timeSdf.format(currentProgram.stopUnixMs) else "--:--"
+                    val remainingMs = currentProgram.stopUnixMs - now
+                    val remainingMin = remainingMs / (60 * 1000)
+                    val remainingText = if (remainingMin > 0) " (${remainingMin}m)" else ""
+                    
+                    actorsList.add(
+                        ActorData(
+                            Actor(
+                                name = "🔴 $startStr-$stopStr$remainingText",
+                                image = liveIconUrl
+                            ),
+                            roleString = currentProgram.title,
+                            role = null
+                        )
+                    )
+                }
+                
+                for (p in upcomingPrograms.take(9)) {
+                    val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
+                    val stopStr = if (p.stopUnixMs > 0) timeSdf.format(p.stopUnixMs) else "--:--"
+                    
+                    actorsList.add(
+                        ActorData(
+                            Actor(
+                                name = "⏰ $startStr-$stopStr",
+                                image = scheduleIconUrl
+                            ),
+                            roleString = p.title,
+                            role = null
+                        )
+                    )
+                }
             }
         }
 
@@ -323,6 +383,7 @@ class M3UPlaylistPlayer(
         ) {
             this.posterUrl = logoUrl
             this.plot = description
+            this.actors = actorsList
         }
     }
 
