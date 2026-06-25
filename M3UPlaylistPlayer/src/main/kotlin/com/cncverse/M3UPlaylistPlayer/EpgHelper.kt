@@ -19,6 +19,11 @@ data class EpgProgram(
 )
 
 object EpgHelper {
+    private val tagRegex = Regex("\\s*[\\[(].*?[\\])]")
+    private val qualityRegex = Regex("\\s+(hd|fhd|sd|hevc|h265|1080p|720p|id|indo|indonesia|tv|asia)\\b")
+    private val nonAlphaNumRegex = Regex("[^a-z0-9\\s]")
+    private val multipleSpaceRegex = Regex("\\s+")
+
     var lastError: String? = null
     private val cachedProgramsMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, List<EpgProgram>>>()
     private val cachedChannelNamesMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, String>>()
@@ -155,13 +160,13 @@ object EpgHelper {
     fun cleanChannelName(name: String): String {
         var clean = name.lowercase()
         // Hapus tag seperti [HD], (HD), (BACKUP), dll.
-        clean = clean.replace(Regex("\\s*[\\[(].*?[\\])]"), "")
+        clean = clean.replace(tagRegex, "")
         // Hapus kata-kata penanda kualitas/sumber umum di akhir
-        clean = clean.replace(Regex("\\s+(hd|fhd|sd|hevc|h265|1080p|720p|id|indo|indonesia|tv|asia)\\b"), "")
+        clean = clean.replace(qualityRegex, "")
         // Hanya sisakan karakter alfanumerik dan spasi
-        clean = clean.replace(Regex("[^a-z0-9\\s]"), "")
+        clean = clean.replace(nonAlphaNumRegex, "")
         // Buang spasi ganda
-        clean = clean.replace(Regex("\\s+"), " ").trim()
+        clean = clean.replace(multipleSpaceRegex, " ").trim()
         return clean
     }
 
