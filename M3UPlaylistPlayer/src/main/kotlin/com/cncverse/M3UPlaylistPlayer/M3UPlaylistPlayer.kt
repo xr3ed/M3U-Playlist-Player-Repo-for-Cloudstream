@@ -233,8 +233,26 @@ class M3UPlaylistPlayer(
             val epgUrl = getEpgUrlToUse()
             val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
             val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
-            val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-            description = currentAndUpcoming.second
+            
+            if (progs.isEmpty()) {
+                val tvgId = item.attributes["tvg-id"]?.trim() ?: "tidak ada"
+                val tvgName = item.attributes["tvg-name"]?.trim() ?: "tidak ada"
+                val cleanTitle = EpgHelper.cleanChannelName(title)
+                
+                description = "Tidak ada data EPG untuk channel ini.\n\n" +
+                              "--- INFO DEBUG ---\n" +
+                              "• URL EPG: $epgUrl\n" +
+                              "• Total ID Channel Terurai: ${nameToIdMap.size}\n" +
+                              "• Total Program Terurai: ${epgData.values.sumOf { it.size }}\n" +
+                              "• Atribut tvg-id M3U: '$tvgId'\n" +
+                              "• Atribut tvg-name M3U: '$tvgName'\n" +
+                              "• Judul Channel: '$title' (bersih: '$cleanTitle')\n" +
+                              "• Cocok via ID M3U di EPG: ${epgData.containsKey(tvgId.lowercase())}\n" +
+                              "• Cocok via Nama/Fuzzy di EPG: ${nameToIdMap.containsKey(title.lowercase()) || nameToIdMap.containsKey(cleanTitle)}"
+            } else {
+                val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+                description = currentAndUpcoming.second
+            }
         }
 
         return newLiveStreamLoadResponse(

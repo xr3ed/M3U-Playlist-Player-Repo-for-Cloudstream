@@ -12,6 +12,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.lagradost.cloudstream3.app
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Settings(
     private val plugin: M3UPlaylistPlayerPlugin
@@ -169,6 +174,72 @@ class Settings(
         root.addView(View(context).apply {
             layoutParams = LinearLayout.LayoutParams(1, 16)
         })
+
+        // Tombol Periksa Playlist M3U untuk Ekstraksi EPG
+        val checkButton = Button(context).apply {
+            text = "Periksa EPG Otomatis dari M3U"
+            setTextColor(Color.WHITE)
+            textSize = 12f
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#FF9500")) // Orange accent
+                cornerRadius = 8f
+            }
+            setPadding(24, 12, 24, 12)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 8, 0, 16)
+            }
+        }
+        checkButton.setOnClickListener {
+            val url = urlInput.text.toString().trim()
+            if (url.isBlank()) {
+                Toast.makeText(context, "Masukkan URL Playlist terlebih dahulu!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            Toast.makeText(context, "Memeriksa playlist M3U...", Toast.LENGTH_SHORT).show()
+            
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    val extractedEpg = withContext(Dispatchers.IO) {
+                        val response = app.get(url, timeout = 10)
+                        val text = response.text
+                        if (text.isNotBlank()) {
+                            val firstLine = text.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) }
+                            if (firstLine != null) {
+                                val regex = Regex("""(?:x-tvg-url|url-tvg)\s*=\s*["']?([^"'\s>]+)["']?""", RegexOption.IGNORE_CASE)
+                                val match = regex.find(firstLine)
+                                if (match != null) {
+                                    val urls = match.groupValues[1]
+                                    urls.split(',').firstOrNull { it.isNotBlank() }?.trim()
+                                } else null
+                            } else null
+                        } else null
+                    }
+                    
+                    if (extractedEpg != null) {
+                        epgInput.setText(extractedEpg)
+                        Toast.makeText(context, "EPG otomatis terkonfigurasi!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Playlist valid, namun EPG bawaan tidak ditemukan.", Toast.LENGTH_SHORT).show()
+                    }
+                    
+                    if (nameInput.text.toString().trim().isBlank()) {
+                        val uriName = url.substringAfterLast('/').substringBeforeLast('.')
+                        if (uriName.isNotBlank() && !uriName.startsWith("http")) {
+                            nameInput.setText(uriName)
+                        } else {
+                            nameInput.setText("M3U Playlist")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Gagal memeriksa playlist: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        root.addView(checkButton)
 
         // Playlist EPG URL Input
         epgInput = EditText(context).apply {
