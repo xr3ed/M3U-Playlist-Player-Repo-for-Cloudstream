@@ -246,6 +246,7 @@ class M3UPlaylistPlayer(
                 description = "Tidak ada data EPG untuk channel ini.\n\n" +
                               "--- INFO DEBUG ---\n" +
                               "• URL EPG: $epgUrl\n" +
+                              "• Last Parser Error: ${EpgHelper.lastError ?: "tidak ada"}\n" +
                               "• Total ID Channel Terurai: ${nameToIdMap.size}\n" +
                               "• Total Program Terurai: ${epgData.values.sumOf { it.size }}\n" +
                               "• Atribut tvg-id M3U: '$tvgId'\n" +

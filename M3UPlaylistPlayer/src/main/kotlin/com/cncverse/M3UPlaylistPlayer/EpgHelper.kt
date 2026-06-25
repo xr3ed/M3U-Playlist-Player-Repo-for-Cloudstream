@@ -18,6 +18,7 @@ data class EpgProgram(
 )
 
 object EpgHelper {
+    var lastError: String? = null
     private val cachedProgramsMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, List<EpgProgram>>>()
     private val cachedChannelNamesMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, String>>()
     private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
@@ -86,6 +87,7 @@ object EpgHelper {
         }
 
         val urlsToTry = getGithubMirrors(epgUrl)
+        var errorBuilder = StringBuilder()
         for (url in urlsToTry) {
             try {
                 android.util.Log.d("EpgHelper", "Fetching EPG XML from $url ...")
@@ -97,19 +99,27 @@ object EpgHelper {
                 )
                 val xmlText = response.text
                 if (xmlText.isNotBlank()) {
-                    val (progs, names) = parseEpgXml(xmlText)
+                    val cleanXml = if (xmlText.startsWith("\uFEFF")) xmlText.substring(1) else xmlText
+                    val (progs, names) = parseEpgXml(cleanXml)
                     if (progs.isNotEmpty() || names.isNotEmpty()) {
                         cachedProgramsMap[epgUrl] = progs
                         cachedChannelNamesMap[epgUrl] = names
                         lastFetchTimeMap[epgUrl] = now
+                        lastError = null // Clear error on success
                         android.util.Log.d("EpgHelper", "Successfully loaded EPG from $url: ${progs.size} channels mapped.")
                         return Pair(progs, names)
+                    } else {
+                        errorBuilder.append("[$url]: Map terurai kosong. ")
                     }
+                } else {
+                    errorBuilder.append("[$url]: Respons kosong. ")
                 }
             } catch (e: Exception) {
+                errorBuilder.append("[$url]: ${e.message}. ")
                 android.util.Log.e("EpgHelper", "Error loading EPG from $url", e)
             }
         }
+        lastError = "Semua mirror EPG gagal: " + errorBuilder.toString()
         return Pair(cachedProgramsMap[epgUrl] ?: emptyMap(), cachedChannelNamesMap[epgUrl] ?: emptyMap())
     }
 
@@ -243,6 +253,7 @@ object EpgHelper {
                 entry.value.sortBy { it.startUnixMs }
             }
         } catch (t: Throwable) {
+            lastError = "Parser crash: " + t.toString() + "\n" + t.stackTrace.take(4).joinToString("\n")
             android.util.Log.e("EpgHelper", "Error parsing EPG XML dengan XmlPullParser", t)
         }
         return Pair(programMap, nameToIdMap)
