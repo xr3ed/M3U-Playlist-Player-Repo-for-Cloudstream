@@ -112,13 +112,10 @@ object EpgHelper {
             var currentProgTitle: String? = null
             var currentProgDesc: String? = null
 
-            val textBuilder = StringBuilder()
-
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 val name = parser.name
                 when (eventType) {
                     XmlPullParser.START_TAG -> {
-                        textBuilder.setLength(0)
                         when (name) {
                             "channel" -> {
                                 currentChannelId = parser.getAttributeValue(null, "id")
@@ -127,22 +124,8 @@ object EpgHelper {
                                     nameToIdMap[lowerId] = lowerId
                                 }
                             }
-                            "programme" -> {
-                                currentProgChannel = parser.getAttributeValue(null, "channel")
-                                currentProgStart = parser.getAttributeValue(null, "start")
-                                currentProgStop = parser.getAttributeValue(null, "stop")
-                                currentProgTitle = null
-                                currentProgDesc = null
-                            }
-                        }
-                    }
-                    XmlPullParser.TEXT -> {
-                        textBuilder.append(parser.text)
-                    }
-                    XmlPullParser.END_TAG -> {
-                        when (name) {
                             "display-name" -> {
-                                val displayName = textBuilder.toString().trim()
+                                val displayName = parser.nextText()?.trim() ?: ""
                                 if (displayName.isNotEmpty() && currentChannelId != null) {
                                     val lowerId = currentChannelId.lowercase()
                                     // Simpan mapping nama asli lowercase ke channel ID lowercase
@@ -154,12 +137,23 @@ object EpgHelper {
                                     }
                                 }
                             }
+                            "programme" -> {
+                                currentProgChannel = parser.getAttributeValue(null, "channel")
+                                currentProgStart = parser.getAttributeValue(null, "start")
+                                currentProgStop = parser.getAttributeValue(null, "stop")
+                                currentProgTitle = null
+                                currentProgDesc = null
+                            }
                             "title" -> {
-                                currentProgTitle = textBuilder.toString().trim()
+                                currentProgTitle = parser.nextText()?.trim()
                             }
                             "desc" -> {
-                                currentProgDesc = textBuilder.toString().trim()
+                                currentProgDesc = parser.nextText()?.trim()
                             }
+                        }
+                    }
+                    XmlPullParser.END_TAG -> {
+                        when (name) {
                             "channel" -> {
                                 currentChannelId = null
                             }
