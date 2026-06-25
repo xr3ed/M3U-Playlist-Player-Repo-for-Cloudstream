@@ -4,7 +4,8 @@ import android.content.Context
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import java.io.StringReader
+import java.io.InputStream
+import java.util.zip.GZIPInputStream
 import com.lagradost.cloudstream3.app
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -57,17 +58,40 @@ object EpgHelper {
         return 0L
     }
 
+    val GithubMirrorsMap = mapOf(
+        "raw.githubusercontent.com" to listOf(
+            "raw.githubusercontent.com",
+            "cdn.jsdelivr.net/gh",
+            "raw.githack.com"
+        )
+    )
+
     fun getGithubMirrors(url: String): List<String> {
-        if (!url.contains("raw.githubusercontent.com", ignoreCase = true)) {
-            return listOf(url)
-        }
         val cleanUrl = url.trim()
-        val parts = cleanUrl.removePrefix("https://").removePrefix("http://").split('/')
-        if (parts.size >= 4 && parts[0].equals("raw.githubusercontent.com", ignoreCase = true)) {
-            val username = parts[1]
-            val repo = parts[2]
-            val branch = parts[3]
-            val path = parts.drop(4).joinToString("/")
+        if (cleanUrl.contains("raw.githubusercontent.com")) {
+            val parts = cleanUrl.split("/")
+            if (parts.size < 6) return listOf(cleanUrl)
+            
+            val username = parts[3]
+            val repo = parts[4]
+            val branch = parts[5]
+            val path = parts.drop(6).joinToString("/")
+            
+            val jsdelivr = "https://cdn.jsdelivr.net/gh/$username/$repo@$branch/$path"
+            val githack = "https://raw.githack.com/$username/$repo/$branch/$path"
+            
+            return listOf(cleanUrl, jsdelivr, githack)
+        }
+        
+        // Handle git branch files
+        if (cleanUrl.contains("github.com") && cleanUrl.contains("/raw/")) {
+            val parts = cleanUrl.split("/")
+            if (parts.size < 7) return listOf(cleanUrl)
+            
+            val username = parts[3]
+            val repo = parts[4]
+            val branch = parts[6]
+            val path = parts.drop(7).joinToString("/")
             
             val jsdelivr = "https://cdn.jsdelivr.net/gh/$username/$repo@$branch/$path"
             val githack = "https://raw.githack.com/$username/$repo/$branch/$path"
@@ -97,22 +121,27 @@ object EpgHelper {
                     headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
                     timeout = 25
                 )
-                val xmlText = response.textLarge
-                if (xmlText.isNotBlank()) {
-                    val cleanXml = if (xmlText.startsWith("\uFEFF")) xmlText.substring(1) else xmlText
-                    val (progs, names) = parseEpgXml(cleanXml)
-                    if (progs.isNotEmpty() || names.isNotEmpty()) {
-                        cachedProgramsMap[epgUrl] = progs
-                        cachedChannelNamesMap[epgUrl] = names
-                        lastFetchTimeMap[epgUrl] = now
-                        lastError = null // Clear error on success
-                        android.util.Log.d("EpgHelper", "Successfully loaded EPG from $url: ${progs.size} channels mapped.")
-                        return Pair(progs, names)
-                    } else {
-                        errorBuilder.append("[$url]: Map terurai kosong. ")
-                    }
+                
+                val rawStream = response.body.byteStream()
+                val isGzip = url.endsWith(".gz", ignoreCase = true) || 
+                             response.headers["Content-Encoding"]?.contains("gzip", ignoreCase = true) == true
+                
+                val stream = if (isGzip) {
+                    GZIPInputStream(rawStream)
                 } else {
-                    errorBuilder.append("[$url]: Respons kosong. ")
+                    rawStream
+                }
+                
+                val (progs, names) = stream.use { parseEpgXml(it) }
+                if (progs.isNotEmpty() || names.isNotEmpty()) {
+                    cachedProgramsMap[epgUrl] = progs
+                    cachedChannelNamesMap[epgUrl] = names
+                    lastFetchTimeMap[epgUrl] = now
+                    lastError = null // Clear error on success
+                    android.util.Log.d("EpgHelper", "Successfully loaded EPG from $url: ${progs.size} channels mapped.")
+                    return Pair(progs, names)
+                } else {
+                    errorBuilder.append("[$url]: Map terurai kosong. ")
                 }
             } catch (e: Exception) {
                 errorBuilder.append("[$url]: ${e.message}. ")
@@ -136,7 +165,7 @@ object EpgHelper {
         return clean
     }
 
-    fun parseEpgXml(xmlText: String): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
+    fun parseEpgXml(input: InputStream): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
         val programMap = mutableMapOf<String, MutableList<EpgProgram>>()
         val nameToIdMap = mutableMapOf<String, String>()
 
@@ -144,7 +173,7 @@ object EpgHelper {
             val factory = XmlPullParserFactory.newInstance()
             factory.isNamespaceAware = false
             val parser = factory.newPullParser()
-            parser.setInput(StringReader(xmlText))
+            parser.setInput(input, null)
 
             var eventType = parser.eventType
             

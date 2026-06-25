@@ -136,7 +136,13 @@ class M3UPlaylistPlayer(
                             "Accept" to "*/*"
                         )
                         val response = app.get(url, headers = headers, timeout = 12)
-                        val text = response.textLarge
+                        val isGzip = url.endsWith(".gz", ignoreCase = true) || 
+                                     response.headers["Content-Encoding"]?.contains("gzip", ignoreCase = true) == true
+                        val text = if (isGzip) {
+                            java.util.zip.GZIPInputStream(response.body.byteStream()).bufferedReader().use { it.readText() }
+                        } else {
+                            response.textLarge
+                        }
                         if (text.isNotBlank()) {
                             val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
                             val trimmed = clean.trim()
