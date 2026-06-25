@@ -58,8 +58,8 @@ object EpgHelper {
                 if (date != null) {
                     return date.time
                 }
-            } catch (e: Exception) {
-                // ignore
+            } catch (e: java.text.ParseException) {
+                // ignore parse exception to try next format
             }
         }
         return 0L
