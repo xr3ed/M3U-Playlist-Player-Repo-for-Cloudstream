@@ -403,7 +403,7 @@ class M3UPlaylistPlayer(
 
             newLiveStreamLoadResponse(
                 title,
-                url,
+                mainUrl,
                 url
             ) {
                 this.posterUrl = logoUrl

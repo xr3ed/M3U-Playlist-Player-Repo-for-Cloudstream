@@ -8,6 +8,8 @@ import java.util.zip.GZIPInputStream
 import com.lagradost.cloudstream3.app
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 data class EpgProgram(
     val title: String,
@@ -27,6 +29,17 @@ object EpgHelper {
     private val cachedChannelNamesMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, String>>()
     private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
+
+    private val epgMutexes = java.util.concurrent.ConcurrentHashMap<String, Mutex>()
+    private val globalEpgMutex = Mutex()
+    private val cleanedNamesCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+
+    private suspend fun getMutexForEpgUrl(url: String): Mutex {
+        return globalEpgMutex.withLock {
+            epgMutexes.getOrPut(url) { Mutex() }
+        }
+    }
+
     private val TIMEZONE_COLON_REGEX = Regex("([+-]\\d{2}):(\\d{2})$")
     private val OFFSET_SPACE_REGEX = Regex("(\\d{14})([+-]\\d{4})$")
     private val XMLTV_DATE_FORMATS = arrayOf(
@@ -42,6 +55,8 @@ object EpgHelper {
         cachedProgramsMap.clear()
         cachedChannelNamesMap.clear()
         lastFetchTimeMap.clear()
+        cleanedNamesCache.clear()
+        epgMutexes.clear()
     }
 
     // Menggunakan ThreadLocal untuk SimpleDateFormat agar parsing puluhan ribu data EPG sangat cepat dan thread-safe
@@ -124,59 +139,71 @@ object EpgHelper {
             return Pair(cachedProgs, cachedNames)
         }
 
-        val urlsToTry = getGithubMirrors(epgUrl)
-        var errorBuilder = StringBuilder()
-        for (url in urlsToTry) {
-            try {
-                android.util.Log.d("EpgHelper", "Fetching EPG XML from $url ...")
-                // Gunakan User-Agent browser agar request tidak diblokir oleh server EPG kustom/Cloudflare
-                val response = app.get(
-                    url,
-                    headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
-                    timeout = 25
-                )
-                
-                val rawStream = response.body.byteStream()
-                val isGzip = url.endsWith(".gz", ignoreCase = true) || 
-                             response.headers["Content-Encoding"]?.contains("gzip", ignoreCase = true) == true
-                
-                val stream = if (isGzip) {
-                    GZIPInputStream(rawStream)
-                } else {
-                    rawStream
-                }
-                
-                val (progs, names) = stream.use { parseEpgXml(it) }
-                if (progs.isNotEmpty() || names.isNotEmpty()) {
-                    cachedProgramsMap[epgUrl] = progs
-                    cachedChannelNamesMap[epgUrl] = names
-                    lastFetchTimeMap[epgUrl] = now
-                    lastError = null // Clear error on success
-                    android.util.Log.d("EpgHelper", "Successfully loaded EPG from $url: ${progs.size} channels mapped.")
-                    return Pair(progs, names)
-                } else {
-                    errorBuilder.append("[$url]: Map terurai kosong. ")
-                }
-            } catch (e: Exception) {
-                errorBuilder.append("[$url]: ${e.message}. ")
-                android.util.Log.e("EpgHelper", "Error loading EPG from $url", e)
+        val mutex = getMutexForEpgUrl(epgUrl)
+        return mutex.withLock {
+            val cachedProgsSec = cachedProgramsMap[epgUrl]
+            val cachedNamesSec = cachedChannelNamesMap[epgUrl]
+            val lastFetchSec = lastFetchTimeMap[epgUrl] ?: 0L
+            if (cachedProgsSec != null && cachedNamesSec != null && (System.currentTimeMillis() - lastFetchSec) < cacheDurationMs) {
+                return@withLock Pair(cachedProgsSec, cachedNamesSec)
             }
+
+            val urlsToTry = getGithubMirrors(epgUrl)
+            var errorBuilder = StringBuilder()
+            for (url in urlsToTry) {
+                try {
+                    android.util.Log.d("EpgHelper", "Fetching EPG XML from $url ...")
+                    // Gunakan User-Agent browser agar request tidak diblokir oleh server EPG kustom/Cloudflare
+                    val response = app.get(
+                        url,
+                        headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
+                        timeout = 25
+                    )
+                    
+                    val rawStream = response.body.byteStream()
+                    val isGzip = url.endsWith(".gz", ignoreCase = true) || 
+                                 response.headers["Content-Encoding"]?.contains("gzip", ignoreCase = true) == true
+                    
+                    val stream = if (isGzip) {
+                        GZIPInputStream(rawStream)
+                    } else {
+                        rawStream
+                    }
+                    
+                    val (progs, names) = stream.use { parseEpgXml(it) }
+                    if (progs.isNotEmpty() || names.isNotEmpty()) {
+                        cachedProgramsMap[epgUrl] = progs
+                        cachedChannelNamesMap[epgUrl] = names
+                        lastFetchTimeMap[epgUrl] = System.currentTimeMillis()
+                        lastError = null // Clear error on success
+                        android.util.Log.d("EpgHelper", "Successfully loaded EPG from $url: ${progs.size} channels mapped.")
+                        return@withLock Pair(progs, names)
+                    } else {
+                        errorBuilder.append("[$url]: Map terurai kosong. ")
+                    }
+                } catch (e: Exception) {
+                    errorBuilder.append("[$url]: ${e.message}. ")
+                    android.util.Log.e("EpgHelper", "Error loading EPG from $url", e)
+                }
+            }
+            lastError = "Semua mirror EPG gagal: " + errorBuilder.toString()
+            Pair(cachedProgramsMap[epgUrl] ?: emptyMap(), cachedChannelNamesMap[epgUrl] ?: emptyMap())
         }
-        lastError = "Semua mirror EPG gagal: " + errorBuilder.toString()
-        return Pair(cachedProgramsMap[epgUrl] ?: emptyMap(), cachedChannelNamesMap[epgUrl] ?: emptyMap())
     }
 
     fun cleanChannelName(name: String): String {
-        var clean = name.lowercase()
-        // Hapus tag seperti [HD], (HD), (BACKUP), dll.
-        clean = clean.replace(tagRegex, "")
-        // Hapus kata-kata penanda kualitas/sumber umum di akhir
-        clean = clean.replace(qualityRegex, "")
-        // Hanya sisakan karakter alfanumerik dan spasi
-        clean = clean.replace(nonAlphaNumRegex, "")
-        // Buang spasi ganda
-        clean = clean.replace(multipleSpaceRegex, " ").trim()
-        return clean
+        return cleanedNamesCache.getOrPut(name) {
+            var clean = name.lowercase()
+            // Hapus tag seperti [HD], (HD), (BACKUP), dll.
+            clean = clean.replace(tagRegex, "")
+            // Hapus kata-kata penanda kualitas/sumber umum di akhir
+            clean = clean.replace(qualityRegex, "")
+            // Hanya sisakan karakter alfanumerik dan spasi
+            clean = clean.replace(nonAlphaNumRegex, "")
+            // Buang spasi ganda
+            clean = clean.replace(multipleSpaceRegex, " ").trim()
+            clean
+        }
     }
 
     fun parseEpgXml(input: InputStream): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
