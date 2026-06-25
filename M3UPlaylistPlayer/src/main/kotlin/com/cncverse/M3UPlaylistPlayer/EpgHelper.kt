@@ -61,7 +61,12 @@ object EpgHelper {
 
         try {
             android.util.Log.d("EpgHelper", "Fetching EPG XML from $epgUrl ...")
-            val response = app.get(epgUrl, timeout = 30)
+            // Gunakan User-Agent browser agar request tidak diblokir oleh server EPG kustom/Cloudflare
+            val response = app.get(
+                epgUrl,
+                headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
+                timeout = 30
+            )
             val xmlText = response.text
             if (xmlText.isNotBlank()) {
                 val (progs, names) = parseEpgXml(xmlText)
@@ -112,6 +117,9 @@ object EpgHelper {
             var currentProgTitle: String? = null
             var currentProgDesc: String? = null
 
+            var currentTextTag: String? = null
+            val textBuilder = StringBuilder()
+
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 val name = parser.name
                 when (eventType) {
@@ -124,18 +132,9 @@ object EpgHelper {
                                     nameToIdMap[lowerId] = lowerId
                                 }
                             }
-                            "display-name" -> {
-                                val displayName = parser.nextText()?.trim() ?: ""
-                                if (displayName.isNotEmpty() && currentChannelId != null) {
-                                    val lowerId = currentChannelId.lowercase()
-                                    // Simpan mapping nama asli lowercase ke channel ID lowercase
-                                    nameToIdMap[displayName.lowercase()] = lowerId
-                                    // Simpan mapping nama bersih/fuzzy ke channel ID lowercase
-                                    val cleanName = cleanChannelName(displayName)
-                                    if (cleanName.isNotEmpty()) {
-                                        nameToIdMap[cleanName] = lowerId
-                                    }
-                                }
+                            "display-name", "title", "desc" -> {
+                                currentTextTag = name
+                                textBuilder.setLength(0)
                             }
                             "programme" -> {
                                 currentProgChannel = parser.getAttributeValue(null, "channel")
@@ -144,16 +143,44 @@ object EpgHelper {
                                 currentProgTitle = null
                                 currentProgDesc = null
                             }
-                            "title" -> {
-                                currentProgTitle = parser.nextText()?.trim()
-                            }
-                            "desc" -> {
-                                currentProgDesc = parser.nextText()?.trim()
+                        }
+                    }
+                    XmlPullParser.TEXT, XmlPullParser.CDSECT -> {
+                        if (currentTextTag != null) {
+                            val txt = parser.text
+                            if (txt != null) {
+                                textBuilder.append(txt)
                             }
                         }
                     }
                     XmlPullParser.END_TAG -> {
                         when (name) {
+                            "display-name" -> {
+                                if (currentTextTag == "display-name") {
+                                    val displayName = textBuilder.toString().trim()
+                                    if (displayName.isNotEmpty() && currentChannelId != null) {
+                                        val lowerId = currentChannelId.lowercase()
+                                        nameToIdMap[displayName.lowercase()] = lowerId
+                                        val cleanName = cleanChannelName(displayName)
+                                        if (cleanName.isNotEmpty()) {
+                                            nameToIdMap[cleanName] = lowerId
+                                        }
+                                    }
+                                    currentTextTag = null
+                                }
+                            }
+                            "title" -> {
+                                if (currentTextTag == "title") {
+                                    currentProgTitle = textBuilder.toString().trim()
+                                    currentTextTag = null
+                                }
+                            }
+                            "desc" -> {
+                                if (currentTextTag == "desc") {
+                                    currentProgDesc = textBuilder.toString().trim()
+                                    currentTextTag = null
+                                }
+                            }
                             "channel" -> {
                                 currentChannelId = null
                             }
