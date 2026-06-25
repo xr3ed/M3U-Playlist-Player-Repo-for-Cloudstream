@@ -346,13 +346,17 @@ class M3UPlaylistPlayer(
                         currentProgram = progs.lastOrNull { it.stopUnixMs <= now }
                     }
 
-                    description = if (currentProgram != null && currentProgram.desc.isNotEmpty()) {
+                    val baseDesc = if (currentProgram != null && currentProgram.desc.isNotEmpty()) {
                         "${currentProgram.title}\n\n${currentProgram.desc}"
                     } else if (currentProgram != null) {
                         currentProgram.title
                     } else {
                         currentProgText ?: "Siaran Langsung"
                     }
+                    description = baseDesc + "\n\n" +
+                                  "📢 PEMBERITAHUAN:\n" +
+                                  "Playlist & aplikasi ini 100% GRATIS!\n" +
+                                  "Jika Anda membeli playlist atau aplikasi ini, Anda telah ditipu."
                     
                     val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
                     val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
