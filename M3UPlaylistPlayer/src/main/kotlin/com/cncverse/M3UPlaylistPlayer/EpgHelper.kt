@@ -1,7 +1,6 @@
 package com.cncverse.M3UPlaylistPlayer
 
 import android.content.Context
-import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.InputStream
