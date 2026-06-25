@@ -1,6 +1,10 @@
 package com.cncverse.M3UPlaylistPlayer
 
 import android.content.Context
+import android.util.Xml
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.StringReader
 import com.lagradost.cloudstream3.app
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -20,10 +24,17 @@ object EpgHelper {
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
 
     private fun parseXmltvDate(dateStr: String): Long {
-        val clean = dateStr.trim()
+        // Hapus titik dua pada timezone offset (misal: +07:00 menjadi +0700) agar mudah di-parse
+        var clean = dateStr.trim().replace(Regex("([+-]\\d{2}):(\\d{2})$"), "$1$2")
+        
+        // Pastikan ada spasi sebelum offset jika ada offset tanpa spasi (misal: 20260625170000+0700 menjadi 20260625170000 +0700)
+        clean = clean.replace(Regex("(\\d{14})([+-]\\d{4})$"), "$1 $2")
+
         val formats = listOf(
             "yyyyMMddHHmmss Z",
-            "yyyyMMddHHmmss"
+            "yyyyMMddHHmmss",
+            "yyyy-MM-dd HH:mm:ss Z",
+            "yyyy-MM-dd HH:mm:ss"
         )
         for (f in formats) {
             try {
@@ -66,58 +77,121 @@ object EpgHelper {
         return Pair(cachedProgramsMap[epgUrl] ?: emptyMap(), cachedChannelNamesMap[epgUrl] ?: emptyMap())
     }
 
+    fun cleanChannelName(name: String): String {
+        var clean = name.lowercase()
+        // Hapus tag seperti [HD], (HD), (BACKUP), dll.
+        clean = clean.replace(Regex("\\s*[\\[(].*?[\\])]"), "")
+        // Hapus kata-kata penanda kualitas/sumber umum di akhir
+        clean = clean.replace(Regex("\\s+(hd|fhd|sd|hevc|h265|1080p|720p|id|indo|indonesia|tv|asia)\\b"), "")
+        // Hanya sisakan karakter alfanumerik dan spasi
+        clean = clean.replace(Regex("[^a-z0-9\\s]"), "")
+        // Buang spasi ganda
+        clean = clean.replace(Regex("\\s+"), " ").trim()
+        return clean
+    }
+
     fun parseEpgXml(xmlText: String): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
         val programMap = mutableMapOf<String, MutableList<EpgProgram>>()
         val nameToIdMap = mutableMapOf<String, String>()
 
         try {
-            // Parse <channel id="..."> ... </channel>
-            val channelRegex = Regex("<channel\\s+id=\"([^\"]+)\">(.*?)</channel>", RegexOption.DOT_MATCHES_ALL)
-            val displayNameRegex = Regex("<display-name[^>]*>(.*?)</display-name>", RegexOption.DOT_MATCHES_ALL)
+            val factory = XmlPullParserFactory.newInstance()
+            factory.isNamespaceAware = false
+            val parser = factory.newPullParser()
+            parser.setInput(StringReader(xmlText))
+
+            var eventType = parser.eventType
             
-            channelRegex.findAll(xmlText).forEach { match ->
-                val channelId = match.groupValues[1]
-                val content = match.groupValues[2]
-                nameToIdMap[channelId.lowercase()] = channelId
-                
-                displayNameRegex.findAll(content).forEach { dnMatch ->
-                    val name = dnMatch.groupValues[1].trim()
-                    if (name.isNotEmpty()) {
-                        nameToIdMap[name.lowercase()] = channelId
+            // State pencatatan channel
+            var currentChannelId: String? = null
+            
+            // State pencatatan programme
+            var currentProgChannel: String? = null
+            var currentProgStart: String? = null
+            var currentProgStop: String? = null
+            var currentProgTitle: String? = null
+            var currentProgDesc: String? = null
+
+            val textBuilder = StringBuilder()
+
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                val name = parser.name
+                when (eventType) {
+                    XmlPullParser.START_TAG -> {
+                        textBuilder.setLength(0)
+                        when (name) {
+                            "channel" -> {
+                                currentChannelId = parser.getAttributeValue(null, "id")
+                                if (currentChannelId != null) {
+                                    val lowerId = currentChannelId.lowercase()
+                                    nameToIdMap[lowerId] = lowerId
+                                }
+                            }
+                            "programme" -> {
+                                currentProgChannel = parser.getAttributeValue(null, "channel")
+                                currentProgStart = parser.getAttributeValue(null, "start")
+                                currentProgStop = parser.getAttributeValue(null, "stop")
+                                currentProgTitle = null
+                                currentProgDesc = null
+                            }
+                        }
+                    }
+                    XmlPullParser.TEXT -> {
+                        textBuilder.append(parser.text)
+                    }
+                    XmlPullParser.END_TAG -> {
+                        when (name) {
+                            "display-name" -> {
+                                val displayName = textBuilder.toString().trim()
+                                if (displayName.isNotEmpty() && currentChannelId != null) {
+                                    val lowerId = currentChannelId.lowercase()
+                                    // Simpan mapping nama asli lowercase ke channel ID lowercase
+                                    nameToIdMap[displayName.lowercase()] = lowerId
+                                    // Simpan mapping nama bersih/fuzzy ke channel ID lowercase
+                                    val cleanName = cleanChannelName(displayName)
+                                    if (cleanName.isNotEmpty()) {
+                                        nameToIdMap[cleanName] = lowerId
+                                    }
+                                }
+                            }
+                            "title" -> {
+                                currentProgTitle = textBuilder.toString().trim()
+                            }
+                            "desc" -> {
+                                currentProgDesc = textBuilder.toString().trim()
+                            }
+                            "channel" -> {
+                                currentChannelId = null
+                            }
+                            "programme" -> {
+                                if (currentProgChannel != null && currentProgStart != null && currentProgStop != null) {
+                                    val title = currentProgTitle ?: ""
+                                    val desc = currentProgDesc ?: ""
+                                    val startMs = parseXmltvDate(currentProgStart)
+                                    val stopMs = parseXmltvDate(currentProgStop)
+                                    val epgProg = EpgProgram(title, desc, startMs, stopMs)
+                                    
+                                    val lowerChannel = currentProgChannel.lowercase()
+                                    programMap.getOrPut(lowerChannel) { mutableListOf() }.add(epgProg)
+                                }
+                                currentProgChannel = null
+                                currentProgStart = null
+                                currentProgStop = null
+                                currentProgTitle = null
+                                currentProgDesc = null
+                            }
+                        }
                     }
                 }
+                eventType = parser.next()
             }
 
-            // Parse <programme start="..." stop="..." channel="..."> ... </programme>
-            val programmeRegex = Regex("<programme\\s+start=\"([^\"]+)\"\\s+stop=\"([^\"]+)\"\\s+channel=\"([^\"]+)\">(.*?)</programme>", RegexOption.DOT_MATCHES_ALL)
-            val titleRegex = Regex("<title[^>]*>(.*?)</title>", RegexOption.DOT_MATCHES_ALL)
-            val descRegex = Regex("<desc[^>]*>(.*?)</desc>", RegexOption.DOT_MATCHES_ALL)
-
-            programmeRegex.findAll(xmlText).forEach { match ->
-                val start = match.groupValues[1]
-                val stop = match.groupValues[2]
-                val channelId = match.groupValues[3]
-                val content = match.groupValues[4]
-
-                val titleMatch = titleRegex.find(content)
-                val title = titleMatch?.groupValues?.get(1)?.trim() ?: ""
-                
-                val descMatch = descRegex.find(content)
-                val desc = descMatch?.groupValues?.get(1)?.trim() ?: ""
-
-                val startMs = parseXmltvDate(start)
-                val stopMs = parseXmltvDate(stop)
-
-                val epgProg = EpgProgram(title, desc, startMs, stopMs)
-                programMap.getOrPut(channelId) { mutableListOf() }.add(epgProg)
-            }
-
-            // Sort each list by start time
+            // Sortir program berdasarkan waktu mulai
             for (entry in programMap) {
                 entry.value.sortBy { it.startUnixMs }
             }
         } catch (t: Throwable) {
-            android.util.Log.e("EpgHelper", "Error parsing EPG XML details", t)
+            android.util.Log.e("EpgHelper", "Error parsing EPG XML dengan XmlPullParser", t)
         }
         return Pair(programMap, nameToIdMap)
     }
@@ -137,18 +211,38 @@ object EpgHelper {
             title
         )
 
+        // 1. Coba pencocokan langsung secara case-insensitive
         for (key in keysToTry) {
             val lowercaseKey = key.lowercase()
-            // 1. Try directly as channel id
-            if (epgData.containsKey(key)) {
-                return epgData[key] ?: emptyList()
+            
+            // Coba cari langsung sebagai channel ID (lowercase)
+            if (epgData.containsKey(lowercaseKey)) {
+                return epgData[lowercaseKey] ?: emptyList()
             }
-            // 2. Try lowercase key as channel id
-            val directMatchId = nameToIdMap[lowercaseKey]
-            if (directMatchId != null && epgData.containsKey(directMatchId)) {
-                return epgData[directMatchId] ?: emptyList()
+            
+            // Coba cari melalui mapping nama channel (lowercase)
+            val mappedId = nameToIdMap[lowercaseKey]
+            if (mappedId != null && epgData.containsKey(mappedId)) {
+                return epgData[mappedId] ?: emptyList()
             }
         }
+
+        // 2. Coba pencocokan fuzzy (dengan pembersihan nama channel)
+        for (key in keysToTry) {
+            val cleanKey = cleanChannelName(key)
+            if (cleanKey.isNotEmpty()) {
+                // Coba cari melalui mapping nama bersih
+                val mappedId = nameToIdMap[cleanKey]
+                if (mappedId != null && epgData.containsKey(mappedId)) {
+                    return epgData[mappedId] ?: emptyList()
+                }
+                // Coba cari langsung sebagai channel ID bersih
+                if (epgData.containsKey(cleanKey)) {
+                    return epgData[cleanKey] ?: emptyList()
+                }
+            }
+        }
+
         return emptyList()
     }
 
