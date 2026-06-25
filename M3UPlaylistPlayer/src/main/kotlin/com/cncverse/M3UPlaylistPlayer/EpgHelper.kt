@@ -25,6 +25,15 @@ object EpgHelper {
     private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
 
+    private val tzOffsetRegex = Regex("([+-]\\d{2}):(\\d{2})$")
+    private val spaceOffsetRegex = Regex("(\\d{14})([+-]\\d{4})$")
+    private val dateFormats = listOf(
+        "yyyyMMddHHmmss Z",
+        "yyyyMMddHHmmss",
+        "yyyy-MM-dd HH:mm:ss Z",
+        "yyyy-MM-dd HH:mm:ss"
+    )
+
     fun clearCache() {
         cachedProgramsMap.clear()
         cachedChannelNamesMap.clear()
@@ -33,18 +42,12 @@ object EpgHelper {
 
     private fun parseXmltvDate(dateStr: String): Long {
         // Hapus titik dua pada timezone offset (misal: +07:00 menjadi +0700) agar mudah di-parse
-        var clean = dateStr.trim().replace(Regex("([+-]\\d{2}):(\\d{2})$"), "$1$2")
+        var clean = dateStr.trim().replace(tzOffsetRegex, "$1$2")
         
         // Pastikan ada spasi sebelum offset jika ada offset tanpa spasi (misal: 20260625170000+0700 menjadi 20260625170000 +0700)
-        clean = clean.replace(Regex("(\\d{14})([+-]\\d{4})$"), "$1 $2")
+        clean = clean.replace(spaceOffsetRegex, "$1 $2")
 
-        val formats = listOf(
-            "yyyyMMddHHmmss Z",
-            "yyyyMMddHHmmss",
-            "yyyy-MM-dd HH:mm:ss Z",
-            "yyyy-MM-dd HH:mm:ss"
-        )
-        for (f in formats) {
+        for (f in dateFormats) {
             try {
                 val sdf = SimpleDateFormat(f, Locale.US)
                 val date = sdf.parse(clean)
