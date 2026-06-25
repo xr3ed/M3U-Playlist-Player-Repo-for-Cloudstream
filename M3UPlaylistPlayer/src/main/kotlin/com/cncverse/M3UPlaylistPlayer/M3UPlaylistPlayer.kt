@@ -20,6 +20,8 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import com.lagradost.cloudstream3.Actor
 import com.lagradost.cloudstream3.ActorData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class M3UPlaylistPlayer(
     private val playlistName: String,
@@ -121,105 +123,107 @@ class M3UPlaylistPlayer(
                 return@withLock cachedSecond
             }
             
-            val userAgents = listOf(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-                "OTTNavigator/1.6.8.2 (Linux;Android 11)",
-                "TiviMate/4.7.0 (Linux;Android 11)",
-                "VLC/3.0.18",
-                "okhttp/4.9.2"
-            )
-            
-            val urlsToTry = EpgHelper.getGithubMirrors(playlistUrl)
-            var content = ""
-            var success = false
-            var fallbackContent = ""
-            
-            for (url in urlsToTry) {
-                if (success) break
-                for (ua in userAgents) {
-                    try {
-                        val headers = mapOf(
-                            "User-Agent" to ua,
-                            "Accept" to "*/*"
-                        )
-                        val response = app.get(url, headers = headers, timeout = 12)
-                        val isGzip = url.endsWith(".gz", ignoreCase = true) || 
-                                     response.headers["Content-Encoding"]?.contains("gzip", ignoreCase = true) == true
-                        val text = if (isGzip) {
-                            java.util.zip.GZIPInputStream(response.body.byteStream()).bufferedReader().use { it.readText() }
-                        } else {
-                            response.textLarge
-                        }
-                        if (text.isNotBlank()) {
-                            val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
-                            val trimmed = clean.trim()
-                            if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
-                                content = clean
-                                success = true
-                                lastWorkingUserAgent = ua
-                                android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
-                                break
-                            } else if (fallbackContent.isBlank()) {
-                                fallbackContent = clean
+            withContext(Dispatchers.IO) {
+                val userAgents = listOf(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+                    "OTTNavigator/1.6.8.2 (Linux;Android 11)",
+                    "TiviMate/4.7.0 (Linux;Android 11)",
+                    "VLC/3.0.18",
+                    "okhttp/4.9.2"
+                )
+                
+                val urlsToTry = EpgHelper.getGithubMirrors(playlistUrl)
+                var content = ""
+                var success = false
+                var fallbackContent = ""
+                
+                for (url in urlsToTry) {
+                    if (success) break
+                    for (ua in userAgents) {
+                        try {
+                            val headers = mapOf(
+                                "User-Agent" to ua,
+                                "Accept" to "*/*"
+                            )
+                            val response = app.get(url, headers = headers, timeout = 12)
+                            val isGzip = url.endsWith(".gz", ignoreCase = true) || 
+                                         response.headers["Content-Encoding"]?.contains("gzip", ignoreCase = true) == true
+                            val text = if (isGzip) {
+                                java.util.zip.GZIPInputStream(response.body.byteStream()).bufferedReader().use { it.readText() }
+                            } else {
+                                response.textLarge
                             }
+                            if (text.isNotBlank()) {
+                                val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
+                                val trimmed = clean.trim()
+                                if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
+                                    content = clean
+                                    success = true
+                                    lastWorkingUserAgent = ua
+                                    android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
+                                    break
+                                } else if (fallbackContent.isBlank()) {
+                                    fallbackContent = clean
+                                }
+                            }
+                        } catch (e: Exception) {
+                            android.util.Log.e("M3UPlayer", "Failed to fetch playlist from $url using User-Agent: $ua", e)
                         }
-                    } catch (e: Exception) {
-                        android.util.Log.e("M3UPlayer", "Failed to fetch playlist from $url using User-Agent: $ua", e)
                     }
                 }
-            }
-            
-            val cleanContent = if (success) content else fallbackContent
-            if (cleanContent.isBlank()) {
-                return@withLock Playlist(emptyList())
-            }
-            
-            // Extract EPG URL from M3U header
-            val extractedUrl = extractEpgUrl(cleanContent)
-            if (extractedUrl != null) {
-                context?.setKey("extracted_epg_${playlistUrl.hashCode()}", extractedUrl)
-                android.util.Log.d("M3UPlayer", "Extracted EPG URL from M3U: $extractedUrl")
-            }
-            
-            val result = try {
-                val parsed = IptvPlaylistParser().parseM3U(cleanContent)
                 
-                // Lakukan deduplikasi link streaming untuk mencegah Cloudstream berat/lag akibat ratusan channel duplikat
-                val uniqueItems = parsed.items.distinctBy { it.url }
+                val cleanContent = if (success) content else fallbackContent
+                if (cleanContent.isBlank()) {
+                    return@withContext Playlist(emptyList())
+                }
                 
-                // Clean up group-title so we don't prepend the playlist name (fixes image 3)
-                val cleanedItems = uniqueItems.map { item ->
-                    val originalGroup = item.attributes["group-title"]
-                    val newGroup = if (originalGroup.isNullOrBlank()) {
-                        "Live Channels"
-                    } else {
-                        originalGroup.trim()
+                // Extract EPG URL from M3U header
+                val extractedUrl = extractEpgUrl(cleanContent)
+                if (extractedUrl != null) {
+                    context?.setKey("extracted_epg_${playlistUrl.hashCode()}", extractedUrl)
+                    android.util.Log.d("M3UPlayer", "Extracted EPG URL from M3U: $extractedUrl")
+                }
+                
+                val result = try {
+                    val parsed = IptvPlaylistParser().parseM3U(cleanContent)
+                    
+                    // Lakukan deduplikasi link streaming untuk mencegah Cloudstream berat/lag akibat ratusan channel duplikat
+                    val uniqueItems = parsed.items.distinctBy { it.url }
+                    
+                    // Clean up group-title so we don't prepend the playlist name (fixes image 3)
+                    val cleanedItems = uniqueItems.map { item ->
+                        val originalGroup = item.attributes["group-title"]
+                        val newGroup = if (originalGroup.isNullOrBlank()) {
+                            "Live Channels"
+                        } else {
+                            originalGroup.trim()
+                        }
+                        
+                        val newAttributes = item.attributes.toMutableMap().apply {
+                            put("group-title", newGroup)
+                        }
+                        
+                        item.copy(attributes = newAttributes)
                     }
                     
-                    val newAttributes = item.attributes.toMutableMap().apply {
-                        put("group-title", newGroup)
-                    }
+                    val groups = cleanedItems.map { it.attributes["group-title"] ?: "Live Channels" }.distinct()
+                    PlaylistHelper.saveCachedGroups(context, playlistUrl, groups)
                     
-                    item.copy(attributes = newAttributes)
+                    Playlist(cleanedItems)
+                } catch (e: Exception) {
+                    android.util.Log.e("M3UPlayer", "Error parsing playlist from $playlistUrl", e)
+                    Playlist(emptyList())
                 }
                 
-                val groups = cleanedItems.map { it.attributes["group-title"] ?: "Live Channels" }.distinct()
-                PlaylistHelper.saveCachedGroups(context, playlistUrl, groups)
-                
-                Playlist(cleanedItems)
-            } catch (e: Exception) {
-                android.util.Log.e("M3UPlayer", "Error parsing playlist from $playlistUrl", e)
-                Playlist(emptyList())
-            }
-            
-            if (result.items.isNotEmpty()) {
-                synchronized(cachedPlaylists) {
-                    cachedPlaylists[playlistUrl] = result
-                    lastFetchTimes[playlistUrl] = System.currentTimeMillis()
+                if (result.items.isNotEmpty()) {
+                    synchronized(cachedPlaylists) {
+                        cachedPlaylists[playlistUrl] = result
+                        lastFetchTimes[playlistUrl] = System.currentTimeMillis()
+                    }
                 }
+                
+                result
             }
-            
-            result
         }
     }
 
@@ -247,161 +251,165 @@ class M3UPlaylistPlayer(
             return newHomePageResponse(emptyList(), hasNext = false)
         }
 
-        // Fetch EPG data
-        val epgUrl = getEpgUrlToUse()
-        val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
+        return withContext(Dispatchers.IO) {
+            // Fetch EPG data
+            val epgUrl = getEpgUrlToUse()
+            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
 
-        val homePageList = HomePageList(
-            groupName,
-            items.map { item ->
-                val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
-                val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
-                
-                newLiveSearchResponse(
-                    displayName,
-                    item.url,
-                    TvType.Live
-                ) {
-                    this.posterUrl = item.attributes["tvg-logo"]
+            val homePageList = HomePageList(
+                groupName,
+                items.map { item ->
+                    val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
+                    val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+                    val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
+                    
+                    newLiveSearchResponse(
+                        displayName,
+                        item.url,
+                        TvType.Live
+                    ) {
+                        this.posterUrl = item.attributes["tvg-logo"]
+                    }
                 }
-            }
-        )
+            )
 
-        return newHomePageResponse(listOf(homePageList), hasNext = false)
+            newHomePageResponse(listOf(homePageList), hasNext = false)
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
         val playlist = fetchPlaylist()
-        val epgUrl = getEpgUrlToUse()
-        val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
-        return playlist.items
-            .filter { it.title.contains(query, ignoreCase = true) }
-            .map { item ->
-                val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
-                val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
-                
-                newLiveSearchResponse(
-                    displayName,
-                    item.url,
-                    TvType.Live
-                ) {
-                    this.posterUrl = item.attributes["tvg-logo"]
+        return withContext(Dispatchers.IO) {
+            val epgUrl = getEpgUrlToUse()
+            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
+            playlist.items
+                .filter { it.title.contains(query, ignoreCase = true) }
+                .map { item ->
+                    val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
+                    val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+                    val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
+                    
+                    newLiveSearchResponse(
+                        displayName,
+                        item.url,
+                        TvType.Live
+                    ) {
+                        this.posterUrl = item.attributes["tvg-logo"]
+                    }
                 }
-            }
+        }
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val playlist = fetchPlaylist()
-        val item = playlist.items.firstOrNull { it.url == url }
-        val title = item?.title ?: "Live Channel"
-        val logoUrl = item?.attributes["tvg-logo"]
+        return withContext(Dispatchers.IO) {
+            val playlist = fetchPlaylist()
+            val item = playlist.items.firstOrNull { it.url == url }
+            val title = item?.title ?: "Live Channel"
+            val logoUrl = item?.attributes["tvg-logo"]
 
-        var description = "Siaran Langsung"
-        val actorsList = mutableListOf<ActorData>()
+            var description = "Siaran Langsung"
+            val actorsList = mutableListOf<ActorData>()
 
-        if (item != null) {
-            val epgUrl = getEpgUrlToUse()
-            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
-            val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
-            
-            if (progs.isEmpty()) {
-                val tvgId = item.attributes["tvg-id"]?.trim() ?: "tidak ada"
-                val tvgName = item.attributes["tvg-name"]?.trim() ?: "tidak ada"
-                val cleanTitle = EpgHelper.cleanChannelName(title)
+            if (item != null) {
+                val epgUrl = getEpgUrlToUse()
+                val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
+                val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
                 
-                description = "Tidak ada data EPG untuk channel ini.\n\n" +
-                              "--- INFO DEBUG ---\n" +
-                              "• URL EPG: $epgUrl\n" +
-                              "• Last Parser Error: ${EpgHelper.lastError ?: "tidak ada"}\n" +
-                              "• Total ID Channel Terurai: ${nameToIdMap.size}\n" +
-                              "• Total Program Terurai: ${epgData.values.sumOf { it.size }}\n" +
-                              "• Atribut tvg-id M3U: '$tvgId'\n" +
-                              "• Atribut tvg-name M3U: '$tvgName'\n" +
-                              "• Judul Channel: '$title' (bersih: '$cleanTitle')\n" +
-                              "• Cocok via ID M3U di EPG: ${epgData.containsKey(tvgId.lowercase())}\n" +
-                              "• Cocok via Nama/Fuzzy di EPG: ${nameToIdMap.containsKey(title.lowercase()) || nameToIdMap.containsKey(cleanTitle)}"
-            } else {
-                // Sembunyikan daftar jadwal teks panjang yang dilingkari merah dari deskripsi
-                // Cukup tampilkan deskripsi singkat dari program yang sedang tayang (jika ada), atau "Siaran Langsung"
-                val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                val currentProgText = currentAndUpcoming.first // format: "Sedang Tayang: Judul (Start - Stop)[Sisa Xm]"
-                
-                val now = System.currentTimeMillis()
-                val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-                
-                var currentProgram: EpgProgram? = null
-                val upcomingPrograms = mutableListOf<EpgProgram>()
-                for (p in progs) {
-                    if (now in p.startUnixMs until p.stopUnixMs) {
-                        currentProgram = p
-                    } else if (p.startUnixMs >= now) {
-                        upcomingPrograms.add(p)
+                if (progs.isEmpty()) {
+                    val tvgId = item.attributes["tvg-id"]?.trim() ?: "tidak ada"
+                    val tvgName = item.attributes["tvg-name"]?.trim() ?: "tidak ada"
+                    val cleanTitle = EpgHelper.cleanChannelName(title)
+                    
+                    description = "Tidak ada data EPG untuk channel ini.\n\n" +
+                                  "--- INFO DEBUG ---\n" +
+                                  "• URL EPG: $epgUrl\n" +
+                                  "• Last Parser Error: ${EpgHelper.lastError ?: "tidak ada"}\n" +
+                                  "• Total ID Channel Terurai: ${nameToIdMap.size}\n" +
+                                  "• Total Program Terurai: ${epgData.values.sumOf { it.size }}\n" +
+                                  "• Atribut tvg-id M3U: '$tvgId'\n" +
+                                  "• Atribut tvg-name M3U: '$tvgName'\n" +
+                                  "• Judul Channel: '$title' (bersih: '$cleanTitle')\n" +
+                                  "• Cocok via ID M3U di EPG: ${epgData.containsKey(tvgId.lowercase())}\n" +
+                                  "• Cocok via Nama/Fuzzy di EPG: ${nameToIdMap.containsKey(title.lowercase()) || nameToIdMap.containsKey(cleanTitle)}"
+                } else {
+                    // Sembunyikan daftar jadwal teks panjang yang dilingkari merah dari deskripsi
+                    // Cukup tampilkan deskripsi singkat dari program yang sedang tayang (jika ada), atau "Siaran Langsung"
+                    val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
+                    val currentProgText = currentAndUpcoming.first // format: "Sedang Tayang: Judul (Start - Stop)[Sisa Xm]"
+                    
+                    val now = System.currentTimeMillis()
+                    val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+                    
+                    var currentProgram: EpgProgram? = null
+                    val upcomingPrograms = mutableListOf<EpgProgram>()
+                    for (p in progs) {
+                        if (now in p.startUnixMs until p.stopUnixMs) {
+                            currentProgram = p
+                        } else if (p.startUnixMs >= now) {
+                            upcomingPrograms.add(p)
+                        }
+                    }
+                    if (currentProgram == null) {
+                        currentProgram = progs.lastOrNull { it.stopUnixMs <= now }
+                    }
+
+                    description = if (currentProgram != null && currentProgram.desc.isNotEmpty()) {
+                        "${currentProgram.title}\n\n${currentProgram.desc}"
+                    } else if (currentProgram != null) {
+                        currentProgram.title
+                    } else {
+                        currentProgText ?: "Siaran Langsung"
+                    }
+                    
+                    val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
+                    val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
+                    
+                    if (currentProgram != null) {
+                        val startStr = if (currentProgram.startUnixMs > 0) timeSdf.format(currentProgram.startUnixMs) else "--:--"
+                        val stopStr = if (currentProgram.stopUnixMs > 0) timeSdf.format(currentProgram.stopUnixMs) else "--:--"
+                        val remainingMs = currentProgram.stopUnixMs - now
+                        val remainingMin = remainingMs / (60 * 1000)
+                        val remainingText = if (remainingMin > 0) " (${remainingMin}m)" else ""
+                        
+                        actorsList.add(
+                            ActorData(
+                                Actor(
+                                    name = "🔴 $startStr-$stopStr$remainingText",
+                                    image = liveIconUrl
+                                ),
+                                roleString = currentProgram.title,
+                                role = null
+                            )
+                        )
+                    }
+                    
+                    for (p in upcomingPrograms.take(9)) {
+                        val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
+                        val stopStr = if (p.stopUnixMs > 0) timeSdf.format(p.stopUnixMs) else "--:--"
+                        
+                        actorsList.add(
+                            ActorData(
+                                Actor(
+                                    name = "⏰ $startStr-$stopStr",
+                                    image = scheduleIconUrl
+                                ),
+                                roleString = p.title,
+                                role = null
+                            )
+                        )
                     }
                 }
-                if (currentProgram == null) {
-                    currentProgram = progs.lastOrNull { it.stopUnixMs <= now }
-                }
-
-                description = if (currentProgram != null && currentProgram.desc.isNotEmpty()) {
-                    "${currentProgram.title}\n\n${currentProgram.desc}"
-                } else if (currentProgram != null) {
-                    currentProgram.title
-                } else {
-                    currentProgText ?: "Siaran Langsung"
-                }
-                
-                val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
-                val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
-                
-                val facebookUrl = "https://www.facebook.com/pesbuk.ibal"
-
-                if (currentProgram != null) {
-                    val startStr = if (currentProgram.startUnixMs > 0) timeSdf.format(currentProgram.startUnixMs) else "--:--"
-                    val stopStr = if (currentProgram.stopUnixMs > 0) timeSdf.format(currentProgram.stopUnixMs) else "--:--"
-                    val remainingMs = currentProgram.stopUnixMs - now
-                    val remainingMin = remainingMs / (60 * 1000)
-                    val remainingText = if (remainingMin > 0) " (${remainingMin}m)" else ""
-                    
-                    actorsList.add(
-                        ActorData(
-                            Actor(
-                                name = "🔴 $startStr-$stopStr$remainingText",
-                                image = liveIconUrl
-                            ),
-                            roleString = currentProgram.title,
-                            role = null
-                        )
-                    )
-                }
-                
-                for (p in upcomingPrograms.take(9)) {
-                    val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
-                    val stopStr = if (p.stopUnixMs > 0) timeSdf.format(p.stopUnixMs) else "--:--"
-                    
-                    actorsList.add(
-                        ActorData(
-                            Actor(
-                                name = "⏰ $startStr-$stopStr",
-                                image = scheduleIconUrl
-                            ),
-                            roleString = p.title,
-                            role = null
-                        )
-                    )
-                }
             }
-        }
 
-        return newLiveStreamLoadResponse(
-            title,
-            url,
-            url
-        ) {
-            this.posterUrl = logoUrl
-            this.plot = description
-            this.actors = actorsList
+            newLiveStreamLoadResponse(
+                title,
+                url,
+                url
+            ) {
+                this.posterUrl = logoUrl
+                this.plot = description
+                this.actors = actorsList
+            }
         }
     }
 
