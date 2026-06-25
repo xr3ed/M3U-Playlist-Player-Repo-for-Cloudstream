@@ -301,9 +301,14 @@ class M3UPlaylistPlayer(
     }
 
     override suspend fun load(url: String): LoadResponse {
+        val cleanUrl = if (url.startsWith("https://www.facebook.com/pesbuk.ibal#")) {
+            url.substringAfter("https://www.facebook.com/pesbuk.ibal#")
+        } else {
+            url
+        }
         return withContext(Dispatchers.IO) {
             val playlist = fetchPlaylist()
-            val item = playlist.items.firstOrNull { it.url == url }
+            val item = playlist.items.firstOrNull { it.url == cleanUrl }
             val title = item?.title ?: "Live Channel"
             val logoUrl = item?.attributes["tvg-logo"]
 
@@ -403,8 +408,8 @@ class M3UPlaylistPlayer(
 
             newLiveStreamLoadResponse(
                 title,
-                mainUrl,
-                url
+                "https://www.facebook.com/pesbuk.ibal#$cleanUrl",
+                cleanUrl
             ) {
                 this.posterUrl = logoUrl
                 this.plot = description
@@ -434,9 +439,14 @@ class M3UPlaylistPlayer(
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        val cleanData = if (data.startsWith("https://www.facebook.com/pesbuk.ibal#")) {
+            data.substringAfter("https://www.facebook.com/pesbuk.ibal#")
+        } else {
+            data
+        }
         val playlist = fetchPlaylist()
-        val item = playlist.items.firstOrNull { it.url == data }
-        val url = item?.url ?: data
+        val item = playlist.items.firstOrNull { it.url == cleanData }
+        val url = item?.url ?: cleanData
 
         val isM3u8 = url.contains(".m3u8", ignoreCase = true) || url.contains("m3u8", ignoreCase = true)
         val isDash = url.contains(".mpd", ignoreCase = true) || url.contains("mpd", ignoreCase = true)
