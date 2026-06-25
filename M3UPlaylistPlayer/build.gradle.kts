@@ -38,3 +38,8 @@ project.afterEvaluate {
         }
     }
 }
+
+tasks.register<JavaExec>("runBenchmark") {
+    mainClass.set("benchmark.BenchmarkKt")
+    classpath = sourceSets["main"].runtimeClasspath
+}

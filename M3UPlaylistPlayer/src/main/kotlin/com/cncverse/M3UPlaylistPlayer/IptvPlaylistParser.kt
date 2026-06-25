@@ -24,8 +24,8 @@ class IptvPlaylistParser {
 
         var bufferedTitle: String? = null
         var bufferedAttributes = emptyMap<String, String>()
-        var bufferedHeaders = emptyMap<String, String>()
-        var bufferedKodiProps = emptyMap<String, String>()
+        var bufferedHeaders: MutableMap<String, String>? = null
+        var bufferedKodiProps: MutableMap<String, String>? = null
 
         input.bufferedReader().forEachLine { rawLine ->
             val line = rawLine.trim()
@@ -40,10 +40,12 @@ class IptvPlaylistParser {
                         val referrer = getTagValue(line, "http-referrer") ?: getTagValue(line, "http-referer")
                         
                         if (userAgent != null) {
-                            bufferedHeaders = bufferedHeaders + mapOf("User-Agent" to userAgent)
+                            if (bufferedHeaders == null) bufferedHeaders = mutableMapOf()
+                            bufferedHeaders!!["User-Agent"] = userAgent
                         }
                         if (referrer != null) {
-                            bufferedHeaders = bufferedHeaders + mapOf("Referer" to referrer)
+                            if (bufferedHeaders == null) bufferedHeaders = mutableMapOf()
+                            bufferedHeaders!!["Referer"] = referrer
                         }
                     }
                     line.startsWith("#KODIPROP:") -> {
@@ -52,7 +54,8 @@ class IptvPlaylistParser {
                         if (parts.size == 2) {
                             val key = parts[0].trim()
                             val value = parts[1].trim()
-                            bufferedKodiProps = bufferedKodiProps + mapOf(key to value)
+                            if (bufferedKodiProps == null) bufferedKodiProps = mutableMapOf()
+                            bufferedKodiProps!![key] = value
                         }
                     }
                     !line.startsWith("#") -> {
@@ -63,15 +66,15 @@ class IptvPlaylistParser {
                                     title = currentTitle,
                                     url = line,
                                     attributes = bufferedAttributes,
-                                    headers = bufferedHeaders,
-                                    kodiProps = bufferedKodiProps
+                                    headers = bufferedHeaders ?: emptyMap(),
+                                    kodiProps = bufferedKodiProps ?: emptyMap()
                                 )
                             )
                         }
                         bufferedTitle = null
                         bufferedAttributes = emptyMap()
-                        bufferedHeaders = emptyMap()
-                        bufferedKodiProps = emptyMap()
+                        bufferedHeaders = null
+                        bufferedKodiProps = null
                     }
                 }
             }
