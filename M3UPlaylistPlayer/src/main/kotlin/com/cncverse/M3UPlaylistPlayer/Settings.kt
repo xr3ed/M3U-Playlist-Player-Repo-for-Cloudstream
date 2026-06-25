@@ -158,6 +158,8 @@ class Settings(
         restartButton.setOnClickListener {
             // Bersihkan cache EPG dulu agar memuat EPG segar saat restart
             EpgHelper.clearCache()
+            // Bersihkan cache playlist M3U memori
+            M3UPlaylistPlayer.clearMemoryCache()
 
             // Save current inputs if they are not blank
             val name = nameInput.text.toString().trim()

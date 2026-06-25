@@ -4,6 +4,8 @@ import android.content.Context
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
@@ -28,6 +30,25 @@ class M3UPlaylistPlayer(
     companion object {
         var context: Context? = null
         var lastWorkingUserAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+
+        private val cachedPlaylists = mutableMapOf<String, Playlist>()
+        private val lastFetchTimes = mutableMapOf<String, Long>()
+        private val playlistMutexes = mutableMapOf<String, Mutex>()
+        private val globalMutex = Mutex()
+        private const val CACHE_DURATION_MS = 5 * 60 * 1000L // Cache 5 menit
+
+        suspend fun getMutexForUrl(url: String): Mutex {
+            return globalMutex.withLock {
+                playlistMutexes.getOrPut(url) { Mutex() }
+            }
+        }
+
+        fun clearMemoryCache() {
+            synchronized(cachedPlaylists) {
+                cachedPlaylists.clear()
+                lastFetchTimes.clear()
+            }
+        }
     }
 
     private fun extractEpgUrl(m3uContent: String): String? {
@@ -70,93 +91,122 @@ class M3UPlaylistPlayer(
             return groups.map { MainPageData(it, it) }
         }
   
-    private suspend fun fetchPlaylist(): Playlist = coroutineScope {
+    private suspend fun fetchPlaylist(): Playlist {
         if (playlistUrl.isBlank()) {
-            return@coroutineScope Playlist(emptyList())
+            return Playlist(emptyList())
         }
         
-        val userAgents = listOf(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-            "OTTNavigator/1.6.8.2 (Linux;Android 11)",
-            "TiviMate/4.7.0 (Linux;Android 11)",
-            "VLC/3.0.18",
-            "okhttp/4.9.2"
-        )
+        val now = System.currentTimeMillis()
+        val cached = synchronized(cachedPlaylists) { cachedPlaylists[playlistUrl] }
+        val lastFetch = synchronized(lastFetchTimes) { lastFetchTimes[playlistUrl] ?: 0L }
         
-        val urlsToTry = EpgHelper.getGithubMirrors(playlistUrl)
-        var content = ""
-        var success = false
-        var fallbackContent = ""
+        if (cached != null && (now - lastFetch) < CACHE_DURATION_MS) {
+            android.util.Log.d("M3UPlayer", "Using cached playlist for $playlistUrl")
+            return cached
+        }
         
-        for (url in urlsToTry) {
-            if (success) break
-            for (ua in userAgents) {
-                try {
-                    val headers = mapOf(
-                        "User-Agent" to ua,
-                        "Accept" to "*/*"
-                    )
-                    val response = app.get(url, headers = headers, timeout = 12)
-                    val text = response.textLarge
-                    if (text.isNotBlank()) {
-                        val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
-                        val trimmed = clean.trim()
-                        if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
-                            content = clean
-                            success = true
-                            lastWorkingUserAgent = ua
-                            android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
-                            break
-                        } else if (fallbackContent.isBlank()) {
-                            fallbackContent = clean
+        val mutex = getMutexForUrl(playlistUrl)
+        return mutex.withLock {
+            val cachedSecond = synchronized(cachedPlaylists) { cachedPlaylists[playlistUrl] }
+            val lastFetchSecond = synchronized(lastFetchTimes) { lastFetchTimes[playlistUrl] ?: 0L }
+            if (cachedSecond != null && (now - lastFetchSecond) < CACHE_DURATION_MS) {
+                android.util.Log.d("M3UPlayer", "Using cached playlist for $playlistUrl (after lock)")
+                return@withLock cachedSecond
+            }
+            
+            val userAgents = listOf(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+                "OTTNavigator/1.6.8.2 (Linux;Android 11)",
+                "TiviMate/4.7.0 (Linux;Android 11)",
+                "VLC/3.0.18",
+                "okhttp/4.9.2"
+            )
+            
+            val urlsToTry = EpgHelper.getGithubMirrors(playlistUrl)
+            var content = ""
+            var success = false
+            var fallbackContent = ""
+            
+            for (url in urlsToTry) {
+                if (success) break
+                for (ua in userAgents) {
+                    try {
+                        val headers = mapOf(
+                            "User-Agent" to ua,
+                            "Accept" to "*/*"
+                        )
+                        val response = app.get(url, headers = headers, timeout = 12)
+                        val text = response.textLarge
+                        if (text.isNotBlank()) {
+                            val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
+                            val trimmed = clean.trim()
+                            if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
+                                content = clean
+                                success = true
+                                lastWorkingUserAgent = ua
+                                android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
+                                break
+                            } else if (fallbackContent.isBlank()) {
+                                fallbackContent = clean
+                            }
                         }
+                    } catch (e: Exception) {
+                        android.util.Log.e("M3UPlayer", "Failed to fetch playlist from $url using User-Agent: $ua", e)
                     }
-                } catch (e: Exception) {
-                    android.util.Log.e("M3UPlayer", "Failed to fetch playlist from $url using User-Agent: $ua", e)
                 }
             }
-        }
-        
-        val cleanContent = if (success) content else fallbackContent
-        if (cleanContent.isBlank()) {
-            return@coroutineScope Playlist(emptyList())
-        }
-        
-        // Extract EPG URL from M3U header
-        val extractedUrl = extractEpgUrl(cleanContent)
-        if (extractedUrl != null) {
-            context?.setKey("extracted_epg_${playlistUrl.hashCode()}", extractedUrl)
-            android.util.Log.d("M3UPlayer", "Extracted EPG URL from M3U: $extractedUrl")
-        }
-        
-        try {
-            val parsed = IptvPlaylistParser().parseM3U(cleanContent)
             
-            // Clean up group-title so we don't prepend the playlist name (fixes image 3)
-            val cleanedItems = parsed.items.map { item ->
-                val originalGroup = item.attributes["group-title"]
-                val newGroup = if (originalGroup.isNullOrBlank()) {
-                    "Live Channels"
-                } else {
-                    originalGroup.trim()
-                }
-                
-                val newAttributes = item.attributes.toMutableMap().apply {
-                    put("group-title", newGroup)
-                }
-                
-                item.copy(attributes = newAttributes)
+            val cleanContent = if (success) content else fallbackContent
+            if (cleanContent.isBlank()) {
+                return@withLock Playlist(emptyList())
             }
             
-            val groups = cleanedItems.map { it.attributes["group-title"] ?: "Live Channels" }.distinct()
-            PlaylistHelper.saveCachedGroups(context, playlistUrl, groups)
+            // Extract EPG URL from M3U header
+            val extractedUrl = extractEpgUrl(cleanContent)
+            if (extractedUrl != null) {
+                context?.setKey("extracted_epg_${playlistUrl.hashCode()}", extractedUrl)
+                android.util.Log.d("M3UPlayer", "Extracted EPG URL from M3U: $extractedUrl")
+            }
             
-            Playlist(cleanedItems)
-        } catch (e: Exception) {
-            android.util.Log.e("M3UPlayer", "Error parsing playlist from $playlistUrl", e)
-            Playlist(emptyList())
+            val result = try {
+                val parsed = IptvPlaylistParser().parseM3U(cleanContent)
+                
+                // Clean up group-title so we don't prepend the playlist name (fixes image 3)
+                val cleanedItems = parsed.items.map { item ->
+                    val originalGroup = item.attributes["group-title"]
+                    val newGroup = if (originalGroup.isNullOrBlank()) {
+                        "Live Channels"
+                    } else {
+                        originalGroup.trim()
+                    }
+                    
+                    val newAttributes = item.attributes.toMutableMap().apply {
+                        put("group-title", newGroup)
+                    }
+                    
+                    item.copy(attributes = newAttributes)
+                }
+                
+                val groups = cleanedItems.map { it.attributes["group-title"] ?: "Live Channels" }.distinct()
+                PlaylistHelper.saveCachedGroups(context, playlistUrl, groups)
+                
+                Playlist(cleanedItems)
+            } catch (e: Exception) {
+                android.util.Log.e("M3UPlayer", "Error parsing playlist from $playlistUrl", e)
+                Playlist(emptyList())
+            }
+            
+            if (result.items.isNotEmpty()) {
+                synchronized(cachedPlaylists) {
+                    cachedPlaylists[playlistUrl] = result
+                    lastFetchTimes[playlistUrl] = System.currentTimeMillis()
+                }
+            }
+            
+            result
         }
     }
+
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val playlist = fetchPlaylist()
