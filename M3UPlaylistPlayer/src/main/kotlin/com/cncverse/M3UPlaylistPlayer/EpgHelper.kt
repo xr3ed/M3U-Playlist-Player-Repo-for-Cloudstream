@@ -24,6 +24,16 @@ object EpgHelper {
     private val cachedChannelNamesMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, String>>()
     private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
+    private val TIMEZONE_COLON_REGEX = Regex("([+-]\\d{2}):(\\d{2})$")
+    private val OFFSET_SPACE_REGEX = Regex("(\\d{14})([+-]\\d{4})$")
+    private val XMLTV_DATE_FORMATS = arrayOf(
+        "yyyyMMddHHmmss Z",
+        "yyyyMMddHHmmss",
+        "yyyy-MM-dd HH:mm:ss Z",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+        "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+    )
 
     fun clearCache() {
         cachedProgramsMap.clear()
@@ -33,18 +43,12 @@ object EpgHelper {
 
     private fun parseXmltvDate(dateStr: String): Long {
         // Hapus titik dua pada timezone offset (misal: +07:00 menjadi +0700) agar mudah di-parse
-        var clean = dateStr.trim().replace(Regex("([+-]\\d{2}):(\\d{2})$"), "$1$2")
+        var clean = dateStr.trim().replace(TIMEZONE_COLON_REGEX, "$1$2")
         
         // Pastikan ada spasi sebelum offset jika ada offset tanpa spasi (misal: 20260625170000+0700 menjadi 20260625170000 +0700)
-        clean = clean.replace(Regex("(\\d{14})([+-]\\d{4})$"), "$1 $2")
+        clean = clean.replace(OFFSET_SPACE_REGEX, "$1 $2")
 
-        val formats = listOf(
-            "yyyyMMddHHmmss Z",
-            "yyyyMMddHHmmss",
-            "yyyy-MM-dd HH:mm:ss Z",
-            "yyyy-MM-dd HH:mm:ss"
-        )
-        for (f in formats) {
+        for (f in XMLTV_DATE_FORMATS) {
             try {
                 val sdf = SimpleDateFormat(f, Locale.US)
                 val date = sdf.parse(clean)
