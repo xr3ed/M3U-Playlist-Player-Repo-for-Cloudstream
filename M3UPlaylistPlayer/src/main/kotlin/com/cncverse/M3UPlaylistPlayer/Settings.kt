@@ -331,7 +331,8 @@ class Settings(
                         }
                     }
                 } catch (e: Exception) {
-                    Toast.makeText(context, "Gagal memeriksa playlist: ${e.message}", Toast.LENGTH_SHORT).show()
+                    android.util.Log.e("Settings", "Gagal memeriksa playlist", e)
+                    Toast.makeText(context, "Gagal memeriksa playlist.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
