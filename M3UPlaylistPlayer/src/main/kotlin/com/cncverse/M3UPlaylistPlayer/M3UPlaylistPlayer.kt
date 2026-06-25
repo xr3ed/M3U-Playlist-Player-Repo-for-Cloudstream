@@ -320,10 +320,9 @@ class M3UPlaylistPlayer(
                     val tvgName = item.attributes["tvg-name"]?.trim() ?: "tidak ada"
                     val cleanTitle = EpgHelper.cleanChannelName(title)
                     
-                    description = "Tidak ada data jadwal acara (EPG) untuk channel ini.\n\n" +
-                                  "📢 PEMBERITAHUAN:\n" +
-                                  "Playlist & aplikasi ini 100% GRATIS!\n" +
-                                  "Jika Anda membeli playlist atau aplikasi ini, Anda telah ditipu."
+                    description = "Tidak ada data jadwal acara (EPG) untuk channel ini. \n\n ── " +
+                                  "📢 PEMBERITAHUAN: Playlist & aplikasi ini 100% GRATIS! " +
+                                  "Jika Anda membeli playlist atau aplikasi ini, Anda telah ditipu. ──"
                 } else {
                     // Sembunyikan daftar jadwal teks panjang yang dilingkari merah dari deskripsi
                     // Cukup tampilkan deskripsi singkat dari program yang sedang tayang (jika ada), atau "Siaran Langsung"
@@ -347,16 +346,20 @@ class M3UPlaylistPlayer(
                     }
 
                     val baseDesc = if (currentProgram != null && currentProgram.desc.isNotEmpty()) {
-                        "${currentProgram.title}\n\n${currentProgram.desc}"
+                        "🔴 Sedang Tayang: ${currentProgram.title}\nDeskripsi: ${currentProgram.desc}"
                     } else if (currentProgram != null) {
-                        currentProgram.title
+                        "🔴 Sedang Tayang: ${currentProgram.title}"
                     } else {
-                        currentProgText ?: "Siaran Langsung"
+                        val progText = currentProgText
+                        if (progText != null) {
+                            "🔴 $progText"
+                        } else {
+                            "🔴 Sedang Tayang: Siaran Langsung"
+                        }
                     }
-                    description = baseDesc + "\n\n" +
-                                  "📢 PEMBERITAHUAN:\n" +
-                                  "Playlist & aplikasi ini 100% GRATIS!\n" +
-                                  "Jika Anda membeli playlist atau aplikasi ini, Anda telah ditipu."
+                    description = baseDesc + " \n\n ── " +
+                                  "📢 PEMBERITAHUAN: Playlist & aplikasi ini 100% GRATIS! " +
+                                  "Jika Anda membeli playlist atau aplikasi ini, Anda telah ditipu. ──"
                     
                     val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
                     val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
