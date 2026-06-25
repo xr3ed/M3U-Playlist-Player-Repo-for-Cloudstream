@@ -27,6 +27,29 @@ class Settings(
     private lateinit var urlInput: EditText
     private lateinit var epgInput: EditText
 
+    private suspend fun checkAndExtractEpg(url: String): String? {
+        if (url.isBlank()) return null
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = app.get(url, timeout = 10)
+                val text = response.text
+                if (text.isNotBlank()) {
+                    val firstLine = text.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) }
+                    if (firstLine != null) {
+                        val regex = Regex("""(?:x-tvg-url|url-tvg)\s*=\s*["']?([^"'\s>]+)["']?""", RegexOption.IGNORE_CASE)
+                        val match = regex.find(firstLine)
+                        if (match != null) {
+                            val urls = match.groupValues[1]
+                            urls.split(',').firstOrNull { it.isNotBlank() }?.trim()
+                        } else null
+                    } else null
+                } else null
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -168,6 +191,30 @@ class Settings(
                 cornerRadius = 12f
             }
         }
+        urlInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val url = urlInput.text.toString().trim()
+                if (url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true)) {
+                    if (epgInput.text.toString().trim().isBlank()) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val extractedEpg = checkAndExtractEpg(url)
+                            if (extractedEpg != null) {
+                                epgInput.setText(extractedEpg)
+                                Toast.makeText(context, "EPG otomatis terkonfigurasi!", Toast.LENGTH_SHORT).show()
+                            }
+                            if (nameInput.text.toString().trim().isBlank()) {
+                                val uriName = url.substringAfterLast('/').substringBeforeLast('.')
+                                if (uriName.isNotBlank() && !uriName.startsWith("http", ignoreCase = true)) {
+                                    nameInput.setText(uriName)
+                                } else {
+                                    nameInput.setText("M3U Playlist")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         root.addView(urlInput)
 
         // Spacer
@@ -203,22 +250,7 @@ class Settings(
             
             CoroutineScope(Dispatchers.Main).launch {
                 try {
-                    val extractedEpg = withContext(Dispatchers.IO) {
-                        val response = app.get(url, timeout = 10)
-                        val text = response.text
-                        if (text.isNotBlank()) {
-                            val firstLine = text.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) }
-                            if (firstLine != null) {
-                                val regex = Regex("""(?:x-tvg-url|url-tvg)\s*=\s*["']?([^"'\s>]+)["']?""", RegexOption.IGNORE_CASE)
-                                val match = regex.find(firstLine)
-                                if (match != null) {
-                                    val urls = match.groupValues[1]
-                                    urls.split(',').firstOrNull { it.isNotBlank() }?.trim()
-                                } else null
-                            } else null
-                        } else null
-                    }
-                    
+                    val extractedEpg = checkAndExtractEpg(url)
                     if (extractedEpg != null) {
                         epgInput.setText(extractedEpg)
                         Toast.makeText(context, "EPG otomatis terkonfigurasi!", Toast.LENGTH_SHORT).show()
@@ -502,10 +534,62 @@ class Settings(
                     }
                 }
 
+                urlEdit.setOnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        val url = urlEdit.text.toString().trim()
+                        if (url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true)) {
+                            if (epgEdit.text.toString().trim().isBlank()) {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    val extractedEpg = checkAndExtractEpg(url)
+                                    if (extractedEpg != null) {
+                                        epgEdit.setText(extractedEpg)
+                                        Toast.makeText(context, "EPG otomatis terkonfigurasi!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                val checkEditEpgBtn = Button(context).apply {
+                    text = "Periksa EPG dari M3U"
+                    setTextColor(Color.WHITE)
+                    textSize = 11f
+                    background = GradientDrawable().apply {
+                        setColor(Color.parseColor("#FF9500")) // Orange accent
+                        cornerRadius = 8f
+                    }
+                    setPadding(24, 8, 24, 8)
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        setMargins(0, 12, 0, 8)
+                    }
+                }
+                checkEditEpgBtn.setOnClickListener {
+                    val url = urlEdit.text.toString().trim()
+                    if (url.isBlank()) {
+                        Toast.makeText(context, "Masukkan URL Playlist terlebih dahulu!", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    Toast.makeText(context, "Memeriksa playlist M3U...", Toast.LENGTH_SHORT).show()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val extractedEpg = checkAndExtractEpg(url)
+                        if (extractedEpg != null) {
+                            epgEdit.setText(extractedEpg)
+                            Toast.makeText(context, "EPG otomatis terkonfigurasi!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Tidak menemukan EPG bawaan pada playlist.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
                 dialogLayout.addView(nameLabel)
                 dialogLayout.addView(nameEdit)
                 dialogLayout.addView(urlLabel)
                 dialogLayout.addView(urlEdit)
+                dialogLayout.addView(checkEditEpgBtn)
                 dialogLayout.addView(epgLabel)
                 dialogLayout.addView(epgEdit)
 
