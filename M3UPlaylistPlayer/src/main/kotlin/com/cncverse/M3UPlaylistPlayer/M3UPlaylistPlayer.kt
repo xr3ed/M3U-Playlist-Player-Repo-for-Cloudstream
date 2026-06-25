@@ -29,6 +29,10 @@ class M3UPlaylistPlayer(
     override val hasMainPage = true
     override var lang = ""
     override val supportedTypes = setOf(TvType.Live)
+    
+    // Set mainUrl ke URL Facebook user agar badge provider (seperti dhanytv/nama playlist)
+    // mengarah ke Facebook saat diklik di halaman detail channel.
+    override var mainUrl: String = "https://www.facebook.com/pesbuk.ibal"
  
     companion object {
         var context: Context? = null
