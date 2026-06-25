@@ -316,8 +316,10 @@ class M3UPlaylistPlayer(
                               "• Cocok via ID M3U di EPG: ${epgData.containsKey(tvgId.lowercase())}\n" +
                               "• Cocok via Nama/Fuzzy di EPG: ${nameToIdMap.containsKey(title.lowercase()) || nameToIdMap.containsKey(cleanTitle)}"
             } else {
+                // Sembunyikan daftar jadwal teks panjang yang dilingkari merah dari deskripsi
+                // Cukup tampilkan deskripsi singkat dari program yang sedang tayang (jika ada), atau "Siaran Langsung"
                 val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                description = currentAndUpcoming.second
+                val currentProgText = currentAndUpcoming.first // format: "Sedang Tayang: Judul (Start - Stop)[Sisa Xm]"
                 
                 val now = System.currentTimeMillis()
                 val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -334,10 +336,20 @@ class M3UPlaylistPlayer(
                 if (currentProgram == null) {
                     currentProgram = progs.lastOrNull { it.stopUnixMs <= now }
                 }
+
+                description = if (currentProgram != null && currentProgram.desc.isNotEmpty()) {
+                    "${currentProgram.title}\n\n${currentProgram.desc}"
+                } else if (currentProgram != null) {
+                    currentProgram.title
+                } else {
+                    currentProgText ?: "Siaran Langsung"
+                }
                 
                 val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
                 val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
                 
+                val facebookUrl = "https://www.facebook.com/pesbuk.ibal"
+
                 if (currentProgram != null) {
                     val startStr = if (currentProgram.startUnixMs > 0) timeSdf.format(currentProgram.startUnixMs) else "--:--"
                     val stopStr = if (currentProgram.stopUnixMs > 0) timeSdf.format(currentProgram.stopUnixMs) else "--:--"
