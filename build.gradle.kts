@@ -99,6 +99,10 @@ subprojects {
             buildConfigField("String", "SPEEDLINK_URL", "\"${getSecret("SPEEDLINK_URL")}\"")
         }
 
+        testOptions {
+            unitTests.isReturnDefaultValues = true
+        }
+
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
@@ -119,6 +123,9 @@ subprojects {
     }
 
     dependencies {
+        val testImplementation by configurations
+        testImplementation("junit:junit:4.13.2")
+        testImplementation("org.robolectric:robolectric:4.11.1")
         val implementation by configurations
         val cloudstream by configurations
         cloudstream("com.lagradost:cloudstream3:pre-release")
