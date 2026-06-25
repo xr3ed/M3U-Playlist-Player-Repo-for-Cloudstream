@@ -20,6 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.net.URL
+import java.net.InetAddress
 
 class Settings(
     private val plugin: M3UPlaylistPlayerPlugin
@@ -44,11 +46,29 @@ class Settings(
         return dialog
     }
 
+
+    private fun isSafeUrl(urlString: String): Boolean {
+        return try {
+            val url = URL(urlString)
+            val host = url.host ?: return false
+            val address = InetAddress.getByName(host)
+            !address.isAnyLocalAddress && !address.isLoopbackAddress &&
+            !address.isLinkLocalAddress && !address.isSiteLocalAddress &&
+            !address.isMulticastAddress
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     private suspend fun checkAndExtractEpg(url: String): String? {
         if (url.isBlank()) return null
         return withContext(Dispatchers.IO) {
             val urlsToTry = EpgHelper.getGithubMirrors(url)
             for (targetUrl in urlsToTry) {
+                if (!isSafeUrl(targetUrl)) {
+                    android.util.Log.w("Settings", "Skipping unsafe URL: $targetUrl")
+                    continue
+                }
                 try {
                     val response = app.get(targetUrl, timeout = 10)
                     val text = response.textLarge
