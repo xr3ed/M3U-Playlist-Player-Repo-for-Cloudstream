@@ -180,8 +180,11 @@ class M3UPlaylistPlayer(
             val result = try {
                 val parsed = IptvPlaylistParser().parseM3U(cleanContent)
                 
+                // Lakukan deduplikasi link streaming untuk mencegah Cloudstream berat/lag akibat ratusan channel duplikat
+                val uniqueItems = parsed.items.distinctBy { it.url }
+                
                 // Clean up group-title so we don't prepend the playlist name (fixes image 3)
-                val cleanedItems = parsed.items.map { item ->
+                val cleanedItems = uniqueItems.map { item ->
                     val originalGroup = item.attributes["group-title"]
                     val newGroup = if (originalGroup.isNullOrBlank()) {
                         "Live Channels"

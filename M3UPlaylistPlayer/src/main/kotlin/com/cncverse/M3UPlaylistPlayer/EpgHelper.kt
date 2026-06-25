@@ -44,6 +44,13 @@ object EpgHelper {
         lastFetchTimeMap.clear()
     }
 
+    // Menggunakan ThreadLocal untuk SimpleDateFormat agar parsing puluhan ribu data EPG sangat cepat dan thread-safe
+    private val formattersHolder = object : ThreadLocal<Array<SimpleDateFormat>>() {
+        override fun initialValue(): Array<SimpleDateFormat> {
+            return XMLTV_DATE_FORMATS.map { SimpleDateFormat(it, Locale.US) }.toTypedArray()
+        }
+    }
+
     private fun parseXmltvDate(dateStr: String): Long {
         // Hapus titik dua pada timezone offset (misal: +07:00 menjadi +0700) agar mudah di-parse
         var clean = dateStr.trim().replace(TIMEZONE_COLON_REGEX, "$1$2")
@@ -51,9 +58,9 @@ object EpgHelper {
         // Pastikan ada spasi sebelum offset jika ada offset tanpa spasi (misal: 20260625170000+0700 menjadi 20260625170000 +0700)
         clean = clean.replace(OFFSET_SPACE_REGEX, "$1 $2")
 
-        for (f in XMLTV_DATE_FORMATS) {
+        val formatters = formattersHolder.get() ?: return 0L
+        for (sdf in formatters) {
             try {
-                val sdf = SimpleDateFormat(f, Locale.US)
                 val date = sdf.parse(clean)
                 if (date != null) {
                     return date.time
@@ -348,6 +355,12 @@ object EpgHelper {
         return emptyList()
     }
 
+    private val timeFormatterHolder = object : ThreadLocal<SimpleDateFormat>() {
+        override fun initialValue(): SimpleDateFormat {
+            return SimpleDateFormat("HH:mm", Locale.getDefault())
+        }
+    }
+
     fun getCurrentAndUpcomingText(programs: List<EpgProgram>): Pair<String?, String> {
         if (programs.isEmpty()) {
             return Pair(null, "Tidak ada data jadwal acara (EPG).")
@@ -406,7 +419,7 @@ object EpgHelper {
             }
         }
 
-        val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val timeSdf = timeFormatterHolder.get() ?: SimpleDateFormat("HH:mm", Locale.getDefault())
         
         val currentText = currentProgram?.let { p ->
             val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
