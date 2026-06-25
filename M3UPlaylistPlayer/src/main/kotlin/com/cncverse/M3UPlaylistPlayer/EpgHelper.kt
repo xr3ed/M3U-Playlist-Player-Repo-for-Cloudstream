@@ -9,7 +9,6 @@ import java.util.zip.GZIPInputStream
 import com.lagradost.cloudstream3.app
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.TimeZone
 
 data class EpgProgram(
     val title: String,
