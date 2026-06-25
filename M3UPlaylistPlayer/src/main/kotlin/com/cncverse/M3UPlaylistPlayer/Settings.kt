@@ -64,42 +64,55 @@ class Settings(
     ): View {
         val context = requireContext()
 
-        // Root ScrollView to support vertical scroll of the bottom sheet
-        val rootScroll = ScrollView(context).apply {
+        // Root LinearLayout utama (vertikal)
+        val mainLayout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
             setBackgroundColor(Color.parseColor("#1C1C1E")) // Dark Mode Background
         }
 
-        // Root inner layout
-        val root = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            setPadding(32, 32, 32, 64)
-        }
-        rootScroll.addView(root)
-
-        // Header Layout (Horizontal) with Title and Simpan & Restart button
+        // Header Layout (Horizontal) - Tetap (Fixed) di atas
         val headerLayout = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
+            setPadding(32, 24, 32, 24)
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#2C2C2E")) // Sedikit lebih terang untuk memisahkan header
+            }
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        // Tombol Tutup / Kembali (Back Button '✕')
+        val backButton = Button(context).apply {
+            text = "✕"
+            textSize = 16f
+            setTextColor(Color.WHITE)
+            background = GradientDrawable().apply {
+                setColor(Color.TRANSPARENT)
+            }
+            setPadding(16, 16, 16, 16)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setPadding(0, 0, 0, 32)
+                setMargins(0, 0, 16, 0)
             }
         }
+        backButton.setOnClickListener {
+            dismiss()
+        }
+        headerLayout.addView(backButton)
 
         // Title
         val title = TextView(context).apply {
             text = "Pengaturan M3U"
-            textSize = 20f
+            textSize = 18f
             setTextColor(Color.WHITE)
             setTypeface(null, android.graphics.Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(
@@ -126,6 +139,9 @@ class Settings(
             )
         }
         restartButton.setOnClickListener {
+            // Bersihkan cache EPG dulu agar memuat EPG segar saat restart
+            EpgHelper.clearCache()
+
             // Save current inputs if they are not blank
             val name = nameInput.text.toString().trim()
             val url = urlInput.text.toString().trim()
@@ -157,7 +173,29 @@ class Settings(
             }
         }
         headerLayout.addView(restartButton)
-        root.addView(headerLayout)
+        mainLayout.addView(headerLayout)
+
+        // Root ScrollView to support vertical scroll of the content
+        val rootScroll = ScrollView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+            setBackgroundColor(Color.parseColor("#1C1C1E"))
+        }
+        mainLayout.addView(rootScroll)
+
+        // Root inner layout
+        val root = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            setPadding(32, 32, 32, 64)
+        }
+        rootScroll.addView(root)
 
         // --- SECTION 1: ADD PLAYLIST ---
         val sectionTitleAdd = TextView(context).apply {
@@ -325,6 +363,9 @@ class Settings(
                 return@setOnClickListener
             }
 
+            // Bersihkan cache EPG saat menambah playlist baru agar tidak terikat cache lama
+            EpgHelper.clearCache()
+
             list.add(0, SavedPlaylist(name, url, true, epg))
             PlaylistHelper.savePlaylists(context, list)
 
@@ -358,7 +399,7 @@ class Settings(
 
         refreshPlaylistsList(context)
 
-        return rootScroll
+        return mainLayout
     }
 
     private fun refreshPlaylistsList(context: Context) {
@@ -602,12 +643,15 @@ class Settings(
 
                 builder.setView(dialogLayout)
 
-                builder.setPositiveButton("Simpan") { _, _ ->
+                 builder.setPositiveButton("Simpan") { _, _ ->
                     val newName = nameEdit.text.toString().trim()
                     val newUrl = urlEdit.text.toString().trim()
                     val newEpg = epgEdit.text.toString().trim().let { if (it.isBlank()) null else it }
 
                     if (newName.isNotBlank() && newUrl.isNotBlank()) {
+                        // Bersihkan cache EPG saat detail diupdate agar memuat EPG segar
+                        EpgHelper.clearCache()
+
                         val currentList = PlaylistHelper.getSavedPlaylists(context).toMutableList()
                         if (index < currentList.size) {
                             currentList[index].name = newName

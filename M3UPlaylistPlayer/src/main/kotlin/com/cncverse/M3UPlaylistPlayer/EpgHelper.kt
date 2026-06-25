@@ -23,6 +23,12 @@ object EpgHelper {
     private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
 
+    fun clearCache() {
+        cachedProgramsMap.clear()
+        cachedChannelNamesMap.clear()
+        lastFetchTimeMap.clear()
+    }
+
     private fun parseXmltvDate(dateStr: String): Long {
         // Hapus titik dua pada timezone offset (misal: +07:00 menjadi +0700) agar mudah di-parse
         var clean = dateStr.trim().replace(Regex("([+-]\\d{2}):(\\d{2})$"), "$1$2")
