@@ -51,7 +51,7 @@ class Settings(
             for (targetUrl in urlsToTry) {
                 try {
                     val response = app.get(targetUrl, timeout = 10)
-                    val text = response.text
+                    val text = response.textLarge
                     if (text.isNotBlank()) {
                         val firstLine = text.lineSequence().firstOrNull { it.startsWith("#EXTM3U", ignoreCase = true) }
                         if (firstLine != null) {

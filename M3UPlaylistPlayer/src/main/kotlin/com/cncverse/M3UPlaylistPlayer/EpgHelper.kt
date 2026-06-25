@@ -97,7 +97,7 @@ object EpgHelper {
                     headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
                     timeout = 25
                 )
-                val xmlText = response.text
+                val xmlText = response.textLarge
                 if (xmlText.isNotBlank()) {
                     val cleanXml = if (xmlText.startsWith("\uFEFF")) xmlText.substring(1) else xmlText
                     val (progs, names) = parseEpgXml(cleanXml)

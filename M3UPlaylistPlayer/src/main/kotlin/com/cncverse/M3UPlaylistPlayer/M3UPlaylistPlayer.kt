@@ -97,7 +97,7 @@ class M3UPlaylistPlayer(
                         "Accept" to "*/*"
                     )
                     val response = app.get(url, headers = headers, timeout = 12)
-                    val text = response.text
+                    val text = response.textLarge
                     if (text.isNotBlank()) {
                         val clean = if (text.startsWith("\uFEFF")) text.substring(1) else text
                         val trimmed = clean.trim()
