@@ -25,6 +25,23 @@ object EpgHelper {
     private val lastFetchTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
     private val cacheDurationMs = 60 * 60 * 1000L // 1 hour cache
 
+    private val timeSdfLocal = object : ThreadLocal<SimpleDateFormat>() {
+        override fun initialValue(): SimpleDateFormat {
+            return SimpleDateFormat("HH:mm", Locale.getDefault())
+        }
+    }
+
+    private val dateFormattersLocal = object : ThreadLocal<List<SimpleDateFormat>>() {
+        override fun initialValue(): List<SimpleDateFormat> {
+            return listOf(
+                SimpleDateFormat("yyyyMMddHHmmss Z", Locale.US),
+                SimpleDateFormat("yyyyMMddHHmmss", Locale.US),
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US),
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            )
+        }
+    }
+
     fun clearCache() {
         cachedProgramsMap.clear()
         cachedChannelNamesMap.clear()
@@ -38,21 +55,17 @@ object EpgHelper {
         // Pastikan ada spasi sebelum offset jika ada offset tanpa spasi (misal: 20260625170000+0700 menjadi 20260625170000 +0700)
         clean = clean.replace(Regex("(\\d{14})([+-]\\d{4})$"), "$1 $2")
 
-        val formats = listOf(
-            "yyyyMMddHHmmss Z",
-            "yyyyMMddHHmmss",
-            "yyyy-MM-dd HH:mm:ss Z",
-            "yyyy-MM-dd HH:mm:ss"
-        )
-        for (f in formats) {
-            try {
-                val sdf = SimpleDateFormat(f, Locale.US)
-                val date = sdf.parse(clean)
-                if (date != null) {
-                    return date.time
+        val formatters = dateFormattersLocal.get()
+        if (formatters != null) {
+            for (sdf in formatters) {
+                try {
+                    val date = sdf.parse(clean)
+                    if (date != null) {
+                        return date.time
+                    }
+                } catch (e: Exception) {
+                    // ignore
                 }
-            } catch (e: Exception) {
-                // ignore
             }
         }
         return 0L
@@ -363,7 +376,7 @@ object EpgHelper {
             currentProgram = programs.lastOrNull { it.stopUnixMs <= now }
         }
 
-        val timeSdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val timeSdf = timeSdfLocal.get()!!
         
         val currentText = currentProgram?.let { p ->
             val startStr = if (p.startUnixMs > 0) timeSdf.format(p.startUnixMs) else "--:--"
