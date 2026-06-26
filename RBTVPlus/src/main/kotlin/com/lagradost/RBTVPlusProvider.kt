@@ -12,13 +12,15 @@ import java.net.URLEncoder
 import java.security.MessageDigest
 
 // Helper data class untuk data pertandingan live
+// Helper data class untuk data pertandingan live
 data class LiveMatchInfo(
     val matchId: Long,
     val streamId: String,
     val matchTitle: String,
     val homeName: String?,
     val awayName: String?,
-    val leagueName: String?
+    val leagueName: String?,
+    val sportType: Int
 )
 
 // ProtoParser ringan untuk membaca Protobuf biner
@@ -74,6 +76,36 @@ class RBTVPlusProvider : MainAPI() {
             hashtext = "0$hashtext"
         }
         return hashtext
+    }
+
+    private fun rot47(text: String): String {
+        val result = StringBuilder()
+        for (i in 0 until text.length) {
+            val c = text[i]
+            val y = c.toInt()
+            if (y in 33..79) {
+                result.append((y + 47).toChar())
+            } else if (y in 80..126) {
+                result.append((y - 47).toChar())
+            } else {
+                result.append(c)
+            }
+        }
+        return result.toString()
+    }
+
+    private fun encryptAesCbc(token: String): String {
+        val keyStr = "a7981cc9eb2f4d19dcfea57b101ecd89"
+        val ivStr = "8017d3a8f1400d2f"
+        
+        val keySpec = javax.crypto.spec.SecretKeySpec(keyStr.toByteArray(Charsets.UTF_8), "AES")
+        val ivSpec = javax.crypto.spec.IvParameterSpec(ivStr.toByteArray(Charsets.UTF_8))
+        
+        val cipher = javax.crypto.Cipher.getInstance("AES/CBC/PKCS5Padding")
+        cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, keySpec, ivSpec)
+        
+        val encrypted = cipher.doFinal(token.toByteArray(Charsets.UTF_8))
+        return encrypted.joinToString("") { String.format("%02x", it) }
     }
 
     private suspend fun getApiHost(): String {
@@ -204,7 +236,7 @@ class RBTVPlusProvider : MainAPI() {
         return name
     }
 
-    private fun parseLiveMatches(data: ByteArray): List<LiveMatchInfo> {
+    private fun parseLiveMatches(data: ByteArray, sportType: Int): List<LiveMatchInfo> {
         val parser = ProtoParser(data)
         val matches = ArrayList<LiveMatchInfo>()
 
@@ -302,7 +334,8 @@ class RBTVPlusProvider : MainAPI() {
                                             matchTitle = finalTitle,
                                             homeName = homeName,
                                             awayName = awayName,
-                                            leagueName = leagueName
+                                            leagueName = leagueName,
+                                            sportType = sportType
                                         )
                                     )
                                 }
@@ -330,7 +363,7 @@ class RBTVPlusProvider : MainAPI() {
             val f = async {
                 try {
                     val bytes = fetchLiveMatchesRaw(apiHost, 1)
-                    if (bytes != null) parseLiveMatches(bytes) else emptyList()
+                    if (bytes != null) parseLiveMatches(bytes, 1) else emptyList()
                 } catch (e: Exception) {
                     emptyList()
                 }
@@ -338,7 +371,7 @@ class RBTVPlusProvider : MainAPI() {
             val b = async {
                 try {
                     val bytes = fetchLiveMatchesRaw(apiHost, 2)
-                    if (bytes != null) parseLiveMatches(bytes) else emptyList()
+                    if (bytes != null) parseLiveMatches(bytes, 2) else emptyList()
                 } catch (e: Exception) {
                     emptyList()
                 }
@@ -346,7 +379,7 @@ class RBTVPlusProvider : MainAPI() {
             val t = async {
                 try {
                     val bytes = fetchLiveMatchesRaw(apiHost, 3)
-                    if (bytes != null) parseLiveMatches(bytes) else emptyList()
+                    if (bytes != null) parseLiveMatches(bytes, 3) else emptyList()
                 } catch (e: Exception) {
                     emptyList()
                 }
@@ -356,7 +389,7 @@ class RBTVPlusProvider : MainAPI() {
                     async {
                         try {
                             val bytes = fetchLiveMatchesRaw(apiHost, sportId)
-                            if (bytes != null) parseLiveMatches(bytes) else emptyList()
+                            if (bytes != null) parseLiveMatches(bytes, sportId) else emptyList()
                         } catch (e: Exception) {
                             emptyList()
                         }
@@ -374,7 +407,7 @@ class RBTVPlusProvider : MainAPI() {
             if (matches.isNotEmpty()) {
                 val searchResps = matches.map { m ->
                     val encodedTitle = URLEncoder.encode(m.matchTitle, "UTF-8")
-                    val detailUrl = "$mainUrl/id/match/detail.html?id=${m.matchId}&stream_id=${m.streamId}&title=$encodedTitle"
+                    val detailUrl = "$mainUrl/id/match/detail.html?id=${m.matchId}&sportType=${m.sportType}&stream_id=${m.streamId}&title=$encodedTitle"
                     newLiveSearchResponse(
                         m.matchTitle,
                         detailUrl,
@@ -424,7 +457,7 @@ class RBTVPlusProvider : MainAPI() {
                 async {
                     try {
                         val bytes = fetchLiveMatchesRaw(apiHost, sportId)
-                        if (bytes != null) parseLiveMatches(bytes) else emptyList()
+                        if (bytes != null) parseLiveMatches(bytes, sportId) else emptyList()
                     } catch (e: Exception) {
                         emptyList()
                     }
@@ -441,7 +474,7 @@ class RBTVPlusProvider : MainAPI() {
                 (m.leagueName?.contains(query, ignoreCase = true) == true)) {
                 
                 val encodedTitle = URLEncoder.encode(m.matchTitle, "UTF-8")
-                val detailUrl = "$mainUrl/id/match/detail.html?id=${m.matchId}&stream_id=${m.streamId}&title=$encodedTitle"
+                val detailUrl = "$mainUrl/id/match/detail.html?id=${m.matchId}&sportType=${m.sportType}&stream_id=${m.streamId}&title=$encodedTitle"
                 
                 val searchResp = newLiveSearchResponse(
                     m.matchTitle,
@@ -463,7 +496,9 @@ class RBTVPlusProvider : MainAPI() {
             parts[0] to parts.getOrNull(1)
         } ?: emptyMap()
         
-        val streamId = queryMap["stream_id"] ?: queryMap["id"] ?: return null
+        val matchId = queryMap["id"] ?: return null
+        val sportType = queryMap["sportType"] ?: "1"
+        val streamId = queryMap["stream_id"] ?: matchId
         val encodedTitle = queryMap["title"]
         val matchTitle = if (!encodedTitle.isNullOrEmpty()) {
             try {
@@ -475,12 +510,12 @@ class RBTVPlusProvider : MainAPI() {
             "RBTV+ Live Match"
         }
 
-        val playerUrl = "https://roastoup.com/4/$streamId"
+        val loadData = "matchId=$matchId&sportType=$sportType&streamId=$streamId&title=$encodedTitle"
 
         return newLiveStreamLoadResponse(
             matchTitle,
             url,
-            playerUrl
+            loadData
         ) {
             this.posterUrl = null
             this.plot = "Tonton siaran langsung pertandingan olahraga di RBTV+"
@@ -493,74 +528,213 @@ class RBTVPlusProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        if (!data.startsWith("http")) return false
+        if (!data.contains("matchId=") || !data.contains("streamId=")) return false
         
         try {
+            val queryMap = data.split("&").associate {
+                val parts = it.split("=")
+                parts[0] to parts.getOrNull(1)
+            }
+            val matchId = queryMap["matchId"]?.toLongOrNull() ?: return false
+            val sportType = queryMap["sportType"]?.toIntOrNull() ?: 1
+            val streamId = queryMap["streamId"]?.toLongOrNull() ?: return false
+
+            val apiHost = getApiHost()
+            val token = getBsToken(apiHost, sportType) ?: return false
+
+            // 1. Panggil detail match biner untuk mencari siteType
+            val detailParamsJson = """{"matchId":$matchId,"sportType":$sportType,"language":34}"""
+            val detailMd5 = md5(detailParamsJson)
+            val detailSliceMd5 = detailMd5.substring(0, 6)
+            val detailSfver = "sfver$detailSliceMd5$token"
+            val detailUrl = "$apiHost/$detailSfver/api/match/detail?matchId=$matchId&sportType=$sportType&language=34"
+
             val headers = mapOf(
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-                "Referer" to "$mainUrl/"
+                "Referer" to "$mainUrl/",
+                "Origin" to mainUrl,
+                "Accept" to "application/json, text/plain, */*"
             )
 
-            // 1. Fetch halaman pertama player
-            val response1 = app.get(data, headers = headers)
-            val html1 = response1.text
+            val detailResponse = app.get(detailUrl, headers = headers, timeout = 15)
+            if (detailResponse.code != 200) return false
+            val detailBytes = detailResponse.body.bytes()
 
-            // 2. Dapatkan URL redirect kuki / fingerprint
-            val redirectMatch = Regex("""href=['"]([^'"]+)['"]""").find(html1) ?: return false
-            var redirectUrl = redirectMatch.groupValues[1]
+            var siteType = 2001 // default fallback
 
-            if (redirectUrl.startsWith("http://")) {
-                redirectUrl = "https://" + redirectUrl.substring(7)
-            } else if (!redirectUrl.startsWith("http")) {
-                redirectUrl = URL(URL(data), redirectUrl).toString()
-            }
-
-            // 3. Fetch halaman kedua (redirect player)
-            val response2 = app.get(redirectUrl, headers = headers)
-            val html2 = response2.text
-
-            // 4. Ekstrak JWT path dari script inline fetch
-            val jwtMatch = Regex("""fetch\(\s*['"](/[^'"]+eyJhbGciOi[^'"]*)['"]\s*\)""").find(html2)
-                ?: Regex("""fetch\(\s*['"](/[^'"]+JWT_atau_token[^'"]*)['"]\s*\)""").find(html2)
-                ?: Regex("""fetch\(\s*['"](/[^'"]+)['"]\s*\)""").find(html2)
-
-            if (jwtMatch == null) return false
-            val jwtPath = jwtMatch.groupValues[1]
-
-            val playerUri = URI(data)
-            val apiHost = "${playerUri.scheme}://${playerUri.host}"
-            val apiUrl = "$apiHost$jwtPath"
-
-            // 5. Panggil endpoint API internal untuk mendapatkan stream location asli
-            val apiHeaders = headers + mapOf(
-                "X-Requested-With" to "XMLHttpRequest",
-                "Accept" to "application/json, text/javascript, */*; q=0.01"
-            )
-
-            val apiResponse = app.get(apiUrl, headers = apiHeaders)
-            val apiText = apiResponse.text
-
-            if (apiResponse.code == 200 && apiText.isNotEmpty()) {
-                val json = JSONObject(apiText)
-                val streamUrl = json.optString("location")
-                
-                if (streamUrl.isNotEmpty() && streamUrl.startsWith("http")) {
-                    val isM3u8 = streamUrl.contains(".m3u8", ignoreCase = true) || streamUrl.contains("m3u8", ignoreCase = true)
-                    val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-                    callback.invoke(
-                        newExtractorLink(
-                            name = "RBTV+ Live Player",
-                            source = "RBTV+ Stream",
-                            url = streamUrl,
-                            type = linkType
-                        ) {
-                            this.quality = Qualities.Unknown.value
-                            this.headers = mapOf("Referer" to "https://roastoup.com/")
-                        }
-                    )
-                    return true
+            val dp = ProtoParser(detailBytes)
+            var detailPayload: ByteArray? = null
+            while (dp.idx < detailBytes.size) {
+                val b = dp.data[dp.idx].toInt() and 0xFF
+                val tag = b shr 3
+                val wire = b and 7
+                dp.idx++
+                if (tag == 10 && wire == 2) {
+                    val length = dp.readVarint().toInt()
+                    if (dp.idx + length <= detailBytes.size) {
+                        detailPayload = detailBytes.copyOfRange(dp.idx, dp.idx + length)
+                    }
+                    break
+                } else {
+                    dp.skipField(wire)
                 }
             }
+
+            if (detailPayload != null) {
+                val dp2 = ProtoParser(detailPayload)
+                var foundStream = false
+                while (dp2.idx < detailPayload.size && !foundStream) {
+                    val b = dp2.data[dp2.idx].toInt() and 0xFF
+                    val tag = b shr 3
+                    val wire = b and 7
+                    dp2.idx++
+                    if (tag == 2 && wire == 2) {
+                        val length = dp2.readVarint().toInt()
+                        if (dp2.idx + length <= detailPayload.size) {
+                            val streamBytes = detailPayload.copyOfRange(dp2.idx, dp2.idx + length)
+                            dp2.idx += length
+
+                            val sp = ProtoParser(streamBytes)
+                            var sId: Long = 0
+                            var sSiteType = 2001
+                            while (sp.idx < streamBytes.size) {
+                                val sb = sp.data[sp.idx].toInt() and 0xFF
+                                val stag = sb shr 3
+                                val swire = sb and 7
+                                sp.idx++
+                                if (stag == 1 && swire == 0) {
+                                    sId = sp.readVarint()
+                                } else if (stag == 9 && swire == 0) {
+                                    sSiteType = sp.readVarint().toInt()
+                                } else {
+                                    sp.skipField(swire)
+                                }
+                            }
+                            if (sId == streamId) {
+                                siteType = sSiteType
+                                foundStream = true
+                            }
+                        }
+                    } else {
+                        dp2.skipField(wire)
+                    }
+                }
+            }
+
+            // 2. Panggil API detail stream
+            val streamParamsJson = """{"streamId":$streamId,"siteType":$siteType,"matchId":$matchId,"sportType":$sportType,"language":34}"""
+            val streamMd5 = md5(streamParamsJson)
+            val streamSliceMd5 = streamMd5.substring(0, 6)
+            val streamSfver = "sfver$streamSliceMd5$token"
+            val streamQuery = "streamId=$streamId&siteType=$siteType&matchId=$matchId&sportType=$sportType&language=34"
+            val streamUrl = "$apiHost/$streamSfver/api/stream/detail?$streamQuery"
+
+            val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
+            if (streamResponse.code != 200) return false
+            
+            var rbSession = streamResponse.headers["rb-session"]
+            val streamBytes = streamResponse.body.bytes()
+
+            // Fallback jika rb-session null, panggil URL error sengaja untuk memicu respons header rb-session
+            if (rbSession.isNullOrEmpty()) {
+                val urlErr = "$apiHost/api/stream/detail?matchId=$matchId&sportType=$sportType&language=34"
+                try {
+                    val errResponse = app.get(urlErr, headers = headers, timeout = 5)
+                    rbSession = errResponse.headers["rb-session"]
+                } catch (e: Exception) {
+                    // ignore
+                }
+            }
+
+            if (rbSession.isNullOrEmpty()) return false
+
+            // Parse detail stream biner
+            val parser = ProtoParser(streamBytes)
+            var pbResponseData: ByteArray? = null
+            while (parser.idx < streamBytes.size) {
+                val b = parser.data[parser.idx].toInt() and 0xFF
+                val tag = b shr 3
+                val wire = b and 7
+                parser.idx++
+                if (tag == 10 && wire == 2) {
+                    val length = parser.readVarint().toInt()
+                    if (parser.idx + length <= streamBytes.size) {
+                        pbResponseData = streamBytes.copyOfRange(parser.idx, parser.idx + length)
+                    }
+                    break
+                } else {
+                    parser.skipField(wire)
+                }
+            }
+            if (pbResponseData == null) return false
+
+            val parser2 = ProtoParser(pbResponseData)
+            var pbStreamData: ByteArray? = null
+            while (parser2.idx < pbResponseData.size) {
+                val b = parser2.data[parser2.idx].toInt() and 0xFF
+                val tag = b shr 3
+                val wire = b and 7
+                parser2.idx++
+                if (tag == 2 && wire == 2) {
+                    val length = parser2.readVarint().toInt()
+                    if (parser2.idx + length <= pbResponseData.size) {
+                        pbStreamData = pbResponseData.copyOfRange(parser2.idx, parser2.idx + length)
+                    }
+                    break
+                } else {
+                    parser2.skipField(wire)
+                }
+            }
+            if (pbStreamData == null) return false
+
+            val parser3 = ProtoParser(pbStreamData)
+            var encryptedUrl: String? = null
+            while (parser3.idx < pbStreamData.size) {
+                val b = parser3.data[parser3.idx].toInt() and 0xFF
+                val tag = b shr 3
+                val wire = b and 7
+                parser3.idx++
+                if (tag == 4 && wire == 2) {
+                    val length = parser3.readVarint().toInt()
+                    if (parser3.idx + length <= pbStreamData.size) {
+                        encryptedUrl = String(pbStreamData, parser3.idx, length, Charsets.UTF_8)
+                    }
+                    break
+                } else {
+                    parser3.skipField(wire)
+                }
+            }
+            if (encryptedUrl.isNullOrEmpty()) return false
+
+            val decryptedRaw = rot47(encryptedUrl)
+            val decryptedUrl = decryptedRaw.substring(8)
+
+            val encToken = encryptAesCbc(rbSession)
+            val uriParsed = URI(decryptedUrl)
+            val origin = "${uriParsed.scheme}://${uriParsed.host}"
+            val pathname = uriParsed.path
+            val search = uriParsed.query
+
+            val finalUrl = "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
+
+            val isM3u8 = finalUrl.contains(".m3u8", ignoreCase = true)
+            val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+
+            callback.invoke(
+                newExtractorLink(
+                    name = "RBTV+ Live Player",
+                    source = "RBTV+ Stream",
+                    url = finalUrl,
+                    type = linkType
+                ) {
+                    this.quality = Qualities.Unknown.value
+                    this.headers = mapOf(
+                        "Referer" to "https://roastoup.com/",
+                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+                    )
+                }
+            )
+            return true
         } catch (e: Exception) {
             e.printStackTrace()
         }
