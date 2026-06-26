@@ -655,19 +655,8 @@ class RBTVPlusProvider : MainAPI() {
             val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
             if (streamResponse.code != 200) return false
             
-            var rbSession = streamResponse.headers["rb-session"]
+            val rbSession = streamResponse.headers["rb-session"]
             val streamBytes = streamResponse.body.bytes()
-
-            // Fallback jika rb-session null, panggil URL error sengaja untuk memicu respons header rb-session
-            if (rbSession.isNullOrEmpty()) {
-                val urlErr = "$apiHost/api/stream/detail?matchId=$matchId&sportType=$sportType&language=34"
-                try {
-                    val errResponse = app.get(urlErr, headers = headers, timeout = 5)
-                    rbSession = errResponse.headers["rb-session"]
-                } catch (e: Exception) {
-                    // ignore
-                }
-            }
 
 
             // Parse detail stream biner
@@ -758,7 +747,8 @@ class RBTVPlusProvider : MainAPI() {
                 ) {
                     this.quality = Qualities.Unknown.value
                     this.headers = mapOf(
-                        "Referer" to "https://roastoup.com/",
+                        "Referer" to "$mainUrl/",
+                        "Origin" to mainUrl,
                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
                     )
                 }

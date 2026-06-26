@@ -1,4 +1,4 @@
-version = 11
+version = 13
 
 android {
     namespace = "com.lagradost.RBTVPlus"
