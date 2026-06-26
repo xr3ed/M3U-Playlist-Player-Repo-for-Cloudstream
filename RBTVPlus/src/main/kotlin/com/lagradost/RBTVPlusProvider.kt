@@ -200,10 +200,9 @@ class RBTVPlusProvider : MainAPI() {
         val parser = ProtoParser(blockData)
         var name: String? = null
         while (parser.idx < blockData.size) {
-            val b = parser.data[parser.idx].toInt() and 0xFF
-            val tag = b shr 3
-            val wire = b and 7
-            parser.idx++
+            val keyVal = parser.readVarint().toInt()
+            val tag = keyVal shr 3
+            val wire = keyVal and 7
 
             if (tag == 3 && wire == 2) {
                 val length = parser.readVarint().toInt()
@@ -213,14 +212,14 @@ class RBTVPlusProvider : MainAPI() {
 
                     val subParser = ProtoParser(subData)
                     while (subParser.idx < subData.size) {
-                        val sb = subParser.data[subParser.idx].toInt() and 0xFF
-                        val stag = sb shr 3
-                        val swire = sb and 7
-                        subParser.idx++
+                        val skey = subParser.readVarint().toInt()
+                        val stag = skey shr 3
+                        val swire = skey and 7
                         if (stag == 2 && swire == 2) {
                             val sLen = subParser.readVarint().toInt()
                             if (subParser.idx + sLen <= subData.size) {
                                 name = String(subParser.data, subParser.idx, sLen, Charsets.UTF_8)
+                                subParser.idx += sLen
                             }
                             break
                         } else {
@@ -241,10 +240,9 @@ class RBTVPlusProvider : MainAPI() {
         val matches = ArrayList<LiveMatchInfo>()
 
         while (parser.idx < data.size) {
-            val b = parser.data[parser.idx].toInt() and 0xFF
-            val tag = b shr 3
-            val wire = b and 7
-            parser.idx++
+            val keyVal = parser.readVarint().toInt()
+            val tag = keyVal shr 3
+            val wire = keyVal and 7
 
             if (tag == 10 && wire == 2) {
                 val length = parser.readVarint().toInt()
@@ -254,12 +252,11 @@ class RBTVPlusProvider : MainAPI() {
 
                     val subParser = ProtoParser(dataBlock)
                     while (subParser.idx < dataBlock.size) {
-                        val subB = dataBlock[subParser.idx].toInt() and 0xFF
-                        val subTag = subB shr 3
-                        val subWire = subB and 7
-                        subParser.idx++
+                        val subKeyVal = subParser.readVarint().toInt()
+                        val subTag = subKeyVal shr 3
+                        val subWire = subKeyVal and 7
 
-                        if ((subTag == 1 || subTag == 2) && subWire == 2) {
+                        if (subTag == 1 && subWire == 2) { // PBDataMatch
                             val mLen = subParser.readVarint().toInt()
                             if (subParser.idx + mLen <= dataBlock.size) {
                                 val mData = dataBlock.copyOfRange(subParser.idx, subParser.idx + mLen)
@@ -269,48 +266,59 @@ class RBTVPlusProvider : MainAPI() {
                                 var matchId: Long = 0
                                 var streamId: String? = null
                                 var rawTitle: String? = null
-                                var tag10Count = 0
                                 var leagueName: String? = null
-                                var homeName: String? = null
-                                var awayName: String? = null
+                                val teams = ArrayList<String>()
                                 var matchStatus: Long = 0
 
                                 while (mParser.idx < mData.size) {
-                                    val mb = mData[mParser.idx].toInt() and 0xFF
-                                    val mtag = mb shr 3
-                                    val mwire = mb and 7
-                                    mParser.idx++
+                                    val mKeyVal = mParser.readVarint().toInt()
+                                    val mtag = mKeyVal shr 3
+                                    val mwire = mKeyVal and 7
 
                                     if (mtag == 1 && mwire == 0) {
-                                        val tempId = mParser.readVarint()
-                                        if (matchId == 0L) {
-                                            matchId = tempId
-                                        }
+                                        matchId = mParser.readVarint()
+                                    } else if (mtag == 2 && mwire == 0) {
+                                        // sportType
+                                        mParser.readVarint()
                                     } else if (mtag == 4 && mwire == 0) {
                                         matchStatus = mParser.readVarint()
-                                    } else if (mtag == 2 && mwire == 2) {
-                                        val sLen = mParser.readVarint().toInt()
-                                        if (mParser.idx + sLen <= mData.size) {
-                                            val valStr = String(mData, mParser.idx, sLen, Charsets.UTF_8)
-                                            mParser.idx += sLen
-                                            if (!valStr.contains("vs", ignoreCase = true)) {
-                                                streamId = valStr
-                                            } else {
-                                                rawTitle = valStr
-                                            }
+                                    } else if (mtag == 10 && mwire == 2) { // league
+                                        val lLen = mParser.readVarint().toInt()
+                                        if (mParser.idx + lLen <= mData.size) {
+                                            val lData = mData.copyOfRange(mParser.idx, mParser.idx + lLen)
+                                            mParser.idx += lLen
+                                            leagueName = parseNameFromTag10(lData)
                                         }
-                                    } else if (mtag == 10 && mwire == 2) {
-                                        tag10Count++
-                                        val hLen = mParser.readVarint().toInt()
-                                        if (mParser.idx + hLen <= mData.size) {
-                                            val hData = mData.copyOfRange(mParser.idx, mParser.idx + hLen)
-                                            mParser.idx += hLen
-
-                                            val nameVal = parseNameFromTag10(hData)
-                                            when (tag10Count) {
-                                                1 -> leagueName = nameVal
-                                                2 -> homeName = nameVal
-                                                3 -> awayName = nameVal
+                                    } else if (mtag == 30 && mwire == 2) { // contender
+                                        val cLen = mParser.readVarint().toInt()
+                                        if (mParser.idx + cLen <= mData.size) {
+                                            val cData = mData.copyOfRange(mParser.idx, mParser.idx + cLen)
+                                            mParser.idx += cLen
+                                            
+                                            val cParser = ProtoParser(cData)
+                                            while (cParser.idx < cData.size) {
+                                                val cKeyVal = cParser.readVarint().toInt()
+                                                val ctag = cKeyVal shr 3
+                                                val cwire = cKeyVal and 7
+                                                if (ctag == 2 && cwire == 2) {
+                                                    val vLen = cParser.readVarint().toInt()
+                                                    if (cParser.idx + vLen <= cData.size) {
+                                                        rawTitle = String(cData, cParser.idx, vLen, Charsets.UTF_8)
+                                                        cParser.idx += vLen
+                                                    }
+                                                } else if (ctag == 10 && cwire == 2) { // team PBDataTeam
+                                                    val tLen = cParser.readVarint().toInt()
+                                                    if (cParser.idx + tLen <= cData.size) {
+                                                        val tData = cData.copyOfRange(cParser.idx, cParser.idx + tLen)
+                                                        cParser.idx += tLen
+                                                        val tName = parseNameFromTag10(tData)
+                                                        if (tName != null) {
+                                                            teams.add(tName)
+                                                        }
+                                                    }
+                                                } else {
+                                                    cParser.skipField(cwire)
+                                                }
                                             }
                                         }
                                     } else {
@@ -319,6 +327,8 @@ class RBTVPlusProvider : MainAPI() {
                                 }
 
                                 val finalStreamId = streamId ?: matchId.toString()
+                                val homeName = teams.getOrNull(0)
+                                val awayName = teams.getOrNull(1)
                                 val finalTitle = if (homeName != null && awayName != null) {
                                     "$homeName vs $awayName" + (if (leagueName != null) " ($leagueName)" else "")
                                 } else {
@@ -352,6 +362,7 @@ class RBTVPlusProvider : MainAPI() {
         }
         return matches
     }
+
 
     override suspend fun getMainPage(
         page: Int,
@@ -565,14 +576,14 @@ class RBTVPlusProvider : MainAPI() {
             val dp = ProtoParser(detailBytes)
             var detailPayload: ByteArray? = null
             while (dp.idx < detailBytes.size) {
-                val b = dp.data[dp.idx].toInt() and 0xFF
-                val tag = b shr 3
-                val wire = b and 7
-                dp.idx++
+                val keyVal = dp.readVarint().toInt()
+                val tag = keyVal shr 3
+                val wire = keyVal and 7
                 if (tag == 10 && wire == 2) {
                     val length = dp.readVarint().toInt()
                     if (dp.idx + length <= detailBytes.size) {
                         detailPayload = detailBytes.copyOfRange(dp.idx, dp.idx + length)
+                        dp.idx += length
                     }
                     break
                 } else {
@@ -580,14 +591,16 @@ class RBTVPlusProvider : MainAPI() {
                 }
             }
 
+            var realStreamId = streamId
             if (detailPayload != null) {
                 val dp2 = ProtoParser(detailPayload)
+                var firstStreamId: Long = 0
+                var firstSiteType = 2001
                 var foundStream = false
-                while (dp2.idx < detailPayload.size && !foundStream) {
-                    val b = dp2.data[dp2.idx].toInt() and 0xFF
-                    val tag = b shr 3
-                    val wire = b and 7
-                    dp2.idx++
+                while (dp2.idx < detailPayload.size) {
+                    val keyVal = dp2.readVarint().toInt()
+                    val tag = keyVal shr 3
+                    val wire = keyVal and 7
                     if (tag == 2 && wire == 2) {
                         val length = dp2.readVarint().toInt()
                         if (dp2.idx + length <= detailPayload.size) {
@@ -598,10 +611,9 @@ class RBTVPlusProvider : MainAPI() {
                             var sId: Long = 0
                             var sSiteType = 2001
                             while (sp.idx < streamBytes.size) {
-                                val sb = sp.data[sp.idx].toInt() and 0xFF
-                                val stag = sb shr 3
-                                val swire = sb and 7
-                                sp.idx++
+                                val skey = sp.readVarint().toInt()
+                                val stag = skey shr 3
+                                val swire = skey and 7
                                 if (stag == 1 && swire == 0) {
                                     sId = sp.readVarint()
                                 } else if (stag == 9 && swire == 0) {
@@ -610,6 +622,12 @@ class RBTVPlusProvider : MainAPI() {
                                     sp.skipField(swire)
                                 }
                             }
+                            
+                            if (firstStreamId == 0L && sId != 0L) {
+                                firstStreamId = sId
+                                firstSiteType = sSiteType
+                            }
+                            
                             if (sId == streamId) {
                                 siteType = sSiteType
                                 foundStream = true
@@ -619,14 +637,19 @@ class RBTVPlusProvider : MainAPI() {
                         dp2.skipField(wire)
                     }
                 }
+                
+                if (!foundStream && firstStreamId != 0L) {
+                    realStreamId = firstStreamId
+                    siteType = firstSiteType
+                }
             }
 
             // 2. Panggil API detail stream
-            val streamParamsJson = """{"streamId":$streamId,"siteType":$siteType,"matchId":$matchId,"sportType":$sportType,"language":34}"""
+            val streamParamsJson = """{"streamId":$realStreamId,"siteType":$siteType,"matchId":$matchId,"sportType":$sportType,"language":34}"""
             val streamMd5 = md5(streamParamsJson)
             val streamSliceMd5 = streamMd5.substring(0, 6)
             val streamSfver = "sfver$streamSliceMd5$token"
-            val streamQuery = "streamId=$streamId&siteType=$siteType&matchId=$matchId&sportType=$sportType&language=34"
+            val streamQuery = "streamId=$realStreamId&siteType=$siteType&matchId=$matchId&sportType=$sportType&language=34"
             val streamUrl = "$apiHost/$streamSfver/api/stream/detail?$streamQuery"
 
             val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
@@ -652,14 +675,14 @@ class RBTVPlusProvider : MainAPI() {
             val parser = ProtoParser(streamBytes)
             var pbResponseData: ByteArray? = null
             while (parser.idx < streamBytes.size) {
-                val b = parser.data[parser.idx].toInt() and 0xFF
-                val tag = b shr 3
-                val wire = b and 7
-                parser.idx++
+                val keyVal = parser.readVarint().toInt()
+                val tag = keyVal shr 3
+                val wire = keyVal and 7
                 if (tag == 10 && wire == 2) {
                     val length = parser.readVarint().toInt()
                     if (parser.idx + length <= streamBytes.size) {
                         pbResponseData = streamBytes.copyOfRange(parser.idx, parser.idx + length)
+                        parser.idx += length
                     }
                     break
                 } else {
@@ -671,14 +694,14 @@ class RBTVPlusProvider : MainAPI() {
             val parser2 = ProtoParser(pbResponseData)
             var pbStreamData: ByteArray? = null
             while (parser2.idx < pbResponseData.size) {
-                val b = parser2.data[parser2.idx].toInt() and 0xFF
-                val tag = b shr 3
-                val wire = b and 7
-                parser2.idx++
+                val keyVal = parser2.readVarint().toInt()
+                val tag = keyVal shr 3
+                val wire = keyVal and 7
                 if (tag == 2 && wire == 2) {
                     val length = parser2.readVarint().toInt()
                     if (parser2.idx + length <= pbResponseData.size) {
                         pbStreamData = pbResponseData.copyOfRange(parser2.idx, parser2.idx + length)
+                        parser2.idx += length
                     }
                     break
                 } else {
@@ -690,14 +713,14 @@ class RBTVPlusProvider : MainAPI() {
             val parser3 = ProtoParser(pbStreamData)
             var encryptedUrl: String? = null
             while (parser3.idx < pbStreamData.size) {
-                val b = parser3.data[parser3.idx].toInt() and 0xFF
-                val tag = b shr 3
-                val wire = b and 7
-                parser3.idx++
+                val keyVal = parser3.readVarint().toInt()
+                val tag = keyVal shr 3
+                val wire = keyVal and 7
                 if (tag == 4 && wire == 2) {
                     val length = parser3.readVarint().toInt()
                     if (parser3.idx + length <= pbStreamData.size) {
                         encryptedUrl = String(pbStreamData, parser3.idx, length, Charsets.UTF_8)
+                        parser3.idx += length
                     }
                     break
                 } else {
