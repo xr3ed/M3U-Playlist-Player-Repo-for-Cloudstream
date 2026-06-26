@@ -94,18 +94,19 @@ class RBTVPlusProvider : MainAPI() {
         return result.toString()
     }
 
-    private fun encryptAesCbc(token: String): String {
+    private fun encryptAesCtr(token: String): String {
         val keyStr = "a7981cc9eb2f4d19dcfea57b101ecd89"
         val ivStr = "8017d3a8f1400d2f"
         
         val keySpec = javax.crypto.spec.SecretKeySpec(keyStr.toByteArray(Charsets.UTF_8), "AES")
         val ivSpec = javax.crypto.spec.IvParameterSpec(ivStr.toByteArray(Charsets.UTF_8))
         
-        val cipher = javax.crypto.Cipher.getInstance("AES/CBC/PKCS5Padding")
+        val cipher = javax.crypto.Cipher.getInstance("AES/CTR/NoPadding")
         cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, keySpec, ivSpec)
         
         val encrypted = cipher.doFinal(token.toByteArray(Charsets.UTF_8))
-        return encrypted.joinToString("") { String.format("%02x", it) }
+        val base64Str = android.util.Base64.encodeToString(encrypted, android.util.Base64.NO_WRAP)
+        return URLEncoder.encode(base64Str, "UTF-8")
     }
 
     private suspend fun getApiHost(): String {
@@ -655,8 +656,19 @@ class RBTVPlusProvider : MainAPI() {
             val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
             if (streamResponse.code != 200) return false
             
-            val rbSession = streamResponse.headers["rb-session"]
+            var rbSession = streamResponse.headers["rb-session"]
             val streamBytes = streamResponse.body.bytes()
+
+            // Fallback jika rb-session null, panggil URL error sengaja untuk memicu respons header rb-session
+            if (rbSession.isNullOrEmpty()) {
+                val urlErr = "$apiHost/api/stream/detail?matchId=$matchId&sportType=$sportType&language=34"
+                try {
+                    val errResponse = app.get(urlErr, headers = headers, timeout = 5)
+                    rbSession = errResponse.headers["rb-session"]
+                } catch (e: Exception) {
+                    // ignore
+                }
+            }
 
 
             // Parse detail stream biner
@@ -721,7 +733,7 @@ class RBTVPlusProvider : MainAPI() {
             val decryptedUrl = decryptedRaw.substring(8)
 
             var finalUrl = if (!rbSession.isNullOrEmpty()) {
-                val encToken = encryptAesCbc(rbSession)
+                val encToken = encryptAesCtr(rbSession)
                 val uriParsed = URI(decryptedUrl)
                 val origin = "${uriParsed.scheme}://${uriParsed.host}"
                 val pathname = uriParsed.path
