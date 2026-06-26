@@ -250,7 +250,10 @@ class RBTVPlusProvider : MainAPI() {
                                     mParser.idx++
 
                                     if (mtag == 1 && mwire == 0) {
-                                        matchId = mParser.readVarint()
+                                        val tempId = mParser.readVarint()
+                                        if (matchId == 0L) {
+                                            matchId = tempId
+                                        }
                                     } else if (mtag == 4 && mwire == 0) {
                                         matchStatus = mParser.readVarint()
                                     } else if (mtag == 2 && mwire == 2) {
