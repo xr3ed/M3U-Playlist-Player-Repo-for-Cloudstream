@@ -731,7 +731,7 @@ class RBTVPlusProvider : MainAPI() {
             val decryptedRaw = rot47(encryptedUrl)
             val decryptedUrl = decryptedRaw.substring(8)
 
-            val finalUrl = if (!rbSession.isNullOrEmpty()) {
+            var finalUrl = if (!rbSession.isNullOrEmpty()) {
                 val encToken = encryptAesCbc(rbSession)
                 val uriParsed = URI(decryptedUrl)
                 val origin = "${uriParsed.scheme}://${uriParsed.host}"
@@ -740,6 +740,10 @@ class RBTVPlusProvider : MainAPI() {
                 "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
             } else {
                 decryptedUrl
+            }
+
+            if (finalUrl.startsWith("http://")) {
+                finalUrl = finalUrl.replaceFirst("http://", "https://")
             }
 
             val isM3u8 = finalUrl.contains(".m3u8", ignoreCase = true)
