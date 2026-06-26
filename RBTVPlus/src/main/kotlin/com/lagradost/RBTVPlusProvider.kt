@@ -646,11 +646,11 @@ class RBTVPlusProvider : MainAPI() {
             }
 
             // 2. Panggil API detail stream
-            val streamParamsJson = """{"matchId":$matchId,"sportType":$sportType,"language":34,"streamId":$realStreamId,"siteType":$siteType}"""
+            val streamParamsJson = """{"matchId":$matchId,"sportType":$sportType,"language":34,"streamId":$realStreamId,"siteType":$siteType,"usls":"rbp","digit":"sith","continent":"AS","country":"ID"}"""
             val streamMd5 = md5(streamParamsJson)
             val streamSliceMd5 = streamMd5.substring(0, 6)
             val streamSfver = "sfver$streamSliceMd5$token"
-            val streamQuery = "streamId=$realStreamId&siteType=$siteType&matchId=$matchId&sportType=$sportType&language=34"
+            val streamQuery = "streamId=$realStreamId&siteType=$siteType&matchId=$matchId&sportType=$sportType&language=34&usls=rbp&digit=sith&continent=AS&country=ID"
             val streamUrl = "$apiHost/$streamSfver/api/stream/detail?$streamQuery"
 
             val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
@@ -759,8 +759,8 @@ class RBTVPlusProvider : MainAPI() {
                 ) {
                     this.quality = Qualities.Unknown.value
                     this.headers = mapOf(
-                        "Referer" to "$mainUrl/",
-                        "Origin" to mainUrl,
+                        "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
+                        "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
                     )
                 }
