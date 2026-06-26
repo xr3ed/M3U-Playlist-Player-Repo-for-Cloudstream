@@ -669,7 +669,6 @@ class RBTVPlusProvider : MainAPI() {
                 }
             }
 
-            if (rbSession.isNullOrEmpty()) return false
 
             // Parse detail stream biner
             val parser = ProtoParser(streamBytes)
@@ -732,13 +731,16 @@ class RBTVPlusProvider : MainAPI() {
             val decryptedRaw = rot47(encryptedUrl)
             val decryptedUrl = decryptedRaw.substring(8)
 
-            val encToken = encryptAesCbc(rbSession)
-            val uriParsed = URI(decryptedUrl)
-            val origin = "${uriParsed.scheme}://${uriParsed.host}"
-            val pathname = uriParsed.path
-            val search = uriParsed.query
-
-            val finalUrl = "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
+            val finalUrl = if (!rbSession.isNullOrEmpty()) {
+                val encToken = encryptAesCbc(rbSession)
+                val uriParsed = URI(decryptedUrl)
+                val origin = "${uriParsed.scheme}://${uriParsed.host}"
+                val pathname = uriParsed.path
+                val search = uriParsed.query
+                "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
+            } else {
+                decryptedUrl
+            }
 
             val isM3u8 = finalUrl.contains(".m3u8", ignoreCase = true)
             val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
