@@ -13,6 +13,7 @@ class RBTVPlusProvider : MainAPI() {
     override var name = "RBTV+"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
+    override val hasMainPage = true
 
     // Helper untuk mem-parse Nuxt state window.__NUXT__ dari HTML
     private fun parseNuxtState(html: String): JSONObject? {
