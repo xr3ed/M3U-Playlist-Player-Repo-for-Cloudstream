@@ -18,8 +18,20 @@ class RBTVPlusProvider : MainAPI() {
     // Helper untuk mem-parse Nuxt state window.__NUXT__ dari HTML
     private fun parseNuxtState(html: String): JSONObject? {
         try {
-            // 1. Ekstrak isi script window.__NUXT__
-            val nuxtScript = Regex("""window\.__NUXT__\s*=\s*(.*?)\s*;""").find(html)?.groupValues?.get(1) ?: return null
+            // 1. Ekstrak isi script window.__NUXT__ menggunakan Jsoup
+            val doc = Jsoup.parse(html)
+            val script = doc.select("script").firstOrNull { it.data().contains("window.__NUXT__") }?.data() ?: return null
+            
+            var nuxtScript = script.trim()
+            if (nuxtScript.startsWith("window.__NUXT__=")) {
+                nuxtScript = nuxtScript.substring("window.__NUXT__=".length).trim()
+            } else if (nuxtScript.startsWith("window.__NUXT__ =")) {
+                nuxtScript = nuxtScript.substring("window.__NUXT__ =".length).trim()
+            }
+            if (nuxtScript.endsWith(";")) {
+                nuxtScript = nuxtScript.dropLast(1).trim()
+            }
+
 
             // 2. Dapatkan params (daftar parameter fungsi IIFE)
             val paramMatch = Regex("""^\(function\(([^)]+)\)""").find(nuxtScript) ?: return null
@@ -39,36 +51,62 @@ class RBTVPlusProvider : MainAPI() {
                 paramMap[params[i]] = argsArray.opt(i)
             }
 
-            // 4. Cari blok state
+            // 4. Cari blok state menggunakan matching braces
             val stateStart = nuxtScript.indexOf("state:{")
             if (stateStart == -1) return null
-            val stateJs = nuxtScript.substring(stateStart, idx).trim()
+            
+            val braceStart = stateStart + 6 // Letak '{'
+            var braceCount = 0
+            var stateEnd = -1
+            for (i in braceStart until nuxtScript.length) {
+                val c = nuxtScript[i]
+                if (c == '{') {
+                    braceCount++
+                } else if (c == '}') {
+                    braceCount--
+                    if (braceCount == 0) {
+                        stateEnd = i + 1
+                        break
+                    }
+                }
+            }
+            if (stateEnd == -1) return null
+            val stateJs = nuxtScript.substring(braceStart, stateEnd)
 
-            // 5. Konversi objek JavaScript literal menjadi JSON valid menggunakan regex substitution map
-            val jsonRegex = Regex("""([a-zA-Z0-9_$]+)\s*:\s*([a-zA-Z0-9_$]+|"[^"]*"|'[^']*'|\{\}|\[\])""")
-            val convertedJson = jsonRegex.replace(stateJs) { matchResult ->
-                val key = matchResult.groupValues[1]
-                val valName = matchResult.groupValues[2]
+            // 5. Konversi objek JavaScript literal menjadi JSON valid menggunakan 2-langkah regex substitution map
+            // Langkah 1: Quote keys (words followed by ':') tapi hindari kata di dalam tanda kutip
+            val keyRegex = Regex("""("[^"]*"|'[^']*')|(?<![a-zA-Z0-9_${'$'}])([a-zA-Z0-9_${'$'}]+)\s*:""")
+            val step1Str = keyRegex.replace(stateJs) { matchResult ->
+                val group1 = matchResult.groupValues[1]
+                if (group1.isNotEmpty()) {
+                    group1
+                } else {
+                    "\"${matchResult.groupValues[2]}\":"
+                }
+            }
 
-                val mappedVal = paramMap[valName]
-                val valJson = when {
-                    paramMap.containsKey(valName) -> {
+            // Langkah 2: Substitusi variabel tapi hindari kata di dalam tanda kutip
+            val varRegex = Regex("""("[^"]*"|'[^']*')|(?<![a-zA-Z0-9_${'$'}])([a-zA-Z0-9_${'$'}]+)(?![a-zA-Z0-9_${'$'}])(?!\s*:)""")
+            val finalJsonStr = varRegex.replace(step1Str) { matchResult ->
+                val group1 = matchResult.groupValues[1]
+                if (group1.isNotEmpty()) {
+                    group1
+                } else {
+                    val word = matchResult.groupValues[2]
+                    if (paramMap.containsKey(word)) {
+                        val mappedVal = paramMap[word]
                         when (mappedVal) {
                             null -> "null"
                             is String -> JSONObject.quote(mappedVal)
                             else -> mappedVal.toString()
                         }
+                    } else {
+                        word
                     }
-                    valName.startsWith("'") && valName.endsWith("'") -> {
-                        JSONObject.quote(valName.substring(1, valName.length - 1))
-                    }
-                    else -> valName
                 }
-                "\"$key\":$valJson"
             }
 
-            val fullJson = "{$convertedJson}"
-            return JSONObject(fullJson).getJSONObject("state")
+            return JSONObject(finalJsonStr)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -133,7 +171,27 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        return if (homePages.isNotEmpty()) newHomePageResponse(homePages, hasNext = false) else null
+        return if (homePages.isNotEmpty()) {
+            newHomePageResponse(homePages, hasNext = false)
+        } else {
+            newHomePageResponse(
+                listOf(
+                    HomePageList(
+                        "Info Live Match",
+                        listOf(
+                            newLiveSearchResponse(
+                                "Sedang tidak ada siaran langsung saat ini (Silakan periksa lagi nanti)",
+                                "$mainUrl/id/about-us.html",
+                                TvType.Live
+                            ) {
+                                this.posterUrl = null
+                            }
+                        )
+                    )
+                ),
+                hasNext = false
+            )
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
