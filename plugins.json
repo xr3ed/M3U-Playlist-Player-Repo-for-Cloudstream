@@ -18,5 +18,24 @@
     "description": "Add your own m3u playlists",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/M3UPlaylistPlayer.cs3",
     "name": "M3UPlaylistPlayer"
+  },
+  {
+    "fileHash": "sha256-049459c29dba45e33acd7c2e3e5ea1de816624be2004b6bbc949be7220b4b396",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 18528,
+    "status": 1,
+    "language": "id",
+    "authors": [
+      "Antigravity"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 1,
+    "internalName": "RBTVPlus",
+    "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/RBTVPlus.cs3",
+    "name": "RBTVPlus"
   }
 ]
