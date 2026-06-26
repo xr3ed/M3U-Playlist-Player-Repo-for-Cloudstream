@@ -645,7 +645,7 @@ class RBTVPlusProvider : MainAPI() {
             }
 
             // 2. Panggil API detail stream
-            val streamParamsJson = """{"streamId":$realStreamId,"siteType":$siteType,"matchId":$matchId,"sportType":$sportType,"language":34}"""
+            val streamParamsJson = """{"matchId":$matchId,"sportType":$sportType,"language":34,"streamId":$realStreamId,"siteType":$siteType}"""
             val streamMd5 = md5(streamParamsJson)
             val streamSliceMd5 = streamMd5.substring(0, 6)
             val streamSfver = "sfver$streamSliceMd5$token"
