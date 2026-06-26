@@ -107,26 +107,22 @@ class RBTVPlusProvider : MainAPI() {
                     val homeName = m.optString("homeName")
                     val awayName = m.optString("awayName")
                     val leagueName = m.optString("leagueName")
-                    val matchTime = m.optString("time") // format waktu jam atau timestamp
 
                     val matchTitle = "$homeName vs $awayName ($leagueName)"
                     val detailUrl = "$mainUrl/id/match/detail.html?id=$id&stream_id=$streamId"
 
-                    matches.add(
-                        LiveSearchResponse(
-                            name = matchTitle,
-                            url = detailUrl,
-                            apiName = this.name,
-                            type = TvType.Live,
-                            posterUrl = null,
-                            lang = "id",
-                            showStatus = if (live) ShowStatus.Ongoing else ShowStatus.Completed
-                        )
-                    )
+                    val searchResp = newLiveSearchResponse(
+                        matchTitle,
+                        detailUrl,
+                        TvType.Live
+                    ) {
+                        this.posterUrl = null
+                    }
+                    matches.add(searchResp)
                 }
 
                 if (matches.isNotEmpty()) {
-                    HomePageList(title, matches, isHorizontalLayout = false)
+                    HomePageList(title, matches)
                 } else {
                     null
                 }
@@ -136,13 +132,10 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        return if (homePages.isNotEmpty()) HomePageResponse(homePages) else null
+        return if (homePages.isNotEmpty()) newHomePageResponse(homePages, hasNext = false) else null
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        // Karena situs tidak memiliki fitur pencarian API sederhana yang tidak dilindungi signature,
-        // kita cari dengan mem-fetch kategori utama (football, basketball, others)
-        // dan memfilter pertandingan yang nama tim atau liganya cocok dengan kueri.
         val categories = listOf(
             "$mainUrl/id/football.html",
             "$mainUrl/id/basketball.html",
@@ -170,22 +163,18 @@ class RBTVPlusProvider : MainAPI() {
                         
                         val id = m.optString("id")
                         val streamId = m.optString("stream_id")
-                        val live = m.optBoolean("live", false)
                         
                         val matchTitle = "$homeName vs $awayName ($leagueName)"
                         val detailUrl = "$mainUrl/id/match/detail.html?id=$id&stream_id=$streamId"
 
-                        results.add(
-                            LiveSearchResponse(
-                                name = matchTitle,
-                                url = detailUrl,
-                                apiName = this.name,
-                                type = TvType.Live,
-                                posterUrl = null,
-                                lang = "id",
-                                showStatus = if (live) ShowStatus.Ongoing else ShowStatus.Completed
-                            )
-                        )
+                        val searchResp = newLiveSearchResponse(
+                            matchTitle,
+                            detailUrl,
+                            TvType.Live
+                        ) {
+                            this.posterUrl = null
+                        }
+                        results.add(searchResp)
                     }
                 }
             } catch (e: Exception) {
@@ -196,7 +185,6 @@ class RBTVPlusProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        // Ambal stream_id langsung dari parameter URL jika ada untuk efisiensi
         val uri = URI(url)
         val queryMap = uri.query?.split("&")?.associate {
             val parts = it.split("=")
@@ -209,7 +197,6 @@ class RBTVPlusProvider : MainAPI() {
         var matchTitle = "RBTV+ Live Match"
         
         try {
-            // Jika streamId kosong, coba fetch halaman detail untuk mendapatkan Nuxt state-nya
             val html = app.get(url).text
             val state = parseNuxtState(html)
             if (state != null) {
@@ -237,28 +224,27 @@ class RBTVPlusProvider : MainAPI() {
         }
 
         if (streamId.isNullOrEmpty() && !matchId.isNullOrEmpty()) {
-            streamId = matchId // Fallback jika ID stream sama dengan ID match
+            streamId = matchId
         }
 
         val playerUrl = "https://roastoup.com/4/$streamId"
 
-        return LiveLoadResponse(
-            name = matchTitle,
-            url = url,
-            apiName = this.name,
-            type = TvType.Live,
-            dataUrl = playerUrl, // Kirimkan playerUrl ke loadLinks
-            posterUrl = null,
-            plot = "Tonton siaran langsung pertandingan olahraga di RBTV+"
-        )
+        return newLiveStreamLoadResponse(
+            matchTitle,
+            url,
+            playerUrl
+        ) {
+            this.posterUrl = null
+            this.plot = "Tonton siaran langsung pertandingan olahraga di RBTV+"
+        }
     }
 
     override suspend fun loadLinks(
         data: String,
-        isDataJob: Boolean,
+        isCasting: Boolean,
+        subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        // Data berisi URL player roastoup: https://roastoup.com/4/streamId
         if (!data.startsWith("http")) return false
         
         try {
@@ -309,15 +295,18 @@ class RBTVPlusProvider : MainAPI() {
                 val streamUrl = json.optString("location")
                 
                 if (streamUrl.isNotEmpty() && streamUrl.startsWith("http")) {
-                    callback(
-                        ExtractorLink(
-                            source = "RBTV+ Stream",
+                    val isM3u8 = streamUrl.contains(".m3u8", ignoreCase = true) || streamUrl.contains("m3u8", ignoreCase = true)
+                    val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                    callback.invoke(
+                        newExtractorLink(
                             name = "RBTV+ Live Player",
+                            source = "RBTV+ Stream",
                             url = streamUrl,
-                            referer = "https://roastoup.com/",
-                            quality = Qualities.Unknown.value,
-                            isM3u8 = streamUrl.contains(".m3u8")
-                        )
+                            type = linkType
+                        ) {
+                            this.quality = Qualities.Unknown.value
+                            this.headers = mapOf("Referer" to "https://roastoup.com/")
+                        }
                     )
                     return true
                 }
