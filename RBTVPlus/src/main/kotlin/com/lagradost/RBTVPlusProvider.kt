@@ -241,6 +241,7 @@ class RBTVPlusProvider : MainAPI() {
                                 var leagueName: String? = null
                                 var homeName: String? = null
                                 var awayName: String? = null
+                                var matchStatus: Long = 0
 
                                 while (mParser.idx < mData.size) {
                                     val mb = mData[mParser.idx].toInt() and 0xFF
@@ -250,6 +251,8 @@ class RBTVPlusProvider : MainAPI() {
 
                                     if (mtag == 1 && mwire == 0) {
                                         matchId = mParser.readVarint()
+                                    } else if (mtag == 4 && mwire == 0) {
+                                        matchStatus = mParser.readVarint()
                                     } else if (mtag == 2 && mwire == 2) {
                                         val sLen = mParser.readVarint().toInt()
                                         if (mParser.idx + sLen <= mData.size) {
@@ -287,16 +290,19 @@ class RBTVPlusProvider : MainAPI() {
                                     rawTitle ?: (leagueName ?: "RBTV+ Live Match")
                                 }
 
-                                matches.add(
-                                    LiveMatchInfo(
-                                        matchId = matchId,
-                                        streamId = finalStreamId,
-                                        matchTitle = finalTitle,
-                                        homeName = homeName,
-                                        awayName = awayName,
-                                        leagueName = leagueName
+                                val isLive = (matchStatus in 100..1600) || matchStatus == 9000L || matchStatus == 1L
+                                if (isLive) {
+                                    matches.add(
+                                        LiveMatchInfo(
+                                            matchId = matchId,
+                                            streamId = finalStreamId,
+                                            matchTitle = finalTitle,
+                                            homeName = homeName,
+                                            awayName = awayName,
+                                            leagueName = leagueName
+                                        )
                                     )
-                                )
+                                }
                             }
                         } else {
                             subParser.skipField(subWire)
