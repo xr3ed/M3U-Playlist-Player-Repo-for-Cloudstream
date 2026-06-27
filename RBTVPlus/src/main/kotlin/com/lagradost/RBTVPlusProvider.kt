@@ -26,6 +26,12 @@ data class LiveMatchInfo(
     val matchStatus: Long = 0
 )
 
+data class StreamItem(
+    val id: Long,
+    val siteType: Int,
+    val name: String?
+)
+
 // ProtoParser ringan untuk membaca Protobuf biner
 class ProtoParser(val data: ByteArray) {
     var idx = 0
@@ -804,179 +810,208 @@ class RBTVPlusProvider : MainAPI() {
                 }
             }
 
-            var realStreamId = streamId
+            val streams = ArrayList<StreamItem>()
             if (detailPayload != null) {
                 val dp2 = ProtoParser(detailPayload)
-                var firstStreamId: Long = 0
-                var firstSiteType = 2001
-                var foundStream = false
                 while (dp2.idx < detailPayload.size) {
                     val keyVal = dp2.readVarint().toInt()
                     val tag = keyVal shr 3
                     val wire = keyVal and 7
-                    if (tag == 2 && wire == 2) {
-                        val length = dp2.readVarint().toInt()
-                        if (dp2.idx + length <= detailPayload.size) {
-                            val streamBytes = detailPayload.copyOfRange(dp2.idx, dp2.idx + length)
-                            dp2.idx += length
+                    if (tag == 1 && wire == 2) {
+                        val mLen = dp2.readVarint().toInt()
+                        if (dp2.idx + mLen <= detailPayload.size) {
+                            val matchBytes = detailPayload.copyOfRange(dp2.idx, dp2.idx + mLen)
+                            dp2.idx += mLen
+                            
+                            val mp = ProtoParser(matchBytes)
+                            while (mp.idx < matchBytes.size) {
+                                val mKeyVal = mp.readVarint().toInt()
+                                val mtag = mKeyVal shr 3
+                                val mwire = mKeyVal and 7
+                                if (mtag == 2 && mwire == 2) {
+                                    val length = mp.readVarint().toInt()
+                                    if (mp.idx + length <= matchBytes.size) {
+                                        val streamBytes = matchBytes.copyOfRange(mp.idx, mp.idx + length)
+                                        mp.idx += length
 
-                            val sp = ProtoParser(streamBytes)
-                            var sId: Long = 0
-                            var sSiteType = 2001
-                            while (sp.idx < streamBytes.size) {
-                                val skey = sp.readVarint().toInt()
-                                val stag = skey shr 3
-                                val swire = skey and 7
-                                if (stag == 1 && swire == 0) {
-                                    sId = sp.readVarint()
-                                } else if (stag == 9 && swire == 0) {
-                                    sSiteType = sp.readVarint().toInt()
+                                        val sp = ProtoParser(streamBytes)
+                                        var sId: Long = 0
+                                        var sSiteType = 2001
+                                        var sName: String? = null
+                                        while (sp.idx < streamBytes.size) {
+                                            val skey = sp.readVarint().toInt()
+                                            val stag = skey shr 3
+                                            val swire = skey and 7
+                                            if (stag == 1 && swire == 0) {
+                                                sId = sp.readVarint()
+                                            } else if (stag == 9 && swire == 0) {
+                                                sSiteType = sp.readVarint().toInt()
+                                            } else if (stag == 2 && swire == 2) {
+                                                val sLen = sp.readVarint().toInt()
+                                                if (sp.idx + sLen <= streamBytes.size) {
+                                                    sName = String(sp.data, sp.idx, sLen, Charsets.UTF_8)
+                                                    sp.idx += sLen
+                                                }
+                                            } else {
+                                                sp.skipField(swire)
+                                            }
+                                        }
+                                        if (sId != 0L) {
+                                            streams.add(StreamItem(sId, sSiteType, sName))
+                                        }
+                                    }
                                 } else {
-                                    sp.skipField(swire)
+                                    mp.skipField(mwire)
                                 }
-                            }
-                            
-                            if (firstStreamId == 0L && sId != 0L) {
-                                firstStreamId = sId
-                                firstSiteType = sSiteType
-                            }
-                            
-                            if (sId == streamId) {
-                                siteType = sSiteType
-                                foundStream = true
                             }
                         }
                     } else {
                         dp2.skipField(wire)
                     }
                 }
-                
-                if (!foundStream && firstStreamId != 0L) {
-                    realStreamId = firstStreamId
-                    siteType = firstSiteType
-                }
             }
 
-            // 2. Panggil API detail stream
-            val streamParamsJson = """{"matchId":$matchId,"sportType":$sportType,"language":34,"streamId":$realStreamId,"siteType":$siteType,"usls":"rbp","digit":"sith","continent":"AS","country":"ID"}"""
-            val streamMd5 = md5(streamParamsJson)
-            val streamSliceMd5 = streamMd5.substring(0, 6)
-            val streamSfver = "sfver$streamSliceMd5$token"
-            val streamQuery = "streamId=$realStreamId&siteType=$siteType&matchId=$matchId&sportType=$sportType&language=34&usls=rbp&digit=sith&continent=AS&country=ID"
-            val streamUrl = "$apiHost/$streamSfver/api/stream/detail?$streamQuery"
-
-            val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
-            if (streamResponse.code != 200) return false
-            
-            var rbSession = streamResponse.headers["rb-session"]
-            val streamBytes = streamResponse.body.bytes()
-
-            // Fallback jika rb-session null, panggil URL error sengaja untuk memicu respons header rb-session
-            if (rbSession.isNullOrEmpty()) {
-                val urlErr = "$apiHost/api/stream/detail?matchId=$matchId&sportType=$sportType&language=34"
-                try {
-                    val errResponse = app.get(urlErr, headers = headers, timeout = 5)
-                    rbSession = errResponse.headers["rb-session"]
-                } catch (e: Exception) {
-                    // ignore
-                }
+            if (streams.isEmpty()) {
+                streams.add(StreamItem(streamId, 2001, null))
             }
 
+            coroutineScope {
+                streams.mapIndexed { index, item ->
+                    async {
+                        try {
+                            val streamParamsJson = """{"matchId":$matchId,"sportType":$sportType,"language":34,"streamId":${item.id},"siteType":${item.siteType},"usls":"rbp","digit":"sith","continent":"AS","country":"ID"}"""
+                            val streamMd5 = md5(streamParamsJson)
+                            val streamSliceMd5 = streamMd5.substring(0, 6)
+                            val streamSfver = "sfver$streamSliceMd5$token"
+                            val streamQuery = "streamId=${item.id}&siteType=${item.siteType}&matchId=$matchId&sportType=$sportType&language=34&usls=rbp&digit=sith&continent=AS&country=ID"
+                            val streamUrl = "$apiHost/$streamSfver/api/stream/detail?$streamQuery"
 
-            // Parse detail stream biner
-            val parser = ProtoParser(streamBytes)
-            var pbResponseData: ByteArray? = null
-            while (parser.idx < streamBytes.size) {
-                val keyVal = parser.readVarint().toInt()
-                val tag = keyVal shr 3
-                val wire = keyVal and 7
-                if (tag == 10 && wire == 2) {
-                    val length = parser.readVarint().toInt()
-                    if (parser.idx + length <= streamBytes.size) {
-                        pbResponseData = streamBytes.copyOfRange(parser.idx, parser.idx + length)
-                        parser.idx += length
+                            val streamResponse = app.get(streamUrl, headers = headers, timeout = 15)
+                            if (streamResponse.code == 200) {
+                                var rbSession = streamResponse.headers["rb-session"]
+                                val streamDetailBytes = streamResponse.body.bytes()
+
+                                // Fallback jika rb-session null
+                                if (rbSession.isNullOrEmpty()) {
+                                    val urlErr = "$apiHost/api/stream/detail?matchId=$matchId&sportType=$sportType&language=34"
+                                    try {
+                                        val errResponse = app.get(urlErr, headers = headers, timeout = 5)
+                                        rbSession = errResponse.headers["rb-session"]
+                                    } catch (e: Exception) {
+                                        // ignore
+                                    }
+                                }
+
+                                // Parse detail stream biner
+                                val parser = ProtoParser(streamDetailBytes)
+                                var pbResponseData: ByteArray? = null
+                                while (parser.idx < streamDetailBytes.size) {
+                                    val keyVal = parser.readVarint().toInt()
+                                    val tag = keyVal shr 3
+                                    val wire = keyVal and 7
+                                    if (tag == 10 && wire == 2) {
+                                        val length = parser.readVarint().toInt()
+                                        if (parser.idx + length <= streamDetailBytes.size) {
+                                            pbResponseData = streamDetailBytes.copyOfRange(parser.idx, parser.idx + length)
+                                            parser.idx += length
+                                        }
+                                        break
+                                    } else {
+                                        parser.skipField(wire)
+                                    }
+                                }
+
+                                if (pbResponseData != null) {
+                                    val parser2 = ProtoParser(pbResponseData)
+                                    var pbStreamData: ByteArray? = null
+                                    while (parser2.idx < pbResponseData.size) {
+                                        val keyVal = parser2.readVarint().toInt()
+                                        val tag = keyVal shr 3
+                                        val wire = keyVal and 7
+                                        if (tag == 2 && wire == 2) {
+                                            val length = parser2.readVarint().toInt()
+                                            if (parser2.idx + length <= pbResponseData.size) {
+                                                pbStreamData = pbResponseData.copyOfRange(parser2.idx, parser2.idx + length)
+                                                parser2.idx += length
+                                            }
+                                            break
+                                        } else {
+                                            parser2.skipField(wire)
+                                        }
+                                    }
+
+                                    if (pbStreamData != null) {
+                                        val parser3 = ProtoParser(pbStreamData)
+                                        var encryptedUrl: String? = null
+                                        while (parser3.idx < pbStreamData.size) {
+                                            val keyVal = parser3.readVarint().toInt()
+                                            val tag = keyVal shr 3
+                                            val wire = keyVal and 7
+                                            if (tag == 4 && wire == 2) {
+                                                val length = parser3.readVarint().toInt()
+                                                if (parser3.idx + length <= pbStreamData.size) {
+                                                    encryptedUrl = String(pbStreamData, parser3.idx, length, Charsets.UTF_8)
+                                                    parser3.idx += length
+                                                }
+                                                break
+                                            } else {
+                                                parser3.skipField(wire)
+                                            }
+                                        }
+
+                                        if (!encryptedUrl.isNullOrEmpty()) {
+                                            val decryptedRaw = rot47(encryptedUrl)
+                                            val decryptedUrl = decryptedRaw.substring(8)
+
+                                            var finalUrl = if (!rbSession.isNullOrEmpty()) {
+                                                val encToken = encryptAesCtr(rbSession)
+                                                val uriParsed = URI(decryptedUrl)
+                                                val origin = "${uriParsed.scheme}://${uriParsed.host}"
+                                                val pathname = uriParsed.path
+                                                val search = uriParsed.query
+                                                "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
+                                            } else {
+                                                decryptedUrl
+                                            }
+
+                                            if (finalUrl.startsWith("http://")) {
+                                                finalUrl = finalUrl.replaceFirst("http://", "https://")
+                                            }
+
+                                            val isM3u8 = finalUrl.contains(".m3u8", ignoreCase = true)
+                                            val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+
+                                            val sourceName = if (!item.name.isNullOrEmpty()) {
+                                                "Source ${index + 1} (${item.name})"
+                                            } else {
+                                                "Source ${index + 1}"
+                                            }
+
+                                            callback.invoke(
+                                                newExtractorLink(
+                                                    name = "RBTV+ Live Player",
+                                                    source = sourceName,
+                                                    url = finalUrl,
+                                                    type = linkType
+                                                ) {
+                                                    this.quality = Qualities.Unknown.value
+                                                    this.headers = mapOf(
+                                                        "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
+                                                        "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
+                                                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
-                    break
-                } else {
-                    parser.skipField(wire)
-                }
+                }.awaitAll()
             }
-            if (pbResponseData == null) return false
-
-            val parser2 = ProtoParser(pbResponseData)
-            var pbStreamData: ByteArray? = null
-            while (parser2.idx < pbResponseData.size) {
-                val keyVal = parser2.readVarint().toInt()
-                val tag = keyVal shr 3
-                val wire = keyVal and 7
-                if (tag == 2 && wire == 2) {
-                    val length = parser2.readVarint().toInt()
-                    if (parser2.idx + length <= pbResponseData.size) {
-                        pbStreamData = pbResponseData.copyOfRange(parser2.idx, parser2.idx + length)
-                        parser2.idx += length
-                    }
-                    break
-                } else {
-                    parser2.skipField(wire)
-                }
-            }
-            if (pbStreamData == null) return false
-
-            val parser3 = ProtoParser(pbStreamData)
-            var encryptedUrl: String? = null
-            while (parser3.idx < pbStreamData.size) {
-                val keyVal = parser3.readVarint().toInt()
-                val tag = keyVal shr 3
-                val wire = keyVal and 7
-                if (tag == 4 && wire == 2) {
-                    val length = parser3.readVarint().toInt()
-                    if (parser3.idx + length <= pbStreamData.size) {
-                        encryptedUrl = String(pbStreamData, parser3.idx, length, Charsets.UTF_8)
-                        parser3.idx += length
-                    }
-                    break
-                } else {
-                    parser3.skipField(wire)
-                }
-            }
-            if (encryptedUrl.isNullOrEmpty()) return false
-
-            val decryptedRaw = rot47(encryptedUrl)
-            val decryptedUrl = decryptedRaw.substring(8)
-
-            var finalUrl = if (!rbSession.isNullOrEmpty()) {
-                val encToken = encryptAesCtr(rbSession)
-                val uriParsed = URI(decryptedUrl)
-                val origin = "${uriParsed.scheme}://${uriParsed.host}"
-                val pathname = uriParsed.path
-                val search = uriParsed.query
-                "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
-            } else {
-                decryptedUrl
-            }
-
-            if (finalUrl.startsWith("http://")) {
-                finalUrl = finalUrl.replaceFirst("http://", "https://")
-            }
-
-            val isM3u8 = finalUrl.contains(".m3u8", ignoreCase = true)
-            val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-
-            callback.invoke(
-                newExtractorLink(
-                    name = "RBTV+ Live Player",
-                    source = "RBTV+ Stream",
-                    url = finalUrl,
-                    type = linkType
-                ) {
-                    this.quality = Qualities.Unknown.value
-                    this.headers = mapOf(
-                        "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
-                        "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
-                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
-                    )
-                }
-            )
             return true
         } catch (e: Exception) {
             e.printStackTrace()

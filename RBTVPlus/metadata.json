@@ -3,6 +3,6 @@
   "displayName": "RBTV+",
   "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
   "author": "Antigravity",
-  "version": 10,
+  "version": 11,
   "tvTypes": ["Live"]
 }
