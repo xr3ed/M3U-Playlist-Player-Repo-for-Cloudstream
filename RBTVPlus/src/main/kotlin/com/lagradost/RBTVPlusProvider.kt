@@ -20,7 +20,8 @@ data class LiveMatchInfo(
     val homeName: String?,
     val awayName: String?,
     val leagueName: String?,
-    val sportType: Int
+    val sportType: Int,
+    val posterUrl: String? = null
 )
 
 // ProtoParser ringan untuk membaca Protobuf biner
@@ -236,6 +237,28 @@ class RBTVPlusProvider : MainAPI() {
         return name
     }
 
+    private fun parseLogoFromTag10(blockData: ByteArray): String? {
+        val parser = ProtoParser(blockData)
+        var logo: String? = null
+        while (parser.idx < blockData.size) {
+            val keyVal = parser.readVarint().toInt()
+            val tag = keyVal shr 3
+            val wire = keyVal and 7
+
+            if (tag == 4 && wire == 2) {
+                val length = parser.readVarint().toInt()
+                if (parser.idx + length <= blockData.size) {
+                    logo = String(blockData, parser.idx, length, Charsets.UTF_8)
+                    parser.idx += length
+                }
+                break
+            } else {
+                parser.skipField(wire)
+            }
+        }
+        return logo
+    }
+
     private fun parseLiveMatches(data: ByteArray, sportType: Int): List<LiveMatchInfo> {
         val parser = ProtoParser(data)
         val matches = ArrayList<LiveMatchInfo>()
@@ -270,6 +293,9 @@ class RBTVPlusProvider : MainAPI() {
                                 var leagueName: String? = null
                                 val teams = ArrayList<String>()
                                 var matchStatus: Long = 0
+                                var matchSportType = sportType
+                                var leagueLogo: String? = null
+                                val teamLogos = ArrayList<String>()
 
                                 while (mParser.idx < mData.size) {
                                     val mKeyVal = mParser.readVarint().toInt()
@@ -279,8 +305,7 @@ class RBTVPlusProvider : MainAPI() {
                                     if (mtag == 1 && mwire == 0) {
                                         matchId = mParser.readVarint()
                                     } else if (mtag == 2 && mwire == 0) {
-                                        // sportType
-                                        mParser.readVarint()
+                                        matchSportType = mParser.readVarint().toInt()
                                     } else if (mtag == 4 && mwire == 0) {
                                         matchStatus = mParser.readVarint()
                                     } else if (mtag == 10 && mwire == 2) { // league
@@ -289,6 +314,7 @@ class RBTVPlusProvider : MainAPI() {
                                             val lData = mData.copyOfRange(mParser.idx, mParser.idx + lLen)
                                             mParser.idx += lLen
                                             leagueName = parseNameFromTag10(lData)
+                                            leagueLogo = parseLogoFromTag10(lData)
                                         }
                                     } else if (mtag == 30 && mwire == 2) { // contender
                                         val cLen = mParser.readVarint().toInt()
@@ -316,6 +342,10 @@ class RBTVPlusProvider : MainAPI() {
                                                         if (tName != null) {
                                                             teams.add(tName)
                                                         }
+                                                        val tLogo = parseLogoFromTag10(tData)
+                                                        if (tLogo != null) {
+                                                            teamLogos.add(tLogo)
+                                                        }
                                                     }
                                                 } else {
                                                     cParser.skipField(cwire)
@@ -336,20 +366,41 @@ class RBTVPlusProvider : MainAPI() {
                                     rawTitle ?: (leagueName ?: "RBTV+ Live Match")
                                 }
 
-                                val isLive = (matchStatus in 100..1600) || matchStatus == 9000L || matchStatus == 1L
-                                if (isLive) {
-                                    matches.add(
-                                        LiveMatchInfo(
-                                            matchId = matchId,
-                                            streamId = finalStreamId,
-                                            matchTitle = finalTitle,
-                                            homeName = homeName,
-                                            awayName = awayName,
-                                            leagueName = leagueName,
-                                            sportType = sportType
-                                        )
-                                    )
+                                val rawPoster = teamLogos.getOrNull(0) ?: leagueLogo
+                                var finalPosterUrl: String? = null
+                                if (rawPoster != null) {
+                                    finalPosterUrl = if (rawPoster.startsWith("//")) {
+                                        "https:$rawPoster"
+                                    } else if (rawPoster.startsWith("/")) {
+                                        "https://logos1.tcore131ybdf.ru$rawPoster"
+                                    } else {
+                                        rawPoster
+                                    }
                                 }
+
+                                if (finalPosterUrl.isNullOrEmpty()) {
+                                    finalPosterUrl = when (matchSportType) {
+                                        1 -> "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&auto=format&fit=crop"
+                                        2 -> "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&auto=format&fit=crop"
+                                        3 -> "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=500&auto=format&fit=crop"
+                                        12 -> "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500&auto=format&fit=crop"
+                                        14 -> "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500&auto=format&fit=crop"
+                                        else -> "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500&auto=format&fit=crop"
+                                    }
+                                }
+
+                                matches.add(
+                                    LiveMatchInfo(
+                                        matchId = matchId,
+                                        streamId = finalStreamId,
+                                        matchTitle = finalTitle,
+                                        homeName = homeName,
+                                        awayName = awayName,
+                                        leagueName = leagueName,
+                                        sportType = matchSportType,
+                                        posterUrl = finalPosterUrl
+                                    )
+                                )
                             }
                         } else {
                             subParser.skipField(subWire)
@@ -371,47 +422,17 @@ class RBTVPlusProvider : MainAPI() {
     ): HomePageResponse? {
         val apiHost = getApiHost()
         
-        val (footballMatches, basketballMatches, tennisMatches, otherMatches) = coroutineScope {
-            val f = async {
-                try {
-                    val bytes = fetchLiveMatchesRaw(apiHost, 1)
-                    if (bytes != null) parseLiveMatches(bytes, 1) else emptyList()
-                } catch (e: Exception) {
-                    emptyList()
-                }
-            }
-            val b = async {
-                try {
-                    val bytes = fetchLiveMatchesRaw(apiHost, 2)
-                    if (bytes != null) parseLiveMatches(bytes, 2) else emptyList()
-                } catch (e: Exception) {
-                    emptyList()
-                }
-            }
-            val t = async {
-                try {
-                    val bytes = fetchLiveMatchesRaw(apiHost, 3)
-                    if (bytes != null) parseLiveMatches(bytes, 3) else emptyList()
-                } catch (e: Exception) {
-                    emptyList()
-                }
-            }
-            val o = async {
-                val deferredList = otherSports.map { sportId ->
-                    async {
-                        try {
-                            val bytes = fetchLiveMatchesRaw(apiHost, sportId)
-                            if (bytes != null) parseLiveMatches(bytes, sportId) else emptyList()
-                        } catch (e: Exception) {
-                            emptyList()
-                        }
-                    }
-                }
-                deferredList.awaitAll().flatten()
-            }
-            
-            listOf(f.await(), b.await(), t.await(), o.await())
+        val allMatches = try {
+            val bytes = fetchLiveMatchesRaw(apiHost, 0)
+            if (bytes != null) parseLiveMatches(bytes, 0) else emptyList()
+        } catch (e: Exception) {
+            emptyList()
         }
+
+        val footballMatches = allMatches.filter { it.sportType == 1 }
+        val basketballMatches = allMatches.filter { it.sportType == 2 }
+        val tennisMatches = allMatches.filter { it.sportType == 3 }
+        val otherMatches = allMatches.filter { it.sportType != 1 && it.sportType != 2 && it.sportType != 3 }
 
         val homePages = ArrayList<HomePageList>()
 
@@ -425,7 +446,7 @@ class RBTVPlusProvider : MainAPI() {
                         detailUrl,
                         TvType.Live
                     ) {
-                        this.posterUrl = null
+                        this.posterUrl = m.posterUrl
                     }
                 }
                 homePages.add(HomePageList(title, searchResps))
@@ -462,20 +483,12 @@ class RBTVPlusProvider : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         val apiHost = getApiHost()
-        val allSports = listOf(1, 2, 3) + otherSports
         
-        val allMatches = coroutineScope {
-            val deferredList = allSports.map { sportId ->
-                async {
-                    try {
-                        val bytes = fetchLiveMatchesRaw(apiHost, sportId)
-                        if (bytes != null) parseLiveMatches(bytes, sportId) else emptyList()
-                    } catch (e: Exception) {
-                        emptyList()
-                    }
-                }
-            }
-            deferredList.awaitAll().flatten()
+        val allMatches = try {
+            val bytes = fetchLiveMatchesRaw(apiHost, 0)
+            if (bytes != null) parseLiveMatches(bytes, 0) else emptyList()
+        } catch (e: Exception) {
+            emptyList()
         }
 
         val results = ArrayList<SearchResponse>()
@@ -493,7 +506,7 @@ class RBTVPlusProvider : MainAPI() {
                     detailUrl,
                     TvType.Live
                 ) {
-                    this.posterUrl = null
+                    this.posterUrl = m.posterUrl
                 }
                 results.add(searchResp)
             }
