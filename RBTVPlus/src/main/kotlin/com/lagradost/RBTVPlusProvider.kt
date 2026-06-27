@@ -67,6 +67,9 @@ class RBTVPlusProvider : MainAPI() {
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
     override val hasMainPage = true
+    override val mainPage = listOf(
+        MainPageData("Live Event", "Live Event")
+    )
 
     private var serverTimeOffset: Long = 0L
 
