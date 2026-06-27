@@ -88,6 +88,26 @@ class RBTVPlusProvider : MainAPI() {
             ?.replace("'", "&apos;")
     }
 
+    private fun wrapText(text: String, maxChars: Int): List<String> {
+        val words = text.split(" ")
+        val lines = ArrayList<String>()
+        var currentLine = ""
+        for (word in words) {
+            if (currentLine.isEmpty()) {
+                currentLine = word
+            } else if (currentLine.length + 1 + word.length <= maxChars) {
+                currentLine += " $word"
+            } else {
+                lines.add(currentLine)
+                currentLine = word
+            }
+        }
+        if (currentLine.isNotEmpty()) {
+            lines.add(currentLine)
+        }
+        return lines.take(2)
+    }
+
     private fun generateDynamicJpegPoster(
         sport: String,
         league: String?,
@@ -123,74 +143,75 @@ class RBTVPlusProvider : MainAPI() {
 
             paint.color = android.graphics.Color.parseColor(accentColor)
             paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 2f
+            paint.strokeWidth = 3f
             canvas.drawRoundRect(25f, 40f, 375f, 560f, 24f, 24f, paint)
 
             // 3. Draw Header (Sport name)
             paint.style = android.graphics.Paint.Style.FILL
             paint.color = android.graphics.Color.parseColor("#a0a5c0")
-            paint.textSize = 14f
+            paint.textSize = 20f
             paint.textAlign = android.graphics.Paint.Align.CENTER
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            canvas.drawText(sport.uppercase(), 200f, 90f, paint)
+            canvas.drawText(sport.uppercase(), 200f, 100f, paint)
 
             // 4. Draw League
             paint.color = android.graphics.Color.parseColor(accentColor)
-            paint.textSize = 18f
+            paint.textSize = 24f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.NORMAL)
             val cleanLeague = league ?: "Tournament"
-            val truncatedLeague = if (cleanLeague.length > 25) cleanLeague.substring(0, 22) + "..." else cleanLeague
-            canvas.drawText(truncatedLeague, 200f, 140f, paint)
+            val truncatedLeague = if (cleanLeague.length > 22) cleanLeague.substring(0, 19) + "..." else cleanLeague
+            canvas.drawText(truncatedLeague, 200f, 160f, paint)
 
             // 5. Draw Team 1 (Split if too long)
             paint.color = android.graphics.Color.WHITE
-            paint.textSize = 24f
+            paint.textSize = 32f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t1 = team1 ?: "Team A"
-            val t1Lines = if (t1.length > 15) listOf(t1.substring(0, 15), t1.substring(15).take(15)) else listOf(t1)
-            var currentY = 220f
+            val t1Lines = wrapText(t1, 14)
+            var currentY = if (t1Lines.size > 1) 220f else 240f
             for (line in t1Lines) {
                 canvas.drawText(line, 200f, currentY, paint)
-                currentY += 30f
+                currentY += 40f
             }
 
             // 6. Draw VS Badge
             paint.color = android.graphics.Color.parseColor(accentColor)
             paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawCircle(200f, 305f, 28f, paint)
+            canvas.drawCircle(200f, 315f, 32f, paint)
             
             paint.color = android.graphics.Color.BLACK
-            paint.textSize = 20f
+            paint.textSize = 24f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            canvas.drawText("VS", 200f, 312f, paint)
+            canvas.drawText("VS", 200f, 323f, paint)
 
             // 7. Draw Team 2 (Split if too long)
             paint.color = android.graphics.Color.WHITE
-            paint.textSize = 24f
+            paint.style = android.graphics.Paint.Style.FILL
+            paint.textSize = 32f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t2 = team2 ?: "Team B"
-            val t2Lines = if (t2.length > 15) listOf(t2.substring(0, 15), t2.substring(15).take(15)) else listOf(t2)
-            currentY = 380f
+            val t2Lines = wrapText(t2, 14)
+            currentY = 385f
             for (line in t2Lines) {
                 canvas.drawText(line, 200f, currentY, paint)
-                currentY += 30f
+                currentY += 40f
             }
 
             // 8. Draw Live Badge
             paint.color = android.graphics.Color.parseColor("#ff5858")
             paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRoundRect(130f, 470f, 270f, 506f, 18f, 18f, paint)
+            canvas.drawRoundRect(110f, 475f, 290f, 515f, 20f, 20f, paint)
 
             paint.color = android.graphics.Color.WHITE
-            paint.textSize = 14f
+            paint.textSize = 18f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            canvas.drawText("LIVE NOW", 200f, 493f, paint)
+            canvas.drawText("LIVE NOW", 200f, 501f, paint)
 
             // 9. Draw Time Subtext
-            paint.color = android.graphics.Color.parseColor("#6d7598")
-            paint.textSize = 14f
+            paint.color = android.graphics.Color.parseColor("#a0a5c0")
+            paint.textSize = 18f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.NORMAL)
-            canvas.drawText(timeStr, 200f, 540f, paint)
+            canvas.drawText(timeStr, 200f, 545f, paint)
 
             // Compress & Encode to Base64 (JPEG format is universally supported by Glide/Coil)
             val baos = java.io.ByteArrayOutputStream()
