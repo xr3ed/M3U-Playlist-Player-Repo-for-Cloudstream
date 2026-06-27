@@ -817,52 +817,36 @@ class RBTVPlusProvider : MainAPI() {
                     val keyVal = dp2.readVarint().toInt()
                     val tag = keyVal shr 3
                     val wire = keyVal and 7
-                    if (tag == 1 && wire == 2) {
-                        val mLen = dp2.readVarint().toInt()
-                        if (dp2.idx + mLen <= detailPayload.size) {
-                            val matchBytes = detailPayload.copyOfRange(dp2.idx, dp2.idx + mLen)
-                            dp2.idx += mLen
-                            
-                            val mp = ProtoParser(matchBytes)
-                            while (mp.idx < matchBytes.size) {
-                                val mKeyVal = mp.readVarint().toInt()
-                                val mtag = mKeyVal shr 3
-                                val mwire = mKeyVal and 7
-                                if (mtag == 2 && mwire == 2) {
-                                    val length = mp.readVarint().toInt()
-                                    if (mp.idx + length <= matchBytes.size) {
-                                        val streamBytes = matchBytes.copyOfRange(mp.idx, mp.idx + length)
-                                        mp.idx += length
+                    if (tag == 2 && wire == 2) {
+                        val length = dp2.readVarint().toInt()
+                        if (dp2.idx + length <= detailPayload.size) {
+                            val streamBytes = detailPayload.copyOfRange(dp2.idx, dp2.idx + length)
+                            dp2.idx += length
 
-                                        val sp = ProtoParser(streamBytes)
-                                        var sId: Long = 0
-                                        var sSiteType = 2001
-                                        var sName: String? = null
-                                        while (sp.idx < streamBytes.size) {
-                                            val skey = sp.readVarint().toInt()
-                                            val stag = skey shr 3
-                                            val swire = skey and 7
-                                            if (stag == 1 && swire == 0) {
-                                                sId = sp.readVarint()
-                                            } else if (stag == 9 && swire == 0) {
-                                                sSiteType = sp.readVarint().toInt()
-                                            } else if (stag == 2 && swire == 2) {
-                                                val sLen = sp.readVarint().toInt()
-                                                if (sp.idx + sLen <= streamBytes.size) {
-                                                    sName = String(sp.data, sp.idx, sLen, Charsets.UTF_8)
-                                                    sp.idx += sLen
-                                                }
-                                            } else {
-                                                sp.skipField(swire)
-                                            }
-                                        }
-                                        if (sId != 0L) {
-                                            streams.add(StreamItem(sId, sSiteType, sName))
-                                        }
+                            val sp = ProtoParser(streamBytes)
+                            var sId: Long = 0
+                            var sSiteType = 2001
+                            var sName: String? = null
+                            while (sp.idx < streamBytes.size) {
+                                val skey = sp.readVarint().toInt()
+                                val stag = skey shr 3
+                                val swire = skey and 7
+                                if (stag == 1 && swire == 0) {
+                                    sId = sp.readVarint()
+                                } else if (stag == 9 && swire == 0) {
+                                    sSiteType = sp.readVarint().toInt()
+                                } else if (stag == 3 && swire == 2) {
+                                    val sLen = sp.readVarint().toInt()
+                                    if (sp.idx + sLen <= streamBytes.size) {
+                                        sName = String(sp.data, sp.idx, sLen, Charsets.UTF_8)
+                                        sp.idx += sLen
                                     }
                                 } else {
-                                    mp.skipField(mwire)
+                                    sp.skipField(swire)
                                 }
+                            }
+                            if (sId != 0L) {
+                                streams.add(StreamItem(sId, sSiteType, sName))
                             }
                         }
                     } else {
