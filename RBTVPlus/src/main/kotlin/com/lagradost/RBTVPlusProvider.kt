@@ -73,6 +73,12 @@ class RBTVPlusProvider : MainAPI() {
 
     private var serverTimeOffset: Long = 0L
 
+    private val ongoingStatuses = setOf(
+        1L, 100L, 101L, 102L, 103L, 104L, 105L,
+        200L, 201L, 202L, 203L, 204L, 211L, 212L, 213L, 214L,
+        300L, 400L, 600L, 700L, 800L, 900L, 1000L, 1100L, 1200L, 1300L, 1400L, 1500L, 1600L, 9000L
+    )
+
     private fun getServerTimeFromHeaders(headers: okhttp3.Headers?): Long? {
         val dateHeader = headers?.get("Date") ?: return null
         return try {
@@ -117,7 +123,8 @@ class RBTVPlusProvider : MainAPI() {
         team1: String?,
         team2: String?,
         timeStr: String,
-        sportType: Int
+        sportType: Int,
+        isLive: Boolean
     ): String {
         return try {
             val width = 400
@@ -200,15 +207,17 @@ class RBTVPlusProvider : MainAPI() {
                 currentY += 45f
             }
 
-            // 8. Draw Live Badge
-            paint.color = android.graphics.Color.parseColor("#ff5858")
+            // 8. Draw Status Badge
+            val badgeColor = if (isLive) "#ff5858" else "#3a7bd5"
+            val badgeText = if (isLive) "LIVE NOW" else "UPCOMING"
+            paint.color = android.graphics.Color.parseColor(badgeColor)
             paint.style = android.graphics.Paint.Style.FILL
             canvas.drawRoundRect(100f, 475f, 300f, 520f, 22f, 22f, paint)
 
             paint.color = android.graphics.Color.WHITE
             paint.textSize = 24f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            canvas.drawText("LIVE NOW", 200f, 506f, paint)
+            canvas.drawText(badgeText, 200f, 506f, paint)
 
             // 9. Draw Time Subtext
             paint.color = android.graphics.Color.parseColor("#a0a5c0")
@@ -556,13 +565,18 @@ class RBTVPlusProvider : MainAPI() {
                                  val timeSdf = java.text.SimpleDateFormat("dd MMM, HH:mm 'WIB'", java.util.Locale("id", "ID"))
                                  timeSdf.timeZone = java.util.TimeZone.getTimeZone("GMT+7")
                                  val timeStr = timeSdf.format(java.util.Date(matchTime))
+                                 
+                                 val now = System.currentTimeMillis() + serverTimeOffset
+                                 val isLive = (matchStatus in ongoingStatuses) || (now >= matchTime && now <= matchTime + 150 * 60 * 1000)
+                                 
                                  val finalPosterUrl = generateDynamicJpegPoster(
                                      sport = sportName,
                                      league = leagueName,
                                      team1 = homeName,
                                      team2 = awayName,
                                      timeStr = timeStr,
-                                     sportType = matchSportType
+                                     sportType = matchSportType,
+                                     isLive = isLive
                                  )
 
                                 matches.add(
@@ -617,17 +631,11 @@ class RBTVPlusProvider : MainAPI() {
         val allMatches = fetchAllLiveMatches(apiHost)
 
         val now = System.currentTimeMillis() + serverTimeOffset
-        val ongoingStatuses = setOf(
-            1L, 100L, 101L, 102L, 103L, 104L, 105L,
-            200L, 201L, 202L, 203L, 204L, 211L, 212L, 213L, 214L,
-            300L, 400L, 600L, 700L, 800L, 900L, 1000L, 1100L, 1200L, 1300L, 1400L, 1500L, 1600L, 9000L
-        )
-
         // Filter 100% live matches
         val liveMatches = allMatches.filter { m ->
             val isOngoingStatus = m.matchStatus in ongoingStatuses
             val isUpcomingOrOmitted = m.matchStatus == 0L || m.matchStatus == 9L
-            val isTimeActive = now >= (m.matchTime - 15 * 60 * 1000) && now <= (m.matchTime + 5 * 60 * 60 * 1000)
+            val isTimeActive = now >= (m.matchTime - 15 * 60 * 1000) && now <= (m.matchTime + 150 * 60 * 1000)
             
             (isOngoingStatus || (isUpcomingOrOmitted && isTimeActive)) && m.matchStatus < 10000L
         }
