@@ -68,6 +68,18 @@ class RBTVPlusProvider : MainAPI() {
     override var lang = "id"
     override val hasMainPage = true
 
+    private var serverTimeOffset: Long = 0L
+
+    private fun getServerTimeFromHeaders(headers: okhttp3.Headers?): Long? {
+        val dateHeader = headers?.get("Date") ?: return null
+        return try {
+            val sdf = java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", java.util.Locale.US)
+            sdf.parse(dateHeader)?.time
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private val sportTypes = listOf(1, 2, 3, 4, 6, 7, 8, 10, 12, 13, 14, 15, 16, 90)
     private val sportNames = mapOf(
         1 to "Sepak Bola",
@@ -208,6 +220,10 @@ class RBTVPlusProvider : MainAPI() {
         try {
             val response = app.get(url, headers = headers, timeout = 15)
             if (response.code == 200) {
+                val serverTime = getServerTimeFromHeaders(response.headers)
+                if (serverTime != null) {
+                    serverTimeOffset = serverTime - System.currentTimeMillis()
+                }
                 return response.body.bytes()
             }
         } catch (e: Exception) {
@@ -470,14 +486,20 @@ class RBTVPlusProvider : MainAPI() {
         val apiHost = getApiHost()
         val allMatches = fetchAllLiveMatches(apiHost)
 
-        val now = System.currentTimeMillis()
-        // Filter only matches that are currently live or starting within 15 minutes
-        // And matches that started less than 6 hours ago
-        // And matches that have not finished (status is not 10000)
+        val now = System.currentTimeMillis() + serverTimeOffset
+        val ongoingStatuses = setOf(
+            1L, 100L, 101L, 102L, 103L, 104L, 105L,
+            200L, 201L, 202L, 203L, 204L, 211L, 212L, 213L, 214L,
+            300L, 400L, 600L, 700L, 800L, 900L, 1000L, 1100L, 1200L, 1300L, 1400L, 1500L, 1600L, 9000L
+        )
+
+        // Filter 100% live matches
         val liveMatches = allMatches.filter { m ->
-            now >= (m.matchTime - 15 * 60 * 1000) && 
-            now <= (m.matchTime + 6 * 60 * 60 * 1000) &&
-            m.matchStatus != 10000L
+            val isOngoingStatus = m.matchStatus in ongoingStatuses
+            val isUpcomingOrOmitted = m.matchStatus == 0L || m.matchStatus == 9L
+            val isTimeActive = now >= (m.matchTime - 15 * 60 * 1000) && now <= (m.matchTime + 5 * 60 * 60 * 1000)
+            
+            (isOngoingStatus || (isUpcomingOrOmitted && isTimeActive)) && m.matchStatus < 10000L
         }
 
         val homePages = ArrayList<HomePageList>()
