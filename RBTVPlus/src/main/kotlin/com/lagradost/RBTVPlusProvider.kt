@@ -66,7 +66,23 @@ class RBTVPlusProvider : MainAPI() {
     override var lang = "id"
     override val hasMainPage = true
 
-    private val otherSports = listOf(4, 6, 7, 8, 10, 12, 13, 14, 15, 16, 90)
+    private val sportTypes = listOf(1, 2, 3, 4, 6, 7, 8, 10, 12, 13, 14, 15, 16, 90)
+    private val sportNames = mapOf(
+        1 to "Sepak Bola",
+        2 to "Basket",
+        3 to "Tenis",
+        4 to "Bisbol",
+        6 to "Kriket",
+        7 to "Motorsport",
+        8 to "Rugby",
+        10 to "Aussie Rules",
+        12 to "Bulutangkis",
+        13 to "Bola Voli",
+        14 to "Fighting",
+        15 to "Balap Sepeda",
+        16 to "Bola Tangan",
+        90 to "Golf"
+    )
 
     private fun md5(input: String): String {
         val md = MessageDigest.getInstance("MD5")
@@ -372,7 +388,7 @@ class RBTVPlusProvider : MainAPI() {
                                     finalPosterUrl = if (rawPoster.startsWith("//")) {
                                         "https:$rawPoster"
                                     } else if (rawPoster.startsWith("/")) {
-                                        "https://logos1.tcore131ybdf.ru$rawPoster"
+                                        "https://logos1.tcrbg61levl.cfd$rawPoster"
                                     } else {
                                         rawPoster
                                     }
@@ -383,8 +399,17 @@ class RBTVPlusProvider : MainAPI() {
                                         1 -> "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&auto=format&fit=crop"
                                         2 -> "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&auto=format&fit=crop"
                                         3 -> "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=500&auto=format&fit=crop"
+                                        4 -> "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=500&auto=format&fit=crop"
+                                        6 -> "https://images.unsplash.com/photo-1531415080290-bc9b85b6bcbe?w=500&auto=format&fit=crop"
+                                        7 -> "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=500&auto=format&fit=crop"
+                                        8 -> "https://images.unsplash.com/photo-1511186716090-f5a1b2448bae?w=500&auto=format&fit=crop"
+                                        10 -> "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500&auto=format&fit=crop"
                                         12 -> "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500&auto=format&fit=crop"
+                                        13 -> "https://images.unsplash.com/photo-1592656094267-764a451590c5?w=500&auto=format&fit=crop"
                                         14 -> "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500&auto=format&fit=crop"
+                                        15 -> "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=500&auto=format&fit=crop"
+                                        16 -> "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500&auto=format&fit=crop"
+                                        90 -> "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=500&auto=format&fit=crop"
                                         else -> "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500&auto=format&fit=crop"
                                     }
                                 }
@@ -416,23 +441,27 @@ class RBTVPlusProvider : MainAPI() {
     }
 
 
+    private suspend fun fetchAllLiveMatches(apiHost: String): List<LiveMatchInfo> {
+        return coroutineScope {
+            sportTypes.map { sportType ->
+                async {
+                    try {
+                        val bytes = fetchLiveMatchesRaw(apiHost, sportType)
+                        if (bytes != null) parseLiveMatches(bytes, sportType) else emptyList()
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                }
+            }.awaitAll().flatten().distinctBy { it.matchId }
+        }
+    }
+
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
         val apiHost = getApiHost()
-        
-        val allMatches = try {
-            val bytes = fetchLiveMatchesRaw(apiHost, 0)
-            if (bytes != null) parseLiveMatches(bytes, 0) else emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
-
-        val footballMatches = allMatches.filter { it.sportType == 1 }
-        val basketballMatches = allMatches.filter { it.sportType == 2 }
-        val tennisMatches = allMatches.filter { it.sportType == 3 }
-        val otherMatches = allMatches.filter { it.sportType != 1 && it.sportType != 2 && it.sportType != 3 }
+        val allMatches = fetchAllLiveMatches(apiHost)
 
         val homePages = ArrayList<HomePageList>()
 
@@ -453,9 +482,14 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        addCategory("Sepakbola", footballMatches)
-        addCategory("Basket", basketballMatches)
-        addCategory("Tenis", tennisMatches)
+        // Loop over the registered categories
+        for ((sportType, catName) in sportNames) {
+            val matches = allMatches.filter { it.sportType == sportType }
+            addCategory(catName, matches)
+        }
+
+        // Check if there are other matches with sportType not in our mapping
+        val otherMatches = allMatches.filter { it.sportType !in sportNames.keys }
         addCategory("Olahraga Lainnya", otherMatches)
 
         return if (homePages.isNotEmpty()) {
@@ -483,13 +517,7 @@ class RBTVPlusProvider : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse> {
         val apiHost = getApiHost()
-        
-        val allMatches = try {
-            val bytes = fetchLiveMatchesRaw(apiHost, 0)
-            if (bytes != null) parseLiveMatches(bytes, 0) else emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
+        val allMatches = fetchAllLiveMatches(apiHost)
 
         val results = ArrayList<SearchResponse>()
         for (m in allMatches) {
