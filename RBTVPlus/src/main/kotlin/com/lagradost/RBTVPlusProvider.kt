@@ -648,11 +648,9 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        val footballMatches = liveMatches.filter { it.sportType == 1 }
-        val otherMatches = liveMatches.filter { it.sportType != 1 }
-
-        addCategory("Sepak Bola", footballMatches)
-        addCategory("Live Event", otherMatches)
+        // Sort matches: Sepak Bola (sportType == 1) first, all other sports after
+        val sortedLiveMatches = liveMatches.sortedWith(compareBy { if (it.sportType == 1) 0 else 1 })
+        addCategory("Live Event", sortedLiveMatches)
 
         return if (homePages.isNotEmpty()) {
             newHomePageResponse(homePages, hasNext = false)
