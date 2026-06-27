@@ -80,6 +80,91 @@ class RBTVPlusProvider : MainAPI() {
         }
     }
 
+    private fun cleanText(text: String?): String? {
+        return text?.replace("&", "&amp;")
+            ?.replace("<", "&lt;")
+            ?.replace(">", "&gt;")
+            ?.replace("\"", "&quot;")
+            ?.replace("'", "&apos;")
+    }
+
+    private fun generateDynamicSvgPoster(
+        sport: String,
+        league: String?,
+        team1: String?,
+        team2: String?,
+        timeStr: String,
+        sportType: Int
+    ): String {
+        val sportLabel = cleanText(sport.uppercase()) ?: ""
+        val leagueLabel = cleanText(league ?: "Tournament") ?: ""
+        val t1 = cleanText(team1 ?: "Team A") ?: ""
+        val t2 = cleanText(team2 ?: "Team B") ?: ""
+
+        // Tema warna dinamis berdasarkan sportType
+        val (themeStart, themeEnd, accentColor) = when (sportType) {
+            1 -> Triple("#11998e", "#38ef7d", "#38ef7d") // Football (Green)
+            2 -> Triple("#ff9900", "#ff5b00", "#ff9900") // Basketball (Orange)
+            3, 12 -> Triple("#d4fc79", "#96e6a1", "#d4fc79") // Tennis / Badminton (Lime)
+            14 -> Triple("#f857a6", "#ff5858", "#ff5858") // Fighting (Crimson)
+            7, 15 -> Triple("#3a7bd5", "#3a6073", "#3a7bd5") // Motorsport / Cycling (Blue)
+            else -> Triple("#7f00ff", "#ff007f", "#00f2fe") // Default (Purple/Neon Cyan)
+        }
+
+        // Sesuaikan ukuran font nama tim agar tidak terpotong
+        val t1FontSize = if (t1.length > 20) "13" else if (t1.length > 15) "15" else "19"
+        val t2FontSize = if (t2.length > 20) "13" else if (t2.length > 15) "15" else "19"
+
+        val svg = """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="100%" height="100%">
+            <defs>
+                <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0f0c1b"/>
+                    <stop offset="50%" stop-color="#15102a"/>
+                    <stop offset="100%" stop-color="#06050a"/>
+                </linearGradient>
+                <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="$accentColor"/>
+                    <stop offset="100%" stop-color="#4facfe"/>
+                </linearGradient>
+                <linearGradient id="liveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="$themeStart"/>
+                    <stop offset="100%" stop-color="$themeEnd"/>
+                </linearGradient>
+                <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.07"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+                </linearGradient>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="8" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+            </defs>
+            <rect width="400" height="600" fill="url(#bgGrad)"/>
+            <circle cx="200" cy="300" r="180" fill="#7f00ff" opacity="0.15" filter="url(#glow)"/>
+            <circle cx="50" cy="100" r="100" fill="#00f2fe" opacity="0.1" filter="url(#glow)"/>
+            <circle cx="350" cy="500" r="120" fill="#ff007f" opacity="0.1" filter="url(#glow)"/>
+            <rect x="25" y="40" width="350" height="520" rx="24" fill="url(#cardGrad)" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.15"/>
+            <rect x="110" y="70" width="180" height="24" rx="12" fill="#ffffff" fill-opacity="0.08"/>
+            <text x="200" y="86" font-family="sans-serif" font-size="9" font-weight="900" fill="#a0a5c0" letter-spacing="2" text-anchor="middle">$sportLabel</text>
+            <text x="200" y="135" font-family="sans-serif" font-size="13" font-weight="600" fill="#00f2fe" text-anchor="middle" opacity="0.9">$leagueLabel</text>
+            <text x="200" y="225" font-family="sans-serif" font-size="$t1FontSize" font-weight="800" fill="#ffffff" text-anchor="middle">$t1</text>
+            <circle cx="200" cy="285" r="28" fill="#15102a" stroke="url(#accentGrad)" stroke-width="2" filter="url(#glow)"/>
+            <text x="200" y="292" font-family="sans-serif" font-size="18" font-weight="900" fill="url(#accentGrad)" text-anchor="middle">VS</text>
+            <text x="200" y="365" font-family="sans-serif" font-size="$t2FontSize" font-weight="800" fill="#ffffff" text-anchor="middle">$t2</text>
+            <g transform="translate(130, 440)">
+                <rect width="140" height="36" rx="18" fill="url(#liveGrad)" filter="url(#glow)"/>
+                <circle cx="28" cy="18" r="5" fill="#ffffff"/>
+                <text x="80" y="23" font-family="sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">LIVE NOW</text>
+            </g>
+            <text x="200" y="515" font-family="sans-serif" font-size="11" font-weight="500" fill="#6d7598" text-anchor="middle">$timeStr</text>
+        </svg>
+        """.trimIndent()
+
+        val base64 = android.util.Base64.encodeToString(svg.toByteArray(), android.util.Base64.NO_WRAP)
+        return "data:image/svg+xml;base64,$base64"
+    }
+
     private val sportTypes = listOf(1, 2, 3, 4, 6, 7, 8, 10, 12, 13, 14, 15, 16, 90)
     private val sportNames = mapOf(
         1 to "Sepak Bola",
@@ -398,42 +483,24 @@ class RBTVPlusProvider : MainAPI() {
                                 val homeName = teams.getOrNull(0)
                                 val awayName = teams.getOrNull(1)
                                 val finalTitle = if (homeName != null && awayName != null) {
-                                    "$homeName vs $awayName" + (if (leagueName != null) " ($leagueName)" else "")
+                                    "$homeName vs $awayName" + (if (leagueName != null) " (${cleanText(leagueName)})" else "")
                                 } else {
-                                    rawTitle ?: (leagueName ?: "RBTV+ Live Match")
+                                    cleanText(rawTitle) ?: (cleanText(leagueName) ?: "RBTV+ Live Match")
                                 }
 
-                                val rawPoster = teamLogos.getOrNull(0) ?: leagueLogo
-                                var finalPosterUrl: String? = null
-                                if (rawPoster != null) {
-                                    finalPosterUrl = if (rawPoster.startsWith("//")) {
-                                        "https:$rawPoster"
-                                    } else if (rawPoster.startsWith("/")) {
-                                        "https://logos1.tcrbg61levl.cfd$rawPoster"
-                                    } else {
-                                        rawPoster
-                                    }
-                                }
-
-                                if (finalPosterUrl.isNullOrEmpty()) {
-                                    finalPosterUrl = when (matchSportType) {
-                                        1 -> "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=500&auto=format&fit=crop"
-                                        2 -> "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&auto=format&fit=crop"
-                                        3 -> "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=500&auto=format&fit=crop"
-                                        4 -> "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=500&auto=format&fit=crop"
-                                        6 -> "https://images.unsplash.com/photo-1531415080290-bc9b85b6bcbe?w=500&auto=format&fit=crop"
-                                        7 -> "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=500&auto=format&fit=crop"
-                                        8 -> "https://images.unsplash.com/photo-1511186716090-f5a1b2448bae?w=500&auto=format&fit=crop"
-                                        10 -> "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500&auto=format&fit=crop"
-                                        12 -> "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=500&auto=format&fit=crop"
-                                        13 -> "https://images.unsplash.com/photo-1592656094267-764a451590c5?w=500&auto=format&fit=crop"
-                                        14 -> "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500&auto=format&fit=crop"
-                                        15 -> "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=500&auto=format&fit=crop"
-                                        16 -> "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500&auto=format&fit=crop"
-                                        90 -> "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=500&auto=format&fit=crop"
-                                        else -> "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500&auto=format&fit=crop"
-                                    }
-                                }
+                                 // Generate dynamic SVG poster for the match
+                                 val sportName = sportNames[matchSportType] ?: "Olahraga"
+                                 val timeSdf = java.text.SimpleDateFormat("dd MMM, HH:mm 'WIB'", java.util.Locale("id", "ID"))
+                                 timeSdf.timeZone = java.util.TimeZone.getTimeZone("GMT+7")
+                                 val timeStr = timeSdf.format(java.util.Date(matchTime))
+                                 val finalPosterUrl = generateDynamicSvgPoster(
+                                     sport = sportName,
+                                     league = cleanText(leagueName),
+                                     team1 = homeName,
+                                     team2 = awayName,
+                                     timeStr = timeStr,
+                                     sportType = matchSportType
+                                 )
 
                                 matches.add(
                                     LiveMatchInfo(
@@ -521,15 +588,11 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        // Loop over the registered categories
-        for ((sportType, catName) in sportNames) {
-            val matches = liveMatches.filter { it.sportType == sportType }
-            addCategory(catName, matches)
-        }
+        val footballMatches = liveMatches.filter { it.sportType == 1 }
+        val otherMatches = liveMatches.filter { it.sportType != 1 }
 
-        // Check if there are other matches with sportType not in our mapping
-        val otherMatches = liveMatches.filter { it.sportType !in sportNames.keys }
-        addCategory("Olahraga Lainnya", otherMatches)
+        addCategory("Sepak Bola", footballMatches)
+        addCategory("Live Event", otherMatches)
 
         return if (homePages.isNotEmpty()) {
             newHomePageResponse(homePages, hasNext = false)
