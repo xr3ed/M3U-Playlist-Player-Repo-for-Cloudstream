@@ -971,14 +971,23 @@ class RBTVPlusProvider : MainAPI() {
                                                 "Source ${index + 1}"
                                             }
 
+                                            val qualityVal = when {
+                                                item.name?.contains("1080", ignoreCase = true) == true -> Qualities.P1080.value
+                                                item.name?.contains("720", ignoreCase = true) == true -> Qualities.P720.value
+                                                item.name?.contains("480", ignoreCase = true) == true -> Qualities.P480.value
+                                                item.name?.contains("360", ignoreCase = true) == true -> Qualities.P360.value
+                                                item.name?.contains("HD", ignoreCase = true) == true -> Qualities.P720.value
+                                                else -> Qualities.Unknown.value
+                                            }
+
                                             callback.invoke(
                                                 newExtractorLink(
-                                                    name = "RBTV+ Live Player",
-                                                    source = sourceName,
+                                                    name = sourceName,
+                                                    source = "RBTV+",
                                                     url = finalUrl,
                                                     type = linkType
                                                 ) {
-                                                    this.quality = Qualities.Unknown.value
+                                                    this.quality = qualityVal
                                                     this.headers = mapOf(
                                                         "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
                                                         "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
