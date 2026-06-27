@@ -21,7 +21,9 @@ data class LiveMatchInfo(
     val awayName: String?,
     val leagueName: String?,
     val sportType: Int,
-    val posterUrl: String? = null
+    val posterUrl: String? = null,
+    val matchTime: Long = 0,
+    val matchStatus: Long = 0
 )
 
 // ProtoParser ringan untuk membaca Protobuf biner
@@ -309,6 +311,7 @@ class RBTVPlusProvider : MainAPI() {
                                 var leagueName: String? = null
                                 val teams = ArrayList<String>()
                                 var matchStatus: Long = 0
+                                var matchTime: Long = 0
                                 var matchSportType = sportType
                                 var leagueLogo: String? = null
                                 val teamLogos = ArrayList<String>()
@@ -322,6 +325,8 @@ class RBTVPlusProvider : MainAPI() {
                                         matchId = mParser.readVarint()
                                     } else if (mtag == 2 && mwire == 0) {
                                         matchSportType = mParser.readVarint().toInt()
+                                    } else if (mtag == 3 && mwire == 0) {
+                                        matchTime = mParser.readVarint()
                                     } else if (mtag == 4 && mwire == 0) {
                                         matchStatus = mParser.readVarint()
                                     } else if (mtag == 10 && mwire == 2) { // league
@@ -423,7 +428,9 @@ class RBTVPlusProvider : MainAPI() {
                                         awayName = awayName,
                                         leagueName = leagueName,
                                         sportType = matchSportType,
-                                        posterUrl = finalPosterUrl
+                                        posterUrl = finalPosterUrl,
+                                        matchTime = matchTime,
+                                        matchStatus = matchStatus
                                     )
                                 )
                             }
@@ -463,6 +470,16 @@ class RBTVPlusProvider : MainAPI() {
         val apiHost = getApiHost()
         val allMatches = fetchAllLiveMatches(apiHost)
 
+        val now = System.currentTimeMillis()
+        // Filter only matches that are currently live or starting within 15 minutes
+        // And matches that started less than 6 hours ago
+        // And matches that have not finished (status is not 10000)
+        val liveMatches = allMatches.filter { m ->
+            now >= (m.matchTime - 15 * 60 * 1000) && 
+            now <= (m.matchTime + 6 * 60 * 60 * 1000) &&
+            m.matchStatus != 10000L
+        }
+
         val homePages = ArrayList<HomePageList>()
 
         fun addCategory(title: String, matches: List<LiveMatchInfo>) {
@@ -484,12 +501,12 @@ class RBTVPlusProvider : MainAPI() {
 
         // Loop over the registered categories
         for ((sportType, catName) in sportNames) {
-            val matches = allMatches.filter { it.sportType == sportType }
+            val matches = liveMatches.filter { it.sportType == sportType }
             addCategory(catName, matches)
         }
 
         // Check if there are other matches with sportType not in our mapping
-        val otherMatches = allMatches.filter { it.sportType !in sportNames.keys }
+        val otherMatches = liveMatches.filter { it.sportType !in sportNames.keys }
         addCategory("Olahraga Lainnya", otherMatches)
 
         return if (homePages.isNotEmpty()) {
