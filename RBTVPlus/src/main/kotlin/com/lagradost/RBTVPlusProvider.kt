@@ -88,7 +88,7 @@ class RBTVPlusProvider : MainAPI() {
             ?.replace("'", "&apos;")
     }
 
-    private fun generateDynamicSvgPoster(
+    private fun generateDynamicJpegPoster(
         sport: String,
         league: String?,
         team1: String?,
@@ -96,73 +96,112 @@ class RBTVPlusProvider : MainAPI() {
         timeStr: String,
         sportType: Int
     ): String {
-        val sportLabel = cleanText(sport.uppercase()) ?: ""
-        val leagueLabel = cleanText(league ?: "Tournament") ?: ""
-        val t1 = cleanText(team1 ?: "Team A") ?: ""
-        val t2 = cleanText(team2 ?: "Team B") ?: ""
+        return try {
+            val width = 400
+            val height = 600
+            val bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
 
-        // Tema warna dinamis berdasarkan sportType
-        val (themeStart, themeEnd, accentColor) = when (sportType) {
-            1 -> Triple("#11998e", "#38ef7d", "#38ef7d") // Football (Green)
-            2 -> Triple("#ff9900", "#ff5b00", "#ff9900") // Basketball (Orange)
-            3, 12 -> Triple("#d4fc79", "#96e6a1", "#d4fc79") // Tennis / Badminton (Lime)
-            14 -> Triple("#f857a6", "#ff5858", "#ff5858") // Fighting (Crimson)
-            7, 15 -> Triple("#3a7bd5", "#3a6073", "#3a7bd5") // Motorsport / Cycling (Blue)
-            else -> Triple("#7f00ff", "#ff007f", "#00f2fe") // Default (Purple/Neon Cyan)
+            // Tema warna dinamis berdasarkan sportType
+            val (bgColor, cardColor, accentColor) = when (sportType) {
+                1 -> Triple("#05140b", "#0d2618", "#38ef7d") // Football (Dark Green)
+                2 -> Triple("#140b05", "#26170d", "#ff9900") // Basketball (Dark Orange)
+                3, 12 -> Triple("#101405", "#22260d", "#d4fc79") // Tennis / Badminton (Dark Lime)
+                14 -> Triple("#140505", "#260d0d", "#ff5858") // Fighting (Dark Crimson)
+                7, 15 -> Triple("#050e14", "#0d1e26", "#3a7bd5") // Motorsport / Cycling (Dark Blue)
+                else -> Triple("#0c0914", "#151024", "#00f2fe") // Default (Dark Purple / Neon Cyan)
+            }
+
+            // 1. Draw Background
+            canvas.drawColor(android.graphics.Color.parseColor(bgColor))
+
+            // 2. Draw Card Container
+            paint.color = android.graphics.Color.parseColor(cardColor)
+            paint.style = android.graphics.Paint.Style.FILL
+            canvas.drawRoundRect(25f, 40f, 375f, 560f, 24f, 24f, paint)
+
+            paint.color = android.graphics.Color.parseColor(accentColor)
+            paint.style = android.graphics.Paint.Style.STROKE
+            paint.strokeWidth = 2f
+            canvas.drawRoundRect(25f, 40f, 375f, 560f, 24f, 24f, paint)
+
+            // 3. Draw Header (Sport name)
+            paint.style = android.graphics.Paint.Style.FILL
+            paint.color = android.graphics.Color.parseColor("#a0a5c0")
+            paint.textSize = 14f
+            paint.textAlign = android.graphics.Paint.Align.CENTER
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+            canvas.drawText(sport.uppercase(), 200f, 90f, paint)
+
+            // 4. Draw League
+            paint.color = android.graphics.Color.parseColor(accentColor)
+            paint.textSize = 18f
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.NORMAL)
+            val cleanLeague = league ?: "Tournament"
+            val truncatedLeague = if (cleanLeague.length > 25) cleanLeague.substring(0, 22) + "..." else cleanLeague
+            canvas.drawText(truncatedLeague, 200f, 140f, paint)
+
+            // 5. Draw Team 1 (Split if too long)
+            paint.color = android.graphics.Color.WHITE
+            paint.textSize = 24f
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+            val t1 = team1 ?: "Team A"
+            val t1Lines = if (t1.length > 15) listOf(t1.substring(0, 15), t1.substring(15).take(15)) else listOf(t1)
+            var currentY = 220f
+            for (line in t1Lines) {
+                canvas.drawText(line, 200f, currentY, paint)
+                currentY += 30f
+            }
+
+            // 6. Draw VS Badge
+            paint.color = android.graphics.Color.parseColor(accentColor)
+            paint.style = android.graphics.Paint.Style.FILL
+            canvas.drawCircle(200f, 305f, 28f, paint)
+            
+            paint.color = android.graphics.Color.BLACK
+            paint.textSize = 20f
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+            canvas.drawText("VS", 200f, 312f, paint)
+
+            // 7. Draw Team 2 (Split if too long)
+            paint.color = android.graphics.Color.WHITE
+            paint.textSize = 24f
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+            val t2 = team2 ?: "Team B"
+            val t2Lines = if (t2.length > 15) listOf(t2.substring(0, 15), t2.substring(15).take(15)) else listOf(t2)
+            currentY = 380f
+            for (line in t2Lines) {
+                canvas.drawText(line, 200f, currentY, paint)
+                currentY += 30f
+            }
+
+            // 8. Draw Live Badge
+            paint.color = android.graphics.Color.parseColor("#ff5858")
+            paint.style = android.graphics.Paint.Style.FILL
+            canvas.drawRoundRect(130f, 470f, 270f, 506f, 18f, 18f, paint)
+
+            paint.color = android.graphics.Color.WHITE
+            paint.textSize = 14f
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+            canvas.drawText("LIVE NOW", 200f, 493f, paint)
+
+            // 9. Draw Time Subtext
+            paint.color = android.graphics.Color.parseColor("#6d7598")
+            paint.textSize = 14f
+            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.NORMAL)
+            canvas.drawText(timeStr, 200f, 540f, paint)
+
+            // Compress & Encode to Base64 (JPEG format is universally supported by Glide/Coil)
+            val baos = java.io.ByteArrayOutputStream()
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, baos)
+            val bytes = baos.toByteArray()
+            val base64 = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
+            "data:image/jpeg;base64,$base64"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
         }
-
-        // Sesuaikan ukuran font nama tim agar tidak terpotong
-        val t1FontSize = if (t1.length > 20) "13" else if (t1.length > 15) "15" else "19"
-        val t2FontSize = if (t2.length > 20) "13" else if (t2.length > 15) "15" else "19"
-
-        val svg = """
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="100%" height="100%">
-            <defs>
-                <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#0f0c1b"/>
-                    <stop offset="50%" stop-color="#15102a"/>
-                    <stop offset="100%" stop-color="#06050a"/>
-                </linearGradient>
-                <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="$accentColor"/>
-                    <stop offset="100%" stop-color="#4facfe"/>
-                </linearGradient>
-                <linearGradient id="liveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="$themeStart"/>
-                    <stop offset="100%" stop-color="$themeEnd"/>
-                </linearGradient>
-                <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.07"/>
-                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
-                </linearGradient>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="8" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                </filter>
-            </defs>
-            <rect width="400" height="600" fill="url(#bgGrad)"/>
-            <circle cx="200" cy="300" r="180" fill="#7f00ff" opacity="0.15" filter="url(#glow)"/>
-            <circle cx="50" cy="100" r="100" fill="#00f2fe" opacity="0.1" filter="url(#glow)"/>
-            <circle cx="350" cy="500" r="120" fill="#ff007f" opacity="0.1" filter="url(#glow)"/>
-            <rect x="25" y="40" width="350" height="520" rx="24" fill="url(#cardGrad)" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.15"/>
-            <rect x="110" y="70" width="180" height="24" rx="12" fill="#ffffff" fill-opacity="0.08"/>
-            <text x="200" y="86" font-family="sans-serif" font-size="9" font-weight="900" fill="#a0a5c0" letter-spacing="2" text-anchor="middle">$sportLabel</text>
-            <text x="200" y="135" font-family="sans-serif" font-size="13" font-weight="600" fill="#00f2fe" text-anchor="middle" opacity="0.9">$leagueLabel</text>
-            <text x="200" y="225" font-family="sans-serif" font-size="$t1FontSize" font-weight="800" fill="#ffffff" text-anchor="middle">$t1</text>
-            <circle cx="200" cy="285" r="28" fill="#15102a" stroke="url(#accentGrad)" stroke-width="2" filter="url(#glow)"/>
-            <text x="200" y="292" font-family="sans-serif" font-size="18" font-weight="900" fill="url(#accentGrad)" text-anchor="middle">VS</text>
-            <text x="200" y="365" font-family="sans-serif" font-size="$t2FontSize" font-weight="800" fill="#ffffff" text-anchor="middle">$t2</text>
-            <g transform="translate(130, 440)">
-                <rect width="140" height="36" rx="18" fill="url(#liveGrad)" filter="url(#glow)"/>
-                <circle cx="28" cy="18" r="5" fill="#ffffff"/>
-                <text x="80" y="23" font-family="sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">LIVE NOW</text>
-            </g>
-            <text x="200" y="515" font-family="sans-serif" font-size="11" font-weight="500" fill="#6d7598" text-anchor="middle">$timeStr</text>
-        </svg>
-        """.trimIndent()
-
-        val base64 = android.util.Base64.encodeToString(svg.toByteArray(), android.util.Base64.NO_WRAP)
-        return "data:image/svg+xml;base64,$base64"
     }
 
     private val sportTypes = listOf(1, 2, 3, 4, 6, 7, 8, 10, 12, 13, 14, 15, 16, 90)
@@ -493,9 +532,9 @@ class RBTVPlusProvider : MainAPI() {
                                  val timeSdf = java.text.SimpleDateFormat("dd MMM, HH:mm 'WIB'", java.util.Locale("id", "ID"))
                                  timeSdf.timeZone = java.util.TimeZone.getTimeZone("GMT+7")
                                  val timeStr = timeSdf.format(java.util.Date(matchTime))
-                                 val finalPosterUrl = generateDynamicSvgPoster(
+                                 val finalPosterUrl = generateDynamicJpegPoster(
                                      sport = sportName,
-                                     league = cleanText(leagueName),
+                                     league = leagueName,
                                      team1 = homeName,
                                      team2 = awayName,
                                      timeStr = timeStr,
