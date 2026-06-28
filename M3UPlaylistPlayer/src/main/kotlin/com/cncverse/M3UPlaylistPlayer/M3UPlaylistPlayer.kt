@@ -448,7 +448,10 @@ class M3UPlaylistPlayer(
         val item = playlist.items.firstOrNull { it.url == cleanData }
         val rawUrl = item?.url ?: cleanData
 
-        val url = if (!rawUrl.contains(".m3u8", ignoreCase = true) && 
+        val isFlv = rawUrl.contains(".flv", ignoreCase = true)
+        val url = if (isFlv) {
+            if (!rawUrl.contains("#")) "$rawUrl#.flv" else rawUrl
+        } else if (!rawUrl.contains(".m3u8", ignoreCase = true) && 
                       !rawUrl.contains("m3u8", ignoreCase = true) && 
                       !rawUrl.contains(".mpd", ignoreCase = true) && 
                       !rawUrl.contains("mpd", ignoreCase = true) && 
