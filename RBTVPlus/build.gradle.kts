@@ -1,4 +1,4 @@
-version = 29
+version = 30
 
 
 android {
@@ -11,7 +11,7 @@ android {
 cloudstream {
     language = "id"
     description = "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+"
-    authors = listOf("Antigravity")
+    authors = listOf("xr3ed")
     status = 1
     tvTypes = listOf("Live")
 }

@@ -448,18 +448,23 @@ class M3UPlaylistPlayer(
         val item = playlist.items.firstOrNull { it.url == cleanData }
         val rawUrl = item?.url ?: cleanData
 
-        val isM3u8 = rawUrl.contains(".m3u8", ignoreCase = true) || rawUrl.contains("m3u8", ignoreCase = true)
-        val isDash = rawUrl.contains(".mpd", ignoreCase = true) || rawUrl.contains("mpd", ignoreCase = true)
+        val url = if (!rawUrl.contains(".m3u8", ignoreCase = true) && 
+                      !rawUrl.contains("m3u8", ignoreCase = true) && 
+                      !rawUrl.contains(".mpd", ignoreCase = true) && 
+                      !rawUrl.contains("mpd", ignoreCase = true) && 
+                      !rawUrl.contains("#") && 
+                      (rawUrl.contains("live.php") || rawUrl.contains("play.php") || rawUrl.contains("/live/"))) {
+            "$rawUrl#.m3u8"
+        } else {
+            rawUrl
+        }
+
+        val isM3u8 = url.contains(".m3u8", ignoreCase = true) || url.contains("m3u8", ignoreCase = true)
+        val isDash = url.contains(".mpd", ignoreCase = true) || url.contains("mpd", ignoreCase = true)
         val type = when {
             isM3u8 -> ExtractorLinkType.M3U8
             isDash -> ExtractorLinkType.DASH
             else -> ExtractorLinkType.VIDEO
-        }
-
-        val url = if (!isM3u8 && !isDash && !rawUrl.contains("#") && (rawUrl.contains("live.php") || rawUrl.contains("play.php") || rawUrl.contains("/live/"))) {
-            "$rawUrl#.ts"
-        } else {
-            rawUrl
         }
 
         val parsedHeaders = item?.headers ?: emptyMap()

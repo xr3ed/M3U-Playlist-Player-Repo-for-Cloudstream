@@ -2,7 +2,7 @@
   "pluginClassName": "com.lagradost.RBTVPlusPlugin",
   "displayName": "RBTV+",
   "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
-  "author": "Antigravity",
-  "version": 13,
+  "author": "xr3ed",
+  "version": 14,
   "tvTypes": ["Live"]
 }
