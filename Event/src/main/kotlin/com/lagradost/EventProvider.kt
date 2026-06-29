@@ -185,6 +185,7 @@ class EventProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         var title = "Live Stream World Cup"
         var resolvedUrl = url
+        var debugDrmInfo = "Tidak menggunakan DRM / Player Bitmovin"
         
         try {
             if (url.contains("#go:")) {
@@ -223,6 +224,63 @@ class EventProvider : MainAPI() {
                         resolved = true
                     }
                 }
+                
+                if (resolvedUrl.contains("xys1-player.pages.dev/bitmovin/")) {
+                    val idVal = resolvedUrl.substringAfter("?id=").substringBefore("&")
+                    debugDrmInfo = "Mencoba fetch worker untuk id: $idVal...\n"
+                    try {
+                        val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
+                        val responseText = app.get(workerUrl, timeout = 10).text
+                        debugDrmInfo += "Respon worker didapatkan (${responseText.length} chars)\n"
+                        val responseJson = JSONObject(responseText.trim())
+                        val ivB64 = responseJson.optString("iv")
+                        val dataB64 = responseJson.optString("data")
+                        
+                        if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
+                            debugDrmInfo += "Mencoba AES-GCM decryption...\n"
+                            val password = "xys1-gh"
+                            val salt = "salt123"
+                            val iterations = 1000
+                            val keySize = 256
+                            
+                            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+                            val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
+                            val tmp = factory.generateSecret(spec)
+                            val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
+                            
+                            val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
+                            val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
+                            
+                            val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+                            val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
+                            cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
+                            
+                            val decryptedBytes = cipher.doFinal(combinedCipher)
+                            val decryptedText = String(decryptedBytes, Charsets.UTF_8)
+                            val decryptedJson = JSONObject(decryptedText)
+                            
+                            val sourceObj = decryptedJson.optJSONObject("source")
+                            if (sourceObj != null) {
+                                val dashUrl = sourceObj.optString("dash")
+                                val drmObj = sourceObj.optJSONObject("drm")
+                                val clearkeyObj = drmObj?.optJSONObject("clearkey")
+                                if (clearkeyObj != null) {
+                                    val keyId = clearkeyObj.optString("keyId")
+                                    val keyValue = clearkeyObj.optString("key")
+                                    debugDrmInfo += "DECRYPT SUCCESS!\n• DASH: $dashUrl\n• DRM KeyId: $keyId\n• DRM Key: $keyValue"
+                                } else {
+                                    debugDrmInfo += "DECRYPTED JSON but no clearkey found: $decryptedText"
+                                }
+                            } else {
+                                debugDrmInfo += "DECRYPTED JSON but no source found: $decryptedText"
+                            }
+                        } else {
+                            debugDrmInfo += "Worker response error/empty: $responseText"
+                        }
+                    } catch (err: Exception) {
+                        debugDrmInfo += "Error decryption: ${err.message}"
+                    }
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -236,7 +294,8 @@ class EventProvider : MainAPI() {
             this.posterUrl = defaultLogo
             this.plot = "DEBUG INFO (Silakan foto/infokan ini jika error):\n" +
                         "• Link Asli: $url\n" +
-                        "• Resolved Link: $resolvedUrl\n\n" +
+                        "• Resolved Link: $resolvedUrl\n" +
+                        "• DRM Status:\n$debugDrmInfo\n\n" +
                         "Tonton siaran langsung Piala Dunia 2026 gratis via plugin Event."
         }
     }
