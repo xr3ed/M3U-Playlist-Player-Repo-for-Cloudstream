@@ -23,6 +23,7 @@ class Xr3edtvProvider : MainAPI() {
     private val ifmUrl = "https://api-tvnetx01.pages.dev/netxtv/ifm.js"
     private val menuUrl = "https://api-tvnetx01.pages.dev/netxtv/menu.js"
     private val channelUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
+    private val jadwalUrl = "https://api-tvnetx01.pages.dev/netxtv/jadwal.js"
 
     private fun md5(input: String): String {
         val md = MessageDigest.getInstance("MD5")
@@ -100,6 +101,57 @@ class Xr3edtvProvider : MainAPI() {
         }
         
         val homePageLists = ArrayList<HomePageList>()
+
+        // 3.5. Ambil data Jadwal Hari Ini (LIVE TODAY) secara dinamis
+        try {
+            val jadwalResponse = app.get("$jadwalUrl?t=${System.currentTimeMillis()}", timeout = 10)
+            if (jadwalResponse.code == 200) {
+                val jadwalObj = JSONObject(jadwalResponse.text)
+                val scheduleArray = jadwalObj.optJSONArray("schedule")
+                if (scheduleArray != null) {
+                    val matchesResps = ArrayList<SearchResponse>()
+                    for (i in 0 until scheduleArray.length()) {
+                        val item = scheduleArray.getJSONObject(i)
+                        val active = item.optBoolean("active", false)
+                        if (!active) continue
+
+                        val title = item.getString("title")
+                        val link = item.getString("link")
+                        val matches = item.optJSONArray("matches") ?: continue
+
+                        for (j in 0 until matches.length()) {
+                            val match = matches.getJSONObject(j)
+                            val matchActive = match.optBoolean("active", false)
+                            if (!matchActive) continue
+
+                            val time = match.optString("time", "")
+                            val home = match.optString("home", match.optString("homeName", ""))
+                            val away = match.optString("away", match.optString("awayName", ""))
+                            if (home.isEmpty() || away.isEmpty()) continue
+
+                            val displayName = "[$time] $home vs $away ($title)"
+                            // Kita bungkus target link agar dikenali oleh Cloudstream sebagai streaming live
+                            val playLink = if (link.startsWith("go:")) "$mainUrl/$link" else link
+
+                            matchesResps.add(
+                                newLiveSearchResponse(
+                                    displayName,
+                                    playLink,
+                                    TvType.Live
+                                ) {
+                                    this.posterUrl = "https://pidio.pages.dev/img/allevent.png"
+                                }
+                            )
+                        }
+                    }
+                    if (matchesResps.isNotEmpty()) {
+                        homePageLists.add(HomePageList("LIVE TODAY / MATCHES", matchesResps))
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         // 4. Iterasi setiap kategori di depan.js untuk dijadikan baris/kategori utama di beranda Cloudstream
         for (i in 0 until categoriesArray.length()) {
@@ -183,8 +235,36 @@ class Xr3edtvProvider : MainAPI() {
             }
         }
 
-        return if (homePageLists.isNotEmpty()) {
-            newHomePageResponse(homePageLists, hasNext = false)
+        // Susun ulang urutan prioritas kategori di beranda agar premium
+        val sortedLists = ArrayList<HomePageList>()
+        
+        // 1. Tempatkan LIVE TODAY di paling atas jika ada
+        val liveTodayList = homePageLists.firstOrNull { it.name == "LIVE TODAY / MATCHES" }
+        if (liveTodayList != null) {
+            sortedLists.add(liveTodayList)
+        }
+        
+        // 2. Tempatkan TV INDONESIA di urutan kedua
+        val tvIndoList = homePageLists.firstOrNull { it.name.contains("nasional", ignoreCase = true) || it.name.contains("indonesia", ignoreCase = true) }
+        if (tvIndoList != null) {
+            sortedLists.add(tvIndoList)
+        }
+        
+        // 3. Tempatkan TV SPORTS di urutan ketiga
+        val tvSportsList = homePageLists.firstOrNull { it.name.contains("sport", ignoreCase = true) }
+        if (tvSportsList != null) {
+            sortedLists.add(tvSportsList)
+        }
+        
+        // 4. Masukkan sisanya (Subkategori/Race/Movies/Kids) secara berurutan
+        homePageLists.forEach { list ->
+            if (list.name != "LIVE TODAY / MATCHES" && list != tvIndoList && list != tvSportsList) {
+                sortedLists.add(list)
+            }
+        }
+
+        return if (sortedLists.isNotEmpty()) {
+            newHomePageResponse(sortedLists, hasNext = false)
         } else {
             null
         }
@@ -284,6 +364,42 @@ class Xr3edtvProvider : MainAPI() {
                 )
             }
 
+            var subcategoryScheduleText = "Daftar saluran di subkategori $rawName"
+            try {
+                val jadwalResponse = app.get("$jadwalUrl?t=${System.currentTimeMillis()}", timeout = 10)
+                if (jadwalResponse.code == 200) {
+                    val jadwalObj = JSONObject(jadwalResponse.text)
+                    val scheduleArray = jadwalObj.optJSONArray("schedule")
+                    if (scheduleArray != null) {
+                        val matchingMatches = ArrayList<String>()
+                        for (i in 0 until scheduleArray.length()) {
+                            val item = scheduleArray.getJSONObject(i)
+                            val link = item.optString("link", "")
+                            val cleanLink = if (link.startsWith("go:")) link.substring(3) else link
+                            
+                            // Cek jika kategori atau link jadwal merujuk ke subkategori ini
+                            if (cleanLink.equals(rawName, ignoreCase = true) || item.getString("title").contains(rawName, ignoreCase = true)) {
+                                val matches = item.optJSONArray("matches") ?: continue
+                                for (j in 0 until matches.length()) {
+                                    val match = matches.getJSONObject(j)
+                                    val time = match.optString("time", "")
+                                    val home = match.optString("home", match.optString("homeName", ""))
+                                    val away = match.optString("away", match.optString("awayName", ""))
+                                    if (home.isNotEmpty() && away.isNotEmpty()) {
+                                        matchingMatches.add("- [$time WIB] $home vs $away")
+                                    }
+                                }
+                            }
+                        }
+                        if (matchingMatches.isNotEmpty()) {
+                            subcategoryScheduleText += "\n\nJadwal Pertandingan Hari Ini:\n" + matchingMatches.joinToString("\n")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             return newTvSeriesLoadResponse(
                 name = rawName.uppercase(),
                 url = url,
@@ -291,7 +407,7 @@ class Xr3edtvProvider : MainAPI() {
                 episodes = subChannelsList
             ) {
                 this.posterUrl = "https://pidio.pages.dev/img/allevent.png"
-                this.plot = "Daftar saluran di subkategori $rawName"
+                this.plot = subcategoryScheduleText
             }
         }
 

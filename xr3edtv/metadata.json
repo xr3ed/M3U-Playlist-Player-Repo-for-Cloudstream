@@ -3,6 +3,6 @@
   "displayName": "XR3EDTV",
   "description": "Ekstensi Cloudstream untuk live TV gratis di XR3EDTV",
   "author": "xr3ed",
-  "version": 6,
+  "version": 7,
   "tvTypes": ["Live"]
 }
