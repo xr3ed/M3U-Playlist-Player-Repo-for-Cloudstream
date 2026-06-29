@@ -13,31 +13,26 @@ import com.lagradost.cloudstream3.MainPageRequest
 class Xr3edtvProviderTest {
 
     @Test
-    fun testGetMainPageAndLoadCategory() = runBlocking {
+    fun testGetMainPage() = runBlocking {
         val provider = Xr3edtvProvider()
         val result = provider.getMainPage(1, MainPageRequest("https://xys1-depan.pages.dev", 1))
         assertNotNull(result)
-        println("Main page categories loaded. Total: ${result?.data?.size}")
+        println("Main page categories loaded. Total rows/categories: ${result?.data?.size}")
         
-        // Coba load salah satu kategori, misalnya TV Indonesia (group:tvnasional)
-        val categoryLoadResult = provider.load("group:tvnasional")
-        assertNotNull(categoryLoadResult)
-        
-        // Verifikasi daftar channel
-        if (categoryLoadResult is com.lagradost.cloudstream3.TvSeriesLoadResponse) {
-            println("Successfully loaded TvSeriesLoadResponse. Total channels in tvnasional: ${categoryLoadResult.episodes.size}")
-            assertTrue("Should contain channels", categoryLoadResult.episodes.isNotEmpty())
-            categoryLoadResult.episodes.take(5).forEach {
-                println("Channel: ${it.name} -> ${it.data}")
+        result?.data?.forEach { row ->
+            println("Category Row: ${row.name} - Channels Count: ${row.list.size}")
+            row.list.take(3).forEach { ch ->
+                println("  Channel: ${ch.name} -> URL: ${ch.url}")
             }
         }
+        assertTrue("Should have loaded at least one category row", result!!.data.isNotEmpty())
     }
 
     @Test
     fun testLoadAndLoadLinks() = runBlocking {
         val provider = Xr3edtvProvider()
         
-        // Test memuat link dari rctivp (RCTI)
+        // Test loading links for RCTI
         val loadResult = provider.load("go:rctivp")
         assertNotNull(loadResult)
         

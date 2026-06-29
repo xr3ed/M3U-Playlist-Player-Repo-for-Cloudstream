@@ -4,7 +4,6 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import org.json.JSONObject
 import java.net.URI
-import java.net.URLEncoder
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
@@ -23,10 +22,6 @@ class Xr3edtvProvider : MainAPI() {
     private val jsonUrl = "https://api-tvnetx01.pages.dev/netxtv/depan.js"
     private val ifmUrl = "https://api-tvnetx01.pages.dev/netxtv/ifm.js"
     private val menuUrl = "https://api-tvnetx01.pages.dev/netxtv/menu.js"
-
-    override val mainPage = listOf(
-        MainPageData("Kategori Saluran", "Kategori Saluran")
-    )
 
     private fun md5(input: String): String {
         val md = MessageDigest.getInstance("MD5")
@@ -59,50 +54,79 @@ class Xr3edtvProvider : MainAPI() {
         return String(decryptedBytes, Charsets.UTF_8)
     }
 
-    // Mengambil daftar kategori utama (Grid di depan)
+    // Pemuatan Halaman Depan Cloudstream yang Benar
+    // Menampilkan langsung Kategori (sebagai Baris) dan saluran TV di dalamnya (sebagai Item)
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
-        val response = app.get("$jsonUrl?v=${System.currentTimeMillis()}", timeout = 15)
-        if (response.code != 200) return null
+        // 1. Ambil kategori utama dari depan.js
+        val depanResponse = app.get("$jsonUrl?v=${System.currentTimeMillis()}", timeout = 15)
+        if (depanResponse.code != 200) return null
         
-        val categoriesArray = JSONObject("{\"data\":${response.text}}").getJSONArray("data")
-        val categoryLists = ArrayList<SearchResponse>()
+        val categoriesArray = JSONObject("{\"data\":${depanResponse.text}}").getJSONArray("data")
+        
+        // 2. Ambil seluruh data channels & groups dari menu.js
+        val menuResponse = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
+        if (menuResponse.code != 200) return null
+        
+        val menuData = JSONObject(menuResponse.text)
+        val groupsObj = menuData.getJSONObject("groups")
+        val channelsObj = menuData.getJSONObject("channels")
+        
+        val homePageLists = ArrayList<HomePageList>()
 
+        // 3. Iterasi setiap kategori di depan.js untuk dijadikan baris/kategori utama di beranda Cloudstream
         for (i in 0 until categoriesArray.length()) {
-            val item = categoriesArray.getJSONObject(i)
-            val active = item.optBoolean("active", false)
+            val catItem = categoriesArray.getJSONObject(i)
+            val active = catItem.optBoolean("active", false)
             if (!active) continue
 
-            val name = item.getString("name")
-            val link = item.getString("link")
-            val img = item.optString("img", "")
+            val catName = catItem.getString("name")
+            val catLink = catItem.getString("link")
 
-            // Hanya proses link internal kategori ("go:...")
-            if (!link.startsWith("go:")) continue
-            val groupId = link.substring(3)
+            // Kita hanya memuat kategori yang mengarah ke internal group ("go:...")
+            if (!catLink.startsWith("go:")) continue
+            val groupId = catLink.substring(3)
 
-            // Jadikan kategori ini sebagai folder (TvType.Live) agar memicu pemuatan detail
-            categoryLists.add(
-                newLiveSearchResponse(
-                    name,
-                    "group:$groupId",
-                    TvType.Live
-                ) {
-                    this.posterUrl = img
-                }
-            )
+            if (!groupsObj.has(groupId)) continue
+            val channelIds = groupsObj.getJSONArray(groupId)
+            val searchResps = ArrayList<SearchResponse>()
+
+            // Penuhi item saluran TV di dalam kategori ini
+            for (j in 0 until channelIds.length()) {
+                val chId = channelIds.getString(j)
+                if (!channelsObj.has(chId)) continue
+
+                val channel = channelsObj.getJSONObject(chId)
+                val chName = channel.getString("name")
+                val chImg = channel.optString("img", "")
+                val chHref = channel.getString("href")
+
+                searchResps.add(
+                    newLiveSearchResponse(
+                        chName,
+                        chHref, // Menggunakan link putar asli (misal go:rctivp) agar langsung memicu pemutaran
+                        TvType.Live
+                    ) {
+                        this.posterUrl = chImg
+                    }
+                )
+            }
+
+            if (searchResps.isNotEmpty()) {
+                homePageLists.add(HomePageList(catName, searchResps))
+            }
         }
 
-        return newHomePageResponse(
-            listOf(HomePageList("Pilih Kategori", categoryLists)),
-            hasNext = false
-        )
+        return if (homePageLists.isNotEmpty()) {
+            newHomePageResponse(homePageLists, hasNext = false)
+        } else {
+            null
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        // Melakukan pencarian langsung ke seluruh channel di menu.js
         val response = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
         if (response.code != 200) return emptyList()
 
@@ -131,59 +155,14 @@ class Xr3edtvProvider : MainAPI() {
         return results
     }
 
-    // Load dipanggil saat pengguna memilih folder kategori (group:...) atau langsung memutar channel (go:...)
     override suspend fun load(url: String): LoadResponse? {
-        if (url.startsWith("group:")) {
-            val groupId = url.substring(6)
-            
-            // Ambil daftar channel dalam grup ini dari menu.js
-            val response = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
-            if (response.code != 200) return null
-            
-            val data = JSONObject(response.text)
-            val groupsObj = data.getJSONObject("groups")
-            val channelsObj = data.getJSONObject("channels")
-            
-            if (!groupsObj.has(groupId)) return null
-            val channelIds = groupsObj.getJSONArray(groupId)
-            
-            val episodeList = ArrayList<Episode>()
-            for (i in 0 until channelIds.length()) {
-                val chId = channelIds.getString(i)
-                if (!channelsObj.has(chId)) continue
-                
-                val channel = channelsObj.getJSONObject(chId)
-                val chName = channel.getString("name")
-                val chImg = channel.optString("img", "")
-                val chHref = channel.getString("href")
-                
-                // Tiap channel dalam kategori disajikan sebagai "episode" agar bisa diklik dan diputar
-                episodeList.add(
-                    newEpisode(chHref) {
-                        this.name = chName
-                        this.posterUrl = chImg
-                    }
-                )
-            }
-            
-            return newTvSeriesLoadResponse(
-                groupId.uppercase(),
-                url,
-                TvType.TvSeries,
-                episodeList
-            ) {
-                this.plot = "Daftar saluran TV dalam kategori $groupId"
-            }
-        } else {
-            // Membuka channel langsung (fallback jika diakses di luar folder)
-            val name = if (url.startsWith("go:")) url.substring(3) else url
-            return newLiveStreamLoadResponse(
-                name.uppercase(),
-                url,
-                url
-            ) {
-                this.plot = "Tonton siaran langsung di XR3EDTV"
-            }
+        val name = if (url.startsWith("go:")) url.substring(3) else url
+        return newLiveStreamLoadResponse(
+            name.uppercase(),
+            url,
+            url
+        ) {
+            this.plot = "Tonton siaran langsung di XR3EDTV"
         }
     }
 
