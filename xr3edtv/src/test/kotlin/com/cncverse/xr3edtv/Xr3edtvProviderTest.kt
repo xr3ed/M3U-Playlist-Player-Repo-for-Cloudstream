@@ -13,15 +13,22 @@ import com.lagradost.cloudstream3.MainPageRequest
 class Xr3edtvProviderTest {
 
     @Test
-    fun testGetMainPage() = runBlocking {
+    fun testGetMainPageAndLoadCategory() = runBlocking {
         val provider = Xr3edtvProvider()
         val result = provider.getMainPage(1, MainPageRequest("https://xys1-depan.pages.dev", 1))
         assertNotNull(result)
         println("Main page categories loaded. Total: ${result?.data?.size}")
-        if (!result?.data.isNullOrEmpty()) {
-            println("Category 1 items count: ${result?.data?.get(0)?.list?.size}")
-            result?.data?.get(0)?.list?.take(5)?.forEach {
-                println("Item: ${it.name} -> ${it.url}")
+        
+        // Coba load salah satu kategori, misalnya TV Indonesia (group:tvnasional)
+        val categoryLoadResult = provider.load("group:tvnasional")
+        assertNotNull(categoryLoadResult)
+        
+        // Verifikasi daftar channel
+        if (categoryLoadResult is com.lagradost.cloudstream3.TvSeriesLoadResponse) {
+            println("Successfully loaded TvSeriesLoadResponse. Total channels in tvnasional: ${categoryLoadResult.episodes.size}")
+            assertTrue("Should contain channels", categoryLoadResult.episodes.isNotEmpty())
+            categoryLoadResult.episodes.take(5).forEach {
+                println("Channel: ${it.name} -> ${it.data}")
             }
         }
     }
@@ -29,11 +36,13 @@ class Xr3edtvProviderTest {
     @Test
     fun testLoadAndLoadLinks() = runBlocking {
         val provider = Xr3edtvProvider()
-        val loadResult = provider.load("go:rcti")
+        
+        // Test memuat link dari rctivp (RCTI)
+        val loadResult = provider.load("go:rctivp")
         assertNotNull(loadResult)
         
         val links = mutableListOf<String>()
-        val success = provider.loadLinks(loadResult!!.data, false, {}, { link ->
+        val success = provider.loadLinks("go:rctivp", false, {}, { link ->
             println("Extracted Link URL: ${link.url}")
             links.add(link.url)
         })
