@@ -165,11 +165,49 @@ class EventProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val title = if (url.contains("#go:")) {
-            val code = url.substringAfter("#go:")
-            "Live Stream World Cup ($code)"
-        } else {
-            "Live Stream World Cup"
+        var title = "Live Stream World Cup"
+        var resolvedUrl = url
+        
+        try {
+            if (url.contains("#go:")) {
+                var code = url.substringAfter("#go:")
+                title = "Live Event - $code"
+                
+                val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
+                val response = app.get(jsUrl, timeout = 15).text
+                val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
+                val root = JSONObject(jsonStr)
+                val channelsObj = root.optJSONObject("channels") ?: JSONObject()
+                
+                var resolved = false
+                var depth = 0
+                while (!resolved && depth < 5) {
+                    val channelData = channelsObj.optJSONObject(code)
+                    if (channelData != null) {
+                        val chName = channelData.optString("name")
+                        if (!chName.isNullOrBlank()) {
+                            title = chName
+                        }
+                        val href = channelData.optString("href")
+                        if (!href.isNullOrBlank()) {
+                            if (href.startsWith("go:")) {
+                                code = href.substringAfter("go:")
+                                depth++
+                            } else {
+                                resolvedUrl = href
+                                resolved = true
+                            }
+                        } else {
+                            resolved = true
+                        }
+                    } else {
+                        resolvedUrl = "https://xys1-player.pages.dev/bitmovin/?id=$code"
+                        resolved = true
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         
         return newLiveStreamLoadResponse(
@@ -178,7 +216,10 @@ class EventProvider : MainAPI() {
             url
         ) {
             this.posterUrl = defaultLogo
-            this.plot = "Tonton siaran langsung Piala Dunia 2026 gratis via plugin Event."
+            this.plot = "DEBUG INFO (Silakan foto/infokan ini jika error):\n" +
+                        "• Link Asli: $url\n" +
+                        "• Resolved Link: $resolvedUrl\n\n" +
+                        "Tonton siaran langsung Piala Dunia 2026 gratis via plugin Event."
         }
     }
 
