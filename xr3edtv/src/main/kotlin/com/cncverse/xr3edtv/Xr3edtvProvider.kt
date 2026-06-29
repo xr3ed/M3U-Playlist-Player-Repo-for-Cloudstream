@@ -165,11 +165,11 @@ class Xr3edtvProvider : MainAPI() {
                         }
                     )
                 } else {
-                    // Jika streaming langsung, sajikan sebagai Live
+                    // Jika streaming langsung, sajikan sebagai Live dengan prefix url provider agar ditangani load()
                     searchResps.add(
                         newLiveSearchResponse(
                             chName,
-                            chHref,
+                            "$mainUrl/$chHref",
                             TvType.Live
                         ) {
                             this.posterUrl = chImg
@@ -221,7 +221,7 @@ class Xr3edtvProvider : MainAPI() {
                 results.add(
                     newLiveSearchResponse(
                         name,
-                        href,
+                        "$mainUrl/$href",
                         TvType.Live
                     ) {
                         this.posterUrl = img
@@ -233,7 +233,8 @@ class Xr3edtvProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val rawName = if (url.startsWith("go:")) url.substring(3) else url
+        val cleanUrl = if (url.startsWith("$mainUrl/")) url.substring(mainUrl.length + 1) else url
+        val rawName = if (cleanUrl.startsWith("go:")) cleanUrl.substring(3) else cleanUrl
         
         // Cek apakah URL yang dipanggil adalah request untuk subkategori/nested group
         val menuResponse = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
@@ -320,7 +321,8 @@ class Xr3edtvProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         try {
-            var channelKey = if (data.startsWith("go:")) data.substring(3) else data
+            val cleanData = if (data.startsWith("$mainUrl/")) data.substring(mainUrl.length + 1) else data
+            var channelKey = if (cleanData.startsWith("go:")) cleanData.substring(3) else cleanData
             
             // Lakukan normalisasi key saluran TV Indonesia (R+ / V+ / dsb)
             // agar memetakan ke worker dekripsi payload yang benar

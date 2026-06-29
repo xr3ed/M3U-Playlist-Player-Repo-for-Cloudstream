@@ -1,4 +1,4 @@
-version = 34
+version = 35
 
 android {
     namespace = "com.cncverse.xr3edtv"
