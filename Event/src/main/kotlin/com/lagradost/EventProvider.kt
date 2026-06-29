@@ -259,23 +259,15 @@ class EventProvider : MainAPI() {
                             val decryptedText = String(decryptedBytes, Charsets.UTF_8)
                             val decryptedJson = JSONObject(decryptedText)
                             
-                            val sourceObj = decryptedJson.optJSONObject("source")
-                            if (sourceObj != null) {
-                                val dashUrl = sourceObj.optString("dash")
-                                val drmObj = sourceObj.optJSONObject("drm")
-                                val clearkeyObj = drmObj?.optJSONObject("clearkey")
-                                if (clearkeyObj != null) {
-                                    val keyId = clearkeyObj.optString("keyId")
-                                    val keyValue = clearkeyObj.optString("key")
-                                    debugDrmInfo += "DECRYPT SUCCESS!\n• DASH: $dashUrl\n• DRM KeyId: $keyId\n• DRM Key: $keyValue"
-                                } else {
-                                    debugDrmInfo += "DECRYPTED JSON but no clearkey found: $decryptedText"
-                                }
+                            val dashUrl = decryptedJson.optString("dash")
+                            val drmStr = decryptedJson.optString("drm")
+                            if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
+                                debugDrmInfo += "DECRYPT SUCCESS!\n• DASH: $dashUrl\n• DRM: $drmStr"
                             } else {
-                                debugDrmInfo += "DECRYPTED JSON but no source found: $decryptedText"
+                                debugDrmInfo += "DECRYPTED JSON but no dash/drm found: $decryptedText"
                             }
                         } else {
-                            debugDrmInfo += "Worker response error/empty: $responseText"
+                            debugDrmInfo += "Worker response error/empty"
                         }
                     } catch (err: Exception) {
                         debugDrmInfo += "Error decryption: ${err.message}"
@@ -382,42 +374,39 @@ class EventProvider : MainAPI() {
                         val decryptedText = String(decryptedBytes, Charsets.UTF_8)
                         val decryptedJson = JSONObject(decryptedText)
                         
-                        val sourceObj = decryptedJson.optJSONObject("source")
-                        if (sourceObj != null) {
-                            val dashUrl = sourceObj.optString("dash")
-                            val drmObj = sourceObj.optJSONObject("drm")
-                            val clearkeyObj = drmObj?.optJSONObject("clearkey")
-                            
-                            if (!dashUrl.isNullOrBlank() && clearkeyObj != null) {
-                                val keyId = clearkeyObj.optString("keyId")
-                                val keyValue = clearkeyObj.optString("key")
+                        val dashUrl = decryptedJson.optString("dash")
+                        val drmStr = decryptedJson.optString("drm")
+                        
+                        if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
+                            val parts = drmStr.split(":")
+                            if (parts.size == 2) {
+                                val keyId = parts[0].trim()
+                                val keyValue = parts[1].trim()
                                 
-                                if (!keyId.isNullOrBlank() && !keyValue.isNullOrBlank()) {
-                                    val clearkeyKid = hexToBase64Url(keyId)
-                                    val clearkeyKey = hexToBase64Url(keyValue)
-                                    
-                                    val headers = mapOf(
-                                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                                        "Referer" to "https://xys1-player.pages.dev/"
-                                    )
-                                    
-                                    callback.invoke(
-                                        newDrmExtractorLink(
-                                            this.name,
-                                            this.name,
-                                            dashUrl,
-                                            ExtractorLinkType.DASH,
-                                            CLEARKEY_UUID
-                                        ) {
-                                            quality = Qualities.Unknown.value
-                                            this.headers = headers
-                                            kty = "oct"
-                                            kid = clearkeyKid
-                                            key = clearkeyKey
-                                        }
-                                    )
-                                    return true
-                                }
+                                val clearkeyKid = hexToBase64Url(keyId)
+                                val clearkeyKey = hexToBase64Url(keyValue)
+                                
+                                val headers = mapOf(
+                                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                    "Referer" to "https://xys1-player.pages.dev/"
+                                )
+                                
+                                callback.invoke(
+                                    newDrmExtractorLink(
+                                        this.name,
+                                        this.name,
+                                        dashUrl,
+                                        ExtractorLinkType.DASH,
+                                        CLEARKEY_UUID
+                                    ) {
+                                        quality = Qualities.Unknown.value
+                                        this.headers = headers
+                                        kty = "oct"
+                                        kid = clearkeyKid
+                                        key = clearkeyKey
+                                    }
+                                )
+                                return true
                             }
                         }
                     }
