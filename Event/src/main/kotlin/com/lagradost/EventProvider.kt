@@ -70,7 +70,7 @@ class EventProvider : MainAPI() {
                 val streamUrl = if (chHref.startsWith("go:")) {
                     "https://wc26.netxtv.id/?id=jadwal#$chHref"
                 } else {
-                    chHref
+                    "https://wc26.netxtv.id/?id=jadwal#go:$chId"
                 }
 
                 if (!addedUrls.contains(streamUrl)) {
@@ -145,7 +145,7 @@ class EventProvider : MainAPI() {
                 val streamUrl = if (chHref.startsWith("go:")) {
                     "https://wc26.netxtv.id/?id=jadwal#$chHref"
                 } else {
-                    chHref
+                    "https://wc26.netxtv.id/?id=jadwal#go:$chId"
                 }
 
                 list.add(
