@@ -25,6 +25,9 @@ class M3UPlaylistPlayerPlugin : Plugin() {
                 registerMainAPI(M3UPlaylistPlayer(playlist.name, playlist.url))
             }
         }
+        
+        // Register XR3EDTV Provider dynamically
+        registerMainAPI(Xr3edtvProvider())
 
         openSettings = openSettingsLabel@{
             val activity = it as? AppCompatActivity ?: return@openSettingsLabel
