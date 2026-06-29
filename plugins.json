@@ -1,10 +1,10 @@
 [
   {
     "iconUrl": "https://play-lh.googleusercontent.com/V4t4JeQV2Cu9u72hKuqOW5c0IfwcZuuVS1d9PF2uJsW3rlIq-aOMTrT5bABVGaAFTcM=w480-h960-rw",
-    "fileHash": "sha256-c59664643ce6e12413329a8d1510721e2c862bf6bc4a23de3f9697bb1188200b",
+    "fileHash": "sha256-ec24e3e693bfb05ac0cfb530b9f7478bc62632c85c0d532e873c994e4786d3f6",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 79606,
+    "fileSize": 71230,
     "status": 1,
     "language": "en",
     "authors": [
@@ -37,5 +37,24 @@
     "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/RBTVPlus.cs3",
     "name": "RBTVPlus"
+  },
+  {
+    "fileHash": "sha256-01f40463ed7b2c668a2aec517074d2f7709ca749102ad6b2f8f004fc3b0d7abc",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 13555,
+    "status": 1,
+    "language": "id",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 30,
+    "internalName": "xr3edtv",
+    "description": "Ekstensi Cloudstream untuk live TV gratis di XR3EDTV",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edtv.cs3",
+    "name": "xr3edtv"
   }
 ]
