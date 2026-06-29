@@ -193,19 +193,34 @@ class EventProvider : MainAPI() {
         try {
             var targetUrl = data
             if (data.contains("#go:")) {
-                val code = data.substringAfter("#go:")
-                // Resolusi go: code ke URL streaming sebenarnya dari channel.js
+                var code = data.substringAfter("#go:")
                 val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
                 val response = app.get(jsUrl, timeout = 15).text
                 val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
                 val root = JSONObject(jsonStr)
                 val channelsObj = root.optJSONObject("channels") ?: JSONObject()
                 
-                val channelData = channelsObj.optJSONObject(code)
-                if (channelData != null) {
-                    val href = channelData.optString("href")
-                    if (!href.isNullOrBlank()) {
-                        targetUrl = href
+                var resolved = false
+                var depth = 0
+                while (!resolved && depth < 5) {
+                    val channelData = channelsObj.optJSONObject(code)
+                    if (channelData != null) {
+                        val href = channelData.optString("href")
+                        if (!href.isNullOrBlank()) {
+                            if (href.startsWith("go:")) {
+                                code = href.substringAfter("go:")
+                                depth++
+                            } else {
+                                targetUrl = href
+                                resolved = true
+                            }
+                        } else {
+                            resolved = true
+                        }
+                    } else {
+                        // Jika tidak ada di channels, mungkin alias langsung
+                        targetUrl = "https://xys1-player.pages.dev/bitmovin/?id=$code"
+                        resolved = true
                     }
                 }
             }

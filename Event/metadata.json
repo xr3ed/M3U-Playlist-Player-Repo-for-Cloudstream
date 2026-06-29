@@ -3,6 +3,6 @@
   "displayName": "Event",
   "description": "Plugin untuk live stream Event Piala Dunia 2026",
   "author": "xr3ed",
-  "version": 2,
+  "version": 3,
   "tvTypes": ["Live"]
 }
