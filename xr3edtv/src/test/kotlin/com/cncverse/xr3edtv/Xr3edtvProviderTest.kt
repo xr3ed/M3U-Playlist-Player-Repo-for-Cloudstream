@@ -1,4 +1,4 @@
-package com.cncverse.M3UPlaylistPlayer
+package com.cncverse.xr3edtv
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -29,15 +29,12 @@ class Xr3edtvProviderTest {
     @Test
     fun testLoadAndLoadLinks() = runBlocking {
         val provider = Xr3edtvProvider()
-        
-        // Test with RCTI channel
         val loadResult = provider.load("go:rcti")
         assertNotNull(loadResult)
         
         val links = mutableListOf<String>()
         val success = provider.loadLinks(loadResult!!.data, false, {}, { link ->
             println("Extracted Link URL: ${link.url}")
-            println("Extracted Link DRM Headers: ${link.headers}")
             links.add(link.url)
         })
         

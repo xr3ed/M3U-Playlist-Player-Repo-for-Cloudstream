@@ -1,4 +1,4 @@
-package com.cncverse.M3UPlaylistPlayer
+package com.cncverse.xr3edtv
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -57,7 +57,7 @@ class Xr3edtvProvider : MainAPI() {
         val gcmSpec = GCMParameterSpec(128, iv)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmSpec)
         
-        val decryptedBytes = cipher.doFinal(fullCiphertext) // JCE handles appended tag automatically when length matches
+        val decryptedBytes = cipher.doFinal(fullCiphertext)
         return String(decryptedBytes, Charsets.UTF_8)
     }
 
@@ -80,7 +80,6 @@ class Xr3edtvProvider : MainAPI() {
             val link = item.getString("link")
             val img = item.optString("img", "")
 
-            // Ignore static URLs like Blogger or website, only allow internal links or category links
             if (link.startsWith("http") && !link.contains("pages.dev") && !link.contains("netxtv.id")) continue
 
             searchResps.add(
@@ -132,7 +131,6 @@ class Xr3edtvProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        // url can be category format: go:schedule or direct name like ssc4
         val name = if (url.startsWith("go:")) url.substring(3) else url
         return newLiveStreamLoadResponse(
             name.uppercase(),
@@ -151,8 +149,6 @@ class Xr3edtvProvider : MainAPI() {
     ): Boolean {
         try {
             val channelKey = if (data.startsWith("go:")) data.substring(3) else data
-            
-            // 1. Dapatkan mapping dari ifmUrl
             val ifmResponse = app.get("$ifmUrl?v=${System.currentTimeMillis()}", timeout = 15)
             if (ifmResponse.code != 200) return false
             
@@ -160,8 +156,6 @@ class Xr3edtvProvider : MainAPI() {
             if (!mapping.has(channelKey)) return false
             
             val targetUrl = mapping.getString(channelKey)
-            
-            // Extract the stream ID from player pages.dev URL query parameters (e.g. ?id=rcti or ?id=ssc4)
             val uri = URI(targetUrl)
             val queryMap = uri.query?.split("&")?.associate {
                 val parts = it.split("=")
@@ -170,7 +164,6 @@ class Xr3edtvProvider : MainAPI() {
             
             val channelId = queryMap["id"] ?: channelKey
             
-            // 2. Fetch encrypted payload from workers API
             val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$channelId&t=${System.currentTimeMillis()}"
             val workerResponse = app.get(workerUrl, timeout = 15)
             if (workerResponse.code != 200) return false
@@ -179,7 +172,6 @@ class Xr3edtvProvider : MainAPI() {
             val encData = payload.getString("data")
             val encIv = payload.getString("iv")
             
-            // 3. Decrypt payload
             val decryptedJsonStr = decryptAesGcm(encData, encIv)
             val decrypted = JSONObject(decryptedJsonStr)
             
@@ -192,8 +184,6 @@ class Xr3edtvProvider : MainAPI() {
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             )
 
-            // If ClearKey DRM keys are returned, format them for Cloudstream
-            // Format format: keyId:key (Base64 hex representation is passed inside ExtractorLink headers or handled by Player)
             callback.invoke(
                 newExtractorLink(
                     name = "Source Live",
@@ -204,7 +194,6 @@ class Xr3edtvProvider : MainAPI() {
                     this.quality = Qualities.P1080.value
                     this.headers = headersMap
                     if (drmKeys.isNotEmpty()) {
-                        // Pass ClearKeys in the headers or custom field so players can load them
                         this.headers = headersMap + mapOf("key" to drmKeys)
                     }
                 }
