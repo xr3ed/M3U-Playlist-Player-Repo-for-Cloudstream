@@ -121,7 +121,16 @@ class Xr3edtvProvider : MainAPI() {
                 "lee" -> "eropa"
                 "lea" -> "asia"
                 "livefight" -> "fight"
-                "schedule" -> "timnas" // live today diarahkan ke event aktif/timnas
+                "schedule" -> "ucl1" // live today diarahkan ke event aktif/ucl1
+                "ucl" -> "ucl8x" // fifa world cup diarahkan ke ucl8x
+                "vpevent" -> "vplus" // vision+ event diarahkan ke vplus
+                "indopride2" -> "indo" // live event indonesia diarahkan ke indo
+                "tvmovie" -> "tvmovies" // tv movies
+                "tvkidsent" -> "hiburan" // kids & entertainment
+                "eredivisi5" -> "tennis" // live tennis
+                "livegolf" -> "ucl17" // live golf
+                "epl9" -> "epl9" // replay
+                "bwf" -> "bwf" // us open / bwf
                 else -> rawGroupId
             }
 
@@ -268,6 +277,8 @@ class Xr3edtvProvider : MainAPI() {
                     newEpisode(chHref) {
                         this.name = chName
                         this.posterUrl = chImg
+                        this.season = 1
+                        this.episode = i + 1
                     }
                 )
             }
@@ -330,11 +341,12 @@ class Xr3edtvProvider : MainAPI() {
             val targetUrl = if (mapping.has(channelKey)) {
                 mapping.getString(channelKey)
             } else {
-                // Gunakan mapping fallback default untuk RCTI / GTV / MNCTV R+
+                // Gunakan mapping fallback default untuk RCTI / GTV / MNCTV / iNews
                 when (channelKey) {
-                    "rctirp" -> "https://xys1-player.pages.dev/bitmovin?id=rctirp&ns=go:xrctirp"
-                    "mnctvrp" -> "https://xys1-player.pages.dev/bitmovin?id=mnctvrp&ns=go:xmnctvrp"
-                    "gtvrp" -> "https://xys1-player.pages.dev/bitmovin?id=gtvrp&ns=go:xgtvrp"
+                    "rctirp", "rctivp", "rctifhd", "rcticub" -> "https://xys1-player.pages.dev/bitmovin?id=rctivp&ns=go:xrctivp"
+                    "mnctvrp", "mnctvvp", "rctihd", "mnctvcub" -> "https://xys1-player.pages.dev/bitmovin?id=mnctvvp&ns=go:xmnctvvp"
+                    "gtvrp", "gtvvp", "rctisd", "gtvcub" -> "https://xys1-player.pages.dev/bitmovin?id=gtvvp&ns=go:xgtvvp"
+                    "inewsrp", "inewsitv", "inews", "inews_itv" -> "https://xys1-player.pages.dev/bitmovin?id=inews&ns=go:xinewsvp"
                     else -> ""
                 }
             }
