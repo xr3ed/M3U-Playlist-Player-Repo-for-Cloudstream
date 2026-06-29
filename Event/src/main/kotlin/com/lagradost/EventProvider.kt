@@ -6,6 +6,9 @@ import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import org.json.JSONObject
+import com.lagradost.cloudstream3.utils.CLEARKEY_UUID
+import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
+import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import java.net.URLDecoder
 
 class EventProvider : MainAPI() {
@@ -20,6 +23,21 @@ class EventProvider : MainAPI() {
     )
 
     private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png"
+
+    private fun hexToBase64Url(str: String): String {
+        val clean = str.replace(" ", "").trim()
+        val isHex = clean.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' } && clean.length % 2 == 0
+        if (!isHex || clean.isEmpty()) return clean
+        return try {
+            val bytes = ByteArray(clean.length / 2)
+            for (i in bytes.indices) {
+                bytes[i] = clean.substring(i * 2, i * 2 + 2).toInt(16).toByte()
+            }
+            android.util.Base64.encodeToString(bytes, android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP or android.util.Base64.NO_PADDING)
+        } catch (e: Exception) {
+            clean
+        }
+    }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val list = ArrayList<SearchResponse>()
@@ -269,28 +287,87 @@ class EventProvider : MainAPI() {
             android.util.Log.d("EventProvider", "Resolved targetUrl: $targetUrl")
 
             // Jika targetUrl merupakan bitmovin player (misal: https://xys1-player.pages.dev/bitmovin/?id=...)
-            // kita bisa coba bypass atau langsung putar jika ada URL stream didalamnya.
-            // Di M3UPlaylistPlayer, kita memutar URL streaming secara direct.
-            // Mari kita tambahkan handling jika URL adalah direct stream, atau link bitmovin.
+            // Kita bypass dan decode DRM ClearKey-nya agar dapat dimainkan secara native di Cloudstream.
             if (targetUrl.contains("xys1-player.pages.dev/bitmovin/")) {
                 val idVal = targetUrl.substringAfter("?id=").substringBefore("&")
                 android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
-                // Seringkali stream URL-nya adalah http://domain/live/stream.m3u8
-                // Kita coba panggil api-tvnetx01/get/ untuk mendapatkan link asli jika diperlukan, 
-                // atau cukup gunakan fallback stream yang paling umum dari netxtv.
-                // Disini kita akan buat resolver yang cerdas.
-                val resolveApi = "https://api-tvnetx01.pages.dev/netxtv/get_stream.php?id=$idVal"
+                
                 try {
-                    val streamRes = app.get(resolveApi, timeout = 8).text
-                    val streamJson = JSONObject(streamRes)
-                    val directUrl = streamJson.optString("url")
-                    if (!directUrl.isNullOrBlank()) {
-                        targetUrl = directUrl
+                    val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
+                    val responseText = app.get(workerUrl, timeout = 10).text
+                    val responseJson = JSONObject(responseText.trim())
+                    
+                    val ivB64 = responseJson.optString("iv")
+                    val dataB64 = responseJson.optString("data")
+                    
+                    if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
+                        // Dekripsi data AES-GCM secara native di Kotlin
+                        val password = "xys1-gh"
+                        val salt = "salt123"
+                        val iterations = 1000
+                        val keySize = 256
+                        
+                        val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+                        val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
+                        val tmp = factory.generateSecret(spec)
+                        val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
+                        
+                        val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
+                        val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
+                        
+                        val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+                        val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
+                        cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
+                        
+                        val decryptedBytes = cipher.doFinal(combinedCipher)
+                        val decryptedText = String(decryptedBytes, Charsets.UTF_8)
+                        val decryptedJson = JSONObject(decryptedText)
+                        
+                        val sourceObj = decryptedJson.optJSONObject("source")
+                        if (sourceObj != null) {
+                            val dashUrl = sourceObj.optString("dash")
+                            val drmObj = sourceObj.optJSONObject("drm")
+                            val clearkeyObj = drmObj?.optJSONObject("clearkey")
+                            
+                            if (!dashUrl.isNullOrBlank() && clearkeyObj != null) {
+                                val keyId = clearkeyObj.optString("keyId")
+                                val keyValue = clearkeyObj.optString("key")
+                                
+                                if (!keyId.isNullOrBlank() && !keyValue.isNullOrBlank()) {
+                                    val clearkeyKid = hexToBase64Url(keyId)
+                                    val clearkeyKey = hexToBase64Url(keyValue)
+                                    
+                                    val headers = mapOf(
+                                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                        "Referer" to "https://xys1-player.pages.dev/"
+                                    )
+                                    
+                                    callback.invoke(
+                                        newDrmExtractorLink(
+                                            this.name,
+                                            this.name,
+                                            dashUrl,
+                                            ExtractorLinkType.DASH,
+                                            CLEARKEY_UUID
+                                        ) {
+                                            quality = Qualities.Unknown.value
+                                            this.headers = headers
+                                            kty = "oct"
+                                            kid = clearkeyKid
+                                            key = clearkeyKey
+                                        }
+                                    )
+                                    return true
+                                }
+                            }
+                        }
                     }
                 } catch (e: Exception) {
-                    // fallback jika gagal, buat default URL stream netxtv
-                    targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
+                    android.util.Log.e("EventProvider", "Failed to decrypt bitmovin source", e)
                 }
+                
+                // Fallback default stream
+                targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
             }
 
             android.util.Log.d("EventProvider", "Final targetUrl to stream: $targetUrl")
