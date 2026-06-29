@@ -375,30 +375,79 @@ class Xr3edtvProvider : MainAPI() {
             val decryptedJsonStr = decryptAesGcm(encData, encIv)
             val decrypted = JSONObject(decryptedJsonStr)
             
-            // Cek apakah payload berisi kunci "dash" atau "hls"
             val streamUrl = if (decrypted.has("dash")) decrypted.getString("dash") else decrypted.getString("hls")
             val drmKeys = decrypted.optString("drm", "")
-            
+
+            // Cek tipe manifest link (m3u8 vs mpd/dash)
+            val isM3u8 = streamUrl.contains(".m3u8", ignoreCase = true) || streamUrl.contains("m3u8", ignoreCase = true)
+            val isDash = streamUrl.contains(".mpd", ignoreCase = true) || streamUrl.contains("mpd", ignoreCase = true)
+            val type = when {
+                isM3u8 -> ExtractorLinkType.M3U8
+                isDash -> ExtractorLinkType.DASH
+                else -> ExtractorLinkType.VIDEO
+            }
+
             val headersMap = mapOf(
                 "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
                 "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             )
 
-            callback.invoke(
-                newExtractorLink(
-                    name = "Source Live",
-                    source = "XR3EDTV",
-                    url = streamUrl,
-                    type = ExtractorLinkType.VIDEO
-                ) {
-                    this.quality = Qualities.P1080.value
-                    this.headers = headersMap
-                    if (drmKeys.isNotEmpty()) {
-                        this.headers = headersMap + mapOf("key" to drmKeys)
+            if (drmKeys.isNotEmpty()) {
+                val parts = drmKeys.split(':')
+                var clearkeyKid: String? = null
+                var clearkeyKey: String? = null
+                
+                if (parts.size == 2) {
+                    // Terjemahkan hex murni DRM key ke Base64Url format yang dimengerti ExoPlayer
+                    val toBase64Url = { hex: String ->
+                        try {
+                            val clean = hex.replace(" ", "").trim()
+                            val bytes = ByteArray(clean.length / 2)
+                            for (i in bytes.indices) {
+                                bytes[i] = clean.substring(i * 2, i * 2 + 2).toInt(16).toByte()
+                            }
+                            Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
+                        } catch (e: Exception) {
+                            hex
+                        }
                     }
+                    clearkeyKid = toBase64Url(parts[0].trim())
+                    clearkeyKey = toBase64Url(parts[1].trim())
                 }
-            )
+
+                callback.invoke(
+                    newDrmExtractorLink(
+                        "XR3EDTV",
+                        "Source Live",
+                        streamUrl,
+                        type,
+                        CLEARKEY_UUID
+                    ) {
+                        this.quality = Qualities.P1080.value
+                        this.headers = headersMap
+                        this.kty = "oct"
+                        if (clearkeyKid != null) {
+                            this.kid = clearkeyKid
+                        }
+                        if (clearkeyKey != null) {
+                            this.key = clearkeyKey
+                        }
+                    }
+                )
+            } else {
+                callback.invoke(
+                    newExtractorLink(
+                        "XR3EDTV",
+                        "Source Live",
+                        streamUrl,
+                        type
+                    ) {
+                        this.quality = Qualities.P1080.value
+                        this.headers = headersMap
+                    }
+                )
+            }
             return true
         } catch (e: Exception) {
             e.printStackTrace()
