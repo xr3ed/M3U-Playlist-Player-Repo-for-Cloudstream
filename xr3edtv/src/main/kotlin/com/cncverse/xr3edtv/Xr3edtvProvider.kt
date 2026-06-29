@@ -22,6 +22,7 @@ class Xr3edtvProvider : MainAPI() {
     private val jsonUrl = "https://api-tvnetx01.pages.dev/netxtv/depan.js"
     private val ifmUrl = "https://api-tvnetx01.pages.dev/netxtv/ifm.js"
     private val menuUrl = "https://api-tvnetx01.pages.dev/netxtv/menu.js"
+    private val channelUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
 
     private fun md5(input: String): String {
         val md = MessageDigest.getInstance("MD5")
@@ -55,7 +56,7 @@ class Xr3edtvProvider : MainAPI() {
     }
 
     // Pemuatan Halaman Depan Cloudstream yang Benar
-    // Menampilkan langsung Kategori (sebagai Baris) dan saluran TV di dalamnya (sebagai Item)
+    // Menampilkan Kategori (sebagai Baris) dan saluran TV di dalamnya (sebagai Item)
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
@@ -66,17 +67,41 @@ class Xr3edtvProvider : MainAPI() {
         
         val categoriesArray = JSONObject("{\"data\":${depanResponse.text}}").getJSONArray("data")
         
-        // 2. Ambil seluruh data channels & groups dari menu.js
+        // 2. Ambil data channels & groups dari menu.js
         val menuResponse = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
-        if (menuResponse.code != 200) return null
+        val menuData = if (menuResponse.code == 200) JSONObject(menuResponse.text) else null
+        val menuGroups = menuData?.optJSONObject("groups") ?: JSONObject()
+        val menuChannels = menuData?.optJSONObject("channels") ?: JSONObject()
         
-        val menuData = JSONObject(menuResponse.text)
-        val groupsObj = menuData.getJSONObject("groups")
-        val channelsObj = menuData.getJSONObject("channels")
+        // 3. Ambil data channels & groups dari channel.js
+        val channelResponse = app.get("$channelUrl?t=${System.currentTimeMillis()}", timeout = 15)
+        val channelData = if (channelResponse.code == 200) JSONObject(channelResponse.text) else null
+        val channelGroups = channelData?.optJSONObject("groups") ?: JSONObject()
+        val channelChannels = channelData?.optJSONObject("channels") ?: JSONObject()
+
+        // Gabungkan groups dan channels agar komprehensif
+        val groupsObj = JSONObject()
+        val channelsObj = JSONObject()
+
+        // Gabungkan menuGroups & channelGroups
+        menuGroups.keys().forEach { key ->
+            groupsObj.put(key, menuGroups.get(key))
+        }
+        channelGroups.keys().forEach { key ->
+            groupsObj.put(key, channelGroups.get(key))
+        }
+
+        // Gabungkan menuChannels & channelChannels
+        menuChannels.keys().forEach { key ->
+            channelsObj.put(key, menuChannels.get(key))
+        }
+        channelChannels.keys().forEach { key ->
+            channelsObj.put(key, channelChannels.get(key))
+        }
         
         val homePageLists = ArrayList<HomePageList>()
 
-        // 3. Iterasi setiap kategori di depan.js untuk dijadikan baris/kategori utama di beranda Cloudstream
+        // 4. Iterasi setiap kategori di depan.js untuk dijadikan baris/kategori utama di beranda Cloudstream
         for (i in 0 until categoriesArray.length()) {
             val catItem = categoriesArray.getJSONObject(i)
             val active = catItem.optBoolean("active", false)
@@ -85,9 +110,20 @@ class Xr3edtvProvider : MainAPI() {
             val catName = catItem.getString("name")
             val catLink = catItem.getString("link")
 
-            // Kita hanya memuat kategori yang mengarah ke internal group ("go:...")
             if (!catLink.startsWith("go:")) continue
-            val groupId = catLink.substring(3)
+            val rawGroupId = catLink.substring(3)
+
+            // Lakukan normalisasi key groupId agar cocok dengan menu.js/channel.js
+            val groupId = when (rawGroupId) {
+                "tvnasional" -> "tvnasional"
+                "tvsport" -> "sports"
+                "race" -> "race"
+                "lee" -> "eropa"
+                "lea" -> "asia"
+                "livefight" -> "fight"
+                "schedule" -> "timnas" // live today diarahkan ke event aktif/timnas
+                else -> rawGroupId
+            }
 
             if (!groupsObj.has(groupId)) continue
             val channelIds = groupsObj.getJSONArray(groupId)
@@ -95,23 +131,42 @@ class Xr3edtvProvider : MainAPI() {
 
             // Penuhi item saluran TV di dalam kategori ini
             for (j in 0 until channelIds.length()) {
+                if (channelIds.isNull(j)) continue
                 val chId = channelIds.getString(j)
-                if (!channelsObj.has(chId)) continue
+                if (chId.isEmpty() || !channelsObj.has(chId)) continue
 
                 val channel = channelsObj.getJSONObject(chId)
                 val chName = channel.getString("name")
                 val chImg = channel.optString("img", "")
                 val chHref = channel.getString("href")
 
-                searchResps.add(
-                    newLiveSearchResponse(
-                        chName,
-                        chHref, // Menggunakan link putar asli (misal go:rctivp) agar langsung memicu pemutaran
-                        TvType.Live
-                    ) {
-                        this.posterUrl = chImg
-                    }
-                )
+                // Cek apakah item ini mengarah ke subkategori (grup lain) atau stream langsung
+                val targetGroupId = if (chHref.startsWith("go:")) chHref.substring(3) else ""
+                val isSubcategory = targetGroupId.isNotEmpty() && groupsObj.has(targetGroupId)
+
+                if (isSubcategory) {
+                    // Jika subkategori/nested group, sajikan sebagai Folder/TvSeries agar memicu load() saat diklik
+                    searchResps.add(
+                        newTvSeriesSearchResponse(
+                            chName,
+                            chHref, // Membawa link go:<subgroup>
+                            TvType.TvSeries
+                        ) {
+                            this.posterUrl = chImg
+                        }
+                    )
+                } else {
+                    // Jika streaming langsung, sajikan sebagai Live
+                    searchResps.add(
+                        newLiveSearchResponse(
+                            chName,
+                            chHref,
+                            TvType.Live
+                        ) {
+                            this.posterUrl = chImg
+                        }
+                    )
+                }
             }
 
             if (searchResps.isNotEmpty()) {
@@ -127,12 +182,25 @@ class Xr3edtvProvider : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
-        if (response.code != 200) return emptyList()
-
-        val data = JSONObject(response.text)
-        val channelsObj = data.getJSONObject("channels")
         val results = ArrayList<SearchResponse>()
+        
+        // Ambil data channels dari menu.js & channel.js
+        val menuResponse = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
+        val channelResponse = app.get("$channelUrl?t=${System.currentTimeMillis()}", timeout = 15)
+        
+        val channelsObj = JSONObject()
+        
+        if (menuResponse.code == 200) {
+            val menuData = JSONObject(menuResponse.text)
+            val menuChannels = menuData.optJSONObject("channels") ?: JSONObject()
+            menuChannels.keys().forEach { channelsObj.put(it, menuChannels.get(it)) }
+        }
+        
+        if (channelResponse.code == 200) {
+            val channelData = JSONObject(channelResponse.text)
+            val channelChannels = channelData.optJSONObject("channels") ?: JSONObject()
+            channelChannels.keys().forEach { channelsObj.put(it, channelChannels.get(it)) }
+        }
 
         for (key in channelsObj.keys()) {
             val channel = channelsObj.getJSONObject(key)
@@ -156,12 +224,80 @@ class Xr3edtvProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val name = if (url.startsWith("go:")) url.substring(3) else url
+        val rawName = if (url.startsWith("go:")) url.substring(3) else url
+        
+        // Cek apakah URL yang dipanggil adalah request untuk subkategori/nested group
+        val menuResponse = app.get("$menuUrl?t=${System.currentTimeMillis()}", timeout = 15)
+        val channelResponse = app.get("$channelUrl?t=${System.currentTimeMillis()}", timeout = 15)
+        
+        val groupsObj = JSONObject()
+        val channelsObj = JSONObject()
+        
+        if (menuResponse.code == 200) {
+            val menuData = JSONObject(menuResponse.text)
+            val menuGroups = menuData.optJSONObject("groups") ?: JSONObject()
+            val menuChannels = menuData.optJSONObject("channels") ?: JSONObject()
+            menuGroups.keys().forEach { groupsObj.put(it, menuGroups.get(it)) }
+            menuChannels.keys().forEach { channelsObj.put(it, menuChannels.get(it)) }
+        }
+        
+        if (channelResponse.code == 200) {
+            val channelData = JSONObject(channelResponse.text)
+            val channelGroups = channelData.optJSONObject("groups") ?: JSONObject()
+            val channelChannels = channelData.optJSONObject("channels") ?: JSONObject()
+            channelGroups.keys().forEach { groupsObj.put(it, channelGroups.get(it)) }
+            channelChannels.keys().forEach { channelsObj.put(it, channelChannels.get(it)) }
+        }
+
+        if (groupsObj.has(rawName)) {
+            // Ini adalah halaman Subkategori (misal: go:formula1, go:motogp)
+            val channelIds = groupsObj.getJSONArray(rawName)
+            val subChannelsList = ArrayList<Episode>()
+
+            for (i in 0 until channelIds.length()) {
+                if (channelIds.isNull(i)) continue
+                val chId = channelIds.getString(i)
+                if (chId.isEmpty() || !channelsObj.has(chId)) continue
+
+                val channel = channelsObj.getJSONObject(chId)
+                val chName = channel.getString("name")
+                val chImg = channel.optString("img", "")
+                val chHref = channel.getString("href")
+
+                subChannelsList.add(
+                    newEpisode(chHref) {
+                        this.name = chName
+                        this.posterUrl = chImg
+                    }
+                )
+            }
+
+            return newTvSeriesLoadResponse(
+                name = rawName.uppercase(),
+                url = url,
+                type = TvType.TvSeries,
+                episodes = subChannelsList
+            ) {
+                this.posterUrl = "https://pidio.pages.dev/img/allevent.png"
+                this.plot = "Daftar saluran di subkategori $rawName"
+            }
+        }
+
+        // Jika bukan subkategori, melainkan live stream utama biasa
+        var displayName = rawName.uppercase()
+        var poster: String? = null
+        if (channelsObj.has(rawName)) {
+            val ch = channelsObj.getJSONObject(rawName)
+            displayName = ch.getString("name")
+            poster = ch.optString("img", "")
+        }
+
         return newLiveStreamLoadResponse(
-            name.uppercase(),
+            displayName,
             url,
             url
         ) {
+            this.posterUrl = poster
             this.plot = "Tonton siaran langsung di XR3EDTV"
         }
     }
@@ -173,18 +309,39 @@ class Xr3edtvProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         try {
-            val channelKey = if (data.startsWith("go:")) data.substring(3) else data
+            var channelKey = if (data.startsWith("go:")) data.substring(3) else data
+            
+            // Lakukan normalisasi key saluran TV Indonesia (R+ / V+ / dsb)
+            // agar memetakan ke worker dekripsi payload yang benar
+            channelKey = when (channelKey) {
+                "rctirp" -> "rctirp"
+                "mnctvrp" -> "mnctvrp"
+                "gtvrp" -> "gtvrp"
+                else -> channelKey
+            }
             
             // 1. Dapatkan mapping dari ifmUrl
             val ifmResponse = app.get("$ifmUrl?v=${System.currentTimeMillis()}", timeout = 15)
             if (ifmResponse.code != 200) return false
             
             val mapping = JSONObject(ifmResponse.text)
-            if (!mapping.has(channelKey)) return false
             
-            val targetUrl = mapping.getString(channelKey)
+            // Tentukan target player url, fallback jika key tidak ada langsung di ifm.js
+            val targetUrl = if (mapping.has(channelKey)) {
+                mapping.getString(channelKey)
+            } else {
+                // Gunakan mapping fallback default untuk RCTI / GTV / MNCTV R+
+                when (channelKey) {
+                    "rctirp" -> "https://xys1-player.pages.dev/bitmovin?id=rctirp&ns=go:xrctirp"
+                    "mnctvrp" -> "https://xys1-player.pages.dev/bitmovin?id=mnctvrp&ns=go:xmnctvrp"
+                    "gtvrp" -> "https://xys1-player.pages.dev/bitmovin?id=gtvrp&ns=go:xgtvrp"
+                    else -> ""
+                }
+            }
             
-            // Ambil id dari parameter query URL player (misal: ?id=rcti)
+            if (targetUrl.isEmpty()) return false
+            
+            // Ambil id dari parameter query URL player (misal: ?id=rctirp)
             val uri = URI(targetUrl)
             val queryMap = uri.query?.split("&")?.associate {
                 val parts = it.split("=")
@@ -206,7 +363,8 @@ class Xr3edtvProvider : MainAPI() {
             val decryptedJsonStr = decryptAesGcm(encData, encIv)
             val decrypted = JSONObject(decryptedJsonStr)
             
-            val dashUrl = decrypted.getString("dash")
+            // Cek apakah payload berisi kunci "dash" atau "hls"
+            val streamUrl = if (decrypted.has("dash")) decrypted.getString("dash") else decrypted.getString("hls")
             val drmKeys = decrypted.optString("drm", "")
             
             val headersMap = mapOf(
@@ -219,7 +377,7 @@ class Xr3edtvProvider : MainAPI() {
                 newExtractorLink(
                     name = "Source Live",
                     source = "XR3EDTV",
-                    url = dashUrl,
+                    url = streamUrl,
                     type = ExtractorLinkType.VIDEO
                 ) {
                     this.quality = Qualities.P1080.value
