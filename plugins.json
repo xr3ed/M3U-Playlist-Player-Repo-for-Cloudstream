@@ -39,10 +39,10 @@
     "name": "RBTVPlus"
   },
   {
-    "fileHash": "sha256-622e184d56e99550d35c69459a1686b18baaae909848fd5c3f3b5fcf753a7526",
+    "fileHash": "sha256-466f3a978e3903b18c59e62984afbe968c3a3bf0985bd0719a4d3cf794a6977c",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 22949,
+    "fileSize": 27273,
     "status": 1,
     "language": "id",
     "authors": [
@@ -51,7 +51,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 35,
+    "version": 36,
     "internalName": "xr3edtv",
     "description": "Ekstensi Cloudstream untuk live TV gratis di XR3EDTV",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edtv.cs3",
