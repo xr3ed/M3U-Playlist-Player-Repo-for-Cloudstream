@@ -304,11 +304,11 @@ class RBTVPlusProvider : MainAPI() {
     }
 
     private suspend fun getApiHost(): String {
-        val fallback = "https://apis-data10.tcore131ybdf.ru"
+        val fallback = "https://apis-data10.tccdc64dgee.cfd"
         try {
             val response = app.get("$mainUrl/id/", timeout = 10)
             val html = response.text
-            val jsUrls = Regex("""https://statics1\.tcore131ybdf\.ru/statics/[a-f0-9]+\.js""").findAll(html)
+            val jsUrls = Regex("""https://statics1\.[a-zA-Z0-9.-]+\.cfd/statics/[a-f0-9]+\.js""").findAll(html)
                 .map { it.value }.toList()
             
             for (jsUrl in jsUrls) {
