@@ -225,12 +225,15 @@ class EventProvider : MainAPI() {
                 }
             }
 
+            android.util.Log.d("EventProvider", "Resolved targetUrl: $targetUrl")
+
             // Jika targetUrl merupakan bitmovin player (misal: https://xys1-player.pages.dev/bitmovin/?id=...)
             // kita bisa coba bypass atau langsung putar jika ada URL stream didalamnya.
             // Di M3UPlaylistPlayer, kita memutar URL streaming secara direct.
             // Mari kita tambahkan handling jika URL adalah direct stream, atau link bitmovin.
             if (targetUrl.contains("xys1-player.pages.dev/bitmovin/")) {
                 val idVal = targetUrl.substringAfter("?id=").substringBefore("&")
+                android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
                 // Seringkali stream URL-nya adalah http://domain/live/stream.m3u8
                 // Kita coba panggil api-tvnetx01/get/ untuk mendapatkan link asli jika diperlukan, 
                 // atau cukup gunakan fallback stream yang paling umum dari netxtv.
@@ -248,6 +251,8 @@ class EventProvider : MainAPI() {
                     targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
                 }
             }
+
+            android.util.Log.d("EventProvider", "Final targetUrl to stream: $targetUrl")
 
             val isFlv = targetUrl.contains(".flv", ignoreCase = true) || targetUrl.contains("flv", ignoreCase = true)
             val url = if (isFlv) {
