@@ -300,8 +300,8 @@ class EventProvider : MainAPI() {
         // format data: url yang dikirim dari load
         try {
             var targetUrl = data
-            if (data.contains("#go:")) {
-                var code = data.substringAfter("#go:")
+             if (data.contains("#go:")) {
+                var code = data.substringAfter("#go:").substringBefore("#").substringBefore("&")
                 val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
                 val response = app.get(jsUrl, timeout = 15).text
                 val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
@@ -316,7 +316,7 @@ class EventProvider : MainAPI() {
                         val href = channelData.optString("href")
                         if (!href.isNullOrBlank()) {
                             if (href.startsWith("go:")) {
-                                code = href.substringAfter("go:")
+                                code = href.substringAfter("go:").substringBefore("#").substringBefore("&")
                                 depth++
                             } else {
                                 targetUrl = href
