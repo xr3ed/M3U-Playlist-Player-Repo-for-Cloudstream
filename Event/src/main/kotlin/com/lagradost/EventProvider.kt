@@ -209,6 +209,8 @@ class EventProvider : MainAPI() {
                         val k = keys2.next()
                         if (k.startsWith(groupId, ignoreCase = true) || k.contains(groupId, ignoreCase = true)) {
                             targetGroups.add(k)
+                            // Membatasi hanya mengambil 1 grup fuzzy pertama (misalnya ucl1) agar tidak menumpuk ucl1, ucl2, ucl3, dsb. yang melipatgandakan episode.
+                            break
                         }
                     }
                 }
