@@ -395,8 +395,8 @@ class EventProvider : MainAPI() {
                                     
                                     val headers = mapOf(
                                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                                        "Referer" to "https://netxtv.pages.dev/",
-                                        "Origin" to "https://netxtv.pages.dev"
+                                        "Referer" to "https://xys1-2-player.pages.dev/",
+                                        "Origin" to "https://xys1-2-player.pages.dev"
                                     )
                                     
                                     callback.invoke(
@@ -513,8 +513,8 @@ class EventProvider : MainAPI() {
 
             val headers = mapOf(
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Referer" to "https://netxtv.pages.dev/",
-                "Origin" to "https://netxtv.pages.dev"
+                "Referer" to "https://xys1-2-player.pages.dev/",
+                "Origin" to "https://xys1-2-player.pages.dev"
             )
 
             callback.invoke(
