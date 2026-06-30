@@ -423,7 +423,7 @@ class EventProvider : MainAPI() {
                                             this.headers = headers
                                             kty = "oct"
                                             kid = clearkeyKid
-                                            this.key = clearkeyKey
+                                            this.key = "{\"$clearkeyKid\":\"$clearkeyKey\"}"
                                         }
                                     )
                                     successDrm = true
@@ -518,7 +518,7 @@ class EventProvider : MainAPI() {
                                                 this.headers = headers
                                                 kty = "oct"
                                                 kid = clearkeyKid
-                                                this.key = clearkeyKey
+                                                this.key = "{\"$clearkeyKid\":\"$clearkeyKey\"}"
                                             }
                                         )
                                         successDrm = true
