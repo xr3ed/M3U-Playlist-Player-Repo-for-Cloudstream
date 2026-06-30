@@ -325,6 +325,7 @@ class EventProvider : MainAPI() {
                         } else {
                             resolved = true
                         }
+                    } else {
                         // Jika tidak ada di channels, mungkin alias langsung
                         targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
                         resolved = true
