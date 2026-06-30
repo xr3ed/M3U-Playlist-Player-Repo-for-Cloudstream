@@ -299,9 +299,18 @@ class EventProvider : MainAPI() {
         // logic pemutaran / ekstrak stream
         // format data: url yang dikirim dari load
         try {
-            var targetUrl = data
-            if (data.contains("#go:")) {
-                var code = data.substringAfter("#go:").substringBefore("#").substringBefore("&")
+            val normalizedData = if (!data.contains("#go:") && data.contains("go:")) {
+                if (data.contains("?id=")) {
+                    data.replace("?id=", "#go:")
+                } else {
+                    data.replace("go:", "#go:")
+                }
+            } else {
+                data
+            }
+            var targetUrl = normalizedData
+            if (normalizedData.contains("#go:")) {
+                var code = normalizedData.substringAfter("#go:").substringBefore("#").substringBefore("&")
                 if (code.contains("?")) {
                     code = code.substringBefore("?")
                 }
