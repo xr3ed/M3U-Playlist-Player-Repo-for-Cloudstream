@@ -335,9 +335,9 @@ class EventProvider : MainAPI() {
 
             android.util.Log.d("EventProvider", "Resolved targetUrl: $targetUrl")
 
-            // Jika targetUrl mengarah ke bitmovin player (baik xys1-player maupun xys1-2-player)
+            // Jika targetUrl mengarah ke halaman player web pages.dev (seperti xys1-2-player.pages.dev/bitmovin/ atau pisionx.pages.dev/xplay/jwplayer)
             // Kita bypass dan decode DRM ClearKey-nya agar dapat dimainkan secara native di Cloudstream.
-            if (targetUrl.contains("player.pages.dev/bitmovin") || targetUrl.contains("player.pages.dev/shaka")) {
+            if (targetUrl.contains(".pages.dev/") && (targetUrl.contains("bitmovin") || targetUrl.contains("shaka") || targetUrl.contains("jwplayer") || targetUrl.contains("clappr") || targetUrl.contains("nsplayer"))) {
                 val idVal = targetUrl.substringAfter("?id=").substringBefore("&")
                 android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
                 
@@ -450,7 +450,7 @@ class EventProvider : MainAPI() {
                     }
                 }
                 
-                if (!successDrm && (targetUrl.contains("player.pages.dev/bitmovin") || targetUrl.contains("player.pages.dev/shaka"))) {
+                if (!successDrm && targetUrl.contains(".pages.dev/")) {
                     // Fallback default stream jika dua-duanya nihil
                     targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
                 }
