@@ -470,6 +470,50 @@ class EventProvider : MainAPI() {
                                     .replace(" ", "%20")
                                 
                                 android.util.Log.d("EventProvider", "NS Player XOR decrypt success: $decryptedUrl")
+                                
+                                // Cek apakah URL hasil dekripsi mengandung ClearKey DRM (format: &drmScheme=clearkey&drmLicense=kid:key)
+                                val decodedUrlParam = decryptedUrl.replace("%7C", "|").replace("%20", " ")
+                                if (decodedUrlParam.contains("drmScheme=clearkey", ignoreCase = true) && decodedUrlParam.contains("drmLicense=", ignoreCase = true)) {
+                                    val cleanUrl = decodedUrlParam.substringBefore("|").substringBefore("&drmScheme=")
+                                    val licenseParam = decodedUrlParam.substringAfter("drmLicense=").substringBefore("&")
+                                    val parts = licenseParam.split(":")
+                                    if (parts.size == 2) {
+                                        val keyId = parts[0].trim()
+                                        val keyValue = parts[1].trim()
+                                        val clearkeyKid = hexToBase64Url(keyId)
+                                        val clearkeyKey = hexToBase64Url(keyValue)
+                                        
+                                        android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey: kid=$keyId key=$keyValue for stream: $cleanUrl")
+                                        
+                                        val headers = mapOf(
+                                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                            "Referer" to "https://xys1-2-player.pages.dev/",
+                                            "Origin" to "https://xys1-2-player.pages.dev"
+                                        )
+                                        
+                                        val isDash = cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)
+                                        val streamType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
+                                        
+                                        callback.invoke(
+                                            newDrmExtractorLink(
+                                                this.name,
+                                                this.name,
+                                                cleanUrl,
+                                                streamType,
+                                                CLEARKEY_UUID
+                                            ) {
+                                                quality = Qualities.Unknown.value
+                                                this.headers = headers
+                                                kty = "oct"
+                                                kid = clearkeyKid
+                                                this.key = clearkeyKey
+                                            }
+                                        )
+                                        successDrm = true
+                                        return true
+                                    }
+                                }
+                                
                                 targetUrl = decryptedUrl
                             } else {
                                 android.util.Log.d("EventProvider", "NS Player payload key $idVal not found in json")
