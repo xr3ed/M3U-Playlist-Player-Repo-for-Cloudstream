@@ -55,6 +55,11 @@ class EventProvider : MainAPI() {
                     if (!group.optBoolean("active", true)) continue
                     
                     val groupTitle = group.optString("title", "EVENT")
+                    // Filter khusus pertandingan Piala Dunia
+                    if (!groupTitle.contains("WORLD CUP", ignoreCase = true) && !groupTitle.contains("FIFA", ignoreCase = true)) {
+                        continue
+                    }
+                    
                     val linkVal = group.optString("link", "")
                     val cleanGroupId = if (linkVal.startsWith("go:")) linkVal.substringAfter("go:") else linkVal
                     
@@ -477,7 +482,8 @@ class EventProvider : MainAPI() {
 
             val headers = mapOf(
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Referer" to "https://netxtv.pages.dev/"
+                "Referer" to "https://netxtv.pages.dev/",
+                "Origin" to "https://netxtv.pages.dev"
             )
 
             callback.invoke(
