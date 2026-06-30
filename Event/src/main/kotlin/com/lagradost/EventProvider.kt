@@ -339,7 +339,7 @@ class EventProvider : MainAPI() {
             // Jika targetUrl mengarah ke halaman player web pages.dev (seperti xys1-2-player.pages.dev/bitmovin/ atau pisionx.pages.dev/xplay/jwplayer)
             // Kita bypass dan decode DRM ClearKey-nya agar dapat dimainkan secara native di Cloudstream.
             if (targetUrl.contains(".pages.dev/") && (targetUrl.contains("bitmovin") || targetUrl.contains("shaka") || targetUrl.contains("jwplayer") || targetUrl.contains("clappr") || targetUrl.contains("nsplayer"))) {
-                val idVal = targetUrl.substringAfter("?id=").substringBefore("&")
+                val idVal = targetUrl.substringAfter("?id=").substringBefore("&").substringBefore("#")
                 android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
                 
                 var successDrm = false
