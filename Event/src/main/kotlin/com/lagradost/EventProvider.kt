@@ -266,13 +266,19 @@ class EventProvider : MainAPI() {
                     this.plot = "Pilih server saluran streaming di bawah untuk menonton pertandingan ini secara langsung."
                 }
             } else {
-                // Untuk support play direct link lama
-                val code = if (url.contains("#go:")) url.substringAfter("#go:") else url.substringAfter("#")
+                var code = if (url.contains("#go:")) url.substringAfter("#go:") else url.substringAfter("#")
+                if (code.contains("?")) {
+                    code = code.substringBefore("?")
+                }
+                if (code.contains("&")) {
+                    code = code.substringBefore("&")
+                }
                 title = "Live Stream - $code"
+                val linkUrl = "https://wc26.netxtv.id/?id=jadwal#go:$code"
                 return newLiveStreamLoadResponse(
                     title,
-                    url,
-                    url
+                    linkUrl,
+                    linkUrl
                 ) {
                     this.posterUrl = defaultLogo
                 }
@@ -299,18 +305,9 @@ class EventProvider : MainAPI() {
         // logic pemutaran / ekstrak stream
         // format data: url yang dikirim dari load
         try {
-            val normalizedData = if (!data.contains("#go:") && data.contains("go:")) {
-                if (data.contains("?id=")) {
-                    data.replace("?id=", "#go:")
-                } else {
-                    data.replace("go:", "#go:")
-                }
-            } else {
-                data
-            }
-            var targetUrl = normalizedData
-            if (normalizedData.contains("#go:")) {
-                var code = normalizedData.substringAfter("#go:").substringBefore("#").substringBefore("&")
+            var targetUrl = data
+            if (data.contains("#go:")) {
+                var code = data.substringAfter("#go:").substringBefore("#").substringBefore("&")
                 if (code.contains("?")) {
                     code = code.substringBefore("?")
                 }
