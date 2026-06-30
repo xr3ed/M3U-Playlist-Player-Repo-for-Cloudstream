@@ -228,49 +228,93 @@ class EventProvider : MainAPI() {
                 if (resolvedUrl.contains("xys1-player.pages.dev/bitmovin/")) {
                     val idVal = resolvedUrl.substringAfter("?id=").substringBefore("&")
                     debugDrmInfo = "Mencoba fetch worker untuk id: $idVal...\n"
+                    
+                    var successDrm = false
                     try {
                         val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
                         val responseText = app.get(workerUrl, timeout = 10).text
-                        debugDrmInfo += "Respon worker didapatkan (${responseText.length} chars)\n"
-                        val responseJson = JSONObject(responseText.trim())
-                        val ivB64 = responseJson.optString("iv")
-                        val dataB64 = responseJson.optString("data")
-                        
-                        if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
-                            debugDrmInfo += "Mencoba AES-GCM decryption...\n"
-                            val password = "xys1-gh"
-                            val salt = "salt123"
-                            val iterations = 1000
-                            val keySize = 256
+                        if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
+                            debugDrmInfo += "Respon worker didapatkan (${responseText.length} chars)\n"
+                            val responseJson = JSONObject(responseText.trim())
+                            val ivB64 = responseJson.optString("iv")
+                            val dataB64 = responseJson.optString("data")
                             
-                            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-                            val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
-                            val tmp = factory.generateSecret(spec)
-                            val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
-                            
-                            val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
-                            val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
-                            
-                            val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
-                            val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
-                            cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
-                            
-                            val decryptedBytes = cipher.doFinal(combinedCipher)
-                            val decryptedText = String(decryptedBytes, Charsets.UTF_8)
-                            val decryptedJson = JSONObject(decryptedText)
-                            
-                            val dashUrl = decryptedJson.optString("dash")
-                            val drmStr = decryptedJson.optString("drm")
-                            if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
-                                debugDrmInfo += "DECRYPT SUCCESS!\n• DASH: $dashUrl\n• DRM: $drmStr"
-                            } else {
-                                debugDrmInfo += "DECRYPTED JSON but no dash/drm found: $decryptedText"
+                            if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
+                                debugDrmInfo += "Mencoba AES-GCM decryption...\n"
+                                val password = "xys1-gh"
+                                val salt = "salt123"
+                                val iterations = 1000
+                                val keySize = 256
+                                
+                                val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+                                val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
+                                val tmp = factory.generateSecret(spec)
+                                val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
+                                
+                                val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
+                                val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
+                                
+                                val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+                                val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
+                                cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
+                                
+                                val decryptedBytes = cipher.doFinal(combinedCipher)
+                                val decryptedText = String(decryptedBytes, Charsets.UTF_8)
+                                val decryptedJson = JSONObject(decryptedText)
+                                
+                                val dashUrl = decryptedJson.optString("dash")
+                                val drmStr = decryptedJson.optString("drm")
+                                if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
+                                    debugDrmInfo += "DECRYPT SUCCESS!\n• DASH: $dashUrl\n• DRM: $drmStr"
+                                    successDrm = true
+                                } else {
+                                    debugDrmInfo += "DECRYPTED JSON but no dash/drm found: $decryptedText"
+                                }
                             }
                         } else {
-                            debugDrmInfo += "Worker response error/empty"
+                            debugDrmInfo += "Bitmovin worker reply: CHANNEL_NOT_FOUND\n"
                         }
                     } catch (err: Exception) {
-                        debugDrmInfo += "Error decryption: ${err.message}"
+                        debugDrmInfo += "Error Bitmovin decryption: ${err.message}\n"
+                    }
+
+                    // Jika gagal atau channel tidak ditemukan di bitmovin worker, coba nsplayer worker
+                    if (!successDrm) {
+                        debugDrmInfo += "Mencoba fallback ke NS Player worker...\n"
+                        try {
+                            val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
+                            val nsResponseText = app.get(nsWorkerUrl, timeout = 10).text
+                            if (nsResponseText.trim().isNotEmpty()) {
+                                val nsJson = JSONObject(nsResponseText.trim())
+                                val encryptedPayload = nsJson.optString(idVal)
+                                if (!encryptedPayload.isNullOrEmpty()) {
+                                    // Custom XOR Decryption
+                                    val key = "xys1-gh"
+                                    val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
+                                    val decodedStr = String(decodedBytes, Charsets.UTF_8)
+                                    
+                                    val decryptedChars = CharArray(decodedStr.length)
+                                    for (i in decodedStr.indices) {
+                                        val cByte = decodedStr[i].code
+                                        val kByte = key[i % key.length].code
+                                        decryptedChars[i] = (cByte xor kByte).toChar()
+                                    }
+                                    
+                                    val decryptedUrl = String(decryptedChars)
+                                        .replace("|", "%7C")
+                                        .replace(" ", "%20")
+                                    
+                                    debugDrmInfo += "NS Player XOR Decrypt SUCCESS!\n• Stream URL: $decryptedUrl"
+                                    resolvedUrl = decryptedUrl
+                                } else {
+                                    debugDrmInfo += "NS Player payload empty untuk id: $idVal"
+                                }
+                            } else {
+                                debugDrmInfo += "NS Player worker response empty"
+                            }
+                        } catch (err2: Exception) {
+                            debugDrmInfo += "Error NS Player decryption: ${err2.message}"
+                        }
                     }
                 }
             }
@@ -343,71 +387,74 @@ class EventProvider : MainAPI() {
                 val idVal = targetUrl.substringAfter("?id=").substringBefore("&")
                 android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
                 
+                var successDrm = false
                 try {
                     val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
                     val responseText = app.get(workerUrl, timeout = 10).text
-                    val responseJson = JSONObject(responseText.trim())
-                    
-                    val ivB64 = responseJson.optString("iv")
-                    val dataB64 = responseJson.optString("data")
-                    
-                    if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
-                        // Dekripsi data AES-GCM secara native di Kotlin
-                        val password = "xys1-gh"
-                        val salt = "salt123"
-                        val iterations = 1000
-                        val keySize = 256
+                    if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
+                        val responseJson = JSONObject(responseText.trim())
+                        val ivB64 = responseJson.optString("iv")
+                        val dataB64 = responseJson.optString("data")
                         
-                        val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-                        val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
-                        val tmp = factory.generateSecret(spec)
-                        val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
-                        
-                        val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
-                        val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
-                        
-                        val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
-                        val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
-                        cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
-                        
-                        val decryptedBytes = cipher.doFinal(combinedCipher)
-                        val decryptedText = String(decryptedBytes, Charsets.UTF_8)
-                        val decryptedJson = JSONObject(decryptedText)
-                        
-                        val dashUrl = decryptedJson.optString("dash")
-                        val drmStr = decryptedJson.optString("drm")
-                        
-                        if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
-                            val parts = drmStr.split(":")
-                            if (parts.size == 2) {
-                                val keyId = parts[0].trim()
-                                val keyValue = parts[1].trim()
-                                
-                                val clearkeyKid = hexToBase64Url(keyId)
-                                val clearkeyKey = hexToBase64Url(keyValue)
-                                
-                                val headers = mapOf(
-                                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                                    "Referer" to "https://netxtv.pages.dev/",
-                                    "Origin" to "https://netxtv.pages.dev"
-                                )
-                                
-                                callback.invoke(
-                                    newDrmExtractorLink(
-                                        this.name,
-                                        this.name,
-                                        dashUrl,
-                                        ExtractorLinkType.DASH,
-                                        CLEARKEY_UUID
-                                    ) {
-                                        quality = Qualities.Unknown.value
-                                        this.headers = headers
-                                        kty = "oct"
-                                        kid = clearkeyKid
-                                        key = clearkeyKey
-                                    }
-                                )
-                                return true
+                        if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
+                            // Dekripsi data AES-GCM secara native di Kotlin
+                            val password = "xys1-gh"
+                            val salt = "salt123"
+                            val iterations = 1000
+                            val keySize = 256
+                            
+                            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+                            val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
+                            val tmp = factory.generateSecret(spec)
+                            val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
+                            
+                            val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
+                            val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
+                            
+                            val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+                            val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
+                            cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
+                            
+                            val decryptedBytes = cipher.doFinal(combinedCipher)
+                            val decryptedText = String(decryptedBytes, Charsets.UTF_8)
+                            val decryptedJson = JSONObject(decryptedText)
+                            
+                            val dashUrl = decryptedJson.optString("dash")
+                            val drmStr = decryptedJson.optString("drm")
+                            
+                            if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
+                                val parts = drmStr.split(":")
+                                if (parts.size == 2) {
+                                    val keyId = parts[0].trim()
+                                    val keyValue = parts[1].trim()
+                                    
+                                    val clearkeyKid = hexToBase64Url(keyId)
+                                    val clearkeyKey = hexToBase64Url(keyValue)
+                                    
+                                    val headers = mapOf(
+                                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                        "Referer" to "https://netxtv.pages.dev/",
+                                        "Origin" to "https://netxtv.pages.dev"
+                                    )
+                                    
+                                    callback.invoke(
+                                        newDrmExtractorLink(
+                                            this.name,
+                                            this.name,
+                                            dashUrl,
+                                            ExtractorLinkType.DASH,
+                                            CLEARKEY_UUID
+                                        ) {
+                                            quality = Qualities.Unknown.value
+                                            this.headers = headers
+                                            kty = "oct"
+                                            kid = clearkeyKid
+                                            key = clearkeyKey
+                                        }
+                                    )
+                                    successDrm = true
+                                    return true
+                                }
                             }
                         }
                     }
@@ -415,8 +462,44 @@ class EventProvider : MainAPI() {
                     android.util.Log.e("EventProvider", "Failed to decrypt bitmovin source", e)
                 }
                 
-                // Fallback default stream
-                targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
+                if (!successDrm) {
+                    // Try NS Player worker fallback
+                    android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
+                    try {
+                        val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
+                        val nsResponseText = app.get(nsWorkerUrl, timeout = 10).text
+                        if (nsResponseText.trim().isNotEmpty()) {
+                            val nsJson = JSONObject(nsResponseText.trim())
+                            val encryptedPayload = nsJson.optString(idVal)
+                            if (!encryptedPayload.isNullOrEmpty()) {
+                                val key = "xys1-gh"
+                                val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
+                                val decodedStr = String(decodedBytes, Charsets.UTF_8)
+                                
+                                val decryptedChars = CharArray(decodedStr.length)
+                                for (i in decodedStr.indices) {
+                                    val cByte = decodedStr[i].code
+                                    val kByte = key[i % key.length].code
+                                    decryptedChars[i] = (cByte xor kByte).toChar()
+                                }
+                                
+                                val decryptedUrl = String(decryptedChars)
+                                    .replace("|", "%7C")
+                                    .replace(" ", "%20")
+                                
+                                android.util.Log.d("EventProvider", "NS Player XOR decrypt success: $decryptedUrl")
+                                targetUrl = decryptedUrl
+                            }
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.e("EventProvider", "Failed to decrypt NS Player source", e)
+                    }
+                }
+                
+                if (!successDrm && targetUrl.contains("xys1-player.pages.dev/bitmovin/")) {
+                    // Fallback default stream jika dua-duanya nihil
+                    targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
+                }
             }
 
             android.util.Log.d("EventProvider", "Final targetUrl to stream: $targetUrl")
