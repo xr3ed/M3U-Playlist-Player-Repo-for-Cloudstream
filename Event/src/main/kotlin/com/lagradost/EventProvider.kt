@@ -484,10 +484,10 @@ class EventProvider : MainAPI() {
             }
 
             val isM3u8 = url.contains(".m3u8", ignoreCase = true) || url.contains("m3u8", ignoreCase = true)
-            val isDash = url.contains(".mpd", ignoreCase = true) || url.contains("mpd", ignoreCase = true)
+            val isDash = url.contains(".mpd", ignoreCase = true) || url.contains("mpd", ignoreCase = true) || url.contains("dash", ignoreCase = true)
             val type = when {
-                isM3u8 -> ExtractorLinkType.M3U8
                 isDash -> ExtractorLinkType.DASH
+                isM3u8 -> ExtractorLinkType.M3U8
                 else -> ExtractorLinkType.VIDEO
             }
 
