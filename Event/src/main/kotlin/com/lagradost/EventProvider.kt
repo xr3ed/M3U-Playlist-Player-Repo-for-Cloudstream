@@ -300,8 +300,11 @@ class EventProvider : MainAPI() {
         // format data: url yang dikirim dari load
         try {
             var targetUrl = data
-             if (data.contains("#go:")) {
+            if (data.contains("#go:")) {
                 var code = data.substringAfter("#go:").substringBefore("#").substringBefore("&")
+                if (code.contains("?")) {
+                    code = code.substringBefore("?")
+                }
                 val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
                 val response = app.get(jsUrl, timeout = 15).text
                 val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
@@ -316,7 +319,10 @@ class EventProvider : MainAPI() {
                         val href = channelData.optString("href")
                         if (!href.isNullOrBlank()) {
                              if (href.startsWith("go:")) {
-                                 val nextCode = href.substringAfter("go:").substringBefore("#").substringBefore("&")
+                                 var nextCode = href.substringAfter("go:").substringBefore("#").substringBefore("&")
+                                 if (nextCode.contains("?")) {
+                                     nextCode = nextCode.substringBefore("?")
+                                 }
                                  if (nextCode == code) {
                                      targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
                                      resolved = true
@@ -411,7 +417,7 @@ class EventProvider : MainAPI() {
                                             this.headers = headers
                                             kty = "oct"
                                             kid = clearkeyKid
-                                            key = clearkeyKey
+                                            this.key = clearkeyKey
                                         }
                                     )
                                     successDrm = true
