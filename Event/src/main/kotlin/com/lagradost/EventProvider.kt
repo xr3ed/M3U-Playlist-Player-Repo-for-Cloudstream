@@ -42,66 +42,54 @@ class EventProvider : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val list = ArrayList<SearchResponse>()
         try {
-            // Mengambil channel.js dari NetxTV Pages API
-            val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
-            val response = app.get(jsUrl, timeout = 15).text
-            
-            // Parsing manual data JSON yang dikelilingi metadata atau langsung sebagai JSON string
+            // Mengambil jadwal.js
+            val jadwalUrl = "https://api-tvnetx01.pages.dev/netxtv/jadwal.js"
+            val response = app.get(jadwalUrl, timeout = 15).text
             val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
             val root = JSONObject(jsonStr)
-            val channelsObj = root.optJSONObject("channels") ?: JSONObject()
-            val groupsObj = root.optJSONObject("groups") ?: JSONObject()
-
-            // Dapatkan list id channel untuk piala dunia (ucl1 sampai ucl20, wc17, dsb)
-            // Di sini kita ambil semua channel yang memiliki keyword 'ucl', 'wc', atau 'fifa'
-            val targetChannelIds = mutableSetOf<String>()
-            val keys = groupsObj.keys()
-            while (keys.hasNext()) {
-                val groupKey = keys.next()
-                if (groupKey.contains("ucl") || groupKey.contains("wc") || groupKey.contains("timnas")) {
-                    val arr = groupsObj.optJSONArray(groupKey)
-                    if (arr != null) {
-                        for (i in 0 until arr.length()) {
-                            targetChannelIds.add(arr.optString(i))
+            val scheduleArray = root.optJSONArray("schedule")
+            
+            if (scheduleArray != null) {
+                for (i in 0 until scheduleArray.length()) {
+                    val group = scheduleArray.optJSONObject(i) ?: continue
+                    if (!group.optBoolean("active", true)) continue
+                    
+                    val groupTitle = group.optString("title", "EVENT")
+                    val linkVal = group.optString("link", "")
+                    val cleanGroupId = if (linkVal.startsWith("go:")) linkVal.substringAfter("go:") else linkVal
+                    
+                    val matchesArray = group.optJSONArray("matches")
+                    if (matchesArray != null) {
+                        for (j in 0 until matchesArray.length()) {
+                            val match = matchesArray.optJSONObject(j) ?: continue
+                            if (!match.optBoolean("active", true)) continue
+                            
+                            val time = match.optString("time", "")
+                            val home = match.optString("home", "")
+                            val away = match.optString("away", "")
+                            val nameVal = match.optString("name", "")
+                            
+                            val displayTitle = if (!home.isNullOrBlank() && !away.isNullOrBlank()) {
+                                if (!time.isNullOrBlank()) "[$time] $home vs $away" else "$home vs $away"
+                            } else if (!nameVal.isNullOrBlank()) {
+                                if (!time.isNullOrBlank()) "[$time] $nameVal" else nameVal
+                            } else {
+                                continue
+                            }
+                            
+                            // Link format: kita pasangkan id group sebagai hash anchor
+                            val streamUrl = "https://wc26.netxtv.id/?id=jadwal#match:$cleanGroupId"
+                            list.add(
+                                newLiveSearchResponse(
+                                    displayTitle,
+                                    streamUrl,
+                                    TvType.Live
+                                ) {
+                                    this.posterUrl = defaultLogo
+                                }
+                            )
                         }
                     }
-                }
-            }
-
-            // Fallback: tambahkan channel bernomor fifa secara langsung
-            for (i in 1..20) {
-                targetChannelIds.add("fifa$i")
-            }
-
-            // Urutkan dan filter agar unik
-            val addedUrls = mutableSetOf<String>()
-            for (chId in targetChannelIds) {
-                val ch = channelsObj.optJSONObject(chId) ?: continue
-                val chName = ch.optString("name", chId)
-                val chImg = ch.optString("img", defaultLogo)
-                val chHref = ch.optString("href")
-
-                if (chHref.isNullOrBlank()) continue
-                
-                // Konversi href kustom netxtv ke format URL penuh
-                // misal 'go:go3x6' atau direct link player
-                val streamUrl = if (chHref.startsWith("go:")) {
-                    "https://wc26.netxtv.id/?id=jadwal#$chHref"
-                } else {
-                    "https://wc26.netxtv.id/?id=jadwal#go:$chId"
-                }
-
-                if (!addedUrls.contains(streamUrl)) {
-                    addedUrls.add(streamUrl)
-                    list.add(
-                        newLiveSearchResponse(
-                            chName,
-                            streamUrl,
-                            TvType.Live
-                        ) {
-                            this.posterUrl = chImg
-                        }
-                    )
                 }
             }
 
@@ -184,138 +172,104 @@ class EventProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse {
         var title = "Live Stream World Cup"
-        var resolvedUrl = url
-        var debugDrmInfo = "Tidak menggunakan DRM / Player Bitmovin"
+        val episodeList = ArrayList<Episode>()
         
         try {
-            if (url.contains("#go:")) {
-                var code = url.substringAfter("#go:")
-                title = "Live Event - $code"
+            if (url.contains("#match:")) {
+                val groupId = url.substringAfter("#match:")
+                title = "Live Match - $groupId"
                 
+                // Ambil channel.js
                 val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
                 val response = app.get(jsUrl, timeout = 15).text
                 val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
                 val root = JSONObject(jsonStr)
                 val channelsObj = root.optJSONObject("channels") ?: JSONObject()
+                val groupsObj = root.optJSONObject("groups") ?: JSONObject()
                 
-                var resolved = false
-                var depth = 0
-                while (!resolved && depth < 5) {
-                    val channelData = channelsObj.optJSONObject(code)
-                    if (channelData != null) {
-                        val chName = channelData.optString("name")
-                        if (!chName.isNullOrBlank()) {
-                            title = chName
-                        }
-                        val href = channelData.optString("href")
-                        if (!href.isNullOrBlank()) {
-                            if (href.startsWith("go:")) {
-                                code = href.substringAfter("go:")
-                                depth++
-                            } else {
-                                resolvedUrl = href
-                                resolved = true
-                            }
-                        } else {
-                            resolved = true
-                        }
-                    } else {
-                        resolvedUrl = "https://xys1-player.pages.dev/bitmovin/?id=$code"
-                        resolved = true
+                // Cari group yang mendekati, misal jika groupId adalah 'ucl', 
+                // kita ambil channel dari grup ucl1, ucl2, ucl3, ucl4, ucl5, ucl6, ucl10, dsb.
+                // Jika exact match, kita ambil grup itu saja.
+                val targetGroups = mutableListOf<String>()
+                val keys = groupsObj.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    if (k.equals(groupId, ignoreCase = true)) {
+                        targetGroups.add(k)
                     }
                 }
                 
-                if (resolvedUrl.contains("xys1-player.pages.dev/bitmovin/")) {
-                    val idVal = resolvedUrl.substringAfter("?id=").substringBefore("&")
-                    debugDrmInfo = "Mencoba fetch worker untuk id: $idVal...\n"
-                    
-                    var successDrm = false
-                    try {
-                        val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
-                        val responseText = app.get(workerUrl, timeout = 10).text
-                        if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
-                            debugDrmInfo += "Respon worker didapatkan (${responseText.length} chars)\n"
-                            val responseJson = JSONObject(responseText.trim())
-                            val ivB64 = responseJson.optString("iv")
-                            val dataB64 = responseJson.optString("data")
-                            
-                            if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
-                                debugDrmInfo += "Mencoba AES-GCM decryption...\n"
-                                val password = "xys1-gh"
-                                val salt = "salt123"
-                                val iterations = 1000
-                                val keySize = 256
-                                
-                                val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-                                val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(Charsets.UTF_8), iterations, keySize)
-                                val tmp = factory.generateSecret(spec)
-                                val secretKey = javax.crypto.spec.SecretKeySpec(tmp.encoded, "AES")
-                                
-                                val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
-                                val combinedCipher = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
-                                
-                                val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
-                                val gcmSpec = javax.crypto.spec.GCMParameterSpec(128, iv)
-                                cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, gcmSpec)
-                                
-                                val decryptedBytes = cipher.doFinal(combinedCipher)
-                                val decryptedText = String(decryptedBytes, Charsets.UTF_8)
-                                val decryptedJson = JSONObject(decryptedText)
-                                
-                                val dashUrl = decryptedJson.optString("dash")
-                                val drmStr = decryptedJson.optString("drm")
-                                if (!dashUrl.isNullOrBlank() && !drmStr.isNullOrBlank()) {
-                                    debugDrmInfo += "DECRYPT SUCCESS!\n• DASH: $dashUrl\n• DRM: $drmStr"
-                                    successDrm = true
-                                } else {
-                                    debugDrmInfo += "DECRYPTED JSON but no dash/drm found: $decryptedText"
-                                }
-                            }
+                // Jika tidak ada exact match, cari fuzzy prefix (misal groupId = 'ucl' -> ucl1, ucl2, ucl4, ucl10)
+                if (targetGroups.isEmpty()) {
+                    val keys2 = groupsObj.keys()
+                    while (keys2.hasNext()) {
+                        val k = keys2.next()
+                        if (k.startsWith(groupId, ignoreCase = true) || k.contains(groupId, ignoreCase = true)) {
+                            targetGroups.add(k)
+                        }
+                    }
+                }
+                
+                val addedChannels = mutableSetOf<String>()
+                var epIndex = 1
+                for (gId in targetGroups) {
+                    val arr = groupsObj.optJSONArray(gId) ?: continue
+                    for (i in 0 until arr.length()) {
+                        val chId = arr.optString(i)
+                        if (chId.equals("vvip", ignoreCase = true) || chId.equals("replay", ignoreCase = true) || chId.equals("wc-jadwal", ignoreCase = true)) continue
+                        if (addedChannels.contains(chId)) continue
+                        addedChannels.add(chId)
+                        
+                        val chData = channelsObj.optJSONObject(chId) ?: continue
+                        val chName = chData.optString("name", chId)
+                        val chImg = chData.optString("img", defaultLogo)
+                        val chHref = chData.optString("href")
+                        
+                        val linkUrl = if (!chHref.isNullOrBlank()) {
+                            if (chHref.startsWith("go:")) "https://wc26.netxtv.id/?id=jadwal#$chHref" else chHref
                         } else {
-                            debugDrmInfo += "Bitmovin worker reply: CHANNEL_NOT_FOUND\n"
+                            "https://wc26.netxtv.id/?id=jadwal#go:$chId"
                         }
-                    } catch (err: Exception) {
-                        debugDrmInfo += "Error Bitmovin decryption: ${err.message}\n"
-                    }
-
-                    // Jika gagal atau channel tidak ditemukan di bitmovin worker, coba nsplayer worker
-                    if (!successDrm) {
-                        debugDrmInfo += "Mencoba fallback ke NS Player worker...\n"
-                        try {
-                            val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
-                            val nsResponseText = app.get(nsWorkerUrl, timeout = 10).text
-                            if (nsResponseText.trim().isNotEmpty()) {
-                                val nsJson = JSONObject(nsResponseText.trim())
-                                val encryptedPayload = nsJson.optString(idVal)
-                                if (!encryptedPayload.isNullOrEmpty()) {
-                                    // Custom XOR Decryption
-                                    val key = "xys1-gh"
-                                    val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
-                                    val decodedStr = String(decodedBytes, Charsets.UTF_8)
-                                    
-                                    val decryptedChars = CharArray(decodedStr.length)
-                                    for (i in decodedStr.indices) {
-                                        val cByte = decodedStr[i].code
-                                        val kByte = key[i % key.length].code
-                                        decryptedChars[i] = (cByte xor kByte).toChar()
-                                    }
-                                    
-                                    val decryptedUrl = String(decryptedChars)
-                                        .replace("|", "%7C")
-                                        .replace(" ", "%20")
-                                    
-                                    debugDrmInfo += "NS Player XOR Decrypt SUCCESS!\n• Stream URL: $decryptedUrl"
-                                    resolvedUrl = decryptedUrl
-                                } else {
-                                    debugDrmInfo += "NS Player payload empty untuk id: $idVal"
-                                }
-                            } else {
-                                debugDrmInfo += "NS Player worker response empty"
+                        
+                        episodeList.add(
+                            newEpisode(linkUrl) {
+                                this.name = chName
+                                this.episode = epIndex++
+                                this.posterUrl = chImg
                             }
-                        } catch (err2: Exception) {
-                            debugDrmInfo += "Error NS Player decryption: ${err2.message}"
-                        }
+                        )
                     }
+                }
+                
+                // Fallback default jika list kosong
+                if (episodeList.isEmpty()) {
+                    episodeList.add(
+                        newEpisode("https://wc26.netxtv.id/?id=jadwal#go:tvri2") {
+                            this.name = "TVRI+"
+                            this.episode = 1
+                        }
+                    )
+                }
+                
+                return newTvSeriesLoadResponse(
+                    title,
+                    url,
+                    TvType.TvSeries,
+                    episodeList
+                ) {
+                    this.posterUrl = defaultLogo
+                    this.plot = "Pilih server saluran streaming di bawah untuk menonton pertandingan ini secara langsung."
+                }
+            } else {
+                // Untuk support play direct link lama
+                val code = if (url.contains("#go:")) url.substringAfter("#go:") else url.substringAfter("#")
+                title = "Live Stream - $code"
+                return newLiveStreamLoadResponse(
+                    title,
+                    url,
+                    url
+                ) {
+                    this.posterUrl = defaultLogo
                 }
             }
         } catch (e: Exception) {
@@ -328,11 +282,6 @@ class EventProvider : MainAPI() {
             url
         ) {
             this.posterUrl = defaultLogo
-            this.plot = "DEBUG INFO (Silakan foto/infokan ini jika error):\n" +
-                        "• Link Asli: $url\n" +
-                        "• Resolved Link: $resolvedUrl\n" +
-                        "• DRM Status:\n$debugDrmInfo\n\n" +
-                        "Tonton siaran langsung Piala Dunia 2026 gratis via plugin Event."
         }
     }
 
