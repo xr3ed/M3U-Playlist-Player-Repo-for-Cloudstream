@@ -315,13 +315,19 @@ class EventProvider : MainAPI() {
                     if (channelData != null) {
                         val href = channelData.optString("href")
                         if (!href.isNullOrBlank()) {
-                            if (href.startsWith("go:")) {
-                                code = href.substringAfter("go:").substringBefore("#").substringBefore("&")
-                                depth++
-                            } else {
-                                targetUrl = href
-                                resolved = true
-                            }
+                             if (href.startsWith("go:")) {
+                                 val nextCode = href.substringAfter("go:").substringBefore("#").substringBefore("&")
+                                 if (nextCode == code) {
+                                     targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
+                                     resolved = true
+                                 } else {
+                                     code = nextCode
+                                     depth++
+                                 }
+                             } else {
+                                 targetUrl = href
+                                 resolved = true
+                             }
                         } else {
                             resolved = true
                         }
