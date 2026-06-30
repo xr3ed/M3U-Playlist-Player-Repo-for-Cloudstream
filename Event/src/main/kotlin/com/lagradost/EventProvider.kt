@@ -382,6 +382,8 @@ class EventProvider : MainAPI() {
                                     val keyId = parts[0].trim()
                                     val keyValue = parts[1].trim()
                                     
+                                    android.util.Log.d("EventProvider", "Successfully decrypted DRM ClearKey: kid=$keyId key=$keyValue")
+                                    
                                     val clearkeyKid = hexToBase64Url(keyId)
                                     val clearkeyKey = hexToBase64Url(keyValue)
                                     
@@ -410,7 +412,11 @@ class EventProvider : MainAPI() {
                                     return true
                                 }
                             }
+                        } else {
+                            android.util.Log.d("EventProvider", "Response worker has empty iv or data: $responseText")
                         }
+                    } else {
+                        android.util.Log.d("EventProvider", "Worker returned CHANNEL_NOT_FOUND for id: $idVal")
                     }
                 } catch (e: Exception) {
                     android.util.Log.e("EventProvider", "Failed to decrypt bitmovin source", e)
@@ -422,6 +428,7 @@ class EventProvider : MainAPI() {
                     try {
                         val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
                         val nsResponseText = app.get(nsWorkerUrl, timeout = 10).text
+                        android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
                             val nsJson = JSONObject(nsResponseText.trim())
                             val encryptedPayload = nsJson.optString(idVal)
@@ -443,6 +450,8 @@ class EventProvider : MainAPI() {
                                 
                                 android.util.Log.d("EventProvider", "NS Player XOR decrypt success: $decryptedUrl")
                                 targetUrl = decryptedUrl
+                            } else {
+                                android.util.Log.d("EventProvider", "NS Player payload key $idVal not found in json")
                             }
                         }
                     } catch (e: Exception) {
@@ -453,6 +462,7 @@ class EventProvider : MainAPI() {
                 if (!successDrm && targetUrl.contains(".pages.dev/")) {
                     // Fallback default stream jika dua-duanya nihil
                     targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
+                    android.util.Log.d("EventProvider", "Decryption failed. Defaulting to stream CDN fallback: $targetUrl")
                 }
             }
 
