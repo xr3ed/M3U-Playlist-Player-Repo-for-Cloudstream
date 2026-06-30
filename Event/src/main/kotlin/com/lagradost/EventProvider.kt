@@ -241,7 +241,6 @@ class EventProvider : MainAPI() {
                                 this.name = chName
                                 this.episode = epIndex++
                                 this.posterUrl = chImg
-                                this.description = linkUrl // Tampilkan di deskripsi/keterangan episode
                             }
                         )
                     }
