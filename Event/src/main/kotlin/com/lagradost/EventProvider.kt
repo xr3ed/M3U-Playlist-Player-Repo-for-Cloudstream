@@ -203,8 +203,6 @@ class EventProvider : MainAPI() {
                         targetGroups.add(k)
                     }
                 }
-                
-                // Jika tidak ada exact match, cari fuzzy prefix (misal groupId = 'ucl' -> ucl1, ucl2, ucl4, ucl10)
                 if (targetGroups.isEmpty()) {
                     val keys2 = groupsObj.keys()
                     while (keys2.hasNext()) {
