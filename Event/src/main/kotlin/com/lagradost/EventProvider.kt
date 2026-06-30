@@ -344,7 +344,7 @@ class EventProvider : MainAPI() {
             // Jika targetUrl mengarah ke halaman player web pages.dev (seperti xys1-2-player.pages.dev/bitmovin/ atau pisionx.pages.dev/xplay/jwplayer)
             // Kita bypass dan decode DRM ClearKey-nya agar dapat dimainkan secara native di Cloudstream.
             if (targetUrl.contains(".pages.dev/") && (targetUrl.contains("bitmovin") || targetUrl.contains("shaka") || targetUrl.contains("jwplayer") || targetUrl.contains("clappr") || targetUrl.contains("nsplayer"))) {
-                val idVal = targetUrl.substringAfter("?id=").substringBefore("&").substringBefore("#")
+                val idVal = targetUrl.substringAfter("id=").substringBefore("&").substringBefore("#")
                 android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
                 
                 var successDrm = false
@@ -433,7 +433,7 @@ class EventProvider : MainAPI() {
                     android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
                     try {
                         val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
-                        val nsResponseText = app.get(nsWorkerUrl, timeout = 10).text
+                        val nsResponseText = app.get(nsWorkerUrl, timeout = 15).text
                         android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
                             val nsJson = JSONObject(nsResponseText.trim())
