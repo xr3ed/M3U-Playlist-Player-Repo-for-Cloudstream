@@ -524,8 +524,8 @@ class EventProvider : MainAPI() {
                     }
                 }
                 
-                if (!successDrm && targetUrl.contains(".pages.dev/")) {
-                    // Fallback default stream jika dua-duanya nihil
+                if (!successDrm && targetUrl.contains(".pages.dev/") && !targetUrl.contains("bitmovin") && !targetUrl.contains("nsplayer")) {
+                    // Fallback default stream jika dua-duanya nihil dan bukan dynamic player
                     targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
                     android.util.Log.d("EventProvider", "Decryption failed. Defaulting to stream CDN fallback: $targetUrl")
                 }
