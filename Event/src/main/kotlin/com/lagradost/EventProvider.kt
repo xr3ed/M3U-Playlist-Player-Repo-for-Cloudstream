@@ -437,9 +437,24 @@ class EventProvider : MainAPI() {
                         android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
                             val nsJson = JSONObject(nsResponseText.trim())
-                            val encryptedPayload = nsJson.optString(idVal)
-                            if (!encryptedPayload.isNullOrEmpty()) {
-                                val key = "xys1-gh"
+                             var encryptedPayload = nsJson.optString(idVal)
+                             if (encryptedPayload.isNullOrEmpty()) {
+                                 // Coba cari key numerik jika idVal bukan numerik (misal jika idVal = "one1" tetapi worker menggunakan key numerik "22", "55", dsb.)
+                                 val keys = nsJson.keys()
+                                 while (keys.hasNext() && encryptedPayload.isNullOrEmpty()) {
+                                     val k = keys.next()
+                                     if (k.all { it.isDigit() }) {
+                                         val valStr = nsJson.optString(k)
+                                         // Validasi base64 payload
+                                         if (valStr.length > 200 && (valStr.startsWith("EA0") || valStr.startsWith("DBA"))) {
+                                             encryptedPayload = valStr
+                                             android.util.Log.d("EventProvider", "Found dynamic numeric channel payload at key: $k")
+                                         }
+                                     }
+                                 }
+                             }
+                             if (!encryptedPayload.isNullOrEmpty()) {
+                                 val key = "xys1-gh"
                                 val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
                                 val decodedStr = String(decodedBytes, Charsets.UTF_8)
                                 
