@@ -218,23 +218,41 @@ class EventProvider(val context: Context) : MainAPI() {
                 val contentProtectionXml = contentProtectionXmlBuilder.toString()
                 
                 if (contentProtectionXml.isNotEmpty()) {
-                    val parts = modifiedXml.split("<AdaptationSet")
-                    if (parts.size > 1) {
-                        val sb = StringBuilder(parts[0])
-                        for (i in 1 until parts.size) {
-                            sb.append("<AdaptationSet")
-                            val rest = parts[i]
-                            val tagEndIdx = rest.indexOf(">")
-                            if (tagEndIdx != -1) {
-                                sb.append(rest.substring(0, tagEndIdx + 1))
-                                sb.append("\n$contentProtectionXml\n")
-                                sb.append(rest.substring(tagEndIdx + 1))
-                            } else {
-                                sb.append(rest)
-                            }
-                        }
-                        modifiedXml = sb.toString()
+                    // Cari tag mp4protection:2011 di seluruh manifest (AdaptationSet maupun Representation)
+                    // dan sisipkan tag ClearKey tepat di sampingnya agar diwarisi secara lokal dengan sukses
+                    var tempXml = modifiedXml
+                    
+                    val selfClosingRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*/\s*>""", RegexOption.IGNORE_CASE)
+                    tempXml = selfClosingRegex.replace(tempXml) { matchResult ->
+                        matchResult.value + "\n" + contentProtectionXml
                     }
+                    
+                    val openCloseRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE)
+                    tempXml = openCloseRegex.replace(tempXml) { matchResult ->
+                        matchResult.value + "\n" + contentProtectionXml
+                    }
+                    
+                    // Jika karena suatu alasan tidak ada tag mp4protection, fallback ke penyisipan AdaptationSet asli
+                    if (tempXml == modifiedXml) {
+                        val parts = modifiedXml.split("<AdaptationSet")
+                        if (parts.size > 1) {
+                            val sb = StringBuilder(parts[0])
+                            for (i in 1 until parts.size) {
+                                sb.append("<AdaptationSet")
+                                val rest = parts[i]
+                                val tagEndIdx = rest.indexOf(">")
+                                if (tagEndIdx != -1) {
+                                    sb.append(rest.substring(0, tagEndIdx + 1))
+                                    sb.append("\n$contentProtectionXml\n")
+                                    sb.append(rest.substring(tagEndIdx + 1))
+                                } else {
+                                    sb.append(rest)
+                                }
+                            }
+                            tempXml = sb.toString()
+                        }
+                    }
+                    modifiedXml = tempXml
                 }
             }
             
