@@ -167,6 +167,29 @@ object LocalManifestServer {
                                               // 2. Hapus PlayReady
                                               modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
                                               modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
+
+                                              // 3. Tambahkan namespace cenc jika belum ada
+                                              if (!modifiedXml.contains("xmlns:cenc")) {
+                                                  modifiedXml = modifiedXml.replace("<MPD", "<MPD xmlns:cenc=\"urn:mpeg:cenc:2013\"")
+                                              }
+
+                                              // 4. Injeksikan ClearKey ContentProtection dengan default_KID yang sesuai
+                                              val kidUuid = if (meta.drmLicenseParam.contains(":")) {
+                                                  meta.drmLicenseParam.substringBefore(":").trim()
+                                              } else {
+                                                  if (meta.drmLicenseParam.length >= 32) {
+                                                      val k = meta.drmLicenseParam.substring(0, 32)
+                                                      if (!k.contains("-")) {
+                                                          "${k.substring(0, 8)}-${k.substring(8, 12)}-${k.substring(12, 16)}-${k.substring(16, 20)}-${k.substring(20)}"
+                                                      } else k
+                                                  } else ""
+                                              }
+                                              if (kidUuid.isNotEmpty()) {
+                                                  val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidUuid"/>"""
+                                                  modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                      matchResult.value + "\n" + clearKeyBlock + "\n"
+                                                  }
+                                              }
                                              
                                              val finalUrl = response.url
                                              val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
