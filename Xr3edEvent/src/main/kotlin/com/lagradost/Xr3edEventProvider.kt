@@ -140,9 +140,6 @@ object LocalManifestServer {
                                           
                                       val sep = if (cleanPath.contains("?")) "&" else "?"
                                       var originalUrl = base + cleanPath + (if (origParams.isNotEmpty()) sep + origParams else "")
-                                      if (originalUrl.startsWith("https://") && originalUrl.contains("workers.dev")) {
-                                          originalUrl = originalUrl.replace("https://", "http://")
-                                      }
                                       
                                       android.util.Log.d("EventProvider", "LocalManifestServer proxying segment: $originalUrl")
                                      
@@ -196,11 +193,7 @@ object LocalManifestServer {
                                                  put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
                                                  put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
                                              }
-                                              val manifestUrl = if (meta.originalUrl.startsWith("https://") && meta.originalUrl.contains("workers.dev")) {
-                                                  meta.originalUrl.replace("https://", "http://")
-                                              } else {
-                                                  meta.originalUrl
-                                              }
+                                              val manifestUrl = meta.originalUrl
                                               val response = kotlinx.coroutines.runBlocking {
                                                   app.get(manifestUrl, headers = manifestHeaders, timeout = 25)
                                               }
@@ -721,11 +714,17 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                       chNameLower.contains("trans") || chNameLower.contains("rcti") ||
                                       chNameLower.contains("lokal") || chNameLower.contains("moji") ||
                                       chNameLower.contains("one1")
+
+                        val isGerman = chIdLower.contains("fusball") || chIdLower.contains("fussball") ||
+                                       chNameLower.contains("fusball") || chNameLower.contains("fussball") ||
+                                       chIdLower.contains("jerman") || chNameLower.contains("jerman") ||
+                                       chIdLower.contains("german") || chNameLower.contains("german")
                         
                         when {
+                            isGerman -> 3
                             isEnglish -> 1
                             isLokal -> 2
-                            else -> 3
+                            else -> 4
                         }
                     }.thenBy { it.second })
 
@@ -905,6 +904,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 val addedChannels = mutableSetOf<String>()
                 var resolvedAny = false
                 
+                val collectedChannels = mutableListOf<Triple<String, String, String>>()
                 for (gId in targetGroups) {
                     val arr = groupsObj.optJSONArray(gId) ?: continue
                     for (i in 0 until arr.length()) {
@@ -924,11 +924,62 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         } else {
                             "https://xys1-2-player.pages.dev/bitmovin/?id=$chId"
                         }
-                        
-                        val success = resolveSingleChannel(linkUrl, chName, callback)
-                        if (success) {
-                            resolvedAny = true
-                        }
+                        collectedChannels.add(Triple(chId, chName, linkUrl))
+                    }
+                }
+
+                val sortedChannels = collectedChannels.sortedWith(compareBy<Triple<String, String, String>> {
+                    val chIdLower = it.first.lowercase()
+                    val chNameLower = it.second.lowercase()
+                    
+                    val isEnglish = chIdLower.contains("eng") || chIdLower.contains("english") ||
+                                    chIdLower.contains("us") || chIdLower.contains("uk") ||
+                                    chIdLower.contains("dazn") || chIdLower.contains("bein") ||
+                                    chIdLower.contains("sky") || chIdLower.contains("optus") ||
+                                    chIdLower.contains("supersport") || chIdLower.contains("tsn") ||
+                                    chIdLower.contains("espn") || chIdLower.contains("fox") ||
+                                    chIdLower.contains("astro") || chIdLower.contains("hub") ||
+                                    chIdLower.contains("premier") || chIdLower.contains("ppv") ||
+                                    chIdLower.contains("vvip") ||
+                                    chNameLower.contains("eng") || chNameLower.contains("english") ||
+                                    chNameLower.contains("us") || chNameLower.contains("uk") ||
+                                    chNameLower.contains("dazn") || chNameLower.contains("bein") ||
+                                    chNameLower.contains("sky") || chNameLower.contains("optus") ||
+                                    chNameLower.contains("supersport") || chNameLower.contains("tsn") ||
+                                    chNameLower.contains("espn") || chNameLower.contains("fox") ||
+                                    chNameLower.contains("astro") || chNameLower.contains("hub") ||
+                                    chNameLower.contains("premier") || chNameLower.contains("ppv") ||
+                                    chNameLower.contains("vvip")
+                                    
+                    val isLokal = chIdLower.contains("tvri") || chIdLower.contains("vidio") ||
+                                  chIdLower.contains("sctv") || chIdLower.contains("indosiar") ||
+                                  chIdLower.contains("trans") || chIdLower.contains("rcti") ||
+                                  chIdLower.contains("lokal") || chIdLower.contains("moji") ||
+                                  chIdLower.contains("one1") ||
+                                  chNameLower.contains("tvri") || chNameLower.contains("vidio") ||
+                                  chNameLower.contains("sctv") || chNameLower.contains("indosiar") ||
+                                  chNameLower.contains("trans") || chNameLower.contains("rcti") ||
+                                  chNameLower.contains("lokal") || chNameLower.contains("moji") ||
+                                  chNameLower.contains("one1")
+
+                    val isGerman = chIdLower.contains("fusball") || chIdLower.contains("fussball") ||
+                                   chNameLower.contains("fusball") || chNameLower.contains("fussball") ||
+                                   chIdLower.contains("jerman") || chIdLower.contains("jerman") ||
+                                   chIdLower.contains("german") || chIdLower.contains("german")
+                    
+                    when {
+                        isGerman -> 3
+                        isEnglish -> 1
+                        isLokal -> 2
+                        else -> 4
+                    }
+                }.thenBy { it.second })
+
+                resolvedAny = false
+                for (ch in sortedChannels) {
+                    val success = resolveSingleChannel(ch.third, ch.second, callback)
+                    if (success) {
+                        resolvedAny = true
                     }
                 }
                 return resolvedAny
@@ -1100,8 +1151,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     
                                     callback.invoke(
                                         newDrmExtractorLink(
-                                            serverName,
-                                            serverName,
+                                            "$serverName (Bitmovin)",
+                                            "$serverName (Bitmovin)",
                                             streamUrl,
                                             ExtractorLinkType.DASH,
                                             CLEARKEY_UUID
@@ -1114,7 +1165,6 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         }
                                     )
                                     successDrm = true
-                                    return true
                                 }
                             }
                         } else {
@@ -1216,35 +1266,35 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                          
                                          android.util.Log.d("EventProvider", "Invoking CallSite 2: URL=$streamUrl, KID=$clearkeyKid, KEY=$clearkeyKey, HEADERS=$headers")
                                          
-                                         callback.invoke(
-                                             newDrmExtractorLink(
-                                                 serverName,
-                                                 serverName,
-                                                 streamUrl,
-                                                 streamType,
-                                                 CLEARKEY_UUID
-                                             ) {
-                                                 quality = Qualities.Unknown.value
-                                                 this.headers = headers
-                                                 kty = "oct"
-                                                 kid = clearkeyKid
-                                                 this.key = clearkeyKey
-                                             }
-                                         )
-                                         successDrm = true
-                                         return true
-                                     }
-                                 }
-                                 currentTargetUrl = decryptedUrl
-                             } else {
-                                 android.util.Log.d("EventProvider", "NS Player payload key $idVal not found in json")
-                             }
-                         }
-                    } catch (e: Exception) {
-                        android.util.Log.e("EventProvider", "Failed to decrypt NS Player source", e)
-                    }
-                }
-                
+                                          callback.invoke(
+                                              newDrmExtractorLink(
+                                                  "$serverName (NS Player)",
+                                                  "$serverName (NS Player)",
+                                                  streamUrl,
+                                                  streamType,
+                                                  CLEARKEY_UUID
+                                              ) {
+                                                  quality = Qualities.Unknown.value
+                                                  this.headers = headers
+                                                  kty = "oct"
+                                                  kid = clearkeyKid
+                                                  this.key = clearkeyKey
+                                              }
+                                          )
+                                          successDrm = true
+                                      }
+                                  }
+                                  currentTargetUrl = decryptedUrl
+                              } else {
+                                  android.util.Log.d("EventProvider", "NS Player payload key $idVal not found in json")
+                              }
+                          }
+                     } catch (e: Exception) {
+                         android.util.Log.e("EventProvider", "Failed to decrypt NS Player source", e)
+                     }
+                 }
+                 
+                 if (successDrm) return true
                 if (!successDrm && currentTargetUrl.contains(".pages.dev/") && !currentTargetUrl.contains("bitmovin") && !currentTargetUrl.contains("nsplayer")) {
                     currentTargetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
                     android.util.Log.d("EventProvider", "Decryption failed. Defaulting to stream CDN fallback: $currentTargetUrl")
