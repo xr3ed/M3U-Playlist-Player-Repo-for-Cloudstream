@@ -10,8 +10,9 @@ import com.lagradost.cloudstream3.utils.CLEARKEY_UUID
 import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
 import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import java.net.URLDecoder
+import android.content.Context
 
-class EventProvider : MainAPI() {
+class EventProvider(val context: Context) : MainAPI() {
     override var mainUrl = "https://wc26.netxtv.id"
     override var name = "Event"
     override val supportedTypes = setOf(TvType.Live)
@@ -130,8 +131,10 @@ class EventProvider : MainAPI() {
                 }
             }
             
-            val base64Xml = android.util.Base64.encodeToString(modifiedXml.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
-            return "data:application/dash+xml;base64,$base64Xml"
+            val cleanKid = kidHex.replace("-", "").trim()
+            val tempFile = java.io.File(context.cacheDir, "manifest_${cleanKid}.mpd")
+            tempFile.writeText(modifiedXml, Charsets.UTF_8)
+            return tempFile.toURI().toString()
         } catch (e: Exception) {
             android.util.Log.e("EventProvider", "Failed to generate dynamic ClearKey DASH manifest", e)
             return originalUrl

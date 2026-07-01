@@ -8,6 +8,6 @@ import android.content.Context
 class EventPlugin: Plugin() {
     override fun load(context: Context) {
         // Register provider kita ke Cloudstream
-        registerMainAPI(EventProvider())
+        registerMainAPI(EventProvider(context))
     }
 }
