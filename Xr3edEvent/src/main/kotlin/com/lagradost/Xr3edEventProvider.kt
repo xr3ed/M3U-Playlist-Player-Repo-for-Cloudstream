@@ -249,6 +249,32 @@ object LocalManifestServer {
                                                   modifiedXml = modifiedXml.replace("<MPD", "<MPD xmlns:cenc=\"urn:mpeg:cenc:2013\"")
                                               }
 
+                                              // 3b. Inject cenc:default_KID ke tag mp4protection yang sudah ada
+                                              // ExoPlayer mengabaikan tag mp4protection jika tidak ada default_KID
+                                              val rawKidForMp4 = if (meta.drmLicenseParam.contains(":")) {
+                                                  meta.drmLicenseParam.substringBefore(":").trim()
+                                              } else {
+                                                  meta.drmLicenseParam.trim()
+                                              }
+                                              val cleanKidForMp4 = rawKidForMp4.replace("-", "")
+                                              val kidUuidForMp4 = if (cleanKidForMp4.length == 32) {
+                                                  "${cleanKidForMp4.substring(0, 8)}-${cleanKidForMp4.substring(8, 12)}-${cleanKidForMp4.substring(12, 16)}-${cleanKidForMp4.substring(16, 20)}-${cleanKidForMp4.substring(20)}"
+                                              } else {
+                                                  rawKidForMp4
+                                              }
+                                              if (kidUuidForMp4.isNotEmpty()) {
+                                                  // Ganti tag mp4protection tanpa cenc:default_KID dengan yang mempunyai attribute tersebut
+                                                  modifiedXml = modifiedXml.replace(
+                                                      Regex("""<ContentProtection\s+value="cenc"\s+schemeIdUri="urn:mpeg:dash:mp4protection:2011"\s*/>""", RegexOption.IGNORE_CASE),
+                                                      """<ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="$kidUuidForMp4" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                  )
+                                                  modifiedXml = modifiedXml.replace(
+                                                      Regex("""<ContentProtection\s+schemeIdUri="urn:mpeg:dash:mp4protection:2011"\s+value="cenc"\s*/>""", RegexOption.IGNORE_CASE),
+                                                      """<ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="$kidUuidForMp4" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                  )
+                                                  android.util.Log.d("EventProvider", "LocalManifestServer: added cenc:default_KID=$kidUuidForMp4 to mp4protection tags")
+                                              }
+
                                               // 4. Injeksikan ClearKey ContentProtection dengan default_KID yang sesuai (selalu berformat UUID dengan tanda hubung)
                                               val rawKid = if (meta.drmLicenseParam.contains(":")) {
                                                   meta.drmLicenseParam.substringBefore(":").trim()
