@@ -43,10 +43,10 @@ object LocalManifestServer {
     )
 
     private val clearkeyUuid = byteArrayOf(
-        0xe2.toByte(), 0x51.toByte(), 0x3a.toByte(), 0x00.toByte(),
-        0x7b.toByte(), 0xfb.toByte(), 0x11.toByte(), 0xe9.toByte(),
-        0x91.toByte(), 0x30.toByte(), 0x02.toByte(), 0x42.toByte(),
-        0xac.toByte(), 0x11.toByte(), 0x00.toByte(), 0x02.toByte()
+        0xe2.toByte(), 0x71.toByte(), 0x9d.toByte(), 0x58.toByte(),
+        0xa9.toByte(), 0x85.toByte(), 0xb3.toByte(), 0xc9.toByte(),
+        0x78.toByte(), 0x1a.toByte(), 0xb0.toByte(), 0x30.toByte(),
+        0xaf.toByte(), 0x78.toByte(), 0xd3.toByte(), 0x0e.toByte()
     )
 
     private fun convertPsshToClearkey(bytes: ByteArray): ByteArray {
@@ -337,9 +337,8 @@ object LocalManifestServer {
                                               }
                                               
                                               // ClearKey tags (injeksikan kedua UUID W3C dan ExoPlayer ClearKey agar kompatibel)
-                                              val hasClearKey = modifiedXml.contains("urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002", ignoreCase = true) ||
-                                                                modifiedXml.contains("urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)
-                                              if (!hasClearKey) {
+                                               val hasExoClearKey = modifiedXml.contains("urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)
+                                               if (!hasExoClearKey) {
                                                   val keyPairs = meta.drmLicenseParam.split(",")
                                                   val contentProtectionXmlBuilder = StringBuilder()
                                                   for (pair in keyPairs) {
