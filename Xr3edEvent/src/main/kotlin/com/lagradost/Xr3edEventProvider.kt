@@ -20,7 +20,13 @@ import kotlin.concurrent.thread
 object LocalManifestServer {
     private var serverSocket: ServerSocket? = null
     private var serverPort: Int = 0
-    private val manifests = HashMap<String, String>()
+    
+    class ManifestMetadata(
+        val originalUrl: String,
+        val drmLicenseParam: String,
+        val headers: Map<String, String>
+    )
+    private val manifestMetadatas = java.util.concurrent.ConcurrentHashMap<String, ManifestMetadata>()
 
     fun start(): Int {
         if (serverSocket != null) return serverPort
@@ -122,29 +128,180 @@ object LocalManifestServer {
                                          out.flush()
                                      }
                                  } else {
-                                     // Request manifest seperti biasa
+                                     // Request manifest secara dinamis
                                      val id = path.substringAfter("/manifest_", "").substringBefore(".mpd", "")
-                                     val xml = manifests[id]
-                                     android.util.Log.d("EventProvider", "LocalManifestServer resolved ID: $id, found manifest: ${xml != null}")
+                                     val meta = manifestMetadatas[id]
+                                     android.util.Log.d("EventProvider", "LocalManifestServer resolved ID: $id, found metadata: ${meta != null}")
                                      
                                      val out = java.io.PrintWriter(java.io.OutputStreamWriter(client.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8), true)
-                                     if (xml != null) {
-                                         val bytes = xml.toByteArray(java.nio.charset.StandardCharsets.UTF_8)
-                                         out.print("HTTP/1.1 200 OK\r\n")
-                                         out.print("Content-Type: application/dash+xml; charset=utf-8\r\n")
-                                         out.print("Content-Length: ${bytes.size}\r\n")
-                                         out.print("Access-Control-Allow-Origin: *\r\n")
-                                         out.print("Connection: close\r\n")
-                                         out.print("\r\n")
-                                         out.print(xml)
-                                         out.flush()
-                                         android.util.Log.d("EventProvider", "LocalManifestServer HTTP 200 OK sent for ID: $id")
+                                     if (meta != null) {
+                                         var xml: String? = null
+                                         try {
+                                             val manifestHeaders = meta.headers.toMutableMap().apply {
+                                                 put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
+                                                 put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
+                                             }
+                                             val response = kotlinx.coroutines.runBlocking {
+                                                 app.get(meta.originalUrl, headers = manifestHeaders, timeout = 25)
+                                             }
+                                             val manifestXml = response.text
+                                             
+                                             var modifiedXml = manifestXml
+                                             
+                                             // 1. Hapus Widevine
+                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
+                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
+                                             
+                                             // 2. Hapus PlayReady
+                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
+                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
+                                             
+                                             val finalUrl = response.url
+                                             val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
+                                             val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
+                                             val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
+                                             
+                                             if (!modifiedXml.contains("<BaseURL>") && !modifiedXml.contains("<BaseURL ")) {
+                                                 val periodIdx = modifiedXml.indexOf("<Period")
+                                                 if (periodIdx != -1) {
+                                                     val insertIdx = modifiedXml.indexOf(">", periodIdx) + 1
+                                                     modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
+                                                 } else {
+                                                     val mpdIdx = modifiedXml.indexOf("<MPD")
+                                                     if (mpdIdx != -1) {
+                                                         val insertIdx = modifiedXml.indexOf(">", mpdIdx) + 1
+                                                         modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
+                                                     }
+                                                 }
+                                             }
+                                             
+                                             // Tulis ulang SegmentTemplate media
+                                             if (queryParams.isNotEmpty()) {
+                                                 val escapedParams = queryParams.replace("&", "&amp;")
+                                                 modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                     val p1 = matchResult.groupValues[1]
+                                                     val sep = if (p1.contains("?")) "&amp;" else "?"
+                                                     """media="$p1$sep$escapedParams""""
+                                                 }
+                                             }
+                                             
+                                             // Tulis ulang SegmentTemplate initialization
+                                             val cleanId = meta.drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
+                                             val refHeader = meta.headers["Referer"] ?: ""
+                                             val originHeader = meta.headers["Origin"] ?: ""
+                                             
+                                             modifiedXml = modifiedXml.replace(Regex("""initialization=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                 val path = matchResult.groupValues[1]
+                                                 val encodedBase = java.net.URLEncoder.encode(absoluteBaseUrl, "UTF-8")
+                                                 val encodedPath = java.net.URLEncoder.encode(path, "UTF-8")
+                                                 val encodedParams = java.net.URLEncoder.encode(queryParams, "UTF-8")
+                                                 val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
+                                                 val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
+                                                 
+                                                 """initialization="http://127.0.0.1:$serverPort/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
+                                             }
+                                             
+                                             // ClearKey tags
+                                             val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)
+                                             if (!hasClearKey) {
+                                                 val keyPairs = meta.drmLicenseParam.split(",")
+                                                 val contentProtectionXmlBuilder = StringBuilder()
+                                                 for (pair in keyPairs) {
+                                                     val parts = pair.split(":")
+                                                     if (parts.size == 2) {
+                                                         val keyId = parts[0].trim()
+                                                         val uuidKid = if (keyId.length == 32) {
+                                                             "${keyId.substring(0, 8)}-${keyId.substring(8, 12)}-${keyId.substring(12, 16)}-${keyId.substring(16, 20)}-${keyId.substring(20)}"
+                                                         } else {
+                                                             keyId
+                                                         }
+                                                         contentProtectionXmlBuilder.append("""
+                                                             <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$uuidKid" xmlns:cenc="urn:mpeg:cenc:2013"/>
+                                                         """.trimIndent()).append("\n")
+                                                     }
+                                                 }
+                                                 val contentProtectionXml = contentProtectionXmlBuilder.toString()
+                                                 
+                                                 if (contentProtectionXml.isNotEmpty()) {
+                                                     var tempXml = modifiedXml
+                                                     
+                                                     val selfClosingRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*/\s*>""", RegexOption.IGNORE_CASE)
+                                                     tempXml = selfClosingRegex.replace(tempXml) { matchResult ->
+                                                         val matchedTag = matchResult.value
+                                                         val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(matchedTag)
+                                                         
+                                                         val clearKeyTag = if (kidMatch != null) {
+                                                             val kidToUse = kidMatch.groupValues[1]
+                                                             """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                         } else {
+                                                             contentProtectionXml.trim()
+                                                         }
+                                                         matchedTag + "\n" + clearKeyTag
+                                                     }
+                                                     
+                                                     val openCloseRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE)
+                                                     tempXml = openCloseRegex.replace(tempXml) { matchResult ->
+                                                         val matchedTag = matchResult.value
+                                                         val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(matchedTag)
+                                                         
+                                                         val clearKeyTag = if (kidMatch != null) {
+                                                             val kidToUse = kidMatch.groupValues[1]
+                                                             """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                         } else {
+                                                             contentProtectionXml.trim()
+                                                         }
+                                                         matchedTag + "\n" + clearKeyTag
+                                                     }
+                                                     
+                                                     if (tempXml == modifiedXml) {
+                                                         val parts = modifiedXml.split("<AdaptationSet")
+                                                         if (parts.size > 1) {
+                                                             val sb = StringBuilder(parts[0])
+                                                             for (i in 1 until parts.size) {
+                                                                 sb.append("<AdaptationSet")
+                                                                 val rest = parts[i]
+                                                                 val tagEndIdx = rest.indexOf(">")
+                                                                 if (tagEndIdx != -1) {
+                                                                     sb.append(rest.substring(0, tagEndIdx + 1))
+                                                                     sb.append("\n$contentProtectionXml\n")
+                                                                     sb.append(rest.substring(tagEndIdx + 1))
+                                                                 } else {
+                                                                     sb.append(rest)
+                                                                 }
+                                                             }
+                                                             tempXml = sb.toString()
+                                                         }
+                                                     }
+                                                     modifiedXml = tempXml
+                                                 }
+                                             }
+                                             xml = modifiedXml
+                                         } catch (e: Exception) {
+                                             android.util.Log.e("EventProvider", "LocalManifestServer dynamically fetch manifest error", e)
+                                         }
+                                         
+                                         if (xml != null) {
+                                             val bytes = xml.toByteArray(java.nio.charset.StandardCharsets.UTF_8)
+                                             out.print("HTTP/1.1 200 OK\r\n")
+                                             out.print("Content-Type: application/dash+xml; charset=utf-8\r\n")
+                                             out.print("Content-Length: ${bytes.size}\r\n")
+                                             out.print("Access-Control-Allow-Origin: *\r\n")
+                                             out.print("Connection: close\r\n")
+                                             out.print("\r\n")
+                                             out.print(xml)
+                                             out.flush()
+                                             android.util.Log.d("EventProvider", "LocalManifestServer dynamic HTTP 200 OK sent for ID: $id")
+                                         } else {
+                                             out.print("HTTP/1.1 502 Bad Gateway\r\n")
+                                             out.print("Connection: close\r\n")
+                                             out.print("\r\n")
+                                             out.flush()
+                                         }
                                      } else {
                                          out.print("HTTP/1.1 404 Not Found\r\n")
                                          out.print("Connection: close\r\n")
                                          out.print("\r\n")
                                          out.flush()
-                                         android.util.Log.w("EventProvider", "LocalManifestServer HTTP 404 Not Found sent for ID: $id")
                                      }
                                  }
                                  client.close()
@@ -164,9 +321,9 @@ object LocalManifestServer {
         }
     }
     
-    fun registerManifest(id: String, xml: String): String {
+    fun registerManifest(id: String, originalUrl: String, drmLicenseParam: String, headers: Map<String, String>): String {
         val port = start()
-        manifests[id] = xml
+        manifestMetadatas[id] = ManifestMetadata(originalUrl, drmLicenseParam, headers)
         return "http://127.0.0.1:$port/manifest_$id.mpd"
     }
 }
@@ -226,161 +383,12 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
     private suspend fun getDrmDashManifestUrl(originalUrl: String, drmLicenseParam: String, headers: Map<String, String>): String {
         android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, drmLicenseParam=$drmLicenseParam")
         try {
-            val manifestHeaders = headers.toMutableMap().apply {
-                put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
-                put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
-            }
-            val response = app.get(originalUrl, headers = manifestHeaders, timeout = 25)
-            val manifestXml = response.text
-            android.util.Log.d("EventProvider", "getDrmDashManifestUrl raw manifest downloaded. Length: ${manifestXml.length}")
-            
-            var modifiedXml = manifestXml
-            
-            // 1. Hapus seluruh blok ContentProtection Widevine (urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed)
-            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
-            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
-            
-            // 2. Hapus seluruh blok ContentProtection PlayReady (urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95)
-            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
-            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
-            
-            // Tentukan BaseURL absolut dan query parameters token asli
-            val finalUrl = response.url
-            val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
-            val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
-            val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
-            
-            // Sisipkan BaseURL absolut di dalam <Period> atau <MPD>
-            if (!modifiedXml.contains("<BaseURL>") && !modifiedXml.contains("<BaseURL ")) {
-                val periodIdx = modifiedXml.indexOf("<Period")
-                if (periodIdx != -1) {
-                    val insertIdx = modifiedXml.indexOf(">", periodIdx) + 1
-                    modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
-                } else {
-                    val mpdIdx = modifiedXml.indexOf("<MPD")
-                    if (mpdIdx != -1) {
-                        val insertIdx = modifiedXml.indexOf(">", mpdIdx) + 1
-                        modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
-                    }
-                }
-            }
-
             val cleanId = drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
-            val port = LocalManifestServer.start()
-
-            // Tulis ulang SegmentTemplate media dengan token CDN agar tidak terkena 403 geoblock/unauthorized
-            if (queryParams.isNotEmpty()) {
-                val escapedParams = queryParams.replace("&", "&amp;")
-                modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                    val p1 = matchResult.groupValues[1]
-                    val sep = if (p1.contains("?")) "&amp;" else "?"
-                    """media="$p1$sep$escapedParams""""
-                }
-            }
-
-            // Tulis ulang SegmentTemplate initialization agar dialihkan ke local proxy server untuk stripping pssh box Widevine secara biner
-            if (port > 0) {
-                val refHeader = headers["Referer"] ?: ""
-                val originHeader = headers["Origin"] ?: ""
-                modifiedXml = modifiedXml.replace(Regex("""initialization=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                    val path = matchResult.groupValues[1]
-                    val encodedBase = java.net.URLEncoder.encode(absoluteBaseUrl, "UTF-8")
-                    val encodedPath = java.net.URLEncoder.encode(path, "UTF-8")
-                    val encodedParams = java.net.URLEncoder.encode(queryParams, "UTF-8")
-                    val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
-                    val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
-                    
-                    """initialization="http://127.0.0.1:$port/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
-                }
-            }
-            
-            // 3. Cek apakah manifest bersih ini sudah memuat ClearKey secara native
-            val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)
-            
-            if (!hasClearKey) {
-                // Generate ContentProtection XML untuk setiap pasangan key
-                val keyPairs = drmLicenseParam.split(",")
-                val contentProtectionXmlBuilder = StringBuilder()
-                for (pair in keyPairs) {
-                    val parts = pair.split(":")
-                    if (parts.size == 2) {
-                        val keyId = parts[0].trim()
-                        val uuidKid = if (keyId.length == 32) {
-                            "${keyId.substring(0, 8)}-${keyId.substring(8, 12)}-${keyId.substring(12, 16)}-${keyId.substring(16, 20)}-${keyId.substring(20)}"
-                        } else {
-                            keyId
-                        }
-                        contentProtectionXmlBuilder.append("""
-                            <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$uuidKid" xmlns:cenc="urn:mpeg:cenc:2013"/>
-                        """.trimIndent()).append("\n")
-                    }
-                }
-                val contentProtectionXml = contentProtectionXmlBuilder.toString()
-                
-                if (contentProtectionXml.isNotEmpty()) {
-                    // Cari tag mp4protection:2011 di seluruh manifest (AdaptationSet maupun Representation)
-                    // dan sisipkan tag ClearKey tepat di sampingnya dengan mencocokkan casing KID asli secara dinamis
-                    var tempXml = modifiedXml
-                    
-                    val selfClosingRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*/\s*>""", RegexOption.IGNORE_CASE)
-                    tempXml = selfClosingRegex.replace(tempXml) { matchResult ->
-                        val matchedTag = matchResult.value
-                        val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(matchedTag)
-                        
-                        val clearKeyTag = if (kidMatch != null) {
-                            val kidToUse = kidMatch.groupValues[1]
-                            """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
-                        } else {
-                            contentProtectionXml.trim()
-                        }
-                        matchedTag + "\n" + clearKeyTag
-                    }
-                    
-                    val openCloseRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE)
-                    tempXml = openCloseRegex.replace(tempXml) { matchResult ->
-                        val matchedTag = matchResult.value
-                        val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(matchedTag)
-                        
-                        val clearKeyTag = if (kidMatch != null) {
-                            val kidToUse = kidMatch.groupValues[1]
-                            """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
-                        } else {
-                            contentProtectionXml.trim()
-                        }
-                        matchedTag + "\n" + clearKeyTag
-                    }
-                    
-                    // Jika karena suatu alasan tidak ada tag mp4protection, fallback ke penyisipan AdaptationSet asli
-                    if (tempXml == modifiedXml) {
-                        val parts = modifiedXml.split("<AdaptationSet")
-                        if (parts.size > 1) {
-                            val sb = StringBuilder(parts[0])
-                            for (i in 1 until parts.size) {
-                                sb.append("<AdaptationSet")
-                                val rest = parts[i]
-                                val tagEndIdx = rest.indexOf(">")
-                                if (tagEndIdx != -1) {
-                                    sb.append(rest.substring(0, tagEndIdx + 1))
-                                    sb.append("\n$contentProtectionXml\n")
-                                    sb.append(rest.substring(tagEndIdx + 1))
-                                } else {
-                                    sb.append(rest)
-                                }
-                            }
-                            tempXml = sb.toString()
-                        }
-                    }
-                    modifiedXml = tempXml
-                }
-            }
-            
-            // cleanId sudah didefinisikan sebelumnya di atas
-            android.util.Log.d("EventProvider", "getDrmDashManifestUrl output xml summary:\n${if (modifiedXml.length > 2500) modifiedXml.substring(0, 2500) else modifiedXml}")
-            val resultUrl = LocalManifestServer.registerManifest(cleanId, modifiedXml)
-            android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Local server URL generated: $resultUrl")
+            val resultUrl = LocalManifestServer.registerManifest(cleanId, originalUrl, drmLicenseParam, headers)
+            android.util.Log.d("EventProvider", "getDrmDashManifestUrl registered dynamic metadata! Local URL: $resultUrl")
             return resultUrl
         } catch (e: Exception) {
-            android.util.Log.e("EventProvider", "getDrmDashManifestUrl FATAL EXCEPTION: ${e.message}", e)
+            android.util.Log.e("EventProvider", "getDrmDashManifestUrl register error", e)
             return originalUrl
         }
     }
