@@ -186,12 +186,12 @@ object LocalManifestServer {
                                                   rawKid
                                               }
                                               
-                                              if (kidUuid.isNotEmpty()) {
-                                                  val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid"/>"""
-                                                  modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
-                                                      matchResult.value + "\n" + clearKeyBlock + "\n"
-                                                  }
-                                              }
+                                               if (kidUuid.isNotEmpty()) {
+                                                   val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                   modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                       matchResult.value + "\n" + clearKeyBlock + "\n"
+                                                   }
+                                               }
                                              
                                              val finalUrl = response.url
                                              val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
