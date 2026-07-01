@@ -598,7 +598,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         chIdLower.contains("supersport") || chIdLower.contains("tsn") ||
                                         chIdLower.contains("espn") || chIdLower.contains("fox") ||
                                         chIdLower.contains("astro") || chIdLower.contains("hub") ||
-                                        chIdLower.contains("premier") || chIdLower.contains("fusball") ||
+                                        chIdLower.contains("premier") || 
                                         chIdLower.contains("ppv") || chIdLower.contains("vvip") ||
                                         chNameLower.contains("eng") || chNameLower.contains("english") ||
                                         chNameLower.contains("us") || chNameLower.contains("uk") ||
@@ -607,7 +607,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         chNameLower.contains("supersport") || chNameLower.contains("tsn") ||
                                         chNameLower.contains("espn") || chNameLower.contains("fox") ||
                                         chNameLower.contains("astro") || chNameLower.contains("hub") ||
-                                        chNameLower.contains("premier") || chNameLower.contains("fusball") ||
+                                        chNameLower.contains("premier") || 
                                         chNameLower.contains("ppv") || chNameLower.contains("vvip")
                                         
                         val isLokal = chIdLower.contains("tvri") || chIdLower.contains("vidio") ||
@@ -629,6 +629,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     }.thenBy { it.second })
 
                     for (ch in sortedChannels) {
+                        android.util.Log.d("EventProvider", "Sorted channel: ID=${ch.first}, Name=${ch.second}")
                         list.add(
                             newLiveSearchResponse(
                                 ch.second,
