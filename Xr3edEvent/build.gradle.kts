@@ -12,7 +12,7 @@ cloudstream {
     authors = listOf("xr3ed")
     status = 1
     tvTypes = listOf(
-        "Live"
+        "Movie"
     )
     iconUrl = "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png"
 }
