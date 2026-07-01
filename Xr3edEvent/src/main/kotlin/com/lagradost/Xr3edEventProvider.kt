@@ -496,20 +496,60 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     }
                 }
 
+                // Ambil channel.js untuk mendapatkan info channel dari group target
+                val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
+                val responseChannel = app.get(jsUrl, timeout = 15).text
+                val jsonChannelStr = if (responseChannel.contains("---")) responseChannel.substringAfter("---").trim() else responseChannel.trim()
+                val rootChannel = JSONObject(jsonChannelStr)
+                val channelsObj = rootChannel.optJSONObject("channels") ?: JSONObject()
+                val groupsObj = rootChannel.optJSONObject("groups") ?: JSONObject()
+
+                val addedChannels = mutableSetOf<String>()
                 for (m in targetMatches) {
                     val cleanGroupId = if (m.groupLink.startsWith("go:")) m.groupLink.substringAfter("go:") else m.groupLink
-                    val displayTitle = if (m.home.isNotEmpty() && m.away.isNotEmpty()) "${m.home} vs ${m.away}" else m.name
-                    val streamUrl = "https://wc26.netxtv.id/?id=jadwal#match:$cleanGroupId"
                     
-                    list.add(
-                        newLiveSearchResponse(
-                            displayTitle,
-                            streamUrl,
-                            TvType.Movie
-                        ) {
-                            this.posterUrl = defaultLogo
+                    val targetGroups = mutableListOf<String>()
+                    val keys = groupsObj.keys()
+                    while (keys.hasNext()) {
+                        val k = keys.next()
+                        if (k.equals(cleanGroupId, ignoreCase = true)) {
+                            targetGroups.add(k)
                         }
-                    )
+                    }
+                    if (targetGroups.isEmpty()) {
+                        val keys2 = groupsObj.keys()
+                        while (keys2.hasNext()) {
+                            val k = keys2.next()
+                            if (k.startsWith(cleanGroupId, ignoreCase = true) || k.contains(cleanGroupId, ignoreCase = true)) {
+                                targetGroups.add(k)
+                                break
+                            }
+                        }
+                    }
+
+                    for (gId in targetGroups) {
+                        val arr = groupsObj.optJSONArray(gId) ?: continue
+                        for (i in 0 until arr.length()) {
+                            val chId = arr.optString(i)
+                            if (chId.equals("vvip", ignoreCase = true) || chId.equals("replay", ignoreCase = true) || chId.equals("wc-jadwal", ignoreCase = true)) continue
+                            if (addedChannels.contains(chId)) continue
+                            addedChannels.add(chId)
+
+                            val chData = channelsObj.optJSONObject(chId) ?: continue
+                            val chName = chData.optString("name", chId)
+                            
+                            val streamUrl = "https://wc26.netxtv.id/?id=jadwal#go:$chId"
+                            list.add(
+                                newLiveSearchResponse(
+                                    chName,
+                                    streamUrl,
+                                    TvType.Movie
+                                ) {
+                                    this.posterUrl = defaultLogo
+                                }
+                            )
+                        }
+                    }
                 }
             }
 
