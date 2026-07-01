@@ -11,6 +11,75 @@ import com.lagradost.cloudstream3.utils.WIDEVINE_UUID
 import com.lagradost.cloudstream3.utils.newDrmExtractorLink
 import java.net.URLDecoder
 import android.content.Context
+import java.net.ServerSocket
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.PrintWriter
+import kotlin.concurrent.thread
+
+object LocalManifestServer {
+    private var serverSocket: ServerSocket? = null
+    private var serverPort: Int = 0
+    private val manifests = HashMap<String, String>()
+
+    fun start(): Int {
+        if (serverSocket != null) return serverPort
+        try {
+            val socket = ServerSocket(0)
+            serverSocket = socket
+            serverPort = socket.localPort
+            thread(start = true, isDaemon = true) {
+                while (!socket.isClosed) {
+                    try {
+                        val client = socket.accept()
+                        thread(start = true, isDaemon = true) {
+                            try {
+                                val reader = BufferedReader(InputStreamReader(client.getInputStream()))
+                                val line = reader.readLine() ?: ""
+                                val path = line.split(" ").getOrNull(1) ?: ""
+                                val id = path.substringAfter("/manifest_", "").substringBefore(".mpd", "")
+                                val xml = manifests[id]
+                                
+                                val out = PrintWriter(client.getOutputStream())
+                                if (xml != null) {
+                                    val bytes = xml.toByteArray(Charsets.UTF_8)
+                                    out.println("HTTP/1.1 200 OK")
+                                    out.println("Content-Type: application/dash+xml")
+                                    out.println("Content-Length: ${bytes.size}")
+                                    out.println("Access-Control-Allow-Origin: *")
+                                    out.println("Connection: close")
+                                    out.println("")
+                                    out.flush()
+                                    client.getOutputStream().write(bytes)
+                                    client.getOutputStream().flush()
+                                } else {
+                                    out.println("HTTP/1.1 404 Not Found")
+                                    out.println("Connection: close")
+                                    out.println("")
+                                    out.flush()
+                                }
+                                client.close()
+                            } catch (e: Exception) {
+                                try { client.close() } catch (ex: Exception) {}
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // socket closed
+                    }
+                }
+            }
+            return serverPort
+        } catch (e: Exception) {
+            return 0
+        }
+    }
+    
+    fun registerManifest(id: String, xml: String): String {
+        val port = start()
+        manifests[id] = xml
+        return "http://127.0.0.1:$port/manifest_$id.mpd"
+    }
+}
 
 class EventProvider(val context: Context) : MainAPI() {
     override var mainUrl = "https://wc26.netxtv.id"
@@ -152,13 +221,10 @@ class EventProvider(val context: Context) : MainAPI() {
                 }
             }
             
-            val base64Xml = android.util.Base64.encodeToString(
-                modifiedXml.toByteArray(Charsets.UTF_8),
-                android.util.Base64.NO_WRAP
-            )
-            val dataUrl = "data:application/dash+xml;base64,$base64Xml"
-            android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Generated Data URI size: ${dataUrl.length}")
-            return dataUrl
+            val cleanId = drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
+            val resultUrl = LocalManifestServer.registerManifest(cleanId, modifiedXml)
+            android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Local server URL generated: $resultUrl")
+            return resultUrl
         } catch (e: Exception) {
             android.util.Log.e("EventProvider", "getDrmDashManifestUrl FATAL EXCEPTION: ${e.message}", e)
             return originalUrl
