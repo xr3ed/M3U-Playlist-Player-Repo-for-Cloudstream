@@ -143,12 +143,13 @@ class EventProvider(val context: Context) : MainAPI() {
                 }
             }
             
-            val cleanKid = kidHex.replace("-", "").trim()
-            val tempFile = java.io.File(context.cacheDir, "manifest_${cleanKid}.mpd")
-            tempFile.writeText(modifiedXml, Charsets.UTF_8)
-            val resultUrl = tempFile.toURI().toString()
-            android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Clean manifest written to: $resultUrl")
-            return resultUrl
+            val base64Xml = android.util.Base64.encodeToString(
+                modifiedXml.toByteArray(Charsets.UTF_8),
+                android.util.Base64.NO_WRAP
+            )
+            val dataUrl = "data:application/dash+xml;base64,$base64Xml"
+            android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Generated Data URI size: ${dataUrl.length}")
+            return dataUrl
         } catch (e: Exception) {
             android.util.Log.e("EventProvider", "getDrmDashManifestUrl FATAL EXCEPTION: ${e.message}", e)
             return originalUrl
@@ -539,7 +540,11 @@ class EventProvider(val context: Context) : MainAPI() {
                                         "Origin" to "https://xys1-2-player.pages.dev"
                                     )
                                     
-                                    val streamUrl = dashUrl
+                                    val streamUrl = if (dashUrl.contains(".mpd", ignoreCase = true) || dashUrl.contains("mpd", ignoreCase = true)) {
+                                        getDrmDashManifestUrl(dashUrl, keyId, headers)
+                                    } else {
+                                        dashUrl
+                                    }
                                     android.util.Log.d("EventProvider", "Invoking CallSite 1: URL=$streamUrl, KID=$clearkeyKid, KEY=$clearkeyKey, HEADERS=$headers")
                                     
                                     callback.invoke(
@@ -633,7 +638,11 @@ class EventProvider(val context: Context) : MainAPI() {
                                             "Origin" to "https://xys1-2-player.pages.dev"
                                         )
                                         
-                                        val streamUrl = cleanUrl
+                                        val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
+                                            getDrmDashManifestUrl(cleanUrl, keyId, headers)
+                                        } else {
+                                            cleanUrl
+                                        }
                                         
                                         val isDash = cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)
                                         val streamType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
