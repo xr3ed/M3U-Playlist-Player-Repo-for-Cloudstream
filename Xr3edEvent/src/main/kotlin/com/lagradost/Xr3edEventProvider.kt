@@ -187,15 +187,33 @@ object LocalManifestServer {
                                                  }
                                              }
                                              
-                                             // Tulis ulang SegmentTemplate media
-                                             if (queryParams.isNotEmpty()) {
-                                                 val escapedParams = queryParams.replace("&", "&amp;")
-                                                 modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                                                     val p1 = matchResult.groupValues[1]
-                                                     val sep = if (p1.contains("?")) "&amp;" else "?"
-                                                     """media="$p1$sep$escapedParams""""
-                                                 }
-                                             }
+                                              // Tulis ulang SegmentTemplate media agar selalu absolute (mencegah ExoPlayer meminta chunk video ke proxy lokal)
+                                              val rootDomain = if (absoluteBaseUrl.startsWith("https://")) {
+                                                  "https://" + absoluteBaseUrl.substringAfter("https://").substringBefore("/")
+                                              } else if (absoluteBaseUrl.startsWith("http://")) {
+                                                  "http://" + absoluteBaseUrl.substringAfter("http://").substringBefore("/")
+                                              } else {
+                                                  ""
+                                              }
+                                              modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                  val p1 = matchResult.groupValues[1]
+                                                  if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
+                                                      matchResult.value
+                                                  } else {
+                                                      val absoluteMediaUrl = if (p1.startsWith("/")) {
+                                                          rootDomain + p1
+                                                      } else {
+                                                          absoluteBaseUrl + p1
+                                                      }
+                                                      val sep = if (absoluteMediaUrl.contains("?")) "&amp;" else "?"
+                                                      val finalMediaUrl = if (queryParams.isNotEmpty()) {
+                                                          absoluteMediaUrl + sep + queryParams.replace("&", "&amp;")
+                                                      } else {
+                                                          absoluteMediaUrl
+                                                      }
+                                                      """media="$finalMediaUrl""""
+                                                  }
+                                              }
                                              
                                              // Tulis ulang SegmentTemplate initialization
                                              val cleanId = meta.drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
