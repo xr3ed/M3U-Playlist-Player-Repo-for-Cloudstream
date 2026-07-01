@@ -39,6 +39,79 @@ class EventProvider : MainAPI() {
         }
     }
 
+    private suspend fun getDrmDashManifestUrl(originalUrl: String, kidHex: String, headers: Map<String, String>): String {
+        try {
+            val response = app.get(originalUrl, headers = headers, timeout = 10)
+            val manifestXml = response.text
+            
+            // Cek apakah manifest sudah memuat ClearKey DRM
+            if (manifestXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)) {
+                return originalUrl
+            }
+            
+            // Tentukan BaseURL absolut
+            val finalUrl = response.url
+            val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
+            val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
+            
+            // Format KID ke UUID format
+            val cleanKid = kidHex.replace("-", "").trim()
+            val uuidKid = if (cleanKid.length == 32) {
+                "${cleanKid.substring(0, 8)}-${cleanKid.substring(8, 12)}-${cleanKid.substring(12, 16)}-${cleanKid.substring(16, 20)}-${cleanKid.substring(20)}"
+            } else {
+                cleanKid
+            }
+            
+            val contentProtectionXml = """
+                <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e">
+                    <cenc:default_KID xmlns:cenc="urn:mpeg:cenc:2013">$uuidKid</cenc:default_KID>
+                </ContentProtection>
+            """.trimIndent()
+            
+            var modifiedXml = manifestXml
+            
+            // Sisipkan BaseURL absolut di dalam <Period> atau <MPD>
+            if (!modifiedXml.contains("<BaseURL>") && !modifiedXml.contains("<BaseURL ")) {
+                val periodIdx = modifiedXml.indexOf("<Period")
+                if (periodIdx != -1) {
+                    val insertIdx = modifiedXml.indexOf(">", periodIdx) + 1
+                    modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
+                } else {
+                    val mpdIdx = modifiedXml.indexOf("<MPD")
+                    if (mpdIdx != -1) {
+                        val insertIdx = modifiedXml.indexOf(">", mpdIdx) + 1
+                        modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
+                    }
+                }
+            }
+            
+            // Sisipkan ContentProtection ClearKey ke dalam setiap <AdaptationSet>
+            val parts = modifiedXml.split("<AdaptationSet")
+            if (parts.size > 1) {
+                val sb = StringBuilder(parts[0])
+                for (i in 1 until parts.size) {
+                    sb.append("<AdaptationSet")
+                    val rest = parts[i]
+                    val tagEndIdx = rest.indexOf(">")
+                    if (tagEndIdx != -1) {
+                        sb.append(rest.substring(0, tagEndIdx + 1))
+                        sb.append("\n$contentProtectionXml\n")
+                        sb.append(rest.substring(tagEndIdx + 1))
+                    } else {
+                        sb.append(rest)
+                    }
+                }
+                modifiedXml = sb.toString()
+            }
+            
+            val base64Xml = android.util.Base64.encodeToString(modifiedXml.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
+            return "data:application/dash+xml;base64,$base64Xml"
+        } catch (e: Exception) {
+            android.util.Log.e("EventProvider", "Failed to generate dynamic ClearKey DASH manifest", e)
+            return originalUrl
+        }
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val list = ArrayList<SearchResponse>()
         try {
@@ -423,11 +496,17 @@ class EventProvider : MainAPI() {
                                         "Origin" to "https://xys1-2-player.pages.dev"
                                     )
                                     
+                                    val streamUrl = if (dashUrl.contains(".mpd", ignoreCase = true) || dashUrl.contains("mpd", ignoreCase = true)) {
+                                        getDrmDashManifestUrl(dashUrl, keyId, headers)
+                                    } else {
+                                        dashUrl
+                                    }
+                                    
                                     callback.invoke(
                                         newDrmExtractorLink(
                                             this.name,
                                             this.name,
-                                            dashUrl,
+                                            streamUrl,
                                             ExtractorLinkType.DASH,
                                             CLEARKEY_UUID
                                         ) {
@@ -435,7 +514,7 @@ class EventProvider : MainAPI() {
                                             this.headers = headers
                                             kty = "oct"
                                             kid = clearkeyKid
-                                            this.key = "{\"keys\":[{\"kty\":\"oct\",\"k\":\"$clearkeyKey\",\"kid\":\"$clearkeyKid\"}],\"type\":\"temporary\"}"
+                                            this.key = clearkeyKey
                                         }
                                     )
                                     successDrm = true
@@ -515,6 +594,12 @@ class EventProvider : MainAPI() {
                                             "Origin" to "https://xys1-2-player.pages.dev"
                                         )
                                         
+                                        val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
+                                            getDrmDashManifestUrl(cleanUrl, keyId, headers)
+                                        } else {
+                                            cleanUrl
+                                        }
+                                        
                                         val isDash = cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)
                                         val streamType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
                                         
@@ -522,7 +607,7 @@ class EventProvider : MainAPI() {
                                             newDrmExtractorLink(
                                                 this.name,
                                                 this.name,
-                                                cleanUrl,
+                                                streamUrl,
                                                 streamType,
                                                 CLEARKEY_UUID
                                             ) {
@@ -530,7 +615,7 @@ class EventProvider : MainAPI() {
                                                 this.headers = headers
                                                 kty = "oct"
                                                 kid = clearkeyKid
-                                                this.key = "{\"keys\":[{\"kty\":\"oct\",\"k\":\"$clearkeyKey\",\"kid\":\"$clearkeyKid\"}],\"type\":\"temporary\"}"
+                                                this.key = clearkeyKey
                                             }
                                         )
                                         successDrm = true
