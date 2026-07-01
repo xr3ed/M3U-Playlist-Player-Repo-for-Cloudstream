@@ -856,12 +856,33 @@ class EventProvider(val context: Context) : MainAPI() {
                                         
                                         android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey params: $licenseParam for stream: $cleanUrl")
                                         
-                                        val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-                                        val headers = mapOf(
-                                            "User-Agent" to userAgent,
-                                            "Referer" to "https://xys1-2-player.pages.dev/",
-                                            "Origin" to "https://xys1-2-player.pages.dev"
-                                        )
+                                         val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                                         val headersMap = HashMap<String, String>()
+                                         headersMap["User-Agent"] = userAgent
+                                         
+                                         // Ekstrak Referer/Origin asli dari URL jika ada
+                                         val parts = decodedUrlParam.split("|")
+                                         if (parts.size > 1) {
+                                             val headerPart = parts[1]
+                                             for (param in headerPart.split("&")) {
+                                                 val pair = param.split("=")
+                                                 if (pair.size == 2) {
+                                                     val key = pair[0].trim()
+                                                     val value = try {
+                                                         java.net.URLDecoder.decode(pair[1], "UTF-8").trim()
+                                                     } catch (e: Exception) {
+                                                         pair[1].trim()
+                                                     }
+                                                     if (key.equals("Referer", ignoreCase = true) && value.isNotEmpty()) {
+                                                         headersMap["Referer"] = value
+                                                     }
+                                                     if (key.equals("Origin", ignoreCase = true) && value.isNotEmpty()) {
+                                                         headersMap["Origin"] = value
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                         val headers = headersMap.toMap()
                                         
                                         val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
                                             getDrmDashManifestUrl(cleanUrl, licenseParam, headers)
