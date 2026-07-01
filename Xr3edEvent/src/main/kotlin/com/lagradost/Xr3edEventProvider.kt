@@ -172,7 +172,7 @@ object LocalManifestServer {
 class Xr3edEventProvider(val context: Context) : MainAPI() {
     override var mainUrl = "https://wc26.netxtv.id"
     override var name = "xr3ed event"
-    override val supportedTypes = setOf(TvType.Live)
+    override val supportedTypes = setOf(TvType.Movie)
     override var lang = "id"
     override val hasMainPage = true
 
@@ -180,7 +180,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         MainPageData("World Cup 2026", "worldcup")
     )
 
-    private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png"
+    private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/world_cup_cover.png"
 
     private fun hexToBase64Url(str: String): String {
         val clean = str.replace(" ", "").trim()
@@ -379,30 +379,53 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         }
     }
 
+    private fun parseTimeToMinutes(timeStr: String): Int? {
+        try {
+            val clean = timeStr.replace(".", ":").trim()
+            if (clean.contains(":")) {
+                val parts = clean.split(":")
+                val hour = parts[0].toIntOrNull() ?: return null
+                val min = parts[1].toIntOrNull() ?: return null
+                return hour * 60 + min
+            }
+            val hour = clean.toIntOrNull() ?: return null
+            return hour * 60
+        } catch (e: Exception) {
+            return null
+        }
+    }
+
+    private data class MatchItem(
+        val time: String,
+        val home: String,
+        val away: String,
+        val name: String,
+        val groupLink: String,
+        val matchMinutes: Int
+    )
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val list = ArrayList<SearchResponse>()
+        var categoryTitle = "WORLD CUP 2026"
         try {
-            // Mengambil jadwal.js
             val jadwalUrl = "https://api-tvnetx01.pages.dev/netxtv/jadwal.js"
             val response = app.get(jadwalUrl, timeout = 15).text
             val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
             val root = JSONObject(jsonStr)
             val scheduleArray = root.optJSONArray("schedule")
             
+            val allMatches = ArrayList<MatchItem>()
             if (scheduleArray != null) {
                 for (i in 0 until scheduleArray.length()) {
                     val group = scheduleArray.optJSONObject(i) ?: continue
                     if (!group.optBoolean("active", true)) continue
                     
                     val groupTitle = group.optString("title", "EVENT")
-                    // Filter khusus pertandingan Piala Dunia
                     if (!groupTitle.contains("WORLD CUP", ignoreCase = true) && !groupTitle.contains("FIFA", ignoreCase = true)) {
                         continue
                     }
                     
                     val linkVal = group.optString("link", "")
-                    val cleanGroupId = if (linkVal.startsWith("go:")) linkVal.substringAfter("go:") else linkVal
-                    
                     val matchesArray = group.optJSONArray("matches")
                     if (matchesArray != null) {
                         for (j in 0 until matchesArray.length()) {
@@ -414,27 +437,79 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                             val away = match.optString("away", "")
                             val nameVal = match.optString("name", "")
                             
-                            val displayTitle = if (!home.isNullOrBlank() && !away.isNullOrBlank()) {
-                                if (!time.isNullOrBlank()) "[$time] $home vs $away" else "$home vs $away"
-                            } else if (!nameVal.isNullOrBlank()) {
-                                if (!time.isNullOrBlank()) "[$time] $nameVal" else nameVal
-                            } else {
-                                continue
-                            }
-                            
-                            // Link format: kita pasangkan id group sebagai hash anchor
-                            val streamUrl = "https://wc26.netxtv.id/?id=jadwal#match:$cleanGroupId"
-                            list.add(
-                                newLiveSearchResponse(
-                                    displayTitle,
-                                    streamUrl,
-                                    TvType.Live
-                                ) {
-                                    this.posterUrl = defaultLogo
-                                }
+                            val matchMin = parseTimeToMinutes(time) ?: continue
+                            allMatches.add(
+                                MatchItem(time, home, away, nameVal, linkVal, matchMin)
                             )
                         }
                     }
+                }
+            }
+
+            if (allMatches.isNotEmpty()) {
+                val calendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("GMT+7"))
+                val currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+                val currentMin = calendar.get(java.util.Calendar.MINUTE)
+                val currentMinutes = currentHour * 60 + currentMin
+
+                val activeMatches = ArrayList<MatchItem>()
+                val upcomingMatches = ArrayList<MatchItem>()
+
+                for (match in allMatches) {
+                    val startMin = match.matchMinutes
+                    val endMin = startMin + 120
+                    val isActive = if (endMin < 1440) {
+                        currentMinutes in startMin..endMin
+                    } else {
+                        currentMinutes >= startMin || currentMinutes <= (endMin - 1440)
+                    }
+                    
+                    if (isActive) {
+                        activeMatches.add(match)
+                    } else {
+                        upcomingMatches.add(match)
+                    }
+                }
+
+                val targetMatches = ArrayList<MatchItem>()
+                if (activeMatches.isNotEmpty()) {
+                    targetMatches.addAll(activeMatches)
+                    categoryTitle = if (activeMatches.size == 1) {
+                        val m = activeMatches[0]
+                        val matchName = if (m.home.isNotEmpty() && m.away.isNotEmpty()) "${m.home} vs ${m.away}" else m.name
+                        "LIVE: $matchName (${m.time})"
+                    } else {
+                        "LIVE MATCHES (${activeMatches[0].time})"
+                    }
+                } else if (upcomingMatches.isNotEmpty()) {
+                    val minDiff = upcomingMatches.map { (it.matchMinutes - currentMinutes + 1440) % 1440 }.minOrNull()
+                    if (minDiff != null) {
+                        val closestUpcoming = upcomingMatches.filter { ((it.matchMinutes - currentMinutes + 1440) % 1440) == minDiff }
+                        targetMatches.addAll(closestUpcoming)
+                        categoryTitle = if (closestUpcoming.size == 1) {
+                            val m = closestUpcoming[0]
+                            val matchName = if (m.home.isNotEmpty() && m.away.isNotEmpty()) "${m.home} vs ${m.away}" else m.name
+                            "UPCOMING: $matchName (${m.time})"
+                        } else {
+                            "UPCOMING MATCHES (${closestUpcoming[0].time})"
+                        }
+                    }
+                }
+
+                for (m in targetMatches) {
+                    val cleanGroupId = if (m.groupLink.startsWith("go:")) m.groupLink.substringAfter("go:") else m.groupLink
+                    val displayTitle = if (m.home.isNotEmpty() && m.away.isNotEmpty()) "${m.home} vs ${m.away}" else m.name
+                    val streamUrl = "https://wc26.netxtv.id/?id=jadwal#match:$cleanGroupId"
+                    
+                    list.add(
+                        newLiveSearchResponse(
+                            displayTitle,
+                            streamUrl,
+                            TvType.Movie
+                        ) {
+                            this.posterUrl = defaultLogo
+                        }
+                    )
                 }
             }
 
@@ -443,11 +518,12 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         }
 
         if (list.isEmpty()) {
+            categoryTitle = "WORLD CUP 2026"
             list.add(
                 newLiveSearchResponse(
                     "Sedang tidak ada pertandingan piala dunia aktif saat ini",
                     "https://wc26.netxtv.id/?id=jadwal#none",
-                    TvType.Live
+                    TvType.Movie
                 ) {
                     this.posterUrl = defaultLogo
                 }
@@ -455,7 +531,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         }
 
         return newHomePageResponse(
-            listOf(HomePageList("World Cup 2026", list)),
+            listOf(HomePageList(categoryTitle, list)),
             hasNext = false
         )
     }
@@ -503,7 +579,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     newLiveSearchResponse(
                         chName,
                         streamUrl,
-                        TvType.Live
+                        TvType.Movie
                     ) {
                         this.posterUrl = chImg
                     }
@@ -517,90 +593,15 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse {
         var title = "Live Stream World Cup"
-        val episodeList = ArrayList<Episode>()
-        
         try {
             if (url.contains("#match:")) {
                 val groupId = url.substringAfter("#match:")
                 title = "Live Match - $groupId"
-                
-                // Ambil channel.js
-                val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
-                val response = app.get(jsUrl, timeout = 15).text
-                val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
-                val root = JSONObject(jsonStr)
-                val channelsObj = root.optJSONObject("channels") ?: JSONObject()
-                val groupsObj = root.optJSONObject("groups") ?: JSONObject()
-                
-                // Cari group yang mendekati, misal jika groupId adalah 'ucl', 
-                // kita ambil channel dari grup ucl1, ucl2, ucl3, ucl4, ucl5, ucl6, ucl10, dsb.
-                // Jika exact match, kita ambil grup itu saja.
-                val targetGroups = mutableListOf<String>()
-                val keys = groupsObj.keys()
-                while (keys.hasNext()) {
-                    val k = keys.next()
-                    if (k.equals(groupId, ignoreCase = true)) {
-                        targetGroups.add(k)
-                    }
-                }
-                if (targetGroups.isEmpty()) {
-                    val keys2 = groupsObj.keys()
-                    while (keys2.hasNext()) {
-                        val k = keys2.next()
-                        if (k.startsWith(groupId, ignoreCase = true) || k.contains(groupId, ignoreCase = true)) {
-                            targetGroups.add(k)
-                            // Membatasi hanya mengambil 1 grup fuzzy pertama (misalnya ucl1) agar tidak menumpuk ucl1, ucl2, ucl3, dsb. yang melipatgandakan episode.
-                            break
-                        }
-                    }
-                }
-                
-                val addedChannels = mutableSetOf<String>()
-                var epIndex = 1
-                for (gId in targetGroups) {
-                    val arr = groupsObj.optJSONArray(gId) ?: continue
-                    for (i in 0 until arr.length()) {
-                        val chId = arr.optString(i)
-                        if (chId.equals("vvip", ignoreCase = true) || chId.equals("replay", ignoreCase = true) || chId.equals("wc-jadwal", ignoreCase = true)) continue
-                        if (addedChannels.contains(chId)) continue
-                        addedChannels.add(chId)
-                        
-                        val chData = channelsObj.optJSONObject(chId) ?: continue
-                        val chName = chData.optString("name", chId)
-                        val chImg = chData.optString("img", defaultLogo)
-                        val chHref = chData.optString("href")
-                        
-                        val linkUrl = if (!chHref.isNullOrBlank()) {
-                            if (chHref.startsWith("go:")) "https://wc26.netxtv.id/?id=jadwal#$chHref" else chHref
-                        } else {
-                            "https://wc26.netxtv.id/?id=jadwal#go:$chId"
-                        }
-                        
-                        episodeList.add(
-                            newEpisode(linkUrl) {
-                                this.name = chName
-                                this.episode = epIndex++
-                                this.posterUrl = chImg
-                            }
-                        )
-                    }
-                }
-                
-                // Fallback default jika list kosong
-                if (episodeList.isEmpty()) {
-                    episodeList.add(
-                        newEpisode("https://wc26.netxtv.id/?id=jadwal#go:tvri2") {
-                            this.name = "TVRI+"
-                            this.episode = 1
-                        }
-                    )
-                }
-                
-                return newTvSeriesLoadResponse(
+                return newMovieLoadResponse(
                     title,
                     url,
-                    TvType.TvSeries,
-                    episodeList
+                    TvType.Movie,
+                    url
                 ) {
                     this.posterUrl = defaultLogo
                     this.plot = "Pilih server saluran streaming di bawah untuk menonton pertandingan ini secara langsung."
@@ -615,9 +616,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 }
                 title = "Live Stream - $code"
                 val linkUrl = "https://wc26.netxtv.id/?id=jadwal#go:$code"
-                return newLiveStreamLoadResponse(
+                return newMovieLoadResponse(
                     title,
                     linkUrl,
+                    TvType.Movie,
                     linkUrl
                 ) {
                     this.posterUrl = defaultLogo
@@ -627,9 +629,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             e.printStackTrace()
         }
         
-        return newLiveStreamLoadResponse(
+        return newMovieLoadResponse(
             title,
             url,
+            TvType.Movie,
             url
         ) {
             this.posterUrl = defaultLogo
@@ -642,63 +645,129 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        // logic pemutaran / ekstrak stream
-        // format data: url yang dikirim dari load
         try {
-            var targetUrl = data
-            if (data.contains("#go:")) {
-                var code = data.substringAfter("#go:").substringBefore("#").substringBefore("&")
-                if (code.contains("?")) {
-                    code = code.substringBefore("?")
-                }
+            if (data.contains("#match:")) {
+                val groupId = data.substringAfter("#match:")
                 val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
                 val response = app.get(jsUrl, timeout = 15).text
                 val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
                 val root = JSONObject(jsonStr)
                 val channelsObj = root.optJSONObject("channels") ?: JSONObject()
+                val groupsObj = root.optJSONObject("groups") ?: JSONObject()
                 
-                var resolved = false
-                var depth = 0
-                while (!resolved && depth < 5) {
-                    val channelData = channelsObj.optJSONObject(code)
-                    if (channelData != null) {
-                        val href = channelData.optString("href")
-                        if (!href.isNullOrBlank()) {
-                             if (href.startsWith("go:")) {
-                                 var nextCode = href.substringAfter("go:").substringBefore("#").substringBefore("&")
-                                 if (nextCode.contains("?")) {
-                                     nextCode = nextCode.substringBefore("?")
-                                 }
-                                 if (nextCode == code) {
-                                     targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
-                                     resolved = true
-                                 } else {
-                                     code = nextCode
-                                     depth++
-                                 }
-                             } else {
-                                 targetUrl = href
-                                 resolved = true
-                             }
-                        } else {
-                            resolved = true
-                        }
-                    } else {
-                        // Jika tidak ada di channels, mungkin alias langsung
-                        targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
-                        resolved = true
+                val targetGroups = mutableListOf<String>()
+                val keys = groupsObj.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    if (k.equals(groupId, ignoreCase = true)) {
+                        targetGroups.add(k)
                     }
                 }
-            }
-
-            android.util.Log.d("EventProvider", "Resolved targetUrl: $targetUrl")
-
-            // Jika targetUrl mengarah ke halaman player web pages.dev (seperti xys1-2-player.pages.dev/bitmovin/ atau pisionx.pages.dev/xplay/jwplayer)
-            // Kita bypass dan decode DRM ClearKey-nya agar dapat dimainkan secara native di Cloudstream.
-            if (targetUrl.contains(".pages.dev/") && (targetUrl.contains("bitmovin") || targetUrl.contains("shaka") || targetUrl.contains("jwplayer") || targetUrl.contains("clappr") || targetUrl.contains("nsplayer"))) {
-                var idVal = targetUrl.substringAfter("id=").substringBefore("&").substringBefore("#")
+                if (targetGroups.isEmpty()) {
+                    val keys2 = groupsObj.keys()
+                    while (keys2.hasNext()) {
+                        val k = keys2.next()
+                        if (k.startsWith(groupId, ignoreCase = true) || k.contains(groupId, ignoreCase = true)) {
+                            targetGroups.add(k)
+                            break
+                        }
+                    }
+                }
                 
-                // Normalisasi ID kustom agar cocok dengan database backend worker
+                val addedChannels = mutableSetOf<String>()
+                var resolvedAny = false
+                
+                for (gId in targetGroups) {
+                    val arr = groupsObj.optJSONArray(gId) ?: continue
+                    for (i in 0 until arr.length()) {
+                        val chId = arr.optString(i)
+                        if (chId.equals("vvip", ignoreCase = true) || chId.equals("replay", ignoreCase = true) || chId.equals("wc-jadwal", ignoreCase = true)) continue
+                        if (addedChannels.contains(chId)) continue
+                        addedChannels.add(chId)
+                        
+                        val chData = channelsObj.optJSONObject(chId) ?: continue
+                        val chName = chData.optString("name", chId)
+                        val chHref = chData.optString("href") ?: ""
+                        
+                        val linkUrl = if (chHref.startsWith("go:")) {
+                            "https://xys1-2-player.pages.dev/bitmovin/?id=${chHref.substringAfter("go:")}"
+                        } else if (chHref.isNotEmpty()) {
+                            chHref
+                        } else {
+                            "https://xys1-2-player.pages.dev/bitmovin/?id=$chId"
+                        }
+                        
+                        val success = resolveSingleChannel(linkUrl, chName, callback)
+                        if (success) {
+                            resolvedAny = true
+                        }
+                    }
+                }
+                return resolvedAny
+            } else {
+                var targetUrl = data
+                var chName = "Server"
+                if (data.contains("#go:")) {
+                    var code = data.substringAfter("#go:").substringBefore("#").substringBefore("&")
+                    if (code.contains("?")) {
+                        code = code.substringBefore("?")
+                    }
+                    val jsUrl = "https://api-tvnetx01.pages.dev/netxtv/channel.js"
+                    val response = app.get(jsUrl, timeout = 15).text
+                    val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
+                    val root = JSONObject(jsonStr)
+                    val channelsObj = root.optJSONObject("channels") ?: JSONObject()
+                    
+                    var resolved = false
+                    var depth = 0
+                    while (!resolved && depth < 5) {
+                        val channelData = channelsObj.optJSONObject(code)
+                        if (channelData != null) {
+                            chName = channelData.optString("name", "Server")
+                            val href = channelData.optString("href")
+                            if (!href.isNullOrBlank()) {
+                                 if (href.startsWith("go:")) {
+                                      var nextCode = href.substringAfter("go:").substringBefore("#").substringBefore("&")
+                                      if (nextCode.contains("?")) {
+                                          nextCode = nextCode.substringBefore("?")
+                                      }
+                                      if (nextCode == code) {
+                                          targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
+                                          resolved = true
+                                      } else {
+                                          code = nextCode
+                                          depth++
+                                      }
+                                 } else {
+                                      targetUrl = href
+                                      resolved = true
+                                 }
+                            } else {
+                                resolved = true
+                            }
+                        } else {
+                            targetUrl = "https://xys1-2-player.pages.dev/bitmovin/?id=$code"
+                            resolved = true
+                        }
+                    }
+                }
+                return resolveSingleChannel(targetUrl, chName, callback)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    private suspend fun resolveSingleChannel(
+        targetUrl: String,
+        serverName: String,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        var currentTargetUrl = targetUrl
+        try {
+            if (currentTargetUrl.contains(".pages.dev/") && (currentTargetUrl.contains("bitmovin") || currentTargetUrl.contains("shaka") || currentTargetUrl.contains("jwplayer") || currentTargetUrl.contains("clappr") || currentTargetUrl.contains("nsplayer"))) {
+                var idVal = currentTargetUrl.substringAfter("id=").substringBefore("&").substringBefore("#")
                 idVal = when (idVal) {
                     "vpl6" -> "tvrivp"
                     "vpl8" -> "tvri"
@@ -723,7 +792,6 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         val dataB64 = responseJson.optString("data")
                         
                         if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
-                            // Dekripsi data AES-GCM secara native di Kotlin
                             val password = "xys1-gh"
                             val salt = "salt123"
                             val iterations = 1000
@@ -762,7 +830,6 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     val headersMap = HashMap<String, String>()
                                     headersMap["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                                     
-                                    // Ekstrak Referer/Origin asli dari dashUrl jika ada
                                     val decodedDashUrl = dashUrl.replace("%7C", "|").replace("%20", " ")
                                     val partsUrl = decodedDashUrl.split("|")
                                     if (partsUrl.size > 1) {
@@ -785,7 +852,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                             }
                                         }
                                     } else {
-                                        if (targetUrl.contains("xys1-2-player.pages.dev") || dashUrl.contains("xys1-2-player.pages.dev")) {
+                                        if (currentTargetUrl.contains("xys1-2-player.pages.dev") || dashUrl.contains("xys1-2-player.pages.dev")) {
                                             headersMap["Referer"] = "https://xys1-2-player.pages.dev/"
                                             headersMap["Origin"] = "https://xys1-2-player.pages.dev"
                                         }
@@ -801,8 +868,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     
                                     callback.invoke(
                                         newDrmExtractorLink(
-                                            this.name,
-                                            this.name,
+                                            serverName,
+                                            serverName,
                                             streamUrl,
                                             ExtractorLinkType.DASH,
                                             CLEARKEY_UUID
@@ -829,7 +896,6 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 }
                 
                 if (!successDrm) {
-                    // Try NS Player worker fallback
                     android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
                     try {
                         val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
@@ -837,39 +903,36 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
                             val nsJson = JSONObject(nsResponseText.trim())
-                             var encryptedPayload = nsJson.optString(idVal)
-                             if (encryptedPayload.isNullOrEmpty()) {
-                                 // Coba cari key numerik jika idVal bukan numerik (misal jika idVal = "one1" tetapi worker menggunakan key numerik "22", "55", dsb.)
-                                 val keys = nsJson.keys()
-                                 while (keys.hasNext() && encryptedPayload.isNullOrEmpty()) {
-                                     val k = keys.next()
-                                     if (k.all { it.isDigit() }) {
-                                         val valStr = nsJson.optString(k)
-                                         // Validasi base64 payload
-                                         if (valStr.length > 200 && (valStr.startsWith("EA0") || valStr.startsWith("DBA"))) {
-                                             encryptedPayload = valStr
-                                             android.util.Log.d("EventProvider", "Found dynamic numeric channel payload at key: $k")
-                                         }
-                                     }
-                                 }
-                             }
-                             if (!encryptedPayload.isNullOrEmpty()) {
-                                 val key = "xys1-gh"
-                                 val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
-                                 val decryptedBytes = ByteArray(decodedBytes.size)
-                                 for (i in decodedBytes.indices) {
-                                     val cByte = decodedBytes[i].toInt() and 0xFF
-                                     val kByte = key[i % key.length].code
-                                     decryptedBytes[i] = (cByte xor kByte).toByte()
-                                 }
-                                 
-                                 val decryptedUrl = String(decryptedBytes, Charsets.UTF_8)
+                            var encryptedPayload = nsJson.optString(idVal)
+                            if (encryptedPayload.isNullOrEmpty()) {
+                                val keys = nsJson.keys()
+                                while (keys.hasNext() && encryptedPayload.isNullOrEmpty()) {
+                                    val k = keys.next()
+                                    if (k.all { it.isDigit() }) {
+                                        val valStr = nsJson.optString(k)
+                                        if (valStr.length > 200 && (valStr.startsWith("EA0") || valStr.startsWith("DBA"))) {
+                                            encryptedPayload = valStr
+                                            android.util.Log.d("EventProvider", "Found dynamic numeric channel payload at key: $k")
+                                        }
+                                    }
+                                }
+                            }
+                            if (!encryptedPayload.isNullOrEmpty()) {
+                                val key = "xys1-gh"
+                                val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
+                                val decryptedBytes = ByteArray(decodedBytes.size)
+                                for (i in decodedBytes.indices) {
+                                    val cByte = decodedBytes[i].toInt() and 0xFF
+                                    val kByte = key[i % key.length].code
+                                    decryptedBytes[i] = (cByte xor kByte).toByte()
+                                }
+                                
+                                val decryptedUrl = String(decryptedBytes, Charsets.UTF_8)
                                     .replace("|", "%7C")
                                     .replace(" ", "%20")
                                 
                                 android.util.Log.d("EventProvider", "NS Player XOR decrypt success: $decryptedUrl")
                                 
-                                // Cek apakah URL hasil dekripsi mengandung ClearKey DRM (format: &drmScheme=clearkey&drmLicense=kid:key)
                                 val decodedUrlParam = decryptedUrl.replace("%7C", "|").replace("%20", " ")
                                 if (decodedUrlParam.contains("drmScheme=clearkey", ignoreCase = true) && decodedUrlParam.contains("drmLicense=", ignoreCase = true)) {
                                     val cleanUrl = decodedUrlParam.substringBefore("|").substringBefore("&drmScheme=")
@@ -883,96 +946,93 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         
                                         android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey params: $licenseParam for stream: $cleanUrl")
                                         
-                                         val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-                                         val headersMap = HashMap<String, String>()
-                                         headersMap["User-Agent"] = userAgent
+                                        val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                                        val headersMap = HashMap<String, String>()
+                                        headersMap["User-Agent"] = userAgent
+                                        
+                                        val parts = decodedUrlParam.split("|")
+                                        if (parts.size > 1) {
+                                            val headerPart = parts[1]
+                                            for (param in headerPart.split("&")) {
+                                                val pair = param.split("=")
+                                                if (pair.size == 2) {
+                                                    val key = pair[0].trim()
+                                                    val value = try {
+                                                        java.net.URLDecoder.decode(pair[1], "UTF-8").trim()
+                                                      } catch (e: Exception) {
+                                                          pair[1].trim()
+                                                      }
+                                                      if (key.equals("Referer", ignoreCase = true) && value.isNotEmpty()) {
+                                                          headersMap["Referer"] = value
+                                                      }
+                                                      if (key.equals("Origin", ignoreCase = true) && value.isNotEmpty()) {
+                                                          headersMap["Origin"] = value
+                                                      }
+                                                  }
+                                              }
+                                          }
+                                          val headers = headersMap.toMap()
                                          
-                                         // Ekstrak Referer/Origin asli dari URL jika ada
-                                         val parts = decodedUrlParam.split("|")
-                                         if (parts.size > 1) {
-                                             val headerPart = parts[1]
-                                             for (param in headerPart.split("&")) {
-                                                 val pair = param.split("=")
-                                                 if (pair.size == 2) {
-                                                     val key = pair[0].trim()
-                                                     val value = try {
-                                                         java.net.URLDecoder.decode(pair[1], "UTF-8").trim()
-                                                     } catch (e: Exception) {
-                                                         pair[1].trim()
-                                                     }
-                                                     if (key.equals("Referer", ignoreCase = true) && value.isNotEmpty()) {
-                                                         headersMap["Referer"] = value
-                                                     }
-                                                     if (key.equals("Origin", ignoreCase = true) && value.isNotEmpty()) {
-                                                         headersMap["Origin"] = value
-                                                     }
-                                                 }
-                                             }
+                                         val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
+                                             getDrmDashManifestUrl(cleanUrl, licenseParam, headers)
+                                         } else {
+                                             cleanUrl
                                          }
-                                         val headers = headersMap.toMap()
-                                        
-                                        val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
-                                            getDrmDashManifestUrl(cleanUrl, licenseParam, headers)
-                                        } else {
-                                            cleanUrl
-                                        }
-                                        
-                                        val isDash = cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)
-                                        val streamType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
-                                        
-                                        android.util.Log.d("EventProvider", "Invoking CallSite 2: URL=$streamUrl, KID=$clearkeyKid, KEY=$clearkeyKey, HEADERS=$headers")
-                                        
-                                        callback.invoke(
-                                            newDrmExtractorLink(
-                                                this.name,
-                                                this.name,
-                                                streamUrl,
-                                                streamType,
-                                                CLEARKEY_UUID
-                                            ) {
-                                                quality = Qualities.Unknown.value
-                                                this.headers = headers
-                                                kty = "oct"
-                                                kid = clearkeyKid
-                                                this.key = clearkeyKey
-                                            }
-                                        )
-                                        successDrm = true
-                                        return true
-                                    }
-                                }
-                                
-                                targetUrl = decryptedUrl
-                            } else {
-                                android.util.Log.d("EventProvider", "NS Player payload key $idVal not found in json")
-                            }
-                        }
+                                         
+                                         val isDash = cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)
+                                         val streamType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
+                                         
+                                         android.util.Log.d("EventProvider", "Invoking CallSite 2: URL=$streamUrl, KID=$clearkeyKid, KEY=$clearkeyKey, HEADERS=$headers")
+                                         
+                                         callback.invoke(
+                                             newDrmExtractorLink(
+                                                 serverName,
+                                                 serverName,
+                                                 streamUrl,
+                                                 streamType,
+                                                 CLEARKEY_UUID
+                                             ) {
+                                                 quality = Qualities.Unknown.value
+                                                 this.headers = headers
+                                                 kty = "oct"
+                                                 kid = clearkeyKid
+                                                 this.key = clearkeyKey
+                                             }
+                                         )
+                                         successDrm = true
+                                         return true
+                                     }
+                                 }
+                                 currentTargetUrl = decryptedUrl
+                             } else {
+                                 android.util.Log.d("EventProvider", "NS Player payload key $idVal not found in json")
+                             }
+                         }
                     } catch (e: Exception) {
                         android.util.Log.e("EventProvider", "Failed to decrypt NS Player source", e)
                     }
                 }
                 
-                if (!successDrm && targetUrl.contains(".pages.dev/") && !targetUrl.contains("bitmovin") && !targetUrl.contains("nsplayer")) {
-                    // Fallback default stream jika dua-duanya nihil dan bukan dynamic player
-                    targetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
-                    android.util.Log.d("EventProvider", "Decryption failed. Defaulting to stream CDN fallback: $targetUrl")
+                if (!successDrm && currentTargetUrl.contains(".pages.dev/") && !currentTargetUrl.contains("bitmovin") && !currentTargetUrl.contains("nsplayer")) {
+                    currentTargetUrl = "https://stream.netxtv.id/live/$idVal/index.m3u8"
+                    android.util.Log.d("EventProvider", "Decryption failed. Defaulting to stream CDN fallback: $currentTargetUrl")
                 }
             }
 
-            android.util.Log.d("EventProvider", "Final targetUrl to stream: $targetUrl")
+            android.util.Log.d("EventProvider", "Final targetUrl to stream: $currentTargetUrl")
 
-            val isFlv = targetUrl.contains(".flv", ignoreCase = true) || targetUrl.contains("flv", ignoreCase = true)
+            val isFlv = currentTargetUrl.contains(".flv", ignoreCase = true) || currentTargetUrl.contains("flv", ignoreCase = true)
             val url = if (isFlv) {
-                if (!targetUrl.contains("#")) "$targetUrl#.flv" else targetUrl
-            } else if (!targetUrl.contains(".m3u8", ignoreCase = true) && 
-                          !targetUrl.contains("m3u8", ignoreCase = true) && 
-                          !targetUrl.contains(".mpd", ignoreCase = true) && 
-                          !targetUrl.contains("mpd", ignoreCase = true) && 
-                          !targetUrl.contains("#") && 
-                          (targetUrl.contains("live.php") || targetUrl.contains("play.php") || targetUrl.contains("/live/"))) {
-                "$targetUrl#.m3u8"
+                if (!currentTargetUrl.contains("#")) "$currentTargetUrl#.flv" else currentTargetUrl
+            } else if (!currentTargetUrl.contains(".m3u8", ignoreCase = true) && 
+                          !currentTargetUrl.contains("m3u8", ignoreCase = true) && 
+                          !currentTargetUrl.contains(".mpd", ignoreCase = true) && 
+                          !currentTargetUrl.contains("mpd", ignoreCase = true) && 
+                          !currentTargetUrl.contains("#") && 
+                          (currentTargetUrl.contains("live.php") || currentTargetUrl.contains("play.php") || currentTargetUrl.contains("/live/"))) {
+                "$currentTargetUrl#.m3u8"
             } else {
-                targetUrl
+                currentTargetUrl
             }
 
             val isM3u8 = url.contains(".m3u8", ignoreCase = true) || url.contains("m3u8", ignoreCase = true)
@@ -991,8 +1051,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
 
             callback.invoke(
                 newExtractorLink(
-                    this.name,
-                    this.name,
+                    serverName,
+                    serverName,
                     url,
                     type
                 ) {
