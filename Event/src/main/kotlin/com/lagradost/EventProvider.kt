@@ -76,23 +76,6 @@ class EventProvider(val context: Context) : MainAPI() {
                 }
             }
             
-            // Sematkan query parameter token ke segment template (media & initialization) secara dinamis
-            if (queryParams.isNotEmpty()) {
-                val escapedParams = queryParams.replace("&", "&amp;")
-                
-                // Regex penggantian media="..." dan initialization="..."
-                modifiedXml = modifiedXml.replace(Regex("""media="([^"]+)"""")) { matchResult ->
-                    val p1 = matchResult.groupValues[1]
-                    val sep = if (p1.contains("?")) "&amp;" else "?"
-                    """media="$p1$sep$escapedParams""""
-                }
-                modifiedXml = modifiedXml.replace(Regex("""initialization="([^"]+)"""")) { matchResult ->
-                    val p1 = matchResult.groupValues[1]
-                    val sep = if (p1.contains("?")) "&amp;" else "?"
-                    """initialization="$p1$sep$escapedParams""""
-                }
-            }
-            
             // 3. Cek apakah manifest bersih ini sudah memuat ClearKey secara native
             val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true) ||
                               modifiedXml.contains("cenc:default_KID", ignoreCase = true)
