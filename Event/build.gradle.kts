@@ -1,4 +1,4 @@
-version = 36
+version = 37
 
 android {
     buildFeatures {
@@ -17,7 +17,15 @@ cloudstream {
     iconUrl = "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png"
 }
 
+repositories {
+    google()
+    mavenCentral()
+    maven("https://jitpack.io")
+}
+
 dependencies {
     val cloudstream by configurations
     cloudstream("com.lagradost:cloudstream3:pre-release")
 }
+
+

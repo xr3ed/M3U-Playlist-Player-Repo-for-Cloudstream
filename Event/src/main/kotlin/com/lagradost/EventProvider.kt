@@ -356,7 +356,19 @@ class EventProvider : MainAPI() {
             // Jika targetUrl mengarah ke halaman player web pages.dev (seperti xys1-2-player.pages.dev/bitmovin/ atau pisionx.pages.dev/xplay/jwplayer)
             // Kita bypass dan decode DRM ClearKey-nya agar dapat dimainkan secara native di Cloudstream.
             if (targetUrl.contains(".pages.dev/") && (targetUrl.contains("bitmovin") || targetUrl.contains("shaka") || targetUrl.contains("jwplayer") || targetUrl.contains("clappr") || targetUrl.contains("nsplayer"))) {
-                val idVal = targetUrl.substringAfter("id=").substringBefore("&").substringBefore("#")
+                var idVal = targetUrl.substringAfter("id=").substringBefore("&").substringBefore("#")
+                
+                // Normalisasi ID kustom agar cocok dengan database backend worker
+                idVal = when (idVal) {
+                    "one1" -> "one_1"
+                    "one2" -> "one_2"
+                    "dazn3es" -> "dazn3_spain"
+                    "dazn1es" -> "dsports"
+                    "xssc2" -> "ssc2"
+                    "vpl8" -> "tvri"
+                    else -> idVal
+                }
+                
                 android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
                 
                 var successDrm = false
@@ -423,7 +435,7 @@ class EventProvider : MainAPI() {
                                             this.headers = headers
                                             kty = "oct"
                                             kid = clearkeyKid
-                                            this.key = "{\"$clearkeyKid\":\"$clearkeyKey\"}"
+                                            this.key = "{\"keys\":[{\"kty\":\"oct\",\"k\":\"$clearkeyKey\",\"kid\":\"$clearkeyKid\"}],\"type\":\"temporary\"}"
                                         }
                                     )
                                     successDrm = true
@@ -518,7 +530,7 @@ class EventProvider : MainAPI() {
                                                 this.headers = headers
                                                 kty = "oct"
                                                 kid = clearkeyKid
-                                                this.key = "{\"$clearkeyKid\":\"$clearkeyKey\"}"
+                                                this.key = "{\"keys\":[{\"kty\":\"oct\",\"k\":\"$clearkeyKey\",\"kid\":\"$clearkeyKid\"}],\"type\":\"temporary\"}"
                                             }
                                         )
                                         successDrm = true
