@@ -1,4 +1,4 @@
-version = 63
+version = 64
 
 android {
     buildFeatures {
@@ -12,7 +12,7 @@ cloudstream {
     authors = listOf("xr3ed")
     status = 1
     tvTypes = listOf(
-        "Movie"
+        "Live"
     )
     iconUrl = "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png"
 }

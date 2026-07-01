@@ -172,7 +172,7 @@ object LocalManifestServer {
 class Xr3edEventProvider(val context: Context) : MainAPI() {
     override var mainUrl = "https://wc26.netxtv.id"
     override var name = "xr3ed event"
-    override val supportedTypes = setOf(TvType.Movie)
+    override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
     override val hasMainPage = true
 
@@ -543,7 +543,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                 newLiveSearchResponse(
                                     chName,
                                     streamUrl,
-                                    TvType.Movie
+                                    TvType.Live
                                 ) {
                                     this.posterUrl = defaultLogo
                                 }
@@ -563,7 +563,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 newLiveSearchResponse(
                     "Sedang tidak ada pertandingan piala dunia aktif saat ini",
                     "https://wc26.netxtv.id/?id=jadwal#none",
-                    TvType.Movie
+                    TvType.Live
                 ) {
                     this.posterUrl = defaultLogo
                 }
@@ -619,7 +619,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     newLiveSearchResponse(
                         chName,
                         streamUrl,
-                        TvType.Movie
+                        TvType.Live
                     ) {
                         this.posterUrl = chImg
                     }
@@ -637,10 +637,9 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             if (url.contains("#match:")) {
                 val groupId = url.substringAfter("#match:")
                 title = "Live Match - $groupId"
-                return newMovieLoadResponse(
+                return newLiveStreamLoadResponse(
                     title,
                     url,
-                    TvType.Movie,
                     url
                 ) {
                     this.posterUrl = defaultLogo
@@ -656,10 +655,9 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 }
                 title = "Live Stream - $code"
                 val linkUrl = "https://wc26.netxtv.id/?id=jadwal#go:$code"
-                return newMovieLoadResponse(
+                return newLiveStreamLoadResponse(
                     title,
                     linkUrl,
-                    TvType.Movie,
                     linkUrl
                 ) {
                     this.posterUrl = defaultLogo
@@ -669,10 +667,9 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             e.printStackTrace()
         }
         
-        return newMovieLoadResponse(
+        return newLiveStreamLoadResponse(
             title,
             url,
-            TvType.Movie,
             url
         ) {
             this.posterUrl = defaultLogo
