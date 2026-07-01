@@ -143,8 +143,13 @@ object LocalManifestServer {
                                                  put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
                                                  put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
                                              }
+                                              val manifestUrl = if (meta.originalUrl.startsWith("https://") && meta.originalUrl.contains("workers.dev")) {
+                                                  meta.originalUrl.replace("https://", "http://")
+                                              } else {
+                                                  meta.originalUrl
+                                              }
                                               val response = kotlinx.coroutines.runBlocking {
-                                                  app.get(meta.originalUrl, headers = manifestHeaders, timeout = 25)
+                                                  app.get(manifestUrl, headers = manifestHeaders, timeout = 25)
                                               }
                                               val manifestXml = response.text
                                               
@@ -939,7 +944,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 
                 var successDrm = false
                 try {
-                    val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
+                    val workerUrl = "http://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
                     val responseText = app.get(workerUrl, timeout = 10).text
                     if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
                         val responseJson = JSONObject(responseText.trim())
@@ -1057,7 +1062,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 if (!successDrm) {
                     android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
                     try {
-                        val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
+                        val nsWorkerUrl = "http://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
                         val nsResponseText = app.get(nsWorkerUrl, timeout = 15).text
                         android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
