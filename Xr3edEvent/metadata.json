@@ -1,6 +1,6 @@
 {
-  "pluginClassName": "com.lagradost.EventPlugin",
-  "displayName": "Event",
+  "pluginClassName": "com.lagradost.Xr3edEventPlugin",
+  "displayName": "xr3ed event",
   "description": "Plugin untuk live stream Event Piala Dunia 2026",
   "author": "xr3ed",
   "version": 60,

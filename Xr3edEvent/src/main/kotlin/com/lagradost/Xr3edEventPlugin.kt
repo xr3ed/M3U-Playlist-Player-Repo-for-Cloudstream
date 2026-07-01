@@ -5,9 +5,9 @@ import com.lagradost.cloudstream3.plugins.Plugin
 import android.content.Context
 
 @CloudstreamPlugin
-class EventPlugin: Plugin() {
+class Xr3edEventPlugin: Plugin() {
     override fun load(context: Context) {
         // Register provider kita ke Cloudstream
-        registerMainAPI(EventProvider(context))
+        registerMainAPI(Xr3edEventProvider(context))
     }
 }

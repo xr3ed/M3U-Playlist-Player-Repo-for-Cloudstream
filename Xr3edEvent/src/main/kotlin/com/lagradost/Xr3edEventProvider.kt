@@ -169,9 +169,9 @@ object LocalManifestServer {
     }
 }
 
-class EventProvider(val context: Context) : MainAPI() {
+class Xr3edEventProvider(val context: Context) : MainAPI() {
     override var mainUrl = "https://wc26.netxtv.id"
-    override var name = "Event"
+    override var name = "xr3ed event"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
     override val hasMainPage = true
