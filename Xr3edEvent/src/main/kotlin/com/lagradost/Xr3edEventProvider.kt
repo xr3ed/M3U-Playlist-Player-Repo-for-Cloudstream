@@ -18,6 +18,21 @@ import java.io.PrintWriter
 import kotlin.concurrent.thread
 
 object LocalManifestServer {
+    private val customClient = okhttp3.OkHttpClient.Builder()
+        .dns(object : okhttp3.Dns {
+            override fun lookup(hostname: String): List<java.net.InetAddress> {
+                val addresses = okhttp3.Dns.SYSTEM.lookup(hostname)
+                val ipv4Only = addresses.filterIsInstance<java.net.Inet4Address>()
+                return ipv4Only.ifEmpty { addresses }
+            }
+        })
+        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .build()
+        
+    val customApi = com.lagradost.nicehttp.Requests(customClient)
+
     private var serverSocket: ServerSocket? = null
     private var serverPort: Int = 0
     
@@ -144,7 +159,7 @@ object LocalManifestServer {
                                                  put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
                                              }
                                              val response = kotlinx.coroutines.runBlocking {
-                                                 app.get(meta.originalUrl, headers = manifestHeaders, timeout = 25)
+                                                 customApi.get(meta.originalUrl, headers = manifestHeaders, timeout = 25)
                                              }
                                              val manifestXml = response.text
                                              
@@ -187,7 +202,7 @@ object LocalManifestServer {
                                               }
                                               
                                                if (kidUuid.isNotEmpty()) {
-                                                   val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                   val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
                                                    var injectCount = 0
                                                    modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
                                                        injectCount++
@@ -260,7 +275,7 @@ object LocalManifestServer {
                                              }
                                              
                                              // ClearKey tags
-                                             val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)
+                                             val hasClearKey = modifiedXml.contains("urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002", ignoreCase = true)
                                              if (!hasClearKey) {
                                                  val keyPairs = meta.drmLicenseParam.split(",")
                                                  val contentProtectionXmlBuilder = StringBuilder()
@@ -274,7 +289,7 @@ object LocalManifestServer {
                                                              keyId
                                                          }
                                                          contentProtectionXmlBuilder.append("""
-                                                             <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$uuidKid" xmlns:cenc="urn:mpeg:cenc:2013"/>
+                                                             <ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$uuidKid" xmlns:cenc="urn:mpeg:cenc:2013"/>
                                                          """.trimIndent()).append("\n")
                                                      }
                                                  }
@@ -290,7 +305,7 @@ object LocalManifestServer {
                                                          
                                                          val clearKeyTag = if (kidMatch != null) {
                                                              val kidToUse = kidMatch.groupValues[1]
-                                                             """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                             """<ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
                                                          } else {
                                                              contentProtectionXml.trim()
                                                          }
@@ -304,7 +319,7 @@ object LocalManifestServer {
                                                          
                                                          val clearKeyTag = if (kidMatch != null) {
                                                              val kidToUse = kidMatch.groupValues[1]
-                                                             """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                             """<ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
                                                          } else {
                                                              contentProtectionXml.trim()
                                                          }
@@ -940,7 +955,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 var successDrm = false
                 try {
                     val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
-                    val responseText = app.get(workerUrl, timeout = 10).text
+                    val responseText = LocalManifestServer.customApi.get(workerUrl, timeout = 10).text
                     if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
                         val responseJson = JSONObject(responseText.trim())
                         val ivB64 = responseJson.optString("iv")
@@ -1058,7 +1073,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
                     try {
                         val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
-                        val nsResponseText = app.get(nsWorkerUrl, timeout = 15).text
+                        val nsResponseText = LocalManifestServer.customApi.get(nsWorkerUrl, timeout = 15).text
                         android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
                             val nsJson = JSONObject(nsResponseText.trim())

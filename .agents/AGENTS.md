@@ -2,3 +2,10 @@
 
 - Lokasi repositori Git utama untuk pengembangan, modifikasi file, kompilasi (`gradlew make`), dan git push adalah `E:\proyyek\cloudsterm\M3U-Playlist-Player-Repo-for-Cloudstream`.
 - Jangan bekerja di folder external (`RBTV+`). Lakukan semua pekerjaan langsung pada repositori Git utama di atas.
+
+### Aturan Pengembangan Plugin IPTV & Penanganan Manifest DASH
+1. **Dinamisasi Referer:** Saat memutar saluran yang menggunakan enkripsi ClearKey/DASH dengan otorisasi CDN, selalu gunakan referer dinamis yang diekstrak lengkap dari path halaman player web target (jangan hardcode referer root domain).
+2. **Absolute Media URLs di Proxy Manifest:** Saat memodifikasi manifest DASH (`.mpd`) di dalam local server proxy, pastikan seluruh atribut `media="..."` diubah menjadi URL absolut yang menunjuk ke domain CDN aslinya. Jangan biarkan relatif, karena ExoPlayer akan salah mengarahkannya ke localhost proxy dan menghasilkan error 404 / 2004.
+3. **Konversi Manifest Static ke Dynamic (LIVE):** Jika live stream menggunakan manifest bertipe `static` atau memiliki batas waktu putar (`mediaPresentationDuration`), ubah tipenya menjadi `type="dynamic"`, hapus `mediaPresentationDuration`, dan sisipkan `minimumUpdatePeriod="PT2S"` agar ExoPlayer me-refresh segmen secara berkala dan memutar siaran tanpa henti.
+4. **Parser Parameter Kebal:** Jangan memotong query parameter proxy dengan `.split("=")` sederhana karena nilai parameter bisa saja mengandung karakter `=`. Gunakan `indexOf('=')` dan `substring` untuk memisahkan key dan value.
+5. **Pengiriman Biner via OutputStream Mentah:** Tulis data biner segmen media langsung ke `OutputStream` mentah dari soket, jangan menggunakan wrapper text seperti `PrintWriter` untuk menghindari pemotongan data (`EOFException`).
