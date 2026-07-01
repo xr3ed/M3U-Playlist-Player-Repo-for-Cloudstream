@@ -44,33 +44,21 @@ class EventProvider : MainAPI() {
             val response = app.get(originalUrl, headers = headers, timeout = 10)
             val manifestXml = response.text
             
-            // Cek apakah manifest sudah memuat ClearKey DRM secara native
-            if (manifestXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true) ||
-                manifestXml.contains("cenc:default_KID", ignoreCase = true)) {
-                return originalUrl
-            }
+            var modifiedXml = manifestXml
+            
+            // 1. Hapus seluruh blok ContentProtection Widevine (urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed)
+            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
+            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
+            
+            // 2. Hapus seluruh blok ContentProtection PlayReady (urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95)
+            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
+            modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
             
             // Tentukan BaseURL absolut dan query parameters token asli
             val finalUrl = response.url
             val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
             val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
             val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
-            
-            // Format KID ke UUID format
-            val cleanKid = kidHex.replace("-", "").trim()
-            val uuidKid = if (cleanKid.length == 32) {
-                "${cleanKid.substring(0, 8)}-${cleanKid.substring(8, 12)}-${cleanKid.substring(12, 16)}-${cleanKid.substring(16, 20)}-${cleanKid.substring(20)}"
-            } else {
-                cleanKid
-            }
-            
-            val contentProtectionXml = """
-                <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e">
-                    <cenc:default_KID xmlns:cenc="urn:mpeg:cenc:2013">$uuidKid</cenc:default_KID>
-                </ContentProtection>
-            """.trimIndent()
-            
-            var modifiedXml = manifestXml
             
             // Sisipkan BaseURL absolut di dalam <Period> atau <MPD>
             if (!modifiedXml.contains("<BaseURL>") && !modifiedXml.contains("<BaseURL ")) {
@@ -104,23 +92,42 @@ class EventProvider : MainAPI() {
                 }
             }
             
-            // Sisipkan ContentProtection ClearKey ke dalam setiap <AdaptationSet>
-            val parts = modifiedXml.split("<AdaptationSet")
-            if (parts.size > 1) {
-                val sb = StringBuilder(parts[0])
-                for (i in 1 until parts.size) {
-                    sb.append("<AdaptationSet")
-                    val rest = parts[i]
-                    val tagEndIdx = rest.indexOf(">")
-                    if (tagEndIdx != -1) {
-                        sb.append(rest.substring(0, tagEndIdx + 1))
-                        sb.append("\n$contentProtectionXml\n")
-                        sb.append(rest.substring(tagEndIdx + 1))
-                    } else {
-                        sb.append(rest)
-                    }
+            // 3. Cek apakah manifest bersih ini sudah memuat ClearKey secara native
+            val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true) ||
+                              modifiedXml.contains("cenc:default_KID", ignoreCase = true)
+            
+            if (!hasClearKey) {
+                // Jika tidak memiliki ClearKey, sisipkan ContentProtection ClearKey
+                val cleanKid = kidHex.replace("-", "").trim()
+                val uuidKid = if (cleanKid.length == 32) {
+                    "${cleanKid.substring(0, 8)}-${cleanKid.substring(8, 12)}-${cleanKid.substring(12, 16)}-${cleanKid.substring(16, 20)}-${cleanKid.substring(20)}"
+                } else {
+                    cleanKid
                 }
-                modifiedXml = sb.toString()
+                
+                val contentProtectionXml = """
+                    <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e">
+                        <cenc:default_KID xmlns:cenc="urn:mpeg:cenc:2013">$uuidKid</cenc:default_KID>
+                    </ContentProtection>
+                """.trimIndent()
+                
+                val parts = modifiedXml.split("<AdaptationSet")
+                if (parts.size > 1) {
+                    val sb = StringBuilder(parts[0])
+                    for (i in 1 until parts.size) {
+                        sb.append("<AdaptationSet")
+                        val rest = parts[i]
+                        val tagEndIdx = rest.indexOf(">")
+                        if (tagEndIdx != -1) {
+                            sb.append(rest.substring(0, tagEndIdx + 1))
+                            sb.append("\n$contentProtectionXml\n")
+                            sb.append(rest.substring(tagEndIdx + 1))
+                        } else {
+                            sb.append(rest)
+                        }
+                    }
+                    modifiedXml = sb.toString()
+                }
             }
             
             val base64Xml = android.util.Base64.encodeToString(modifiedXml.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
