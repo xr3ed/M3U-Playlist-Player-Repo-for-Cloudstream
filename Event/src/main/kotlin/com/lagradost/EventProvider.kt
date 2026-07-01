@@ -558,17 +558,15 @@ class EventProvider : MainAPI() {
                              }
                              if (!encryptedPayload.isNullOrEmpty()) {
                                  val key = "xys1-gh"
-                                val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
-                                val decodedStr = String(decodedBytes, Charsets.UTF_8)
-                                
-                                val decryptedChars = CharArray(decodedStr.length)
-                                for (i in decodedStr.indices) {
-                                    val cByte = decodedStr[i].code
-                                    val kByte = key[i % key.length].code
-                                    decryptedChars[i] = (cByte xor kByte).toChar()
-                                }
-                                
-                                val decryptedUrl = String(decryptedChars)
+                                 val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
+                                 val decryptedBytes = ByteArray(decodedBytes.size)
+                                 for (i in decodedBytes.indices) {
+                                     val cByte = decodedBytes[i].toInt() and 0xFF
+                                     val kByte = key[i % key.length].code
+                                     decryptedBytes[i] = (cByte xor kByte).toByte()
+                                 }
+                                 
+                                 val decryptedUrl = String(decryptedBytes, Charsets.UTF_8)
                                     .replace("|", "%7C")
                                     .replace(" ", "%20")
                                 
