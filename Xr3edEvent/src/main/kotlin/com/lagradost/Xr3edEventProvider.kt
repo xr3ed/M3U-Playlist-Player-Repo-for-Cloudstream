@@ -69,12 +69,25 @@ object LocalManifestServer {
                 modified[i+2] == 0x73.toByte() &&   // 's'
                 modified[i+3] == 0x68.toByte()) {   // 'h'
                 
-                // Ubah type dari 'pssh' menjadi 'free'
-                modified[i] = 0x66.toByte()     // 'f'
-                modified[i+1] = 0x72.toByte()   // 'r'
-                modified[i+2] = 0x65.toByte()   // 'e'
-                modified[i+3] = 0x65.toByte()   // 'e'
-                psshCount++
+                if (i + 23 < limit) {
+                    var isWidevine = true
+                    for (j in 0 until 16) {
+                        if (modified[i + 8 + j] != widevineUuid[j]) { isWidevine = false; break }
+                    }
+                    var isPlayready = true
+                    for (j in 0 until 16) {
+                        if (modified[i + 8 + j] != playreadyUuid[j]) { isPlayready = false; break }
+                    }
+                    
+                    if (isWidevine || isPlayready) {
+                        // Ubah type dari 'pssh' menjadi 'free'
+                        modified[i] = 0x66.toByte()     // 'f'
+                        modified[i+1] = 0x72.toByte()   // 'r'
+                        modified[i+2] = 0x65.toByte()   // 'e'
+                        modified[i+3] = 0x65.toByte()   // 'e'
+                        psshCount++
+                    }
+                }
             }
         }
         if (psshCount > 0) {
@@ -123,23 +136,26 @@ object LocalManifestServer {
                                       val rep = paramsMap["rep"] ?: ""
                                       val time = paramsMap["time"] ?: ""
                                       val num = paramsMap["num"] ?: ""
+                                      val bw = paramsMap["bw"] ?: ""
                                       val base = paramsMap["base"] ?: ""
                                       val origPath = paramsMap["path"] ?: ""
                                       val origParams = paramsMap["params"] ?: ""
                                       val ref = paramsMap["ref"] ?: ""
                                       val orig = paramsMap["orig"] ?: ""
                                       
-                                      // Susun URL asli dengan resolusi placeholder DASH
-                                      var cleanPath = origPath
+                                      val sep = if (origPath.contains("?")) "&" else "?"
+                                      var originalUrl = base + origPath + (if (origParams.isNotEmpty()) sep + origParams else "")
+                                      
+                                      // Susun URL asli dengan resolusi placeholder DASH pada seluruh URL
+                                      originalUrl = originalUrl
                                           .replace("\$RepresentationID\$", rep)
                                           .replace("\$RepresentationID", rep)
                                           .replace("\$Time\$", time)
                                           .replace("\$Time", time)
                                           .replace("\$Number\$", num)
                                           .replace("\$Number", num)
-                                          
-                                      val sep = if (cleanPath.contains("?")) "&" else "?"
-                                      var originalUrl = base + cleanPath + (if (origParams.isNotEmpty()) sep + origParams else "")
+                                          .replace("\$Bandwidth\$", bw)
+                                          .replace("\$Bandwidth", bw)
                                       
                                       android.util.Log.d("EventProvider", "LocalManifestServer proxying segment: $originalUrl")
                                      
@@ -149,36 +165,45 @@ object LocalManifestServer {
                                          "Origin" to if (orig.isNotEmpty()) orig else "https://xys1-2-player.pages.dev"
                                      )
                                      
-                                     var bytes: ByteArray? = null
-                                     try {
-                                         val response = kotlinx.coroutines.runBlocking {
-                                             app.get(originalUrl, headers = headers, timeout = 20)
-                                         }
-                                         bytes = response.body.bytes()
-                                     } catch (e: Exception) {
-                                         android.util.Log.e("EventProvider", "Failed to download original segment: ${e.message}", e)
-                                     }
-                                     
-                                     val clientOs = client.getOutputStream()
-                                     if (bytes != null && bytes.isNotEmpty()) {
+                                      var bytes: ByteArray? = null
+                                      var isSuccess = false
+                                      var responseCode = 404
+                                      try {
+                                          val response = kotlinx.coroutines.runBlocking {
+                                              app.get(originalUrl, headers = headers, timeout = 20)
+                                          }
+                                          isSuccess = response.isSuccessful
+                                          responseCode = response.code
+                                          if (isSuccess) {
+                                              bytes = response.body.bytes()
+                                          } else {
+                                              android.util.Log.e("EventProvider", "Segment download failed with HTTP $responseCode: $originalUrl")
+                                          }
+                                      } catch (e: Exception) {
+                                          android.util.Log.e("EventProvider", "Failed to download original segment: ${e.message}", e)
+                                      }
+                                      
+                                      val clientOs = client.getOutputStream()
+                                      if (isSuccess && bytes != null && bytes.isNotEmpty()) {
                                           val modifiedBytes = stripAllPssh(bytes)
-                                         val headerString = "HTTP/1.1 200 OK\r\n" +
-                                                            "Content-Type: video/mp4\r\n" +
-                                                            "Content-Length: ${modifiedBytes.size}\r\n" +
-                                                            "Access-Control-Allow-Origin: *\r\n" +
-                                                            "Connection: close\r\n" +
-                                                            "\r\n"
-                                         clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
-                                         clientOs.write(modifiedBytes)
-                                         clientOs.flush()
-                                         android.util.Log.d("EventProvider", "LocalManifestServer successfully sent modified segment.")
-                                     } else {
-                                         val headerString = "HTTP/1.1 404 Not Found\r\n" +
-                                                            "Connection: close\r\n" +
-                                                            "\r\n"
-                                         clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
-                                         clientOs.flush()
-                                     }
+                                          val headerString = "HTTP/1.1 200 OK\r\n" +
+                                                             "Content-Type: video/mp4\r\n" +
+                                                             "Content-Length: ${modifiedBytes.size}\r\n" +
+                                                             "Access-Control-Allow-Origin: *\r\n" +
+                                                             "Connection: close\r\n" +
+                                                             "\r\n"
+                                          clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
+                                          clientOs.write(modifiedBytes)
+                                          clientOs.flush()
+                                          android.util.Log.d("EventProvider", "LocalManifestServer successfully sent modified segment.")
+                                      } else {
+                                          val statusText = if (responseCode == 403) "Forbidden" else if (responseCode == 404) "Not Found" else "Error"
+                                          val headerString = "HTTP/1.1 $responseCode $statusText\r\n" +
+                                                             "Connection: close\r\n" +
+                                                             "\r\n"
+                                          clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
+                                          clientOs.flush()
+                                      }
                                  } else {
                                      // Request manifest secara dinamis
                                      val id = path.substringAfter("/manifest_", "").substringBefore(".mpd", "")
@@ -302,7 +327,7 @@ object LocalManifestServer {
                                                      val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
                                                      val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
                                                      
-                                                     """media="http://127.0.0.1:$serverPort/media_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;time=${'$'}Time${'$'}&amp;num=${'$'}Number${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
+                                                     """media="http://127.0.0.1:$serverPort/media_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;time=${'$'}Time${'$'}&amp;num=${'$'}Number${'$'}&amp;bw=${'$'}Bandwidth${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
                                                  }
                                                
                                                // Tulis ulang SegmentTemplate initialization
@@ -315,7 +340,7 @@ object LocalManifestServer {
                                                   val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
                                                   val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
                                                   
-                                                  """initialization="http://127.0.0.1:$serverPort/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
+                                                  """initialization="http://127.0.0.1:$serverPort/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;bw=${'$'}Bandwidth${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
                                               }
                                               
                                               // ClearKey tags (injeksikan kedua UUID W3C dan ExoPlayer ClearKey agar kompatibel)
@@ -1101,11 +1126,6 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     val keyId = parts[0].trim()
                                     val keyValue = parts[1].trim()
                                     
-                                    android.util.Log.d("EventProvider", "Successfully decrypted DRM ClearKey: kid=$keyId key=$keyValue")
-                                    
-                                    val clearkeyKid = hexToBase64Url(keyId)
-                                    val clearkeyKey = hexToBase64Url(keyValue)
-                                    
                                     val headersMap = HashMap<String, String>()
                                     headersMap["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                                     
@@ -1141,9 +1161,23 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         headersMap["Origin"] = cleanOrigin
                                     }
                                     val headers = headersMap.toMap()
+
+                                    var actualKid = keyId
+                                    try {
+                                        val mResp = app.get(dashUrl, headers = headers, timeout = 10).text
+                                        val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(mResp)
+                                        if (kidMatch != null) {
+                                            actualKid = kidMatch.groupValues[1].replace("-", "")
+                                        }
+                                    } catch (e: Exception) {
+                                        android.util.Log.e("EventProvider", "Failed to fetch manifest to get actual KID", e)
+                                    }
+                                    
+                                    val clearkeyKid = hexToBase64Url(actualKid)
+                                    val clearkeyKey = hexToBase64Url(keyValue)
                                     
                                     val streamUrl = if (dashUrl.contains(".mpd", ignoreCase = true) || dashUrl.contains("mpd", ignoreCase = true)) {
-                                        getDrmDashManifestUrl(dashUrl, drmStr, headers)
+                                        getDrmDashManifestUrl(dashUrl, "$actualKid:$keyValue", headers)
                                     } else {
                                         dashUrl
                                     }
@@ -1223,9 +1257,6 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     if (firstPair != null && firstPair.size == 2) {
                                         val keyId = firstPair[0].trim()
                                         val keyValue = firstPair[1].trim()
-                                        val clearkeyKid = hexToBase64Url(keyId)
-                                        val clearkeyKey = hexToBase64Url(keyValue)
-                                        
                                         android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey params: $licenseParam for stream: $cleanUrl")
                                         
                                         val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -1254,9 +1285,23 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                               }
                                           }
                                           val headers = headersMap.toMap()
+                                          
+                                          var actualKid = keyId
+                                          try {
+                                              val mResp = app.get(cleanUrl, headers = headersMap.toMap(), timeout = 10).text
+                                              val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(mResp)
+                                              if (kidMatch != null) {
+                                                  actualKid = kidMatch.groupValues[1].replace("-", "")
+                                              }
+                                          } catch (e: Exception) {
+                                              android.util.Log.e("EventProvider", "Failed to fetch manifest to get actual KID", e)
+                                          }
+                                          
+                                          val clearkeyKid = hexToBase64Url(actualKid)
+                                          val clearkeyKey = hexToBase64Url(keyValue)
                                          
                                          val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
-                                             getDrmDashManifestUrl(cleanUrl, licenseParam, headers)
+                                             getDrmDashManifestUrl(cleanUrl, "$actualKid:$keyValue", headers)
                                          } else {
                                              cleanUrl
                                          }
