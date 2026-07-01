@@ -207,9 +207,7 @@ class EventProvider(val context: Context) : MainAPI() {
                             keyId
                         }
                         contentProtectionXmlBuilder.append("""
-                            <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e">
-                                <cenc:default_KID xmlns:cenc="urn:mpeg:cenc:2013">$uuidKid</cenc:default_KID>
-                            </ContentProtection>
+                            <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$uuidKid" xmlns:cenc="urn:mpeg:cenc:2013"/>
                         """.trimIndent()).append("\n")
                     }
                 }
