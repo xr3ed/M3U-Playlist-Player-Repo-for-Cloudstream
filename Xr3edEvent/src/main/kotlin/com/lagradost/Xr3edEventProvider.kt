@@ -52,14 +52,16 @@ object LocalManifestServer {
                                      // Ekstrak query parameters
                                      val queryStr = path.substringAfter("?", "")
                                      val paramsMap = HashMap<String, String>()
-                                     if (queryStr.isNotEmpty()) {
-                                         for (param in queryStr.split("&")) {
-                                             val pair = param.split("=")
-                                             if (pair.size == 2) {
-                                                 paramsMap[pair[0]] = java.net.URLDecoder.decode(pair[1], "UTF-8")
-                                             }
-                                         }
-                                     }
+                                      if (queryStr.isNotEmpty()) {
+                                          for (param in queryStr.split("&")) {
+                                              val idx = param.indexOf('=')
+                                              if (idx != -1) {
+                                                  val key = param.substring(0, idx)
+                                                  val value = param.substring(idx + 1)
+                                                  paramsMap[key] = java.net.URLDecoder.decode(value, "UTF-8")
+                                              }
+                                          }
+                                      }
                                      
                                      val rep = paramsMap["rep"] ?: ""
                                      val base = paramsMap["base"] ?: ""
@@ -91,7 +93,7 @@ object LocalManifestServer {
                                          android.util.Log.e("EventProvider", "Failed to download original init segment: ${e.message}", e)
                                      }
                                      
-                                     val out = java.io.PrintWriter(java.io.OutputStreamWriter(client.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8), true)
+                                     val clientOs = client.getOutputStream()
                                      if (bytes != null && bytes.isNotEmpty()) {
                                          val modifiedBytes = bytes.clone()
                                          var psshCount = 0
@@ -110,22 +112,22 @@ object LocalManifestServer {
                                          }
                                          android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount pssh box(es) from init segment.")
                                          
-                                         out.print("HTTP/1.1 200 OK\r\n")
-                                         out.print("Content-Type: video/mp4\r\n")
-                                         out.print("Content-Length: ${modifiedBytes.size}\r\n")
-                                         out.print("Access-Control-Allow-Origin: *\r\n")
-                                         out.print("Connection: close\r\n")
-                                         out.print("\r\n")
-                                         out.flush()
-                                         
-                                         client.getOutputStream().write(modifiedBytes)
-                                         client.getOutputStream().flush()
+                                         val headerString = "HTTP/1.1 200 OK\r\n" +
+                                                            "Content-Type: video/mp4\r\n" +
+                                                            "Content-Length: ${modifiedBytes.size}\r\n" +
+                                                            "Access-Control-Allow-Origin: *\r\n" +
+                                                            "Connection: close\r\n" +
+                                                            "\r\n"
+                                         clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
+                                         clientOs.write(modifiedBytes)
+                                         clientOs.flush()
                                          android.util.Log.d("EventProvider", "LocalManifestServer successfully sent modified init segment.")
                                      } else {
-                                         out.print("HTTP/1.1 404 Not Found\r\n")
-                                         out.print("Connection: close\r\n")
-                                         out.print("\r\n")
-                                         out.flush()
+                                         val headerString = "HTTP/1.1 404 Not Found\r\n" +
+                                                            "Connection: close\r\n" +
+                                                            "\r\n"
+                                         clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
+                                         clientOs.flush()
                                      }
                                  } else {
                                      // Request manifest secara dinamis
