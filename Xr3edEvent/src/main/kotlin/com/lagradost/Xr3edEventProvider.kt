@@ -18,21 +18,6 @@ import java.io.PrintWriter
 import kotlin.concurrent.thread
 
 object LocalManifestServer {
-    private val customClient = okhttp3.OkHttpClient.Builder()
-        .dns(object : okhttp3.Dns {
-            override fun lookup(hostname: String): List<java.net.InetAddress> {
-                val addresses = okhttp3.Dns.SYSTEM.lookup(hostname)
-                val ipv4Only = addresses.filterIsInstance<java.net.Inet4Address>()
-                return ipv4Only.ifEmpty { addresses }
-            }
-        })
-        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-        .build()
-        
-    val customApi = com.lagradost.nicehttp.Requests(customClient)
-
     private var serverSocket: ServerSocket? = null
     private var serverPort: Int = 0
     
@@ -158,11 +143,11 @@ object LocalManifestServer {
                                                  put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
                                                  put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
                                              }
-                                             val response = kotlinx.coroutines.runBlocking {
-                                                 customApi.get(meta.originalUrl, headers = manifestHeaders, timeout = 25)
-                                             }
-                                             val manifestXml = response.text
-                                             
+                                              val response = kotlinx.coroutines.runBlocking {
+                                                  app.get(meta.originalUrl, headers = manifestHeaders, timeout = 25)
+                                              }
+                                              val manifestXml = response.text
+                                              
                                               var modifiedXml = manifestXml
                                               
                                               // Paksa tipe MPD menjadi dynamic agar dideteksi sebagai Live (menghindari batasan durasi 30 menit / 1 jam)
@@ -955,7 +940,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 var successDrm = false
                 try {
                     val workerUrl = "https://bitmovin.03anutv.workers.dev/?id=$idVal&t=${System.currentTimeMillis()}"
-                    val responseText = LocalManifestServer.customApi.get(workerUrl, timeout = 10).text
+                    val responseText = app.get(workerUrl, timeout = 10).text
                     if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
                         val responseJson = JSONObject(responseText.trim())
                         val ivB64 = responseJson.optString("iv")
@@ -1073,7 +1058,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
                     try {
                         val nsWorkerUrl = "https://nsplayer.pisionpluss5a.workers.dev/?id=$idVal"
-                        val nsResponseText = LocalManifestServer.customApi.get(nsWorkerUrl, timeout = 15).text
+                        val nsResponseText = app.get(nsWorkerUrl, timeout = 15).text
                         android.util.Log.d("EventProvider", "NS Player worker raw response: $nsResponseText")
                         if (nsResponseText.trim().isNotEmpty()) {
                             val nsJson = JSONObject(nsResponseText.trim())
