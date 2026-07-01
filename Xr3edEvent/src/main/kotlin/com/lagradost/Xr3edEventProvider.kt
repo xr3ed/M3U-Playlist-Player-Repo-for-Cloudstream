@@ -192,7 +192,10 @@ object LocalManifestServer {
                                               }
                                               
                                                if (kidUuid.isNotEmpty()) {
-                                                   val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                    val clearKeyBlock = """
+                                                        <ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>
+                                                        <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>
+                                                    """.trimIndent()
                                                    var injectCount = 0
                                                    modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
                                                        injectCount++
