@@ -44,13 +44,15 @@ class EventProvider : MainAPI() {
             val response = app.get(originalUrl, headers = headers, timeout = 10)
             val manifestXml = response.text
             
-            // Cek apakah manifest sudah memuat ClearKey DRM
-            if (manifestXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)) {
+            // Cek apakah manifest sudah memuat ClearKey DRM secara native
+            if (manifestXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true) ||
+                manifestXml.contains("cenc:default_KID", ignoreCase = true)) {
                 return originalUrl
             }
             
-            // Tentukan BaseURL absolut
+            // Tentukan BaseURL absolut dan query parameters token asli
             val finalUrl = response.url
+            val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
             val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
             val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
             
@@ -82,6 +84,23 @@ class EventProvider : MainAPI() {
                         val insertIdx = modifiedXml.indexOf(">", mpdIdx) + 1
                         modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
                     }
+                }
+            }
+            
+            // Sematkan query parameter token ke segment template (media & initialization) secara dinamis
+            if (queryParams.isNotEmpty()) {
+                val escapedParams = queryParams.replace("&", "&amp;")
+                
+                // Regex penggantian media="..." dan initialization="..."
+                modifiedXml = modifiedXml.replace(Regex("""media="([^"]+)"""")) { matchResult ->
+                    val p1 = matchResult.groupValues[1]
+                    val sep = if (p1.contains("?")) "&amp;" else "?"
+                    """media="$p1$sep$escapedParams""""
+                }
+                modifiedXml = modifiedXml.replace(Regex("""initialization="([^"]+)"""")) { matchResult ->
+                    val p1 = matchResult.groupValues[1]
+                    val sep = if (p1.contains("?")) "&amp;" else "?"
+                    """initialization="$p1$sep$escapedParams""""
                 }
             }
             
