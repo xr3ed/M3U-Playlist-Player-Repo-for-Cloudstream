@@ -43,7 +43,11 @@ class EventProvider(val context: Context) : MainAPI() {
     private suspend fun getDrmDashManifestUrl(originalUrl: String, kidHex: String, headers: Map<String, String>): String {
         android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, kidHex=$kidHex")
         try {
-            val response = app.get(originalUrl, headers = headers, timeout = 25)
+            val manifestHeaders = headers.toMutableMap().apply {
+                put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
+                put("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
+            }
+            val response = app.get(originalUrl, headers = manifestHeaders, timeout = 25)
             val manifestXml = response.text
             android.util.Log.d("EventProvider", "getDrmDashManifestUrl raw manifest downloaded. Length: ${manifestXml.length}")
             
@@ -509,9 +513,7 @@ class EventProvider(val context: Context) : MainAPI() {
                                     val headers = mapOf(
                                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                                         "Referer" to "https://xys1-2-player.pages.dev/",
-                                        "Origin" to "https://xys1-2-player.pages.dev",
-                                        "Accept" to "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8",
-                                        "Accept-Language" to "en-US,en;q=0.9,id;q=0.8"
+                                        "Origin" to "https://xys1-2-player.pages.dev"
                                     )
                                     
                                     val streamUrl = if (dashUrl.contains(".mpd", ignoreCase = true) || dashUrl.contains("mpd", ignoreCase = true)) {
@@ -607,9 +609,7 @@ class EventProvider(val context: Context) : MainAPI() {
                                         val headers = mapOf(
                                             "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                                             "Referer" to "https://xys1-2-player.pages.dev/",
-                                            "Origin" to "https://xys1-2-player.pages.dev",
-                                            "Accept" to "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8",
-                                            "Accept-Language" to "en-US,en;q=0.9,id;q=0.8"
+                                            "Origin" to "https://xys1-2-player.pages.dev"
                                         )
                                         
                                         val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
