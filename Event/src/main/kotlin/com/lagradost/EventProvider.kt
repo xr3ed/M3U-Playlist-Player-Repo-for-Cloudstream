@@ -36,30 +36,34 @@ object LocalManifestServer {
                             try {
                                 val reader = BufferedReader(InputStreamReader(client.getInputStream()))
                                 val line = reader.readLine() ?: ""
+                                android.util.Log.d("EventProvider", "LocalManifestServer HTTP request: $line")
                                 val path = line.split(" ").getOrNull(1) ?: ""
                                 val id = path.substringAfter("/manifest_", "").substringBefore(".mpd", "")
                                 val xml = manifests[id]
+                                android.util.Log.d("EventProvider", "LocalManifestServer resolved ID: $id, found manifest: ${xml != null}")
                                 
-                                val out = PrintWriter(client.getOutputStream())
+                                val out = java.io.PrintWriter(java.io.OutputStreamWriter(client.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8), true)
                                 if (xml != null) {
-                                    val bytes = xml.toByteArray(Charsets.UTF_8)
-                                    out.println("HTTP/1.1 200 OK")
-                                    out.println("Content-Type: application/dash+xml")
-                                    out.println("Content-Length: ${bytes.size}")
-                                    out.println("Access-Control-Allow-Origin: *")
-                                    out.println("Connection: close")
-                                    out.println("")
+                                    val bytes = xml.toByteArray(java.nio.charset.StandardCharsets.UTF_8)
+                                    out.print("HTTP/1.1 200 OK\r\n")
+                                    out.print("Content-Type: application/dash+xml; charset=utf-8\r\n")
+                                    out.print("Content-Length: ${bytes.size}\r\n")
+                                    out.print("Access-Control-Allow-Origin: *\r\n")
+                                    out.print("Connection: close\r\n")
+                                    out.print("\r\n")
+                                    out.print(xml)
                                     out.flush()
-                                    client.getOutputStream().write(bytes)
-                                    client.getOutputStream().flush()
+                                    android.util.Log.d("EventProvider", "LocalManifestServer HTTP 200 OK sent for ID: $id")
                                 } else {
-                                    out.println("HTTP/1.1 404 Not Found")
-                                    out.println("Connection: close")
-                                    out.println("")
+                                    out.print("HTTP/1.1 404 Not Found\r\n")
+                                    out.print("Connection: close\r\n")
+                                    out.print("\r\n")
                                     out.flush()
+                                    android.util.Log.w("EventProvider", "LocalManifestServer HTTP 404 Not Found sent for ID: $id")
                                 }
                                 client.close()
                             } catch (e: Exception) {
+                                android.util.Log.e("EventProvider", "LocalManifestServer client thread exception: ${e.message}", e)
                                 try { client.close() } catch (ex: Exception) {}
                             }
                         }
@@ -235,6 +239,7 @@ class EventProvider(val context: Context) : MainAPI() {
             }
             
             val cleanId = drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
+            android.util.Log.d("EventProvider", "getDrmDashManifestUrl output xml summary:\n${if (modifiedXml.length > 2500) modifiedXml.substring(0, 2500) else modifiedXml}")
             val resultUrl = LocalManifestServer.registerManifest(cleanId, modifiedXml)
             android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Local server URL generated: $resultUrl")
             return resultUrl
