@@ -28,6 +28,39 @@ object LocalManifestServer {
     )
     private val manifestMetadatas = java.util.concurrent.ConcurrentHashMap<String, ManifestMetadata>()
 
+    private fun stripPssh(bytes: ByteArray): ByteArray {
+        val modified = bytes.clone()
+        var mdatIdx = -1
+        for (i in 0 until modified.size - 3) {
+            if (modified[i] == 0x6d.toByte() &&     // 'm'
+                modified[i+1] == 0x64.toByte() &&   // 'd'
+                modified[i+2] == 0x61.toByte() &&   // 'a'
+                modified[i+3] == 0x74.toByte()) {   // 't'
+                mdatIdx = i
+                break
+            }
+        }
+        val limit = if (mdatIdx != -1) mdatIdx else modified.size - 3
+        var psshCount = 0
+        for (i in 0 until limit) {
+            if (modified[i] == 0x70.toByte() &&     // 'p'
+                modified[i+1] == 0x73.toByte() &&   // 's'
+                modified[i+2] == 0x73.toByte() &&   // 's'
+                modified[i+3] == 0x68.toByte()) {   // 'h'
+                
+                modified[i] = 0x66.toByte()     // 'f'
+                modified[i+1] = 0x72.toByte()   // 'r'
+                modified[i+2] = 0x65.toByte()   // 'e'
+                modified[i+3] = 0x65.toByte()   // 'e'
+                psshCount++
+            }
+        }
+        if (psshCount > 0) {
+            android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount pssh box(es) before mdat.")
+        }
+        return modified
+    }
+
     fun start(): Int {
         if (serverSocket != null) return serverPort
         try {
@@ -45,9 +78,11 @@ object LocalManifestServer {
                                  android.util.Log.d("EventProvider", "LocalManifestServer HTTP request: $line")
                                  val path = line.split(" ").getOrNull(1) ?: ""
                                  
-                                  if (path.startsWith("/init_")) {
-                                      // Penanganan proxy segmen inisialisasi untuk stripping pssh box Widevine
-                                      val id = path.substringAfter("/init_", "").substringBefore("?", "")
+                                  val isSegment = path.startsWith("/init_") || path.startsWith("/media_")
+                                  if (isSegment) {
+                                      // Penanganan proxy segmen inisialisasi / media untuk stripping pssh box Widevine
+                                      val prefix = if (path.startsWith("/init_")) "/init_" else "/media_"
+                                      val id = path.substringAfter(prefix, "").substringBefore("?", "")
                                       
                                       // Ekstrak query parameters
                                       val queryStr = path.substringAfter("?", "")
@@ -64,21 +99,30 @@ object LocalManifestServer {
                                        }
                                       
                                       val rep = paramsMap["rep"] ?: ""
+                                      val time = paramsMap["time"] ?: ""
+                                      val num = paramsMap["num"] ?: ""
                                       val base = paramsMap["base"] ?: ""
                                       val origPath = paramsMap["path"] ?: ""
                                       val origParams = paramsMap["params"] ?: ""
                                       val ref = paramsMap["ref"] ?: ""
                                       val orig = paramsMap["orig"] ?: ""
                                       
-                                      // Susun URL asli
-                                      val cleanPath = origPath.replace("\$RepresentationID\$", rep).replace("\$RepresentationID", rep)
+                                      // Susun URL asli dengan resolusi placeholder DASH
+                                      var cleanPath = origPath
+                                          .replace("\$RepresentationID\$", rep)
+                                          .replace("\$RepresentationID", rep)
+                                          .replace("\$Time\$", time)
+                                          .replace("\$Time", time)
+                                          .replace("\$Number\$", num)
+                                          .replace("\$Number", num)
+                                          
                                       val sep = if (cleanPath.contains("?")) "&" else "?"
                                       var originalUrl = base + cleanPath + (if (origParams.isNotEmpty()) sep + origParams else "")
                                       if (originalUrl.startsWith("https://") && originalUrl.contains("workers.dev")) {
                                           originalUrl = originalUrl.replace("https://", "http://")
                                       }
                                       
-                                      android.util.Log.d("EventProvider", "LocalManifestServer proxying init segment: $originalUrl")
+                                      android.util.Log.d("EventProvider", "LocalManifestServer proxying segment: $originalUrl")
                                      
                                      val headers = mapOf(
                                          "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -93,28 +137,12 @@ object LocalManifestServer {
                                          }
                                          bytes = response.body.bytes()
                                      } catch (e: Exception) {
-                                         android.util.Log.e("EventProvider", "Failed to download original init segment: ${e.message}", e)
+                                         android.util.Log.e("EventProvider", "Failed to download original segment: ${e.message}", e)
                                      }
                                      
                                      val clientOs = client.getOutputStream()
                                      if (bytes != null && bytes.isNotEmpty()) {
-                                         val modifiedBytes = bytes.clone()
-                                         var psshCount = 0
-                                         for (i in 0 until modifiedBytes.size - 3) {
-                                             if (modifiedBytes[i] == 0x70.toByte() && // 'p'
-                                                 modifiedBytes[i+1] == 0x73.toByte() && // 's'
-                                                 modifiedBytes[i+2] == 0x73.toByte() && // 's'
-                                                 modifiedBytes[i+3] == 0x68.toByte()) { // 'h'
-                                                 
-                                                 modifiedBytes[i] = 0x66.toByte()   // 'f'
-                                                 modifiedBytes[i+1] = 0x72.toByte() // 'r'
-                                                 modifiedBytes[i+2] = 0x65.toByte() // 'e'
-                                                 modifiedBytes[i+3] = 0x65.toByte() // 'e'
-                                                 psshCount++
-                                             }
-                                         }
-                                         android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount pssh box(es) from init segment.")
-                                         
+                                         val modifiedBytes = stripPssh(bytes)
                                          val headerString = "HTTP/1.1 200 OK\r\n" +
                                                             "Content-Type: video/mp4\r\n" +
                                                             "Content-Length: ${modifiedBytes.size}\r\n" +
@@ -124,7 +152,7 @@ object LocalManifestServer {
                                          clientOs.write(headerString.toByteArray(java.nio.charset.StandardCharsets.UTF_8))
                                          clientOs.write(modifiedBytes)
                                          clientOs.flush()
-                                         android.util.Log.d("EventProvider", "LocalManifestServer successfully sent modified init segment.")
+                                         android.util.Log.d("EventProvider", "LocalManifestServer successfully sent modified segment.")
                                      } else {
                                          val headerString = "HTTP/1.1 404 Not Found\r\n" +
                                                             "Connection: close\r\n" +
@@ -237,26 +265,30 @@ object LocalManifestServer {
                                                    ""
                                                }
                                                
-                                                // Tulis ulang SegmentTemplate media agar selalu absolute (mencegah ExoPlayer meminta chunk video ke proxy lokal)
-                                                modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                                                   val p1 = matchResult.groupValues[1]
-                                                   if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
-                                                       matchResult.value
-                                                   } else {
-                                                       val absoluteMediaUrl = if (p1.startsWith("/")) {
-                                                           rootDomain + p1
-                                                       } else {
-                                                           absoluteBaseUrl + p1
-                                                       }
-                                                       val sep = if (absoluteMediaUrl.contains("?")) "&amp;" else "?"
-                                                       val finalMediaUrl = if (queryParams.isNotEmpty()) {
-                                                           absoluteMediaUrl + sep + queryParams.replace("&", "&amp;")
-                                                       } else {
-                                                           absoluteMediaUrl
-                                                       }
-                                                       """media="$finalMediaUrl""""
-                                                   }
-                                                }
+                                                 // Tulis ulang SegmentTemplate media agar diarahkan ke proxy lokal (agar pssh box Widevine di tiap chunk video di-strip secara aman)
+                                                 modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                     val p1 = matchResult.groupValues[1]
+                                                     val absoluteMediaUrl = if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
+                                                         p1
+                                                     } else if (p1.startsWith("/")) {
+                                                         rootDomain + p1
+                                                     } else {
+                                                         absoluteBaseUrl + p1
+                                                     }
+                                                     
+                                                     val pathPart = if (absoluteMediaUrl.contains("?")) absoluteMediaUrl.substringBefore("?") else absoluteMediaUrl
+                                                     val mediaBase = pathPart.substringBeforeLast("/") + "/"
+                                                     val mediaPath = pathPart.substringAfterLast("/")
+                                                     val mediaParams = if (absoluteMediaUrl.contains("?")) absoluteMediaUrl.substringAfter("?") else ""
+                                                     
+                                                     val encodedBase = java.net.URLEncoder.encode(mediaBase, "UTF-8")
+                                                     val encodedPath = java.net.URLEncoder.encode(mediaPath, "UTF-8")
+                                                     val encodedParams = java.net.URLEncoder.encode(mediaParams, "UTF-8")
+                                                     val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
+                                                     val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
+                                                     
+                                                     """media="http://127.0.0.1:$serverPort/media_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;time=${'$'}Time${'$'}&amp;num=${'$'}Number${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
+                                                 }
                                                
                                                // Tulis ulang SegmentTemplate initialization
                                               
