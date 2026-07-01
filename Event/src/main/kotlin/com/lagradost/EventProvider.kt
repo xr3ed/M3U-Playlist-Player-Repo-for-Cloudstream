@@ -34,34 +34,118 @@ object LocalManifestServer {
                         val client = socket.accept()
                         thread(start = true, isDaemon = true) {
                             try {
-                                val reader = BufferedReader(InputStreamReader(client.getInputStream()))
-                                val line = reader.readLine() ?: ""
-                                android.util.Log.d("EventProvider", "LocalManifestServer HTTP request: $line")
-                                val path = line.split(" ").getOrNull(1) ?: ""
-                                val id = path.substringAfter("/manifest_", "").substringBefore(".mpd", "")
-                                val xml = manifests[id]
-                                android.util.Log.d("EventProvider", "LocalManifestServer resolved ID: $id, found manifest: ${xml != null}")
-                                
-                                val out = java.io.PrintWriter(java.io.OutputStreamWriter(client.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8), true)
-                                if (xml != null) {
-                                    val bytes = xml.toByteArray(java.nio.charset.StandardCharsets.UTF_8)
-                                    out.print("HTTP/1.1 200 OK\r\n")
-                                    out.print("Content-Type: application/dash+xml; charset=utf-8\r\n")
-                                    out.print("Content-Length: ${bytes.size}\r\n")
-                                    out.print("Access-Control-Allow-Origin: *\r\n")
-                                    out.print("Connection: close\r\n")
-                                    out.print("\r\n")
-                                    out.print(xml)
-                                    out.flush()
-                                    android.util.Log.d("EventProvider", "LocalManifestServer HTTP 200 OK sent for ID: $id")
-                                } else {
-                                    out.print("HTTP/1.1 404 Not Found\r\n")
-                                    out.print("Connection: close\r\n")
-                                    out.print("\r\n")
-                                    out.flush()
-                                    android.util.Log.w("EventProvider", "LocalManifestServer HTTP 404 Not Found sent for ID: $id")
-                                }
-                                client.close()
+                                 val reader = BufferedReader(InputStreamReader(client.getInputStream()))
+                                 val line = reader.readLine() ?: ""
+                                 android.util.Log.d("EventProvider", "LocalManifestServer HTTP request: $line")
+                                 val path = line.split(" ").getOrNull(1) ?: ""
+                                 
+                                 if (path.startsWith("/init_")) {
+                                     // Penanganan proxy segmen inisialisasi untuk stripping pssh box Widevine
+                                     val id = path.substringAfter("/init_", "").substringBefore("?", "")
+                                     
+                                     // Ekstrak query parameters
+                                     val queryStr = path.substringAfter("?", "")
+                                     val paramsMap = HashMap<String, String>()
+                                     if (queryStr.isNotEmpty()) {
+                                         for (param in queryStr.split("&")) {
+                                             val pair = param.split("=")
+                                             if (pair.size == 2) {
+                                                 paramsMap[pair[0]] = java.net.URLDecoder.decode(pair[1], "UTF-8")
+                                             }
+                                         }
+                                     }
+                                     
+                                     val rep = paramsMap["rep"] ?: ""
+                                     val base = paramsMap["base"] ?: ""
+                                     val origPath = paramsMap["path"] ?: ""
+                                     val origParams = paramsMap["params"] ?: ""
+                                     
+                                     // Susun URL asli
+                                     val cleanPath = origPath.replace("\$RepresentationID\$", rep).replace("\$RepresentationID", rep)
+                                     val sep = if (cleanPath.contains("?")) "&" else "?"
+                                     val originalUrl = base + cleanPath + (if (origParams.isNotEmpty()) sep + origParams else "")
+                                     
+                                     android.util.Log.d("EventProvider", "LocalManifestServer proxying init segment: $originalUrl")
+                                     
+                                     val headers = mapOf(
+                                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                         "Referer" to "https://xys1-2-player.pages.dev/",
+                                         "Origin" to "https://xys1-2-player.pages.dev"
+                                     )
+                                     
+                                     var bytes: ByteArray? = null
+                                     try {
+                                         val response = kotlinx.coroutines.runBlocking {
+                                             app.get(originalUrl, headers = headers, timeout = 20)
+                                         }
+                                         bytes = response.body.bytes()
+                                     } catch (e: Exception) {
+                                         android.util.Log.e("EventProvider", "Failed to download original init segment: ${e.message}", e)
+                                     }
+                                     
+                                     val out = java.io.PrintWriter(java.io.OutputStreamWriter(client.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8), true)
+                                     if (bytes != null && bytes.isNotEmpty()) {
+                                         val modifiedBytes = bytes.clone()
+                                         var psshCount = 0
+                                         for (i in 0 until modifiedBytes.size - 3) {
+                                             if (modifiedBytes[i] == 0x70.toByte() && // 'p'
+                                                 modifiedBytes[i+1] == 0x73.toByte() && // 's'
+                                                 modifiedBytes[i+2] == 0x73.toByte() && // 's'
+                                                 modifiedBytes[i+3] == 0x68.toByte()) { // 'h'
+                                                 
+                                                 modifiedBytes[i] = 0x66.toByte()   // 'f'
+                                                 modifiedBytes[i+1] = 0x72.toByte() // 'r'
+                                                 modifiedBytes[i+2] = 0x65.toByte() // 'e'
+                                                 modifiedBytes[i+3] = 0x65.toByte() // 'e'
+                                                 psshCount++
+                                             }
+                                         }
+                                         android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount pssh box(es) from init segment.")
+                                         
+                                         out.print("HTTP/1.1 200 OK\r\n")
+                                         out.print("Content-Type: video/mp4\r\n")
+                                         out.print("Content-Length: ${modifiedBytes.size}\r\n")
+                                         out.print("Access-Control-Allow-Origin: *\r\n")
+                                         out.print("Connection: close\r\n")
+                                         out.print("\r\n")
+                                         out.flush()
+                                         
+                                         client.getOutputStream().write(modifiedBytes)
+                                         client.getOutputStream().flush()
+                                         android.util.Log.d("EventProvider", "LocalManifestServer successfully sent modified init segment.")
+                                     } else {
+                                         out.print("HTTP/1.1 404 Not Found\r\n")
+                                         out.print("Connection: close\r\n")
+                                         out.print("\r\n")
+                                         out.flush()
+                                     }
+                                 } else {
+                                     // Request manifest seperti biasa
+                                     val id = path.substringAfter("/manifest_", "").substringBefore(".mpd", "")
+                                     val xml = manifests[id]
+                                     android.util.Log.d("EventProvider", "LocalManifestServer resolved ID: $id, found manifest: ${xml != null}")
+                                     
+                                     val out = java.io.PrintWriter(java.io.OutputStreamWriter(client.getOutputStream(), java.nio.charset.StandardCharsets.UTF_8), true)
+                                     if (xml != null) {
+                                         val bytes = xml.toByteArray(java.nio.charset.StandardCharsets.UTF_8)
+                                         out.print("HTTP/1.1 200 OK\r\n")
+                                         out.print("Content-Type: application/dash+xml; charset=utf-8\r\n")
+                                         out.print("Content-Length: ${bytes.size}\r\n")
+                                         out.print("Access-Control-Allow-Origin: *\r\n")
+                                         out.print("Connection: close\r\n")
+                                         out.print("\r\n")
+                                         out.print(xml)
+                                         out.flush()
+                                         android.util.Log.d("EventProvider", "LocalManifestServer HTTP 200 OK sent for ID: $id")
+                                     } else {
+                                         out.print("HTTP/1.1 404 Not Found\r\n")
+                                         out.print("Connection: close\r\n")
+                                         out.print("\r\n")
+                                         out.flush()
+                                         android.util.Log.w("EventProvider", "LocalManifestServer HTTP 404 Not Found sent for ID: $id")
+                                     }
+                                 }
+                                 client.close()
                             } catch (e: Exception) {
                                 android.util.Log.e("EventProvider", "LocalManifestServer client thread exception: ${e.message}", e)
                                 try { client.close() } catch (ex: Exception) {}
@@ -179,7 +263,10 @@ class EventProvider(val context: Context) : MainAPI() {
                 }
             }
 
-            // Tulis ulang SegmentTemplate media dan initialization dengan token CDN agar tidak terkena 403 geoblock/unauthorized
+            val cleanId = drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
+            val port = LocalManifestServer.start()
+
+            // Tulis ulang SegmentTemplate media dengan token CDN agar tidak terkena 403 geoblock/unauthorized
             if (queryParams.isNotEmpty()) {
                 val escapedParams = queryParams.replace("&", "&amp;")
                 modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
@@ -187,10 +274,17 @@ class EventProvider(val context: Context) : MainAPI() {
                     val sep = if (p1.contains("?")) "&amp;" else "?"
                     """media="$p1$sep$escapedParams""""
                 }
+            }
+
+            // Tulis ulang SegmentTemplate initialization agar dialihkan ke local proxy server untuk stripping pssh box Widevine secara biner
+            if (port > 0) {
                 modifiedXml = modifiedXml.replace(Regex("""initialization=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                    val p1 = matchResult.groupValues[1]
-                    val sep = if (p1.contains("?")) "&amp;" else "?"
-                    """initialization="$p1$sep$escapedParams""""
+                    val path = matchResult.groupValues[1]
+                    val encodedBase = java.net.URLEncoder.encode(absoluteBaseUrl, "UTF-8")
+                    val encodedPath = java.net.URLEncoder.encode(path, "UTF-8")
+                    val encodedParams = java.net.URLEncoder.encode(queryParams, "UTF-8")
+                    
+                    """initialization="http://127.0.0.1:$port/init_$cleanId?rep=${'$'}RepresentationID${'$'}&base=$encodedBase&path=$encodedPath&params=$encodedParams""""
                 }
             }
             
@@ -274,7 +368,7 @@ class EventProvider(val context: Context) : MainAPI() {
                 }
             }
             
-            val cleanId = drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
+            // cleanId sudah didefinisikan sebelumnya di atas
             android.util.Log.d("EventProvider", "getDrmDashManifestUrl output xml summary:\n${if (modifiedXml.length > 2500) modifiedXml.substring(0, 2500) else modifiedXml}")
             val resultUrl = LocalManifestServer.registerManifest(cleanId, modifiedXml)
             android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Local server URL generated: $resultUrl")
