@@ -173,17 +173,19 @@ object LocalManifestServer {
                                                   modifiedXml = modifiedXml.replace("<MPD", "<MPD xmlns:cenc=\"urn:mpeg:cenc:2013\"")
                                               }
 
-                                              // 4. Injeksikan ClearKey ContentProtection dengan default_KID yang sesuai
-                                              val kidUuid = if (meta.drmLicenseParam.contains(":")) {
+                                              // 4. Injeksikan ClearKey ContentProtection dengan default_KID yang sesuai (selalu berformat UUID dengan tanda hubung)
+                                              val rawKid = if (meta.drmLicenseParam.contains(":")) {
                                                   meta.drmLicenseParam.substringBefore(":").trim()
                                               } else {
-                                                  if (meta.drmLicenseParam.length >= 32) {
-                                                      val k = meta.drmLicenseParam.substring(0, 32)
-                                                      if (!k.contains("-")) {
-                                                          "${k.substring(0, 8)}-${k.substring(8, 12)}-${k.substring(12, 16)}-${k.substring(16, 20)}-${k.substring(20)}"
-                                                      } else k
-                                                  } else ""
+                                                  meta.drmLicenseParam.trim()
                                               }
+                                              val cleanKid = rawKid.replace("-", "")
+                                              val kidUuid = if (cleanKid.length == 32) {
+                                                  "${cleanKid.substring(0, 8)}-${cleanKid.substring(8, 12)}-${cleanKid.substring(12, 16)}-${cleanKid.substring(16, 20)}-${cleanKid.substring(20)}"
+                                              } else {
+                                                  rawKid
+                                              }
+                                              
                                               if (kidUuid.isNotEmpty()) {
                                                   val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid"/>"""
                                                   modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
