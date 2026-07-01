@@ -59,6 +59,8 @@ object LocalManifestServer {
                                      val base = paramsMap["base"] ?: ""
                                      val origPath = paramsMap["path"] ?: ""
                                      val origParams = paramsMap["params"] ?: ""
+                                     val ref = paramsMap["ref"] ?: ""
+                                     val orig = paramsMap["orig"] ?: ""
                                      
                                      // Susun URL asli
                                      val cleanPath = origPath.replace("\$RepresentationID\$", rep).replace("\$RepresentationID", rep)
@@ -69,8 +71,8 @@ object LocalManifestServer {
                                      
                                      val headers = mapOf(
                                          "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                                         "Referer" to "https://xys1-2-player.pages.dev/",
-                                         "Origin" to "https://xys1-2-player.pages.dev"
+                                         "Referer" to if (ref.isNotEmpty()) ref else "https://xys1-2-player.pages.dev/",
+                                         "Origin" to if (orig.isNotEmpty()) orig else "https://xys1-2-player.pages.dev"
                                      )
                                      
                                      var bytes: ByteArray? = null
@@ -278,13 +280,17 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
 
             // Tulis ulang SegmentTemplate initialization agar dialihkan ke local proxy server untuk stripping pssh box Widevine secara biner
             if (port > 0) {
+                val refHeader = headers["Referer"] ?: ""
+                val originHeader = headers["Origin"] ?: ""
                 modifiedXml = modifiedXml.replace(Regex("""initialization=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
                     val path = matchResult.groupValues[1]
                     val encodedBase = java.net.URLEncoder.encode(absoluteBaseUrl, "UTF-8")
                     val encodedPath = java.net.URLEncoder.encode(path, "UTF-8")
                     val encodedParams = java.net.URLEncoder.encode(queryParams, "UTF-8")
+                    val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
+                    val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
                     
-                    """initialization="http://127.0.0.1:$port/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams""""
+                    """initialization="http://127.0.0.1:$port/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
                 }
             }
             
