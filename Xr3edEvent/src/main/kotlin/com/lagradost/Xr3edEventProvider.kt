@@ -571,6 +571,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         }
                     }
 
+                    val collectedChannels = mutableListOf<Triple<String, String, String>>()
                     for (gId in targetGroups) {
                         val arr = groupsObj.optJSONArray(gId) ?: continue
                         for (i in 0 until arr.length()) {
@@ -581,18 +582,62 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
 
                             val chData = channelsObj.optJSONObject(chId) ?: continue
                             val chName = chData.optString("name", chId)
-                            
                             val streamUrl = "https://wc26.netxtv.id/?id=jadwal#go:$chId"
-                            list.add(
-                                newLiveSearchResponse(
-                                    chName,
-                                    streamUrl,
-                                    TvType.Live
-                                ) {
-                                    this.posterUrl = defaultLogo
-                                }
-                            )
+                            collectedChannels.add(Triple(chId, chName, streamUrl))
                         }
+                    }
+
+                    val sortedChannels = collectedChannels.sortedWith(compareBy<Triple<String, String, String>> {
+                        val chIdLower = it.first.lowercase()
+                        val chNameLower = it.second.lowercase()
+                        
+                        val isEnglish = chIdLower.contains("eng") || chIdLower.contains("english") ||
+                                        chIdLower.contains("us") || chIdLower.contains("uk") ||
+                                        chIdLower.contains("dazn") || chIdLower.contains("bein") ||
+                                        chIdLower.contains("sky") || chIdLower.contains("optus") ||
+                                        chIdLower.contains("supersport") || chIdLower.contains("tsn") ||
+                                        chIdLower.contains("espn") || chIdLower.contains("fox") ||
+                                        chIdLower.contains("astro") || chIdLower.contains("hub") ||
+                                        chIdLower.contains("premier") || chIdLower.contains("fusball") ||
+                                        chIdLower.contains("ppv") || chIdLower.contains("vvip") ||
+                                        chNameLower.contains("eng") || chNameLower.contains("english") ||
+                                        chNameLower.contains("us") || chNameLower.contains("uk") ||
+                                        chNameLower.contains("dazn") || chNameLower.contains("bein") ||
+                                        chNameLower.contains("sky") || chNameLower.contains("optus") ||
+                                        chNameLower.contains("supersport") || chNameLower.contains("tsn") ||
+                                        chNameLower.contains("espn") || chNameLower.contains("fox") ||
+                                        chNameLower.contains("astro") || chNameLower.contains("hub") ||
+                                        chNameLower.contains("premier") || chNameLower.contains("fusball") ||
+                                        chNameLower.contains("ppv") || chNameLower.contains("vvip")
+                                        
+                        val isLokal = chIdLower.contains("tvri") || chIdLower.contains("vidio") ||
+                                      chIdLower.contains("sctv") || chIdLower.contains("indosiar") ||
+                                      chIdLower.contains("trans") || chIdLower.contains("rcti") ||
+                                      chIdLower.contains("lokal") || chIdLower.contains("moji") ||
+                                      chIdLower.contains("one1") ||
+                                      chNameLower.contains("tvri") || chNameLower.contains("vidio") ||
+                                      chNameLower.contains("sctv") || chNameLower.contains("indosiar") ||
+                                      chNameLower.contains("trans") || chNameLower.contains("rcti") ||
+                                      chNameLower.contains("lokal") || chNameLower.contains("moji") ||
+                                      chNameLower.contains("one1")
+                        
+                        when {
+                            isEnglish -> 1
+                            isLokal -> 2
+                            else -> 3
+                        }
+                    }.thenBy { it.second })
+
+                    for (ch in sortedChannels) {
+                        list.add(
+                            newLiveSearchResponse(
+                                ch.second,
+                                ch.third,
+                                TvType.Live
+                            ) {
+                                this.posterUrl = defaultLogo
+                            }
+                        )
                     }
                 }
             }
