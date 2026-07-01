@@ -219,17 +219,35 @@ class EventProvider(val context: Context) : MainAPI() {
                 
                 if (contentProtectionXml.isNotEmpty()) {
                     // Cari tag mp4protection:2011 di seluruh manifest (AdaptationSet maupun Representation)
-                    // dan sisipkan tag ClearKey tepat di sampingnya agar diwarisi secara lokal dengan sukses
+                    // dan sisipkan tag ClearKey tepat di sampingnya dengan mencocokkan casing KID asli secara dinamis
                     var tempXml = modifiedXml
                     
                     val selfClosingRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*/\s*>""", RegexOption.IGNORE_CASE)
                     tempXml = selfClosingRegex.replace(tempXml) { matchResult ->
-                        matchResult.value + "\n" + contentProtectionXml
+                        val matchedTag = matchResult.value
+                        val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(matchedTag)
+                        
+                        val clearKeyTag = if (kidMatch != null) {
+                            val kidToUse = kidMatch.groupValues[1]
+                            """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                        } else {
+                            contentProtectionXml.trim()
+                        }
+                        matchedTag + "\n" + clearKeyTag
                     }
                     
                     val openCloseRegex = Regex("""<ContentProtection[^>]*urn:mpeg:dash:mp4protection:2011[^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE)
                     tempXml = openCloseRegex.replace(tempXml) { matchResult ->
-                        matchResult.value + "\n" + contentProtectionXml
+                        val matchedTag = matchResult.value
+                        val kidMatch = Regex("""cenc:default_KID\s*=\s*["']([^"']+)["']""", RegexOption.IGNORE_CASE).find(matchedTag)
+                        
+                        val clearKeyTag = if (kidMatch != null) {
+                            val kidToUse = kidMatch.groupValues[1]
+                            """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidToUse" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                        } else {
+                            contentProtectionXml.trim()
+                        }
+                        matchedTag + "\n" + clearKeyTag
                     }
                     
                     // Jika karena suatu alasan tidak ada tag mp4protection, fallback ke penyisipan AdaptationSet asli
