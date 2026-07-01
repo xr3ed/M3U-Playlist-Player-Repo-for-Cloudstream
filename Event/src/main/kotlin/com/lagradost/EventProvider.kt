@@ -40,6 +40,29 @@ class EventProvider(val context: Context) : MainAPI() {
         }
     }
 
+    private fun extractUserAgent(url: String, defaultUa: String): String {
+        val parts = url.split("|")
+        if (parts.size > 1) {
+            val headerPart = parts[1]
+            val uaParam = headerPart.split("&").firstOrNull { it.startsWith("User-Agent=", ignoreCase = true) }
+            if (uaParam != null) {
+                val uaValue = uaParam.substringAfter("=").trim()
+                if (uaValue.isNotEmpty()) {
+                    return if (uaValue.contains("%")) {
+                        try {
+                            java.net.URLDecoder.decode(uaValue, "UTF-8")
+                        } catch (e: Exception) {
+                            uaValue
+                        }
+                    } else {
+                        uaValue
+                    }
+                }
+            }
+        }
+        return defaultUa
+    }
+
     private suspend fun getDrmDashManifestUrl(originalUrl: String, kidHex: String, headers: Map<String, String>): String {
         android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, kidHex=$kidHex")
         try {
@@ -603,8 +626,9 @@ class EventProvider(val context: Context) : MainAPI() {
                                         
                                         android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey: kid=$keyId key=$keyValue for stream: $cleanUrl")
                                         
+                                        val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                         val headers = mapOf(
-                                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                                            "User-Agent" to userAgent,
                                             "Referer" to "https://xys1-2-player.pages.dev/",
                                             "Origin" to "https://xys1-2-player.pages.dev"
                                         )
