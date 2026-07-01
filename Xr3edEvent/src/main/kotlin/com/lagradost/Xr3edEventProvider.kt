@@ -188,9 +188,12 @@ object LocalManifestServer {
                                               
                                                if (kidUuid.isNotEmpty()) {
                                                    val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid" xmlns:cenc="urn:mpeg:cenc:2013"/>"""
+                                                   var injectCount = 0
                                                    modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                       injectCount++
                                                        matchResult.value + "\n" + clearKeyBlock + "\n"
                                                    }
+                                                   android.util.Log.d("EventProvider", "LocalManifestServer injected ClearKey block $injectCount times. KID=$kidUuid")
                                                }
                                              
                                              val finalUrl = response.url
