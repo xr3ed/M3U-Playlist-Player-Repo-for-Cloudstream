@@ -889,10 +889,14 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                             }
                                         }
                                     } else {
-                                        if (currentTargetUrl.contains("xys1-2-player.pages.dev") || dashUrl.contains("xys1-2-player.pages.dev")) {
-                                            headersMap["Referer"] = "https://xys1-2-player.pages.dev/"
-                                            headersMap["Origin"] = "https://xys1-2-player.pages.dev"
+                                        val cleanReferer = currentTargetUrl.substringBefore("?").substringBefore("#")
+                                        val cleanOrigin = if (cleanReferer.startsWith("https://")) {
+                                            "https://" + cleanReferer.substringAfter("https://").substringBefore("/")
+                                        } else {
+                                            "https://xys1-2-player.pages.dev"
                                         }
+                                        headersMap["Referer"] = cleanReferer
+                                        headersMap["Origin"] = cleanOrigin
                                     }
                                     val headers = headersMap.toMap()
                                     
@@ -1080,10 +1084,16 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 else -> ExtractorLinkType.VIDEO
             }
 
+            val cleanReferer = currentTargetUrl.substringBefore("?").substringBefore("#")
+            val cleanOrigin = if (cleanReferer.startsWith("https://")) {
+                "https://" + cleanReferer.substringAfter("https://").substringBefore("/")
+            } else {
+                "https://xys1-2-player.pages.dev"
+            }
             val headers = mapOf(
                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Referer" to "https://xys1-2-player.pages.dev/",
-                "Origin" to "https://xys1-2-player.pages.dev"
+                "Referer" to cleanReferer,
+                "Origin" to cleanOrigin
             )
 
             callback.invoke(
