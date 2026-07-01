@@ -41,9 +41,11 @@ class EventProvider(val context: Context) : MainAPI() {
     }
 
     private suspend fun getDrmDashManifestUrl(originalUrl: String, kidHex: String, headers: Map<String, String>): String {
+        android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, kidHex=$kidHex")
         try {
             val response = app.get(originalUrl, headers = headers, timeout = 25)
             val manifestXml = response.text
+            android.util.Log.d("EventProvider", "getDrmDashManifestUrl raw manifest downloaded. Length: ${manifestXml.length}")
             
             var modifiedXml = manifestXml
             
@@ -117,9 +119,11 @@ class EventProvider(val context: Context) : MainAPI() {
             val cleanKid = kidHex.replace("-", "").trim()
             val tempFile = java.io.File(context.cacheDir, "manifest_${cleanKid}.mpd")
             tempFile.writeText(modifiedXml, Charsets.UTF_8)
-            return tempFile.toURI().toString()
+            val resultUrl = tempFile.toURI().toString()
+            android.util.Log.d("EventProvider", "getDrmDashManifestUrl success! Clean manifest written to: $resultUrl")
+            return resultUrl
         } catch (e: Exception) {
-            android.util.Log.e("EventProvider", "Failed to generate dynamic ClearKey DASH manifest", e)
+            android.util.Log.e("EventProvider", "getDrmDashManifestUrl FATAL EXCEPTION: ${e.message}", e)
             return originalUrl
         }
     }
