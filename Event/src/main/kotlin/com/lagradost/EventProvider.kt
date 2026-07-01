@@ -154,8 +154,9 @@ class EventProvider(val context: Context) : MainAPI() {
             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
             
-            // Tentukan BaseURL absolut
+            // Tentukan BaseURL absolut dan query parameters token asli
             val finalUrl = response.url
+            val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
             val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
             val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
             
@@ -171,6 +172,21 @@ class EventProvider(val context: Context) : MainAPI() {
                         val insertIdx = modifiedXml.indexOf(">", mpdIdx) + 1
                         modifiedXml = modifiedXml.substring(0, insertIdx) + "\n<BaseURL>$absoluteBaseUrl</BaseURL>\n" + modifiedXml.substring(insertIdx)
                     }
+                }
+            }
+
+            // Tulis ulang SegmentTemplate media dan initialization dengan token CDN agar tidak terkena 403 geoblock/unauthorized
+            if (queryParams.isNotEmpty()) {
+                val escapedParams = queryParams.replace("&", "&amp;")
+                modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                    val p1 = matchResult.groupValues[1]
+                    val sep = if (p1.contains("?")) "&amp;" else "?"
+                    """media="$p1$sep$escapedParams""""
+                }
+                modifiedXml = modifiedXml.replace(Regex("""initialization=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                    val p1 = matchResult.groupValues[1]
+                    val sep = if (p1.contains("?")) "&amp;" else "?"
+                    """initialization="$p1$sep$escapedParams""""
                 }
             }
             
