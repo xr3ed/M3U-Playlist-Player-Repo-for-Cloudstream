@@ -45,37 +45,51 @@ object LocalManifestServer {
                                  android.util.Log.d("EventProvider", "LocalManifestServer HTTP request: $line")
                                  val path = line.split(" ").getOrNull(1) ?: ""
                                  
-                                 if (path.startsWith("/init_")) {
-                                     // Penanganan proxy segmen inisialisasi untuk stripping pssh box Widevine
-                                     val id = path.substringAfter("/init_", "").substringBefore("?", "")
-                                     
-                                     // Ekstrak query parameters
-                                     val queryStr = path.substringAfter("?", "")
-                                     val paramsMap = HashMap<String, String>()
-                                      if (queryStr.isNotEmpty()) {
-                                          for (param in queryStr.split("&")) {
-                                              val idx = param.indexOf('=')
-                                              if (idx != -1) {
-                                                  val key = param.substring(0, idx)
-                                                  val value = param.substring(idx + 1)
-                                                  paramsMap[key] = java.net.URLDecoder.decode(value, "UTF-8")
-                                              }
-                                          }
+                                  val isSegment = path.startsWith("/init_") || path.startsWith("/media_")
+                                  if (isSegment) {
+                                      // Penanganan proxy segmen inisialisasi / media untuk stripping pssh box Widevine
+                                      val prefix = if (path.startsWith("/init_")) "/init_" else "/media_"
+                                      val id = path.substringAfter(prefix, "").substringBefore("?", "")
+                                      
+                                      // Ekstrak query parameters
+                                      val queryStr = path.substringAfter("?", "")
+                                      val paramsMap = HashMap<String, String>()
+                                       if (queryStr.isNotEmpty()) {
+                                           for (param in queryStr.split("&")) {
+                                               val idx = param.indexOf('=')
+                                               if (idx != -1) {
+                                                   val key = param.substring(0, idx)
+                                                   val value = param.substring(idx + 1)
+                                                   paramsMap[key] = java.net.URLDecoder.decode(value, "UTF-8")
+                                               }
+                                           }
+                                       }
+                                      
+                                      val rep = paramsMap["rep"] ?: ""
+                                      val time = paramsMap["time"] ?: ""
+                                      val num = paramsMap["num"] ?: ""
+                                      val base = paramsMap["base"] ?: ""
+                                      val origPath = paramsMap["path"] ?: ""
+                                      val origParams = paramsMap["params"] ?: ""
+                                      val ref = paramsMap["ref"] ?: ""
+                                      val orig = paramsMap["orig"] ?: ""
+                                      
+                                      // Susun URL asli dengan resolusi placeholder DASH
+                                      var cleanPath = origPath
+                                          .replace("\$RepresentationID\$", rep)
+                                          .replace("\$RepresentationID", rep)
+                                          .replace("\$Time\$", time)
+                                          .replace("\$Time", time)
+                                          .replace("\$Number\$", num)
+                                          .replace("\$Number", num)
+                                          
+                                      val sep = if (cleanPath.contains("?")) "&" else "?"
+                                      var originalUrl = base + cleanPath + (if (origParams.isNotEmpty()) sep + origParams else "")
+                                      if (originalUrl.startsWith("https://") && originalUrl.contains("workers.dev")) {
+                                          originalUrl = originalUrl.replace("https://", "http://")
                                       }
-                                     
-                                     val rep = paramsMap["rep"] ?: ""
-                                     val base = paramsMap["base"] ?: ""
-                                     val origPath = paramsMap["path"] ?: ""
-                                     val origParams = paramsMap["params"] ?: ""
-                                     val ref = paramsMap["ref"] ?: ""
-                                     val orig = paramsMap["orig"] ?: ""
-                                     
-                                     // Susun URL asli
-                                     val cleanPath = origPath.replace("\$RepresentationID\$", rep).replace("\$RepresentationID", rep)
-                                     val sep = if (cleanPath.contains("?")) "&" else "?"
-                                     val originalUrl = base + cleanPath + (if (origParams.isNotEmpty()) sep + origParams else "")
-                                     
-                                     android.util.Log.d("EventProvider", "LocalManifestServer proxying init segment: $originalUrl")
+                                      
+                                      android.util.Log.d("EventProvider", "LocalManifestServer proxying segment: $originalUrl")
                                      
                                      val headers = mapOf(
                                          "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -223,38 +237,43 @@ object LocalManifestServer {
                                                  }
                                              }
                                              
-                                              // Tulis ulang SegmentTemplate media agar selalu absolute (mencegah ExoPlayer meminta chunk video ke proxy lokal)
-                                              val rootDomain = if (absoluteBaseUrl.startsWith("https://")) {
-                                                  "https://" + absoluteBaseUrl.substringAfter("https://").substringBefore("/")
-                                              } else if (absoluteBaseUrl.startsWith("http://")) {
-                                                  "http://" + absoluteBaseUrl.substringAfter("http://").substringBefore("/")
-                                              } else {
-                                                  ""
-                                              }
-                                              modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                                                  val p1 = matchResult.groupValues[1]
-                                                  if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
-                                                      matchResult.value
-                                                  } else {
-                                                      val absoluteMediaUrl = if (p1.startsWith("/")) {
-                                                          rootDomain + p1
-                                                      } else {
-                                                          absoluteBaseUrl + p1
-                                                      }
-                                                      val sep = if (absoluteMediaUrl.contains("?")) "&amp;" else "?"
-                                                      val finalMediaUrl = if (queryParams.isNotEmpty()) {
-                                                          absoluteMediaUrl + sep + queryParams.replace("&", "&amp;")
-                                                      } else {
-                                                          absoluteMediaUrl
-                                                      }
-                                                      """media="$finalMediaUrl""""
-                                                  }
-                                              }
-                                             
-                                             // Tulis ulang SegmentTemplate initialization
-                                             val cleanId = meta.drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
-                                             val refHeader = meta.headers["Referer"] ?: ""
-                                             val originHeader = meta.headers["Origin"] ?: ""
+                                               val cleanId = meta.drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
+                                               val refHeader = meta.headers["Referer"] ?: ""
+                                               val originHeader = meta.headers["Origin"] ?: ""
+                                               val rootDomain = if (absoluteBaseUrl.startsWith("https://")) {
+                                                   "https://" + absoluteBaseUrl.substringAfter("https://").substringBefore("/")
+                                               } else if (absoluteBaseUrl.startsWith("http://")) {
+                                                   "http://" + absoluteBaseUrl.substringAfter("http://").substringBefore("/")
+                                               } else {
+                                                   ""
+                                               }
+                                               
+                                               // Tulis ulang SegmentTemplate media agar diarahkan ke proxy lokal (agar pssh box Widevine di tiap chunk video di-strip)
+                                               modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                   val p1 = matchResult.groupValues[1]
+                                                   val absoluteMediaUrl = if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
+                                                       p1
+                                                   } else if (p1.startsWith("/")) {
+                                                       rootDomain + p1
+                                                   } else {
+                                                       absoluteBaseUrl + p1
+                                                   }
+                                                   
+                                                   val pathPart = if (absoluteMediaUrl.contains("?")) absoluteMediaUrl.substringBefore("?") else absoluteMediaUrl
+                                                   val mediaBase = pathPart.substringBeforeLast("/") + "/"
+                                                   val mediaPath = pathPart.substringAfterLast("/")
+                                                   val mediaParams = if (absoluteMediaUrl.contains("?")) absoluteMediaUrl.substringAfter("?") else ""
+                                                   
+                                                   val encodedBase = java.net.URLEncoder.encode(mediaBase, "UTF-8")
+                                                   val encodedPath = java.net.URLEncoder.encode(mediaPath, "UTF-8")
+                                                   val encodedParams = java.net.URLEncoder.encode(mediaParams, "UTF-8")
+                                                   val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
+                                                   val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
+                                                   
+                                                   """media="http://127.0.0.1:$serverPort/media_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;time=${'$'}Time${'$'}&amp;num=${'$'}Number${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
+                                               }
+                                              
+                                              // Tulis ulang SegmentTemplate initialization
                                              
                                              modifiedXml = modifiedXml.replace(Regex("""initialization=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
                                                  val path = matchResult.groupValues[1]
