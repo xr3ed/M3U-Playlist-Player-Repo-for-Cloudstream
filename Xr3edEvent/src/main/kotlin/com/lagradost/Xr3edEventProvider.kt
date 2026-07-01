@@ -49,7 +49,7 @@ object LocalManifestServer {
         0xaf.toByte(), 0x78.toByte(), 0xd3.toByte(), 0x0e.toByte()
     )
 
-    private fun convertPsshToClearkey(bytes: ByteArray): ByteArray {
+    private fun stripAllPssh(bytes: ByteArray): ByteArray {
         val modified = bytes.clone()
         var mdatIdx = -1
         for (i in 0 until modified.size - 3) {
@@ -62,91 +62,23 @@ object LocalManifestServer {
             }
         }
         val limit = if (mdatIdx != -1) mdatIdx else modified.size - 3
-        var convertedCount = 0
-        
-        var i = 4
-        while (i < limit) {
+        var psshCount = 0
+        for (i in 0 until limit) {
             if (modified[i] == 0x70.toByte() &&     // 'p'
                 modified[i+1] == 0x73.toByte() &&   // 's'
                 modified[i+2] == 0x73.toByte() &&   // 's'
                 modified[i+3] == 0x68.toByte()) {   // 'h'
                 
-                val w1 = modified[i - 4].toInt() and 0xFF
-                val w2 = modified[i - 3].toInt() and 0xFF
-                val w3 = modified[i - 2].toInt() and 0xFF
-                val w4 = modified[i - 1].toInt() and 0xFF
-                val w = (w1 shl 24) or (w2 shl 16) or (w3 shl 8) or w4
-                
-                if (w >= 40 && i - 4 + w <= modified.size) {
-                    var isWv = true
-                    var isPr = true
-                    for (j in 0 until 16) {
-                        val b = modified[i + 8 + j]
-                        if (b != widevineUuid[j]) isWv = false
-                        if (b != playreadyUuid[j]) isPr = false
-                    }
-                    
-                    if (isWv || isPr) {
-                        val boxStart = i - 4
-                        
-                        // size = 32 (0x00000020)
-                        modified[boxStart] = 0x00.toByte()
-                        modified[boxStart + 1] = 0x00.toByte()
-                        modified[boxStart + 2] = 0x00.toByte()
-                        modified[boxStart + 3] = 0x20.toByte()
-                        
-                        // type = 'pssh'
-                        modified[boxStart + 4] = 0x70.toByte()
-                        modified[boxStart + 5] = 0x73.toByte()
-                        modified[boxStart + 6] = 0x73.toByte()
-                        modified[boxStart + 7] = 0x68.toByte()
-                        
-                        // version & flags = 0
-                        modified[boxStart + 8] = 0x00.toByte()
-                        modified[boxStart + 9] = 0x00.toByte()
-                        modified[boxStart + 10] = 0x00.toByte()
-                        modified[boxStart + 11] = 0x00.toByte()
-                        
-                        // SystemID
-                        for (j in 0 until 16) {
-                            modified[boxStart + 12 + j] = clearkeyUuid[j]
-                        }
-                        
-                        // data_size = 0
-                        modified[boxStart + 28] = 0x00.toByte()
-                        modified[boxStart + 29] = 0x00.toByte()
-                        modified[boxStart + 30] = 0x00.toByte()
-                        modified[boxStart + 31] = 0x00.toByte()
-                        
-                        val freeSize = w - 32
-                        val freeStart = boxStart + 32
-                        
-                        // size free box
-                        modified[freeStart] = ((freeSize shr 24) and 0xFF).toByte()
-                        modified[freeStart + 1] = ((freeSize shr 16) and 0xFF).toByte()
-                        modified[freeStart + 2] = ((freeSize shr 8) and 0xFF).toByte()
-                        modified[freeStart + 3] = (freeSize and 0xFF).toByte()
-                        
-                        // type = 'free'
-                        modified[freeStart + 4] = 0x66.toByte()
-                        modified[freeStart + 5] = 0x72.toByte()
-                        modified[freeStart + 6] = 0x65.toByte()
-                        modified[freeStart + 7] = 0x65.toByte()
-                        
-                        for (j in 8 until freeSize) {
-                            modified[freeStart + j] = 0x00.toByte()
-                        }
-                        
-                        convertedCount++
-                        i += w - 4
-                        continue
-                    }
-                }
+                // Ubah type dari 'pssh' menjadi 'free'
+                modified[i] = 0x66.toByte()     // 'f'
+                modified[i+1] = 0x72.toByte()   // 'r'
+                modified[i+2] = 0x65.toByte()   // 'e'
+                modified[i+3] = 0x65.toByte()   // 'e'
+                psshCount++
             }
-            i++
         }
-        if (convertedCount > 0) {
-            android.util.Log.d("EventProvider", "LocalManifestServer converted $convertedCount Widevine/PlayReady pssh box(es) to ClearKey version 0.")
+        if (psshCount > 0) {
+            android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount DRM pssh box(es).")
         }
         return modified
     }
@@ -232,7 +164,7 @@ object LocalManifestServer {
                                      
                                      val clientOs = client.getOutputStream()
                                      if (bytes != null && bytes.isNotEmpty()) {
-                                          val modifiedBytes = convertPsshToClearkey(bytes)
+                                          val modifiedBytes = stripAllPssh(bytes)
                                          val headerString = "HTTP/1.1 200 OK\r\n" +
                                                             "Content-Type: video/mp4\r\n" +
                                                             "Content-Length: ${modifiedBytes.size}\r\n" +
