@@ -489,9 +489,9 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         categoryTitle = if (closestUpcoming.size == 1) {
                             val m = closestUpcoming[0]
                             val matchName = if (m.home.isNotEmpty() && m.away.isNotEmpty()) "${m.home} vs ${m.away}" else m.name
-                            "UPCOMING: $matchName (${m.time})"
+                            "WORLD CUP 2026 - $matchName (${m.time})"
                         } else {
-                            "UPCOMING MATCHES (${closestUpcoming[0].time})"
+                            "WORLD CUP 2026 MATCHES (${closestUpcoming[0].time})"
                         }
                     }
                 }
