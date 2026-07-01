@@ -64,8 +64,8 @@ class EventProvider(val context: Context) : MainAPI() {
         return defaultUa
     }
 
-    private suspend fun getDrmDashManifestUrl(originalUrl: String, kidHex: String, headers: Map<String, String>): String {
-        android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, kidHex=$kidHex")
+    private suspend fun getDrmDashManifestUrl(originalUrl: String, drmLicenseParam: String, headers: Map<String, String>): String {
+        android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, drmLicenseParam=$drmLicenseParam")
         try {
             val manifestHeaders = headers.toMutableMap().apply {
                 put("Accept", "application/dash+xml,video/mpd,application/xml;q=0.9,*/*;q=0.8")
@@ -85,9 +85,8 @@ class EventProvider(val context: Context) : MainAPI() {
             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
             
-            // Tentukan BaseURL absolut dan query parameters token asli
+            // Tentukan BaseURL absolut
             val finalUrl = response.url
-            val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
             val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
             val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
             
@@ -111,36 +110,45 @@ class EventProvider(val context: Context) : MainAPI() {
                               modifiedXml.contains("cenc:default_KID", ignoreCase = true)
             
             if (!hasClearKey) {
-                // Jika tidak memiliki ClearKey, sisipkan ContentProtection ClearKey
-                val cleanKid = kidHex.replace("-", "").trim()
-                val uuidKid = if (cleanKid.length == 32) {
-                    "${cleanKid.substring(0, 8)}-${cleanKid.substring(8, 12)}-${cleanKid.substring(12, 16)}-${cleanKid.substring(16, 20)}-${cleanKid.substring(20)}"
-                } else {
-                    cleanKid
-                }
-                
-                val contentProtectionXml = """
-                    <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e">
-                        <cenc:default_KID xmlns:cenc="urn:mpeg:cenc:2013">$uuidKid</cenc:default_KID>
-                    </ContentProtection>
-                """.trimIndent()
-                
-                val parts = modifiedXml.split("<AdaptationSet")
-                if (parts.size > 1) {
-                    val sb = StringBuilder(parts[0])
-                    for (i in 1 until parts.size) {
-                        sb.append("<AdaptationSet")
-                        val rest = parts[i]
-                        val tagEndIdx = rest.indexOf(">")
-                        if (tagEndIdx != -1) {
-                            sb.append(rest.substring(0, tagEndIdx + 1))
-                            sb.append("\n$contentProtectionXml\n")
-                            sb.append(rest.substring(tagEndIdx + 1))
+                // Generate ContentProtection XML untuk setiap pasangan key
+                val keyPairs = drmLicenseParam.split(",")
+                val contentProtectionXmlBuilder = StringBuilder()
+                for (pair in keyPairs) {
+                    val parts = pair.split(":")
+                    if (parts.size == 2) {
+                        val keyId = parts[0].trim()
+                        val uuidKid = if (keyId.length == 32) {
+                            "${keyId.substring(0, 8)}-${keyId.substring(8, 12)}-${keyId.substring(12, 16)}-${keyId.substring(16, 20)}-${keyId.substring(20)}"
                         } else {
-                            sb.append(rest)
+                            keyId
                         }
+                        contentProtectionXmlBuilder.append("""
+                            <ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e">
+                                <cenc:default_KID xmlns:cenc="urn:mpeg:cenc:2013">$uuidKid</cenc:default_KID>
+                            </ContentProtection>
+                        """.trimIndent()).append("\n")
                     }
-                    modifiedXml = sb.toString()
+                }
+                val contentProtectionXml = contentProtectionXmlBuilder.toString()
+                
+                if (contentProtectionXml.isNotEmpty()) {
+                    val parts = modifiedXml.split("<AdaptationSet")
+                    if (parts.size > 1) {
+                        val sb = StringBuilder(parts[0])
+                        for (i in 1 until parts.size) {
+                            sb.append("<AdaptationSet")
+                            val rest = parts[i]
+                            val tagEndIdx = rest.indexOf(">")
+                            if (tagEndIdx != -1) {
+                                sb.append(rest.substring(0, tagEndIdx + 1))
+                                sb.append("\n$contentProtectionXml\n")
+                                sb.append(rest.substring(tagEndIdx + 1))
+                            } else {
+                                sb.append(rest)
+                            }
+                        }
+                        modifiedXml = sb.toString()
+                    }
                 }
             }
             
@@ -623,14 +631,14 @@ class EventProvider(val context: Context) : MainAPI() {
                                 if (decodedUrlParam.contains("drmScheme=clearkey", ignoreCase = true) && decodedUrlParam.contains("drmLicense=", ignoreCase = true)) {
                                     val cleanUrl = decodedUrlParam.substringBefore("|").substringBefore("&drmScheme=")
                                     val licenseParam = decodedUrlParam.substringAfter("drmLicense=").substringBefore("&")
-                                    val parts = licenseParam.split(":")
-                                    if (parts.size == 2) {
-                                        val keyId = parts[0].trim()
-                                        val keyValue = parts[1].trim()
+                                    val firstPair = licenseParam.split(",").firstOrNull()?.split(":")
+                                    if (firstPair != null && firstPair.size == 2) {
+                                        val keyId = firstPair[0].trim()
+                                        val keyValue = firstPair[1].trim()
                                         val clearkeyKid = hexToBase64Url(keyId)
                                         val clearkeyKey = hexToBase64Url(keyValue)
                                         
-                                        android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey: kid=$keyId key=$keyValue for stream: $cleanUrl")
+                                        android.util.Log.d("EventProvider", "Successfully decrypted NS Player DRM ClearKey params: $licenseParam for stream: $cleanUrl")
                                         
                                         val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                         val headers = mapOf(
@@ -640,7 +648,7 @@ class EventProvider(val context: Context) : MainAPI() {
                                         )
                                         
                                         val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
-                                            getDrmDashManifestUrl(cleanUrl, keyId, headers)
+                                            getDrmDashManifestUrl(cleanUrl, licenseParam, headers)
                                         } else {
                                             cleanUrl
                                         }
