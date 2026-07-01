@@ -284,7 +284,7 @@ class EventProvider(val context: Context) : MainAPI() {
                     val encodedPath = java.net.URLEncoder.encode(path, "UTF-8")
                     val encodedParams = java.net.URLEncoder.encode(queryParams, "UTF-8")
                     
-                    """initialization="http://127.0.0.1:$port/init_$cleanId?rep=${'$'}RepresentationID${'$'}&base=$encodedBase&path=$encodedPath&params=$encodedParams""""
+                    """initialization="http://127.0.0.1:$port/init_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;base=$encodedBase&amp;path=$encodedPath&amp;params=$encodedParams""""
                 }
             }
             
