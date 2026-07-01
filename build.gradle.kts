@@ -126,6 +126,7 @@ subprojects {
         val testImplementation by configurations
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.robolectric:robolectric:4.11.1")
+        testImplementation(files("${System.getProperty("user.home")}/.gradle/caches/cloudstream/cloudstream/cloudstream.jar"))
         val implementation by configurations
         val cloudstream by configurations
         cloudstream("com.lagradost:cloudstream3:pre-release")
