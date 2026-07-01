@@ -552,12 +552,14 @@ class EventProvider(val context: Context) : MainAPI() {
                 
                 // Normalisasi ID kustom agar cocok dengan database backend worker
                 idVal = when (idVal) {
+                    "vpl6" -> "tvrivp"
+                    "vpl8" -> "tvri"
+                    "tvri2" -> "tvrivpxx"
                     "one1" -> "one_1"
                     "one2" -> "one_2"
                     "dazn3es" -> "dazn3_spain"
                     "dazn1es" -> "dsports"
                     "xssc2" -> "ssc2"
-                    "vpl8" -> "tvri"
                     else -> idVal
                 }
                 
