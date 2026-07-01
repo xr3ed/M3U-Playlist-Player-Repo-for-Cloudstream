@@ -191,8 +191,7 @@ class EventProvider(val context: Context) : MainAPI() {
             }
             
             // 3. Cek apakah manifest bersih ini sudah memuat ClearKey secara native
-            val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true) ||
-                              modifiedXml.contains("cenc:default_KID", ignoreCase = true)
+            val hasClearKey = modifiedXml.contains("e2719d58-a985-b3c9-781a-b030af78d30e", ignoreCase = true)
             
             if (!hasClearKey) {
                 // Generate ContentProtection XML untuk setiap pasangan key
@@ -634,7 +633,7 @@ class EventProvider(val context: Context) : MainAPI() {
                                     )
                                     
                                     val streamUrl = if (dashUrl.contains(".mpd", ignoreCase = true) || dashUrl.contains("mpd", ignoreCase = true)) {
-                                        getDrmDashManifestUrl(dashUrl, keyId, headers)
+                                        getDrmDashManifestUrl(dashUrl, drmStr, headers)
                                     } else {
                                         dashUrl
                                     }
