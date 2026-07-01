@@ -146,15 +146,25 @@ object LocalManifestServer {
                                              }
                                              val manifestXml = response.text
                                              
-                                             var modifiedXml = manifestXml
-                                             
-                                             // 1. Hapus Widevine
-                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
-                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
-                                             
-                                             // 2. Hapus PlayReady
-                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
-                                             modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
+                                              var modifiedXml = manifestXml
+                                              
+                                              // Paksa tipe MPD menjadi dynamic agar dideteksi sebagai Live (menghindari batasan durasi 30 menit / 1 jam)
+                                              if (modifiedXml.contains("type=\"static\"", ignoreCase = true) || modifiedXml.contains("type='static'", ignoreCase = true)) {
+                                                  modifiedXml = modifiedXml.replace(Regex("""type\s*=\s*["']static["']""", RegexOption.IGNORE_CASE), """type="dynamic"""")
+                                              }
+                                              if (!modifiedXml.contains("minimumUpdatePeriod", ignoreCase = true)) {
+                                                  modifiedXml = modifiedXml.replace(Regex("""<MPD"""), """<MPD minimumUpdatePeriod="PT2S"""")
+                                              }
+                                              // Hapus mediaPresentationDuration agar durasi video tidak dibatasi (sehingga berjalan terus sebagai LIVE sejati)
+                                              modifiedXml = modifiedXml.replace(Regex("""mediaPresentationDuration\s*=\s*["'][^"']+["']""", RegexOption.IGNORE_CASE), "")
+
+                                              // 1. Hapus Widevine
+                                              modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
+                                              modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
+                                              
+                                              // 2. Hapus PlayReady
+                                              modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*>([\s\S]*?)</ContentProtection>""", RegexOption.IGNORE_CASE), "")
+                                              modifiedXml = modifiedXml.replace(Regex("""<ContentProtection[^>]*schemeIdUri=\s*["']urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95["'][^>]*/\s*>""", RegexOption.IGNORE_CASE), "")
                                              
                                              val finalUrl = response.url
                                              val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
