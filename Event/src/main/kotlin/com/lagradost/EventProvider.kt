@@ -41,7 +41,8 @@ class EventProvider(val context: Context) : MainAPI() {
     }
 
     private fun extractUserAgent(url: String, defaultUa: String): String {
-        val parts = url.split("|")
+        val decodedUrl = url.replace("%7C", "|").replace("%20", " ")
+        val parts = decodedUrl.split("|")
         if (parts.size > 1) {
             val headerPart = parts[1]
             val uaParam = headerPart.split("&").firstOrNull { it.startsWith("User-Agent=", ignoreCase = true) }
