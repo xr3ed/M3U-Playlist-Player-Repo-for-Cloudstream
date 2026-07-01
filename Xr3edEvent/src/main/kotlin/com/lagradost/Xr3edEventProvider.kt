@@ -185,7 +185,7 @@ object LocalManifestServer {
                                                   } else ""
                                               }
                                               if (kidUuid.isNotEmpty()) {
-                                                  val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2513a00-7bfb-11e9-9130-0242ac110002" cenc:default_KID="$kidUuid"/>"""
+                                                  val clearKeyBlock = """<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" cenc:default_KID="$kidUuid"/>"""
                                                   modifiedXml = modifiedXml.replace(Regex("""<AdaptationSet([^>]*)>""", RegexOption.IGNORE_CASE)) { matchResult ->
                                                       matchResult.value + "\n" + clearKeyBlock + "\n"
                                                   }
