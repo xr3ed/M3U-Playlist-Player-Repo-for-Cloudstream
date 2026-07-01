@@ -28,6 +28,34 @@ object LocalManifestServer {
     )
     private val manifestMetadatas = java.util.concurrent.ConcurrentHashMap<String, ManifestMetadata>()
 
+    private fun isDrmSystemId(bytes: ByteArray, offset: Int): Boolean {
+        if (offset + 16 > bytes.size) return false
+        
+        val widevineUuid = byteArrayOf(
+            0xed.toByte(), 0xef.toByte(), 0x8b.toByte(), 0xa9.toByte(),
+            0x79.toByte(), 0xd6.toByte(), 0x4a.toByte(), 0xce.toByte(),
+            0xa3.toByte(), 0xc8.toByte(), 0x27.toByte(), 0xdc.toByte(),
+            0xd5.toByte(), 0x1d.toByte(), 0x21.toByte(), 0xed.toByte()
+        )
+        
+        val playreadyUuid = byteArrayOf(
+            0x9a.toByte(), 0x04.toByte(), 0xf0.toByte(), 0x79.toByte(),
+            0x98.toByte(), 0x40.toByte(), 0x42.toByte(), 0x86.toByte(),
+            0xab.toByte(), 0x92.toByte(), 0xe6.toByte(), 0x5b.toByte(),
+            0xe0.toByte(), 0x88.toByte(), 0x5f.toByte(), 0x95.toByte()
+        )
+        
+        var isWv = true
+        var isPr = true
+        for (i in 0 until 16) {
+            val b = bytes[offset + i]
+            if (b != widevineUuid[i]) isWv = false
+            if (b != playreadyUuid[i]) isPr = false
+            if (!isWv && !isPr) return false
+        }
+        return true
+    }
+
     private fun stripPssh(bytes: ByteArray): ByteArray {
         val modified = bytes.clone()
         var mdatIdx = -1
@@ -48,15 +76,17 @@ object LocalManifestServer {
                 modified[i+2] == 0x73.toByte() &&   // 's'
                 modified[i+3] == 0x68.toByte()) {   // 'h'
                 
-                modified[i] = 0x66.toByte()     // 'f'
-                modified[i+1] = 0x72.toByte()   // 'r'
-                modified[i+2] = 0x65.toByte()   // 'e'
-                modified[i+3] = 0x65.toByte()   // 'e'
-                psshCount++
+                if (isDrmSystemId(modified, i + 8)) {
+                    modified[i] = 0x66.toByte()     // 'f'
+                    modified[i+1] = 0x72.toByte()   // 'r'
+                    modified[i+2] = 0x65.toByte()   // 'e'
+                    modified[i+3] = 0x65.toByte()   // 'e'
+                    psshCount++
+                }
             }
         }
         if (psshCount > 0) {
-            android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount pssh box(es) before mdat.")
+            android.util.Log.d("EventProvider", "LocalManifestServer stripped $psshCount DRM pssh box(es) before mdat.")
         }
         return modified
     }
