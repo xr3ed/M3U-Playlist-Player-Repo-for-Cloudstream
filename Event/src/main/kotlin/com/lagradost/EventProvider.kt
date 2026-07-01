@@ -516,11 +516,8 @@ class EventProvider(val context: Context) : MainAPI() {
                                         "Origin" to "https://xys1-2-player.pages.dev"
                                     )
                                     
-                                    val streamUrl = if (dashUrl.contains(".mpd", ignoreCase = true) || dashUrl.contains("mpd", ignoreCase = true)) {
-                                        getDrmDashManifestUrl(dashUrl, keyId, headers)
-                                    } else {
-                                        dashUrl
-                                    }
+                                    val streamUrl = dashUrl
+                                    android.util.Log.d("EventProvider", "Invoking CallSite 1: URL=$streamUrl, KID=$clearkeyKid, KEY=$clearkeyKey, HEADERS=$headers")
                                     
                                     callback.invoke(
                                         newDrmExtractorLink(
@@ -612,14 +609,12 @@ class EventProvider(val context: Context) : MainAPI() {
                                             "Origin" to "https://xys1-2-player.pages.dev"
                                         )
                                         
-                                        val streamUrl = if (cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)) {
-                                            getDrmDashManifestUrl(cleanUrl, keyId, headers)
-                                        } else {
-                                            cleanUrl
-                                        }
+                                        val streamUrl = cleanUrl
                                         
                                         val isDash = cleanUrl.contains(".mpd", ignoreCase = true) || cleanUrl.contains("mpd", ignoreCase = true)
                                         val streamType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
+                                        
+                                        android.util.Log.d("EventProvider", "Invoking CallSite 2: URL=$streamUrl, KID=$clearkeyKid, KEY=$clearkeyKey, HEADERS=$headers")
                                         
                                         callback.invoke(
                                             newDrmExtractorLink(
