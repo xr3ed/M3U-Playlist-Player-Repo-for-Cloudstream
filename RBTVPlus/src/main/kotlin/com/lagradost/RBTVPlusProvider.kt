@@ -68,7 +68,7 @@ class ProtoParser(val data: ByteArray) {
 }
 
 class RBTVPlusProvider : MainAPI() {
-    override var mainUrl = "https://www.rbtvplus18.hair"
+    override var mainUrl = "https://www.rbtvplus18.mom"
     override var name = "RBTV+"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
@@ -637,12 +637,12 @@ class RBTVPlusProvider : MainAPI() {
         val allMatches = fetchAllLiveMatches(apiHost)
 
         val now = System.currentTimeMillis() + serverTimeOffset
-
-        // Filter original v16: live + upcoming dalam jendela -15 menit s/d +150 menit
+        // Filter 100% live matches
         val liveMatches = allMatches.filter { m ->
             val isOngoingStatus = m.matchStatus in ongoingStatuses
             val isUpcomingOrOmitted = m.matchStatus == 0L || m.matchStatus == 9L
             val isTimeActive = now >= (m.matchTime - 15 * 60 * 1000) && now <= (m.matchTime + 150 * 60 * 1000)
+            
             (isOngoingStatus || (isUpcomingOrOmitted && isTimeActive)) && m.matchStatus < 10000L
         }
 
