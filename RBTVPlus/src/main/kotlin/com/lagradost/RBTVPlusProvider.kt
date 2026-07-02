@@ -636,14 +636,10 @@ class RBTVPlusProvider : MainAPI() {
         val apiHost = getApiHost()
         val allMatches = fetchAllLiveMatches(apiHost)
 
-        val now = System.currentTimeMillis() + serverTimeOffset
-        // Filter 100% live matches
+        // Tampilkan semua event yang dikembalikan API (sesuai tampilan website)
+        // API sudah mengembalikan event relevan hari ini: live, upcoming, maupun replay/highlight
         val liveMatches = allMatches.filter { m ->
-            val isOngoingStatus = m.matchStatus in ongoingStatuses
-            val isUpcomingOrOmitted = m.matchStatus == 0L || m.matchStatus == 9L
-            val isTimeActive = now >= (m.matchTime - 15 * 60 * 1000) && now <= (m.matchTime + 150 * 60 * 1000)
-            
-            (isOngoingStatus || (isUpcomingOrOmitted && isTimeActive)) && m.matchStatus < 10000L
+            m.matchStatus < 10000L
         }
 
         val homePages = ArrayList<HomePageList>()
