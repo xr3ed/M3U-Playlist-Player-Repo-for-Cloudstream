@@ -40,10 +40,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png",
-    "fileHash": "sha256-eca99ec9d8635b509b40e02f62ed5af7a8e31922d7f397e2885471d50801b169",
+    "fileHash": "sha256-d700bfd53c1cc2c7aef67b5965a377ff949c033c952b6222d172a3c53b01ac5c",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 56830,
+    "fileSize": 63625,
     "status": 1,
     "language": "id",
     "authors": [
