@@ -575,7 +575,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
     }
 
     // Cek semua channel secara paralel, hasil di-cache 5 menit
-    private suspend fun checkAllChannelsParallel(channelList: List<Triple<String, String, String>>) {
+    private suspend fun checkAllChannelsParallel(
+        channelList: List<Triple<String, String, String>>,
+        chIdToHref: Map<String, String>   // chId -> href asli dari channel.js (e.g. "go:bein1my")
+    ) {
         val now = System.currentTimeMillis()
         if (now - cacheTimestamp < CACHE_TTL_MS && channelStatusCache.isNotEmpty()) {
             android.util.Log.d("EventProvider", "Channel status cache masih valid (${(now - cacheTimestamp) / 1000}s), skip check")
@@ -584,14 +587,14 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         android.util.Log.d("EventProvider", "Mulai cek ${channelList.size} channel secara paralel...")
         try {
             supervisorScope {
-                val jobs = channelList.map { (chId, _, streamUrl) ->
+                val jobs = channelList.map { (chId, _, _) ->
                     async {
-                        // Ambil href dari streamUrl format: https://wc26.netxtv.id/?id=jadwal#go:chId
-                        val chData = streamUrl.substringAfter("#go:", "")
-                        val href = if (chData.isNotEmpty()) "go:$chData" else ""
+                        // Gunakan href ASLI dari channel.js, bukan dari streamUrl!
+                        // Contoh: fusball -> "go:bein1my", bukan "go:fusball"
+                        val href = chIdToHref[chId] ?: ""
                         val alive = isChannelAlive(chId, href)
                         channelStatusCache[chId] = alive
-                        android.util.Log.d("EventProvider", "Channel $chId (${if (alive) "ALIVE" else "DEAD"})")
+                        android.util.Log.d("EventProvider", "Channel $chId href=$href (${if (alive) "ALIVE" else "DEAD"})")
                     }
                 }
                 jobs.awaitAll()
@@ -805,6 +808,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     }
 
                     val collectedChannels = mutableListOf<Triple<String, String, String>>()
+                    val chIdToHref = mutableMapOf<String, String>() // chId -> href dari channel.js
                     for (gId in targetGroups) {
                         val arr = groupsObj.optJSONArray(gId) ?: continue
                         for (i in 0 until arr.length()) {
@@ -815,8 +819,11 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
 
                             val chData = channelsObj.optJSONObject(chId) ?: continue
                             val chName = chData.optString("name", chId)
+                            val chHref = chData.optString("href", "") // href asli dari channel.js, e.g. "go:bein1my"
                             val streamUrl = "https://wc26.netxtv.id/?id=jadwal#go:$chId"
                             collectedChannels.add(Triple(chId, chName, streamUrl))
+                            // Simpan href asli ke map untuk pengecekan status
+                            chIdToHref[chId] = chHref
                         }
                     }
 
@@ -868,7 +875,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     }.thenBy { it.second })
 
                     // Cek status channel secara paralel sebelum ditampilkan
-                    checkAllChannelsParallel(sortedChannels)
+                    checkAllChannelsParallel(sortedChannels, chIdToHref)
 
                     for (ch in sortedChannels) {
                         val isAlive = channelStatusCache[ch.first] != false // Default alive jika belum dicek
