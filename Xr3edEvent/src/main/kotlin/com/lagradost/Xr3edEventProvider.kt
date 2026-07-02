@@ -1105,7 +1105,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     "one1" -> "one_1"
                     "one2" -> "one_2"
                     "dazn3es" -> "dazn3_spain"
-                    "dazn1es" -> "dsports"
+                    "dazn1es" -> "dazn1_spain"
                     "xssc2" -> "ssc2"
                     else -> idVal
                 }
