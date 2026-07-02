@@ -638,16 +638,12 @@ class RBTVPlusProvider : MainAPI() {
 
         val now = System.currentTimeMillis() + serverTimeOffset
 
-        // Rolling window: tampilkan event dari -8 jam s/d +3 jam dari sekarang
-        // -8 jam: menampilkan replay event pagi yang sudah selesai
-        // +3 jam: menampilkan upcoming yang dekat saja (tidak menampilkan event malam yang jauh)
-        val windowStart = now - 8 * 60 * 60 * 1000L   // 8 jam lalu
-        val windowEnd   = now + 3 * 60 * 60 * 1000L   // 3 jam ke depan
-
+        // Filter original v16: live + upcoming dalam jendela -15 menit s/d +150 menit
         val liveMatches = allMatches.filter { m ->
-            val isOngoing = m.matchStatus in ongoingStatuses
-            val isInWindow = m.matchTime in windowStart..windowEnd
-            (isOngoing || isInWindow) && m.matchStatus < 10000L
+            val isOngoingStatus = m.matchStatus in ongoingStatuses
+            val isUpcomingOrOmitted = m.matchStatus == 0L || m.matchStatus == 9L
+            val isTimeActive = now >= (m.matchTime - 15 * 60 * 1000) && now <= (m.matchTime + 150 * 60 * 1000)
+            (isOngoingStatus || (isUpcomingOrOmitted && isTimeActive)) && m.matchStatus < 10000L
         }
 
         val homePages = ArrayList<HomePageList>()
