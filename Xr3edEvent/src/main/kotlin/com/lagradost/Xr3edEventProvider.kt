@@ -16,6 +16,9 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import kotlin.concurrent.thread
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.supervisorScope
 
 object LocalManifestServer {
     private var serverSocket: ServerSocket? = null
@@ -516,6 +519,91 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
 
     private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/world_cup_cover.png"
 
+    companion object {
+        const val OFFLINE_POSTER_URL = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/assets/channel_offline.png"
+        private const val CACHE_TTL_MS = 5 * 60 * 1000L // 5 menit
+        val channelStatusCache = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
+        @Volatile var cacheTimestamp = 0L
+    }
+
+    // Remap worker ID — harus sinkron dengan remap di resolveSingleChannel
+    private fun remapWorkerIdForCheck(id: String): String {
+        return mapOf(
+            "vpl6" to "tvrivp", "vpl8" to "tvri", "tvri2" to "tvrivpxx",
+            "one1" to "one_1", "one2" to "one_2",
+            "dazn3es" to "dazn3_spain", "dazn1es" to "dazn1_spain", "xssc2" to "ssc2"
+        )[id] ?: id
+    }
+
+    // Dekripsi response dari bitmovin worker (AES-GCM)
+    private fun decryptWorkerPayload(responseText: String): JSONObject? {
+        return try {
+            val responseJson = JSONObject(responseText.trim())
+            val ivB64 = responseJson.optString("iv")
+            val dataB64 = responseJson.optString("data")
+            if (ivB64.isNullOrEmpty() || dataB64.isNullOrEmpty()) return null
+            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val spec = javax.crypto.spec.PBEKeySpec("xys1-gh".toCharArray(), "salt123".toByteArray(), 1000, 256)
+            val secretKey = javax.crypto.spec.SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+            val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
+            val combined = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
+            val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, javax.crypto.spec.GCMParameterSpec(128, iv))
+            JSONObject(String(cipher.doFinal(combined), Charsets.UTF_8))
+        } catch (e: Exception) { null }
+    }
+
+    // Cek apakah channel masih aktif: worker check + HTTP fetch manifest
+    private suspend fun isChannelAlive(channelId: String, href: String): Boolean {
+        return try {
+            val resolvedId = if (href.startsWith("go:")) href.substring(3) else channelId
+            val mappedId = remapWorkerIdForCheck(resolvedId)
+            val workerUrl = "http://bitmovin.03anutv.workers.dev/?id=$mappedId&t=${System.currentTimeMillis()}"
+            val responseText = app.get(workerUrl, timeout = 8).text
+            if (responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) return false
+            val decrypted = decryptWorkerPayload(responseText) ?: return false
+            val dashUrl = decrypted.optString("dash")
+            if (dashUrl.isNullOrBlank()) return false
+            val cleanUrl = dashUrl.split("|")[0].trim()
+            val resp = app.get(cleanUrl, timeout = 8, headers = mapOf("User-Agent" to "Mozilla/5.0", "Accept" to "*/*"))
+            val body = resp.text
+            resp.code == 200 && (body.contains("<MPD") || body.contains("<?xml") || body.length > 200)
+        } catch (e: Exception) {
+            android.util.Log.w("EventProvider", "isChannelAlive check failed for $channelId: ${e.message}")
+            true // Kalau error timeout/network, anggap alive (jangan salah matikan)
+        }
+    }
+
+    // Cek semua channel secara paralel, hasil di-cache 5 menit
+    private suspend fun checkAllChannelsParallel(channelList: List<Triple<String, String, String>>) {
+        val now = System.currentTimeMillis()
+        if (now - cacheTimestamp < CACHE_TTL_MS && channelStatusCache.isNotEmpty()) {
+            android.util.Log.d("EventProvider", "Channel status cache masih valid (${(now - cacheTimestamp) / 1000}s), skip check")
+            return
+        }
+        android.util.Log.d("EventProvider", "Mulai cek ${channelList.size} channel secara paralel...")
+        try {
+            supervisorScope {
+                val jobs = channelList.map { (chId, _, streamUrl) ->
+                    async {
+                        // Ambil href dari streamUrl format: https://wc26.netxtv.id/?id=jadwal#go:chId
+                        val chData = streamUrl.substringAfter("#go:", "")
+                        val href = if (chData.isNotEmpty()) "go:$chData" else ""
+                        val alive = isChannelAlive(chId, href)
+                        channelStatusCache[chId] = alive
+                        android.util.Log.d("EventProvider", "Channel $chId (${if (alive) "ALIVE" else "DEAD"})")
+                    }
+                }
+                jobs.awaitAll()
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("EventProvider", "checkAllChannelsParallel error", e)
+        }
+        cacheTimestamp = System.currentTimeMillis()
+        val deadCount = channelStatusCache.values.count { !it }
+        android.util.Log.d("EventProvider", "Channel check selesai: ${channelList.size - deadCount} alive, $deadCount dead")
+    }
+
     private fun hexToBase64Url(str: String): String {
         val clean = str.replace(" ", "").trim()
         val isHex = clean.all { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' } && clean.length % 2 == 0
@@ -779,15 +867,21 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         }
                     }.thenBy { it.second })
 
+                    // Cek status channel secara paralel sebelum ditampilkan
+                    checkAllChannelsParallel(sortedChannels)
+
                     for (ch in sortedChannels) {
-                        android.util.Log.d("EventProvider", "Sorted channel: ID=${ch.first}, Name=${ch.second}")
+                        val isAlive = channelStatusCache[ch.first] != false // Default alive jika belum dicek
+                        val poster = if (isAlive) defaultLogo else OFFLINE_POSTER_URL
+                        val displayName = if (isAlive) ch.second else "⚠️ ${ch.second} (OFFLINE)"
+                        android.util.Log.d("EventProvider", "Sorted channel: ID=${ch.first}, Name=${ch.second}, Alive=$isAlive")
                         list.add(
                             newLiveSearchResponse(
-                                ch.second,
+                                displayName,
                                 ch.third,
                                 TvType.Live
                             ) {
-                                this.posterUrl = defaultLogo
+                                this.posterUrl = poster
                             }
                         )
                     }
