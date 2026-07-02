@@ -636,10 +636,23 @@ class RBTVPlusProvider : MainAPI() {
         val apiHost = getApiHost()
         val allMatches = fetchAllLiveMatches(apiHost)
 
-        // Tampilkan semua event yang dikembalikan API (sesuai tampilan website)
-        // API sudah mengembalikan event relevan hari ini: live, upcoming, maupun replay/highlight
+        val now = System.currentTimeMillis() + serverTimeOffset
+
+        // Hitung batas "hari ini" dalam WIB (UTC+7 / Asia/Jakarta)
+        val wibTimezone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
+        val cal = java.util.Calendar.getInstance(wibTimezone)
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        cal.set(java.util.Calendar.MINUTE, 0)
+        cal.set(java.util.Calendar.SECOND, 0)
+        cal.set(java.util.Calendar.MILLISECOND, 0)
+        val todayStartMs = cal.timeInMillis
+        val todayEndMs = todayStartMs + 24 * 60 * 60 * 1000L // sampai akhir hari ini
+
+        // Tampilkan event hari ini (sesuai website) + event yang sedang live
         val liveMatches = allMatches.filter { m ->
-            m.matchStatus < 10000L
+            val isOngoing = m.matchStatus in ongoingStatuses
+            val isTodayEvent = m.matchTime in todayStartMs..todayEndMs
+            (isOngoing || isTodayEvent) && m.matchStatus < 10000L
         }
 
         val homePages = ArrayList<HomePageList>()
