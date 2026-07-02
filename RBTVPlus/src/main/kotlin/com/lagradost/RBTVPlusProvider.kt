@@ -68,7 +68,7 @@ class ProtoParser(val data: ByteArray) {
 }
 
 class RBTVPlusProvider : MainAPI() {
-    override var mainUrl = "https://www.rbtvplus18.mom"
+    override var mainUrl = "https://www.rbtvplus18.hair"
     override var name = "RBTV+"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
