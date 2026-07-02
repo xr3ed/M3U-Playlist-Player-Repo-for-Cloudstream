@@ -638,21 +638,16 @@ class RBTVPlusProvider : MainAPI() {
 
         val now = System.currentTimeMillis() + serverTimeOffset
 
-        // Hitung batas "hari ini" dalam WIB (UTC+7 / Asia/Jakarta)
-        val wibTimezone = java.util.TimeZone.getTimeZone("Asia/Jakarta")
-        val cal = java.util.Calendar.getInstance(wibTimezone)
-        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
-        cal.set(java.util.Calendar.MINUTE, 0)
-        cal.set(java.util.Calendar.SECOND, 0)
-        cal.set(java.util.Calendar.MILLISECOND, 0)
-        val todayStartMs = cal.timeInMillis
-        val todayEndMs = todayStartMs + 24 * 60 * 60 * 1000L // sampai akhir hari ini
+        // Rolling window: tampilkan event dari -8 jam s/d +3 jam dari sekarang
+        // -8 jam: menampilkan replay event pagi yang sudah selesai
+        // +3 jam: menampilkan upcoming yang dekat saja (tidak menampilkan event malam yang jauh)
+        val windowStart = now - 8 * 60 * 60 * 1000L   // 8 jam lalu
+        val windowEnd   = now + 3 * 60 * 60 * 1000L   // 3 jam ke depan
 
-        // Tampilkan event hari ini (sesuai website) + event yang sedang live
         val liveMatches = allMatches.filter { m ->
             val isOngoing = m.matchStatus in ongoingStatuses
-            val isTodayEvent = m.matchTime in todayStartMs..todayEndMs
-            (isOngoing || isTodayEvent) && m.matchStatus < 10000L
+            val isInWindow = m.matchTime in windowStart..windowEnd
+            (isOngoing || isInWindow) && m.matchStatus < 10000L
         }
 
         val homePages = ArrayList<HomePageList>()

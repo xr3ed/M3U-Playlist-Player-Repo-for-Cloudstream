@@ -3,6 +3,6 @@
   "displayName": "RBTV+",
   "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
   "author": "xr3ed",
-  "version": 18,
+  "version": 19,
   "tvTypes": ["Live"]
 }
