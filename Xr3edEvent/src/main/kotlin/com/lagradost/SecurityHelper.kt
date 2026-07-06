@@ -76,29 +76,13 @@ private fun getResumedActivity(): Activity? {
             if (activityRecord == null) continue
             val pausedField = activityRecord.javaClass.getDeclaredField("paused")
             pausedField.isAccessible = true
-            val paused = activityRecord.javaClass.getDeclaredField("paused")
-            if (paused.type == Boolean::class.javaPrimitiveType || paused.type == Boolean::class.java) {
-                val pausedVal = paused.get(activityRecord) as? Boolean ?: true
-                if (!pausedVal) {
-                    val activityField = activityRecord.javaClass.getDeclaredField("activity")
-                    activityField.isAccessible = true
-                    val activity = activityField.get(activityRecord) as? Activity
-                    if (activity != null && !activity.isFinishing) {
-                        return activity
-                    }
-                }
-            } else {
-                val pausedObj = paused.get(activityRecord)
-                if (pausedObj != null) {
-                    val pausedVal = pausedObj.toString().toBoolean()
-                    if (!pausedVal) {
-                        val activityField = activityRecord.javaClass.getDeclaredField("activity")
-                        activityField.isAccessible = true
-                        val activity = activityField.get(activityRecord) as? Activity
-                        if (activity != null && !activity.isFinishing) {
-                            return activity
-                        }
-                    }
+            val paused = pausedField.get(activityRecord) as? Boolean ?: true
+            if (!paused) {
+                val activityField = activityRecord.javaClass.getDeclaredField("activity")
+                activityField.isAccessible = true
+                val activity = activityField.get(activityRecord) as? Activity
+                if (activity != null && !activity.isFinishing) {
+                    return activity
                 }
             }
         }
