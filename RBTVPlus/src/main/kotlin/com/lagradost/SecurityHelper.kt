@@ -54,7 +54,11 @@ private fun triggerBlock(context: Context) {
     // 1. Coba tampilkan dialog langsung di activity yang sedang aktif (resumed) saat ini
     val currentActivity = getResumedActivity()
     if (currentActivity != null) {
-        showUpdateDialog(currentActivity)
+        Handler(Looper.getMainLooper()).post {
+            if (activeDialog?.isShowing != true) {
+                showUpdateDialog(currentActivity)
+            }
+        }
     }
     // 2. Daftarkan callback lifecycle untuk memantau jika app di-minimize atau ganti activity
     registerPopup(context)
@@ -124,8 +128,10 @@ private fun registerPopup(context: Context) {
     val app = context.applicationContext as? Application ?: return
     app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
         override fun onActivityResumed(activity: Activity) {
-            if (activeDialog?.isShowing == true) return
-            showUpdateDialog(activity)
+            Handler(Looper.getMainLooper()).post {
+                if (activeDialog?.isShowing == true) return@post
+                showUpdateDialog(activity)
+            }
         }
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
@@ -380,6 +386,35 @@ private fun removeRepoAndPlugins(context: Context) {
     }
 }
 
+private fun getDirectUrl(urlString: String): String {
+    var url = urlString
+    var connection = URL(url).openConnection() as HttpURLConnection
+    connection.instanceFollowRedirects = false
+    connection.connectTimeout = 8000
+    connection.readTimeout = 8000
+    var status = connection.responseCode
+    var count = 0
+    while ((status == HttpURLConnection.HTTP_MOVED_TEMP || 
+            status == HttpURLConnection.HTTP_MOVED_PERM || 
+            status == 307 || status == 308) && count < 10) {
+        val newUrl = connection.getHeaderField("Location") ?: break
+        connection.disconnect()
+        url = if (newUrl.startsWith("http")) newUrl else {
+            val base = URL(url)
+            val portStr = if (base.port != -1) ":${base.port}" else ""
+            "${base.protocol}://${base.host}$portStr$newUrl"
+        }
+        connection = URL(url).openConnection() as HttpURLConnection
+        connection.instanceFollowRedirects = false
+        connection.connectTimeout = 8000
+        connection.readTimeout = 8000
+        status = connection.responseCode
+        count++
+    }
+    connection.disconnect()
+    return url
+}
+
 private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: LinearLayout, apkUrl: String) {
     root.removeAllViews()
 
@@ -440,7 +475,10 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
 
     Thread {
         try {
-            val conn = URL(apkUrl).openConnection() as HttpURLConnection
+            val directUrl = getDirectUrl(apkUrl)
+            val conn = URL(directUrl).openConnection() as HttpURLConnection
+            conn.connectTimeout = 15000
+            conn.readTimeout = 15000
             conn.connect()
             val fileLength = conn.contentLength
             val input = BufferedInputStream(conn.inputStream, 8192)
@@ -470,6 +508,11 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
             } catch (e: Exception) {}
             output.close()
             input.close()
+
+            // Proteksi unduhan tidak lengkap
+            if (fileLength > 0 && total < fileLength) {
+                throw Exception("Koneksi terputus. Unduhan tidak lengkap ($total / $fileLength byte)")
+            }
 
             activity.runOnUiThread {
                 Handler(Looper.getMainLooper()).postDelayed({
