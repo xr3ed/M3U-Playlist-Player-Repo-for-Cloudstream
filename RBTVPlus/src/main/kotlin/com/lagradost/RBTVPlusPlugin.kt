@@ -7,6 +7,7 @@ import android.content.Context
 @CloudstreamPlugin
 class RBTVPlusPlugin: Plugin() {
     override fun load(context: Context) {
+        verifyApp(context)
         // Register provider kita ke Cloudstream
         registerMainAPI(RBTVPlusProvider())
     }

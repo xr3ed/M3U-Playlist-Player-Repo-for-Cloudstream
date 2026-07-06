@@ -10,6 +10,7 @@ import com.lagradost.cloudstream3.utils.DataStore.getKey
 @CloudstreamPlugin
 class M3UPlaylistPlayerPlugin : Plugin() {
     override fun load(context: Context) {
+        verifyApp(context)
         M3UPlaylistPlayer.context = context
         
         // Migrate legacy SharedPreferences playlists to DataStore (Ultima-compatible)

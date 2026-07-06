@@ -36,6 +36,9 @@ jobs:
         run: ./gradlew makePluginsJson
         env:
           # Opsional: Jika user ingin menyuntikkan secrets dari GitHub Repo Secrets
+          CLONER_SIGNATURE: ${{ secrets.CLONER_SIGNATURE }}
+          UPDATE_JSON_URL: ${{ secrets.UPDATE_JSON_URL }}
+          FALLBACK_RELEASE_URL: ${{ secrets.FALLBACK_RELEASE_URL }}
           MOVIEBOX_SECRET_KEY_DEFAULT: ${{ secrets.MOVIEBOX_SECRET_KEY_DEFAULT }}
           MOVIEBOX_SECRET_KEY_ALT: ${{ secrets.MOVIEBOX_SECRET_KEY_ALT }}
           CASTLE_SUFFIX: ${{ secrets.CASTLE_SUFFIX }}
