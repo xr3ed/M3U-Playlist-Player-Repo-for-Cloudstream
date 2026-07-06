@@ -1,0 +1,62 @@
+[
+  {
+    "iconUrl": "https://play-lh.googleusercontent.com/V4t4JeQV2Cu9u72hKuqOW5c0IfwcZuuVS1d9PF2uJsW3rlIq-aOMTrT5bABVGaAFTcM=w480-h960-rw",
+    "fileHash": "sha256-ec24e3e693bfb05ac0cfb530b9f7478bc62632c85c0d532e873c994e4786d3f6",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 71230,
+    "status": 1,
+    "language": "en",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 30,
+    "internalName": "M3UPlaylistPlayer",
+    "description": "Add your own m3u playlists",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/M3UPlaylistPlayer.cs3",
+    "name": "M3UPlaylistPlayer"
+  },
+  {
+    "fileHash": "sha256-c554dea6b8736ad67cef644c891d60013b36279edc988b07dfa6e95c9ef392f4",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 39861,
+    "status": 1,
+    "language": "id",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 33,
+    "internalName": "RBTVPlus",
+    "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/RBTVPlus.cs3",
+    "name": "RBTVPlus"
+  },
+
+  {
+    "iconUrl": "https://raw.githubusercontent.com/xr3ed/Auto-IPTV/main/logo/fifa.png",
+    "fileHash": "sha256-91c1eaa76da840438e5f4bb38f774184a87e7ec5a02d86eb22b37f6fc1bf0dfe",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 52969,
+    "status": 1,
+    "language": "id",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "version": 96,
+    "internalName": "Xr3edEvent",
+    "description": "Plugin untuk live stream Event Piala Dunia 2026",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/Xr3edEvent.cs3",
+    "name": "Xr3edEvent"
+  }
+]

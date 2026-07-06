@@ -1,0 +1,102 @@
+name: Auto Build and Deploy Extensions
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant Execute Permission to Gradlew
+        run: chmod +x gradlew
+
+      - name: Build Repositories & Plugins
+        run: ./gradlew makePluginsJson
+        env:
+          # Opsional: Jika user ingin menyuntikkan secrets dari GitHub Repo Secrets
+          MOVIEBOX_SECRET_KEY_DEFAULT: ${{ secrets.MOVIEBOX_SECRET_KEY_DEFAULT }}
+          MOVIEBOX_SECRET_KEY_ALT: ${{ secrets.MOVIEBOX_SECRET_KEY_ALT }}
+          CASTLE_SUFFIX: ${{ secrets.CASTLE_SUFFIX }}
+          SIMKL_API: ${{ secrets.SIMKL_API }}
+          MAL_API: ${{ secrets.MAL_API }}
+          CRICIFY_PROVIDER_SECRET1: ${{ secrets.CRICIFY_PROVIDER_SECRET1 }}
+          CRICIFY_PROVIDER_SECRET2: ${{ secrets.CRICIFY_PROVIDER_SECRET2 }}
+          PIKASHOW_API_KEY: ${{ secrets.PIKASHOW_API_KEY }}
+          PIKASHOW_HMAC_SECRET: ${{ secrets.PIKASHOW_HMAC_SECRET }}
+          CRICFY_FIREBASE_API_KEY: ${{ secrets.CRICFY_FIREBASE_API_KEY }}
+          CRICFY_FIREBASE_APP_ID: ${{ secrets.CRICFY_FIREBASE_APP_ID }}
+          CRICFY_FIREBASE_PROJECT_NUMBER: ${{ secrets.CRICFY_FIREBASE_PROJECT_NUMBER }}
+          SKLIVE_KEY: ${{ secrets.SKLIVE_KEY }}
+          SKLIVE_IV: ${{ secrets.SKLIVE_IV }}
+          SKLIVE_V23_KEY: ${{ secrets.SKLIVE_V23_KEY }}
+          SKLIVE_V23_IV: ${{ secrets.SKLIVE_V23_IV }}
+          SKTECH_FIREBASE_API_KEY: ${{ secrets.SKTECH_FIREBASE_API_KEY }}
+          SKTECH_FIREBASE_APP_ID: ${{ secrets.SKTECH_FIREBASE_APP_ID }}
+          SKTECH_FIREBASE_PROJECT_NUMBER: ${{ secrets.SKTECH_FIREBASE_PROJECT_NUMBER }}
+          XON_FIREBASE_API_KEY: ${{ secrets.XON_FIREBASE_API_KEY }}
+          XON_FIREBASE_APP_ID: ${{ secrets.XON_FIREBASE_APP_ID }}
+          XON_FIREBASE_PROJECT_NUMBER: ${{ secrets.XON_FIREBASE_PROJECT_NUMBER }}
+          CINETV_SECRET_KEY_ENCRYPTED: ${{ secrets.CINETV_SECRET_KEY_ENCRYPTED }}
+          CINETV_DES_KEY: ${{ secrets.CINETV_DES_KEY }}
+          CINETV_DES_IV: ${{ secrets.CINETV_DES_IV }}
+          CINETV_AES_KEY: ${{ secrets.CINETV_AES_KEY }}
+          CINETV_AES_IV: ${{ secrets.CINETV_AES_IV }}
+          CINETV_WS_SECRET: ${{ secrets.CINETV_WS_SECRET }}
+          SMARTLINK_URL: ${{ secrets.SMARTLINK_URL }}
+          SPEEDLINK_URL: ${{ secrets.SPEEDLINK_URL }}
+          XR3EV_MAIN_URL: ${{ secrets.XR3EV_MAIN_URL }}
+          XR3EV_API_URL: ${{ secrets.XR3EV_API_URL }}
+          XR3EV_PLAYER_URL: ${{ secrets.XR3EV_PLAYER_URL }}
+          XR3EV_STREAM_URL: ${{ secrets.XR3EV_STREAM_URL }}
+          RBTV_MAIN_URL: ${{ secrets.RBTV_MAIN_URL }}
+          RBTV_API_HOST: ${{ secrets.RBTV_API_HOST }}
+          XSTREAM_TMDB_API: ${{ secrets.XSTREAM_TMDB_API }}
+
+      - name: Collect Build Artifacts
+        run: |
+          mkdir -p build-out
+          # Cari semua file .cs3 hasil kompilasi dan salin ke folder build-out (abaikan folder build-out itu sendiri)
+          find . -path "./build-out" -prune -o -name "*.cs3" -exec cp {} build-out/ \;
+          
+          # Salin file metadata manifest index
+          if [ -f "build/plugins.json" ]; then
+            cp build/plugins.json build-out/plugins.json
+            
+            # Gabungkan dengan prebuilts (M3UPlaylistPlayer, AnimeSuge, SubscriptionManager)
+            node prebuilts/merge_plugins.cjs
+            
+            # Buat file index repositori xr3ed.json yang sesungguhnya yang mengarah ke plugins.json secara aman
+            echo '{"name": "M3U Playlist Player Repo", "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/cnc.png", "description": "M3U Playlist Player extension for Cloudstream", "manifestVersion": 1, "pluginLists": ["https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/plugins.json"]}' > build-out/xr3ed.json
+            echo "Artifacts collected successfully!"
+          else
+            echo "Error: plugins.json not found in build/ directory!" && exit 1
+          fi
+
+      - name: Deploy to builds Branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build-out
+          branch: builds
+          clean: true

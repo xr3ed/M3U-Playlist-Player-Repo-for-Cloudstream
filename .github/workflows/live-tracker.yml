@@ -1,0 +1,33 @@
+name: RBTV+ Live Match Tracker (Playwright)
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # Setiap 5 menit
+  workflow_dispatch:          # Bisa dipanggil manual
+
+jobs:
+  scrape-live-matches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4        # Timeout sebelum run berikutnya
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests playwright
+          playwright install chromium --with-deps
+
+      - name: Scrape live matches dan update Gist
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: bea11b35c556c7acc73fcd2ef3014c7d
+          RBTV_SITE_URL: ${{ secrets.RBTV_SITE_URL }}
+          RBTV_FALLBACK_URL: ${{ secrets.RBTV_FALLBACK_URL }}
+        run: python .github/scripts/update_live_matches.py

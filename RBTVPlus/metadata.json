@@ -1,0 +1,8 @@
+{
+  "pluginClassName": "com.lagradost.RBTVPlusPlugin",
+  "displayName": "RBTV+",
+  "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
+  "author": "xr3ed",
+  "version": 35,
+  "tvTypes": ["Live"]
+}
