@@ -247,10 +247,16 @@ class DramaBoxProvider : MainAPI() {
             seenHomepageUrls.clear()
         }
 
+        val githubBaseUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/database/dramabox"
+
         try {
             if (page > 1) {
                 // Hanya muat Kategori Lainnya saat scroll halaman berikutnya (dengan filter duplikat)
-                val forYouRes = getWithRetry("https://nax1.cc/api/dramabox/foryou", mapOf("page" to page.toString()))
+                val forYouRes = try {
+                    getWithRetry("$githubBaseUrl/foryou_$page.json")
+                } catch (e: Exception) {
+                    getWithRetry("https://nax1.cc/api/dramabox/foryou", mapOf("page" to page.toString()))
+                }
                 val forYouList = parseSekaiDramaList(forYouRes, filterDuplicates = true)
                 if (forYouList.isNotEmpty()) {
                     homePages.add(HomePageList("Lainnya", forYouList))
@@ -263,50 +269,78 @@ class DramaBoxProvider : MainAPI() {
             }
 
             // Halaman Pertama (page == 1): Muat semua kategori
-            // 1. Pilihan VIP dari SekaiDrama
-            val vipRes = getWithRetry("https://nax1.cc/api/dramabox/vip")
+            // 1. Pilihan VIP
+            val vipRes = try {
+                getWithRetry("$githubBaseUrl/vip.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/vip")
+            }
             val vipList = parseVipDramaList(vipRes, filterDuplicates = true)
             if (vipList.isNotEmpty()) {
                 homePages.add(HomePageList("Pilihan VIP", vipList))
             }
 
-            // 2. Trending dari SekaiDrama
-            val trendingRes = getWithRetry("https://nax1.cc/api/dramabox/trending")
+            // 2. Trending
+            val trendingRes = try {
+                getWithRetry("$githubBaseUrl/trending.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/trending")
+            }
             val trendingList = parseSekaiDramaList(trendingRes, filterDuplicates = true)
             if (trendingList.isNotEmpty()) {
                 homePages.add(HomePageList("Trending", trendingList))
             }
 
-            // 3. Terbaru dari SekaiDrama
-            val latestRes = getWithRetry("https://nax1.cc/api/dramabox/latest")
+            // 3. Terbaru
+            val latestRes = try {
+                getWithRetry("$githubBaseUrl/latest.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/latest")
+            }
             val latestList = parseSekaiDramaList(latestRes, filterDuplicates = true)
             if (latestList.isNotEmpty()) {
                 homePages.add(HomePageList("Terbaru", latestList))
             }
 
-            // 4. Pencarian Populer dari SekaiDrama
-            val popSearchRes = getWithRetry("https://nax1.cc/api/dramabox/populersearch")
+            // 4. Pencarian Populer
+            val popSearchRes = try {
+                getWithRetry("$githubBaseUrl/populersearch.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/populersearch")
+            }
             val popSearchList = parseSekaiDramaList(popSearchRes, filterDuplicates = true)
             if (popSearchList.isNotEmpty()) {
                 homePages.add(HomePageList("Pencarian Populer", popSearchList))
             }
 
-            // 5. Sulih Suara Populer dari SekaiDrama
-            val voicePopRes = getWithRetry("https://nax1.cc/api/dramabox/dubindo", mapOf("classify" to "terpopuler"))
+            // 5. Sulih Suara Populer
+            val voicePopRes = try {
+                getWithRetry("$githubBaseUrl/dubindo_terpopuler.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/dubindo", mapOf("classify" to "terpopuler"))
+            }
             val voicePopList = parseSekaiDramaList(voicePopRes, filterDuplicates = true)
             if (voicePopList.isNotEmpty()) {
                 homePages.add(HomePageList("Sulih Suara Populer", voicePopList))
             }
 
-            // 6. Sulih Suara Terbaru dari SekaiDrama
-            val voiceNewRes = getWithRetry("https://nax1.cc/api/dramabox/dubindo", mapOf("classify" to "terbaru"))
+            // 6. Sulih Suara Terbaru
+            val voiceNewRes = try {
+                getWithRetry("$githubBaseUrl/dubindo_terbaru.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/dubindo", mapOf("classify" to "terbaru"))
+            }
             val voiceNewList = parseSekaiDramaList(voiceNewRes, filterDuplicates = true)
             if (voiceNewList.isNotEmpty()) {
                 homePages.add(HomePageList("Sulih Suara Terbaru", voiceNewList))
             }
 
-            // 7. Lainnya (Halaman 1) dari SekaiDrama
-            val forYouRes = getWithRetry("https://nax1.cc/api/dramabox/foryou", mapOf("page" to "1"))
+            // 7. Lainnya (Halaman 1)
+            val forYouRes = try {
+                getWithRetry("$githubBaseUrl/foryou_1.json")
+            } catch (e: Exception) {
+                getWithRetry("https://nax1.cc/api/dramabox/foryou", mapOf("page" to "1"))
+            }
             val forYouList = parseSekaiDramaList(forYouRes, filterDuplicates = true)
             if (forYouList.isNotEmpty()) {
                 homePages.add(HomePageList("Lainnya", forYouList))
