@@ -257,17 +257,53 @@ class MeloloProvider : MainAPI() {
                 val catId = request.data
                 val searchUrl = "$mainUrl/i18n_novel/search/page/v1/?$commonParams&category_id=$catId"
                 val resText = getApiData(searchUrl, forceProxy = true)
-                val root = JSONObject(resText)
-                val dataObj = root.optJSONObject("data")
-                val searchData = dataObj?.optJSONArray("search_data")
-                if (searchData != null) {
-                    for (i in 0 until searchData.length()) {
-                        val item = searchData.getJSONObject(i)
-                        val book = item.optJSONObject("search_book")
-                        val bookId = book?.optString("book_id")
-                        val name = book?.optString("book_name")
-                        val cover = book?.optString("cover_url")
-                        if (!bookId.isNullOrEmpty() && !name.isNullOrEmpty()) {
+                if (resText.isNotEmpty()) {
+                    val root = JSONObject(resText)
+                    val dataObj = root.optJSONObject("data")
+                    val searchData = dataObj?.optJSONArray("search_data")
+                    if (searchData != null) {
+                        for (i in 0 until searchData.length()) {
+                            val item = searchData.getJSONObject(i)
+                            val book = item.optJSONObject("search_book")
+                            val bookId = book?.optString("book_id")
+                            val name = book?.optString("book_name")
+                            val cover = book?.optString("cover_url")
+                            if (!bookId.isNullOrEmpty() && !name.isNullOrEmpty()) {
+                                listItems.add(
+                                    newTvSeriesSearchResponse(name, "$mainUrl/book/$bookId", TvType.TvSeries) {
+                                        this.posterUrl = cover
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                if (listItems.isEmpty()) {
+                    val staticIds = when (catId) {
+                        "2" -> listOf(
+                            "7655897426561076277", "7656644146102291461", "7656306115868625973",
+                            "7656352297785510917", "7657361523391597573", "7631383376364063749",
+                            "7623452418121927733", "7633336990653484037", "7651790081413352453",
+                            "7652544402623056901", "7657182335237884981"
+                        )
+                        "19" -> listOf(
+                            "7657435255623650357", "7636721427118312453", "7657852492641733685",
+                            "7655263162391874565", "7656363888757197829", "7656735244900371461",
+                            "7656726745898290229", "7656457800142294069"
+                        )
+                        "754" -> listOf(
+                            "7655897426561076277", "7657361523391597573", "7655263162391874565",
+                            "7645534390017084421", "7630016555664804869", "7656644146102291461",
+                            "7655739700639960117"
+                        )
+                        else -> emptyList()
+                    }
+                    staticIds.forEach { bookId ->
+                        val staticInfo = staticBookDetails[bookId]
+                        if (staticInfo != null) {
+                            val name = staticInfo.first
+                            val cover = staticInfo.second
                             listItems.add(
                                 newTvSeriesSearchResponse(name, "$mainUrl/book/$bookId", TvType.TvSeries) {
                                     this.posterUrl = cover
@@ -371,10 +407,25 @@ class MeloloProvider : MainAPI() {
                 e.printStackTrace()
             }
 
+            var finalPlot = plotText
             if (episodesList.isEmpty()) {
+                finalPlot = "⚠️ [PENTING] Gagal memuat daftar episode dari server Melolo (Geoblocked/Signature error). Silakan aktifkan VPN (ke Singapura atau US) lalu muat ulang halaman ini!\n\n$plotText"
+                
+                // Coba tampilkan Toast jika context tersedia
+                try {
+                    val ctx = MeloloProviderPlugin.currentContext
+                    if (ctx != null) {
+                        (ctx as? android.app.Activity)?.runOnUiThread {
+                            android.widget.Toast.makeText(ctx, "Gagal memuat daftar episode. Silakan aktifkan VPN!", android.widget.Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Abaikan
+                }
+
                 episodesList.add(
                     newEpisode("$mainUrl/play/$bookId/dummy_item_id") {
-                        this.name = "Episode 1"
+                        this.name = "⚠️ Aktifkan VPN untuk memuat episode"
                         this.episode = 1
                     }
                 )
@@ -382,7 +433,7 @@ class MeloloProvider : MainAPI() {
 
             return newTvSeriesLoadResponse(name, url, TvType.TvSeries, episodesList) {
                 this.posterUrl = cover
-                this.plot = plotText
+                this.plot = finalPlot
             }
         } catch (e: Exception) {
             e.printStackTrace()
