@@ -138,9 +138,8 @@ class DramaBoxProvider : MainAPI() {
             json = mapOf("distinctId" to null)
         ).text
 
-        println("DramaBoxBootstrapRaw: $resText")
         val json = JSONObject(resText)
-        val dataObj = json.optJSONObject("data") ?: throw Exception("Invalid bootstrap response: $resText")
+        val dataObj = json.optJSONObject("data") ?: throw Exception("Invalid bootstrap response")
         val userObj = dataObj.optJSONObject("user") ?: throw Exception("No user data in bootstrap")
         
         val tokenData = TokenData(
@@ -213,94 +212,85 @@ class DramaBoxProvider : MainAPI() {
         return response.text
     }
 
+    private suspend fun getWithRetry(url: String, params: Map<String, String> = emptyMap(), retries: Int = 3): String {
+        var lastException: Exception? = null
+        for (attempt in 1..retries) {
+            try {
+                return app.get(url, params = params, timeout = 30).text
+            } catch (e: Exception) {
+                lastException = e
+                if (attempt < retries) {
+                    try {
+                        Thread.sleep(1000)
+                    } catch (ie: InterruptedException) {
+                        // ignore
+                    }
+                }
+            }
+        }
+        throw lastException ?: Exception("Network request failed")
+    }
+
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
+        if (page > 1) return null // Seluruh katalog SekaiDrama sudah dimuat di halaman pertama
+
         val homePages = ArrayList<HomePageList>()
 
         try {
-            // Trending
-            val trendingRes = makeRequest("/drama-box/he001/theater", mapOf(
-                "newChannelStyle" to 1,
-                "isNeedRank" to 1,
-                "pageNo" to 1,
-                "index" to 0,
-                "channelId" to 175
-            ))
-            println("DramaBoxTrendingRaw: $trendingRes")
-            val trendingList = parseDramaList(trendingRes)
-            println("DramaBoxTrendingParsed: ${trendingList.size} items")
+            // Trending dari SekaiDrama
+            val trendingRes = getWithRetry("https://nax1.cc/api/dramabox/trending")
+            val trendingList = parseSekaiDramaList(trendingRes)
             if (trendingList.isNotEmpty()) {
                 homePages.add(HomePageList("Trending", trendingList))
             }
 
-            // Terbaru
-            val latestRes = makeRequest("/drama-box/he001/theater", mapOf(
-                "newChannelStyle" to 1,
-                "isNeedRank" to 1,
-                "pageNo" to page,
-                "index" to 1,
-                "channelId" to 48
-            ))
-            println("DramaBoxLatestRaw: $latestRes")
-            val latestList = parseDramaList(latestRes)
-            println("DramaBoxLatestParsed: ${latestList.size} items")
+            // Terbaru dari SekaiDrama
+            val latestRes = getWithRetry("https://nax1.cc/api/dramabox/latest")
+            val latestList = parseSekaiDramaList(latestRes)
             if (latestList.isNotEmpty()) {
                 homePages.add(HomePageList("Terbaru", latestList))
             }
 
-            // Rekomendasi
-            val recRes = makeRequest("/drama-box/he001/recommendBook", mapOf(
-                "isNeedRank" to 1,
-                "newChannelStyle" to 1,
-                "specialColumnId" to 0,
-                "pageNo" to 1,
-                "channelId" to 43
-            ))
-            println("DramaBoxRecRaw: $recRes")
-            val recList = parseDramaList(recRes)
-            println("DramaBoxRecParsed: ${recList.size} items")
-            if (recList.isNotEmpty()) {
-                homePages.add(HomePageList("Rekomendasi", recList))
+            // Sulih Suara dari SekaiDrama
+            val voiceList = (trendingList + latestList)
+                .distinctBy { it.url }
+                .filter { it.name.contains("Sulih Suara", ignoreCase = true) }
+            if (voiceList.isNotEmpty()) {
+                homePages.add(HomePageList("Sulih Suara", voiceList))
             }
         } catch (e: Exception) {
-            println("DramaBoxGetMainPageError: ${e.message}")
             e.printStackTrace()
         }
 
         return if (homePages.isNotEmpty()) {
-            newHomePageResponse(homePages, hasNext = true)
+            newHomePageResponse(homePages, hasNext = false)
         } else {
             null
         }
     }
 
-    private fun parseDramaList(jsonStr: String): List<SearchResponse> {
+    private fun parseSekaiDramaList(jsonStr: String): List<SearchResponse> {
         val results = ArrayList<SearchResponse>()
         try {
-            val json = JSONObject(jsonStr)
-            val dataObj = json.optJSONObject("data") ?: return results
-            
-            val columnVoList = dataObj.optJSONArray("columnVoList")
-            if (columnVoList != null) {
-                for (i in 0 until columnVoList.length()) {
-                    val col = columnVoList.optJSONObject(i) ?: continue
-                    val bookList = col.optJSONArray("bookList") ?: continue
-                    for (j in 0 until bookList.length()) {
-                        val book = bookList.optJSONObject(j) ?: continue
-                        results.add(mapBookToSearchResponse(book))
+            val jsonArray = JSONArray(jsonStr)
+            for (i in 0 until jsonArray.length()) {
+                val book = jsonArray.optJSONObject(i) ?: continue
+                val bookId = book.optString("bookId")
+                val bookName = book.optString("bookName")
+                val cover = book.optString("coverWap").ifEmpty { book.optString("cover") }
+                
+                results.add(
+                    newTvSeriesSearchResponse(
+                        name = bookName,
+                        url = "$mainUrl/play/$bookId",
+                        type = TvType.TvSeries
+                    ) {
+                        this.posterUrl = cover
                     }
-                }
-            } else {
-                val recommendListObj = dataObj.optJSONObject("recommendList")
-                val records = recommendListObj?.optJSONArray("records") ?: dataObj.optJSONArray("records")
-                if (records != null) {
-                    for (i in 0 until records.length()) {
-                        val book = records.optJSONObject(i) ?: continue
-                        results.add(mapBookToSearchResponse(book))
-                    }
-                }
+                )
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -308,42 +298,14 @@ class DramaBoxProvider : MainAPI() {
         return results.distinctBy { it.url }
     }
 
-    private fun mapBookToSearchResponse(book: JSONObject): SearchResponse {
-        val bookId = book.optString("bookId")
-        val bookName = book.optString("bookName")
-        val cover = book.optString("coverWap").ifEmpty { book.optString("cover") }
-        val introduction = book.optString("introduction")
-        
-        return newTvSeriesSearchResponse(
-            name = bookName,
-            url = "$mainUrl/play/$bookId",
-            type = TvType.TvSeries
-        ) {
-            this.posterUrl = cover
-        }
-    }
-
     override suspend fun search(query: String): List<SearchResponse> {
-        val results = ArrayList<SearchResponse>()
         try {
-            val resStr = makeRequest("/drama-box/search/search", mapOf(
-                "searchSource" to "搜索按钮",
-                "pageNo" to 1,
-                "pageSize" to 20,
-                "from" to "search_sug",
-                "keyword" to query
-            ))
-            val json = JSONObject(resStr)
-            val dataObj = json.optJSONObject("data") ?: return results
-            val searchList = dataObj.optJSONArray("searchList") ?: return results
-            for (i in 0 until searchList.length()) {
-                val book = searchList.optJSONObject(i) ?: continue
-                results.add(mapBookToSearchResponse(book))
-            }
+            val resStr = getWithRetry("https://nax1.cc/api/dramabox/search", mapOf("query" to query))
+            return parseSekaiDramaList(resStr)
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return results
+        return emptyList()
     }
     override suspend fun load(url: String): LoadResponse? {
         val bookId = when {
@@ -354,43 +316,23 @@ class DramaBoxProvider : MainAPI() {
         if (bookId.isEmpty()) return null
 
         try {
-            val detailRes = makeRequest("/drama-box/chapterv2/detail", mapOf(
-                "needRecommend" to true,
-                "from" to "book_album",
-                "bookId" to bookId
-            ))
+            // 1. Fetch metadata dari SekaiDrama API dengan retry
+            val detailRes = getWithRetry("https://nax1.cc/api/dramabox/detail", mapOf("bookId" to bookId))
             val detailJson = JSONObject(detailRes)
-            val dataObj = detailJson.optJSONObject("data") ?: return null
-            val bookObj = dataObj.optJSONObject("book") ?: return null
-            
-            val bookName = bookObj.optString("bookName")
-            val cover = bookObj.optString("coverWap").ifEmpty { bookObj.optString("cover") }
-            val introduction = bookObj.optString("introduction")
-            
-            val chaptersRes = makeRequest("/drama-box/chapterv2/batch/load", mapOf(
-                "boundaryIndex" to 0,
-                "comingPlaySectionId" to -1,
-                "index" to 1,
-                "currencyPlaySource" to "discover_new_rec_new",
-                "needEndRecommend" to 0,
-                "currencyPlaySourceName" to "",
-                "preLoad" to false,
-                "rid" to "",
-                "pullCid" to "",
-                "loadDirection" to 0,
-                "bookId" to bookId
-            ))
-            
-            val chapJson = JSONObject(chaptersRes)
-            val chapDataObj = chapJson.optJSONObject("data") ?: return null
-            val chapterList = chapDataObj.optJSONArray("chapterList") ?: JSONArray()
-            
+            val bookName = detailJson.optString("bookName").ifEmpty { "DramaBox" }
+            val cover = detailJson.optString("coverWap").ifEmpty { detailJson.optString("cover") }
+            val introduction = detailJson.optString("introduction").ifEmpty { "Saksikan drama pendek menarik di DramaBox." }
+
+            // 2. Fetch seluruh episode dari SekaiDrama API dengan retry
+            val episodesRes = getWithRetry("https://nax1.cc/api/dramabox/allepisode", mapOf("bookId" to bookId))
+            val chapterList = JSONArray(episodesRes)
+
             val episodes = ArrayList<Episode>()
             for (i in 0 until chapterList.length()) {
                 val ch = chapterList.optJSONObject(i) ?: continue
                 val chapterIndex = ch.optInt("chapterIndex")
-                val chapterName = ch.optString("chapterName")
-                val coverUrl = ch.optString("cover")
+                val chapterName = ch.optString("chapterName").ifEmpty { "EP ${chapterIndex + 1}" }
+                val coverUrl = ch.optString("chapterImg").ifEmpty { ch.optString("chapterImgMap") }
                 
                 var videoPath: String? = null
                 val cdnList = ch.optJSONArray("cdnList")
@@ -413,10 +355,15 @@ class DramaBoxProvider : MainAPI() {
                         }
                     }
                 }
+
+                var finalVideoPath = videoPath ?: ""
+                if (finalVideoPath.isNotEmpty() && (finalVideoPath.contains(".encrypt.mp4") || finalVideoPath.contains("etavirp_nuyila"))) {
+                    finalVideoPath = "https://nax1.cc/api/dramabox/decrypt-stream?url=" + java.net.URLEncoder.encode(finalVideoPath, "UTF-8")
+                }
                 
                 episodes.add(
                     newEpisode(
-                        "$bookId|$chapterIndex|${videoPath ?: ""}"
+                        "$bookId|$chapterIndex|$finalVideoPath"
                     ) {
                         this.name = chapterName
                         this.episode = chapterIndex
@@ -465,7 +412,7 @@ class DramaBoxProvider : MainAPI() {
                 ) {
                     this.quality = Qualities.P720.value
                     this.headers = mapOf(
-                        "Referer" to mainUrl,
+                        "Referer" to "https://drama.sansekai.my.id/",
                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                     )
                 }
