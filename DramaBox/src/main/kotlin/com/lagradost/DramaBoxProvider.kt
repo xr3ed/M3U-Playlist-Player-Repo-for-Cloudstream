@@ -249,7 +249,7 @@ class DramaBoxProvider : MainAPI() {
             seenHomepageUrls.clear()
         }
 
-        val githubBaseUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/database/dramabox"
+        val githubBaseUrl = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox"
         println("DramaBox: Loading page $page of homepage")
 
         try {
@@ -477,7 +477,7 @@ class DramaBoxProvider : MainAPI() {
         val cached = detailCache[bookId]
         if (cached != null) return cached
 
-        val githubBaseUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/database/dramabox"
+        val githubBaseUrl = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox"
 
         try {
             // Muat data detail dan episode dari GitHub CDN terlebih dahulu

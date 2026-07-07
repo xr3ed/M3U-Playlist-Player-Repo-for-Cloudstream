@@ -3,6 +3,6 @@
   "displayName": "DramaBox",
   "description": "Ekstensi Cloudstream untuk menonton drama pendek DramaBox",
   "author": "xr3ed",
-  "version": 4,
+  "version": 5,
   "tvTypes": ["TvSeries"]
 }
