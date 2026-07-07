@@ -477,13 +477,25 @@ class DramaBoxProvider : MainAPI() {
         val cached = detailCache[bookId]
         if (cached != null) return cached
 
+        val githubBaseUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/database/dramabox"
+
         try {
-            // Fetch metadata detail dan daftar episode secara paralel
-            val (detailRes, episodesRes) = coroutineScope {
-                val detailDeferred = async { getWithRetry("https://nax1.cc/api/dramabox/detail", mapOf("bookId" to bookId)) }
-                val episodesDeferred = async { getWithRetry("https://nax1.cc/api/dramabox/allepisode", mapOf("bookId" to bookId)) }
-                detailDeferred.await() to episodesDeferred.await()
+            // Muat data detail dan episode dari GitHub CDN terlebih dahulu
+            val (detailRes, episodesRes) = try {
+                coroutineScope {
+                    val detailDeferred = async { getWithRetry("$githubBaseUrl/detail/$bookId.json") }
+                    val episodesDeferred = async { getWithRetry("$githubBaseUrl/allepisode/$bookId.json") }
+                    detailDeferred.await() to episodesDeferred.await()
+                }
+            } catch (e: Exception) {
+                // Fallback ke server nax1.cc secara langsung jika file di GitHub belum tersedia
+                coroutineScope {
+                    val detailDeferred = async { getWithRetry("https://nax1.cc/api/dramabox/detail", mapOf("bookId" to bookId)) }
+                    val episodesDeferred = async { getWithRetry("https://nax1.cc/api/dramabox/allepisode", mapOf("bookId" to bookId)) }
+                    detailDeferred.await() to episodesDeferred.await()
+                }
             }
+
             val detailJson = JSONObject(detailRes)
             val bookName = detailJson.optString("bookName").ifEmpty { "DramaBox" }
             val cover = detailJson.optString("coverWap").ifEmpty { detailJson.optString("cover") }
@@ -497,36 +509,10 @@ class DramaBoxProvider : MainAPI() {
                 val chapterName = ch.optString("chapterName").ifEmpty { "EP ${chapterIndex + 1}" }
                 val coverUrl = ch.optString("chapterImg").ifEmpty { ch.optString("chapterImgMap") }
                 
-                var videoPath: String? = null
-                val cdnList = ch.optJSONArray("cdnList")
-                if (cdnList != null) {
-                    for (j in 0 until cdnList.length()) {
-                        val cdn = cdnList.optJSONObject(j) ?: continue
-                        if (cdn.optInt("isDefault") == 1 || videoPath == null) {
-                            val videoPathList = cdn.optJSONArray("videoPathList")
-                            if (videoPathList != null && videoPathList.length() > 0) {
-                                var preferred = videoPathList.optJSONObject(0)
-                                for (k in 0 until videoPathList.length()) {
-                                    val v = videoPathList.optJSONObject(k) ?: continue
-                                    if (v.optInt("isDefault") == 1) {
-                                        preferred = v
-                                        break
-                                    }
-                                }
-                                videoPath = preferred?.optString("videoPath")
-                            }
-                        }
-                    }
-                }
-
-                var finalVideoPath = videoPath ?: ""
-                if (finalVideoPath.isNotEmpty() && (finalVideoPath.contains(".encrypt.mp4") || finalVideoPath.contains("etavirp_nuyila"))) {
-                    finalVideoPath = "https://nax1.cc/api/dramabox/decrypt-stream?url=" + java.net.URLEncoder.encode(finalVideoPath, "UTF-8")
-                }
-                
+                // Simpan hanya bookId dan chapterIndex (tanpa videoPath untuk menghemat jatah limit dan menghindari link kedaluwarsa)
                 episodes.add(
                     newEpisode(
-                        "$bookId|$chapterIndex|$finalVideoPath"
+                        "$bookId|$chapterIndex"
                     ) {
                         this.name = chapterName
                         this.episode = chapterIndex
@@ -562,9 +548,10 @@ class DramaBoxProvider : MainAPI() {
         val parts = data.split("|")
         if (parts.size < 2) return false
         val bookId = parts[0]
-        val episodeIndex = parts[1]
+        val episodeIndex = parts[1].toIntOrNull() ?: 0
         val cachedVideoPath = parts.getOrNull(2)
 
+        // 1. Jika URL video sudah tersimpan langsung, langsung putar
         if (!cachedVideoPath.isNullOrEmpty() && (cachedVideoPath.startsWith("http://") || cachedVideoPath.startsWith("https://"))) {
             val isM3u8 = cachedVideoPath.contains(".m3u8", ignoreCase = true)
             val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
@@ -585,6 +572,76 @@ class DramaBoxProvider : MainAPI() {
             return true
         }
 
+        // 2. Jika tidak ada URL video (karena dimuat dari GitHub CDN), fetch URL tanda tangan segar dari nax1.cc secara runtime
+        try {
+            val episodesRes = getWithRetry("https://nax1.cc/api/dramabox/allepisode", mapOf("bookId" to bookId))
+            val chapterList = JSONArray(episodesRes)
+            
+            // Temukan episode yang cocok berdasarkan index
+            var targetCh: JSONObject? = null
+            for (i in 0 until chapterList.length()) {
+                val ch = chapterList.optJSONObject(i) ?: continue
+                if (ch.optInt("chapterIndex") == episodeIndex) {
+                    targetCh = ch
+                    break
+                }
+            }
+            if (targetCh == null && episodeIndex < chapterList.length()) {
+                targetCh = chapterList.optJSONObject(episodeIndex)
+            }
+
+            if (targetCh != null) {
+                var videoPath: String? = null
+                val cdnList = targetCh.optJSONArray("cdnList")
+                if (cdnList != null) {
+                    for (j in 0 until cdnList.length()) {
+                        val cdn = cdnList.optJSONObject(j) ?: continue
+                        if (cdn.optInt("isDefault") == 1 || videoPath == null) {
+                            val videoPathList = cdn.optJSONArray("videoPathList")
+                            if (videoPathList != null && videoPathList.length() > 0) {
+                                var preferred = videoPathList.optJSONObject(0)
+                                for (k in 0 until videoPathList.length()) {
+                                    val v = videoPathList.optJSONObject(k) ?: continue
+                                    if (v.optInt("isDefault") == 1) {
+                                        preferred = v
+                                        break
+                                    }
+                                }
+                                videoPath = preferred?.optString("videoPath")
+                            }
+                        }
+                    }
+                }
+
+                var finalVideoPath = videoPath ?: ""
+                if (finalVideoPath.isNotEmpty()) {
+                    if (finalVideoPath.contains(".encrypt.mp4") || finalVideoPath.contains("etavirp_nuyila")) {
+                        finalVideoPath = "https://nax1.cc/api/dramabox/decrypt-stream?url=" + java.net.URLEncoder.encode(finalVideoPath, "UTF-8")
+                    }
+                    val isM3u8 = finalVideoPath.contains(".m3u8", ignoreCase = true)
+                    val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                    callback.invoke(
+                        newExtractorLink(
+                            name = "$name Resmi",
+                            source = name,
+                            url = finalVideoPath,
+                            type = linkType
+                        ) {
+                            this.quality = Qualities.P720.value
+                            this.headers = mapOf(
+                                "Referer" to "https://drama.sansekai.my.id/",
+                                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                            )
+                        }
+                    )
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        // 3. Fallback terakhir ke regexd.com (jika API gagal)
         try {
             val url = "https://regexd.com/base.php"
             val headers = mapOf(
@@ -598,7 +655,7 @@ class DramaBoxProvider : MainAPI() {
                     "ajax" to "1",
                     "bookId" to bookId,
                     "lang" to "in",
-                    "episode" to episodeIndex
+                    "episode" to episodeIndex.toString()
                 ),
                 headers = headers,
                 timeout = 20
