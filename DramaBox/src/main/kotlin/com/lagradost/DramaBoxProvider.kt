@@ -553,11 +553,16 @@ class DramaBoxProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        println("DramaBox: loadLinks called with data = $data")
         val parts = data.split("|")
-        if (parts.size < 2) return false
+        if (parts.size < 2) {
+            println("DramaBox: parts size too small: ${parts.size}")
+            return false
+        }
         val bookId = parts[0]
         val episodeIndex = parts[1].toIntOrNull() ?: 0
         val cachedVideoPath = parts.getOrNull(2)
+        println("DramaBox: bookId=$bookId, episodeIndex=$episodeIndex, cachedVideoPath=$cachedVideoPath")
 
         // 1. Jika URL video sudah tersimpan langsung dan belum kedaluwarsa, langsung putar
         var useCached = false
@@ -565,14 +570,17 @@ class DramaBoxProvider : MainAPI() {
             val expiresStr = cachedVideoPath.substringAfter("Expires=", "").substringBefore("&")
             val expires = expiresStr.toLongOrNull()
             val currentTime = System.currentTimeMillis() / 1000
+            println("DramaBox: cached link expires=$expires, currentTime=$currentTime")
             if (expires == null || currentTime < expires) {
                 useCached = true
             }
         }
+        println("DramaBox: useCached=$useCached")
 
         if (useCached && !cachedVideoPath.isNullOrEmpty()) {
             val isM3u8 = cachedVideoPath.contains(".m3u8", ignoreCase = true)
             val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+            println("DramaBox: playing from cached URL: $cachedVideoPath")
             callback.invoke(
                 newExtractorLink(
                     name = "$name Resmi",
@@ -592,6 +600,7 @@ class DramaBoxProvider : MainAPI() {
 
         // 2. Jika tidak ada URL video (karena dimuat dari GitHub CDN), fetch URL tanda tangan segar dari nax1.cc secara runtime
         try {
+            println("DramaBox: calling nax1.cc for fresh signed URL, bookId=$bookId, episodeIndex=$episodeIndex")
             val episodesRes = getWithRetry("https://nax1.cc/api/dramabox/allepisode", mapOf("bookId" to bookId))
             val chapterList = JSONArray(episodesRes)
             
@@ -632,9 +641,11 @@ class DramaBoxProvider : MainAPI() {
                 }
 
                 var finalVideoPath = videoPath ?: ""
+                println("DramaBox: parsed videoPath from nax1.cc = $finalVideoPath")
                 if (finalVideoPath.isNotEmpty()) {
                     if (finalVideoPath.contains(".encrypt.mp4") || finalVideoPath.contains("etavirp_nuyila")) {
                         finalVideoPath = "https://nax1.cc/api/dramabox/decrypt-stream?url=" + java.net.URLEncoder.encode(finalVideoPath, "UTF-8")
+                        println("DramaBox: encrypted video, set decrypt URL = $finalVideoPath")
                     }
                     val isM3u8 = finalVideoPath.contains(".m3u8", ignoreCase = true)
                     val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
@@ -652,10 +663,16 @@ class DramaBoxProvider : MainAPI() {
                             )
                         }
                     )
+                    println("DramaBox: successfully extracted link from nax1.cc")
                     return true
+                } else {
+                    println("DramaBox: finalVideoPath is empty!")
                 }
+            } else {
+                println("DramaBox: targetCh is null!")
             }
         } catch (e: Exception) {
+            println("DramaBox: Exception in loadLinks step 2: ${e.message}")
             e.printStackTrace()
         }
 
@@ -667,9 +684,10 @@ class DramaBoxProvider : MainAPI() {
                 "X-Requested-With" to "XMLHttpRequest",
                 "Referer" to "$url?bookId=$bookId"
             )
-            val resText = app.get(
-                url,
-                params = mapOf(
+            println("DramaBox: starting fallback to regexd.com...")
+            val resText = app.post(
+                url = "https://regexd.com/base.php",
+                data = mapOf(
                     "ajax" to "1",
                     "bookId" to bookId,
                     "lang" to "in",
@@ -680,7 +698,10 @@ class DramaBoxProvider : MainAPI() {
             ).text
 
             val json = JSONObject(resText)
-            val chapterObj = json.optJSONObject("chapter") ?: return false
+            val chapterObj = json.optJSONObject("chapter") ?: run {
+                println("DramaBox: fallback failed, no chapter object found!")
+                return false
+            }
             
             val m3u8Url = chapterObj.optString("m3u8Url").ifEmpty { chapterObj.optString("m3u8") }
             if (m3u8Url.isNotEmpty() && (m3u8Url.startsWith("http://") || m3u8Url.startsWith("https://"))) {
@@ -698,6 +719,7 @@ class DramaBoxProvider : MainAPI() {
                         )
                     }
                 )
+                println("DramaBox: playing from fallback HLS = $m3u8Url")
                 return true
             }
 
@@ -717,12 +739,15 @@ class DramaBoxProvider : MainAPI() {
                         )
                     }
                 )
+                println("DramaBox: playing from fallback MP4 = $mp4Url")
                 return true
             }
         } catch (e: Exception) {
+            println("DramaBox: Exception in fallback: ${e.message}")
             e.printStackTrace()
         }
 
+        println("DramaBox: loadLinks fully failed, returning false")
         return false
     }
 }
