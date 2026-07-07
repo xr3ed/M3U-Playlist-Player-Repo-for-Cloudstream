@@ -246,7 +246,7 @@ class DramaBoxProvider : MainAPI() {
                     homePages.add(HomePageList("Lainnya", forYouList))
                 }
                 return if (homePages.isNotEmpty()) {
-                    newHomePageResponse(homePages, hasNext = forYouList.isNotEmpty())
+                    newHomePageResponse(homePages, hasNext = page < 11)
                 } else {
                     null
                 }
