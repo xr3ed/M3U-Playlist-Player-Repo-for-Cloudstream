@@ -828,7 +828,7 @@ class DramaBoxProvider : MainAPI() {
         val cachedVideoPath = parts.getOrNull(2)
         println("DramaBox: parsed bookId=$bookId, episodeIndex=$episodeIndex, cachedVideoPath=$cachedVideoPath")
 
-        // 1. Jika URL video sudah tersimpan langsung dan belum kedaluwarsa, langsung putar
+        // 1. Cek masa kedaluwarsa tautan cache
         var useCached = false
         if (!cachedVideoPath.isNullOrEmpty() && (cachedVideoPath.startsWith("http://") || cachedVideoPath.startsWith("https://"))) {
             val expiresStr = cachedVideoPath.substringAfter("Expires=", "").substringBefore("&")
@@ -841,30 +841,9 @@ class DramaBoxProvider : MainAPI() {
         }
         println("DramaBox: useCached=$useCached")
 
-        if (useCached && !cachedVideoPath.isNullOrEmpty()) {
-            val isM3u8 = cachedVideoPath.contains(".m3u8", ignoreCase = true)
-            val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-            println("DramaBox: playing from cached URL: $cachedVideoPath")
-            callback.invoke(
-                newExtractorLink(
-                    name = "$name Resmi",
-                    source = name,
-                    url = cachedVideoPath,
-                    type = linkType
-                ) {
-                    this.quality = Qualities.P720.value
-                    this.headers = mapOf(
-                        "Referer" to "$mainUrl/",
-                        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-                    )
-                }
-            )
-            return true
-        }
-
-        // 2. Ambil URL video segar dari API dinamis mainUrl
+        // 2. Ambil URL video segar dan daftar subtitle dari API
         try {
-            println("DramaBox: calling mainUrl for fresh signed URL, bookId=$bookId, episodeIndex=$episodeIndex")
+            println("DramaBox: calling mainUrl for fresh data & subtitles, bookId=$bookId, episodeIndex=$episodeIndex")
             val episodesRes = requestWithCf("$mainUrl/api/dramabox/allepisode", mapOf("bookId" to bookId))
             val chapterList = JSONArray(episodesRes)
             
@@ -882,6 +861,67 @@ class DramaBoxProvider : MainAPI() {
             }
 
             if (targetCh != null) {
+                // Ekstrak subtitle jika tersedia
+                val subList = targetCh.optJSONArray("subLanguageVoList")
+                if (subList != null) {
+                    for (j in 0 until subList.length()) {
+                        val subObj = subList.optJSONObject(j) ?: continue
+                        val langCode = subObj.optString("captionLanguage")
+                        val subUrl = subObj.optString("url")
+                        if (subUrl.isNotEmpty() && langCode != "none") {
+                            val cleanSubUrl = if (subUrl.startsWith("https://")) {
+                                "https://" + subUrl.substring(8).replace("//", "/")
+                            } else if (subUrl.startsWith("http://")) {
+                                "http://" + subUrl.substring(7).replace("//", "/")
+                            } else {
+                                subUrl
+                            }
+                            val langName = when (langCode) {
+                                "in" -> "Indonesian"
+                                "en" -> "English"
+                                "de" -> "German"
+                                "pt" -> "Portuguese"
+                                "ko" -> "Korean"
+                                "it" -> "Italian"
+                                "fr" -> "French"
+                                "es" -> "Spanish"
+                                "zh" -> "Chinese"
+                                "ar" -> "Arabic"
+                                "vi" -> "Vietnamese"
+                                "th" -> "Thai"
+                                "ja" -> "Japanese"
+                                "pl" -> "Polish"
+                                else -> langCode.uppercase()
+                            }
+                            subtitleCallback.invoke(
+                                newSubtitleFile(langName, cleanSubUrl)
+                            )
+                        }
+                    }
+                }
+
+                // Putar video
+                if (useCached && !cachedVideoPath.isNullOrEmpty()) {
+                    val isM3u8 = cachedVideoPath.contains(".m3u8", ignoreCase = true)
+                    val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                    println("DramaBox: playing from cached URL: $cachedVideoPath")
+                    callback.invoke(
+                        newExtractorLink(
+                            name = "$name Resmi",
+                            source = name,
+                            url = cachedVideoPath,
+                            type = linkType
+                        ) {
+                            this.quality = Qualities.P720.value
+                            this.headers = mapOf(
+                                "Referer" to "$mainUrl/",
+                                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                            )
+                        }
+                    )
+                    return true
+                }
+
                 var videoPath: String? = null
                 val cdnList = targetCh.optJSONArray("cdnList")
                 if (cdnList != null) {
