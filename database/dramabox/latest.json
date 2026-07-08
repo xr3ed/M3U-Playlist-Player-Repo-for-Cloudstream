@@ -1,5 +1,66 @@
 [
   {
+    "bookId": "42000019623",
+    "bookName": "Koki Legendaris",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019623/42000019623.jpg?t=1782983726059",
+    "chapterCount": 57,
+    "introduction": "Helen, juru masak istana legendaris yang dijuluki Raja sebagai Dewi Kuliner, meninggal tepat sebelum menerima penghargaan tertinggi. Terlahir kembali 100 tahun kemudian, dia menjadi asisten dapur di restoran ternama dan berjuang menyelamatkan restoran itu dari pengkhianatan serta kehancuran.",
+    "tags": [
+      "Serangan Balik",
+      "Terlahir Kembali",
+      "Wanita Karier",
+      "Wanita Kuat",
+      "Pembalikan Identitas",
+      "Bangkitnya Orang Biasa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1405,
+        "tagName": "Terlahir Kembali",
+        "tagEnName": "Rebirth"
+      },
+      {
+        "tagId": 1375,
+        "tagName": "Wanita Karier",
+        "tagEnName": "Career Woman"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1398,
+        "tagName": "Bangkitnya Orang Biasa",
+        "tagEnName": "Underdog Story"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Theo Gunawan,  Helen Candra",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "28K",
+      "sort": 1
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783045344000,
+    "shelfTime": "2026-07-03 10:22:24",
+    "inLibrary": false
+  },
+  {
     "bookId": "42000019700",
     "bookName": "Raja Mecha Terakhir",
     "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019700/42000019700.jpg?t=1783043760736",
@@ -52,8 +113,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "23.5K",
-      "sort": 1
+      "hotCode": "25.7K",
+      "sort": 2
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783047144000,
@@ -113,8 +174,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "17.4K",
-      "sort": 2
+      "hotCode": "19.5K",
+      "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783216800000,
@@ -174,73 +235,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "11.3K",
-      "sort": 3
+      "hotCode": "13.2K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783303200000,
     "shelfTime": "2026-07-06 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019623",
-    "bookName": "Koki Legendaris",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019623/42000019623.jpg?t=1782983726059",
-    "chapterCount": 57,
-    "introduction": "Helen, juru masak istana legendaris yang dijuluki Raja sebagai Dewi Kuliner, meninggal tepat sebelum menerima penghargaan tertinggi. Terlahir kembali 100 tahun kemudian, dia menjadi asisten dapur di restoran ternama dan berjuang menyelamatkan restoran itu dari pengkhianatan serta kehancuran.",
-    "tags": [
-      "Serangan Balik",
-      "Terlahir Kembali",
-      "Wanita Karier",
-      "Wanita Kuat",
-      "Pembalikan Identitas",
-      "Bangkitnya Orang Biasa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1405,
-        "tagName": "Terlahir Kembali",
-        "tagEnName": "Rebirth"
-      },
-      {
-        "tagId": 1375,
-        "tagName": "Wanita Karier",
-        "tagEnName": "Career Woman"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1398,
-        "tagName": "Bangkitnya Orang Biasa",
-        "tagEnName": "Underdog Story"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Theo Gunawan,  Helen Candra",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "9.6K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783045344000,
-    "shelfTime": "2026-07-03 10:22:24",
     "inLibrary": false
   },
   {
@@ -296,7 +296,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.5K",
+      "hotCode": "6.4K",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
@@ -534,7 +534,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "3.8K",
+      "hotCode": "3.4K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000006238",
+  "bookName": "Gila, Hebat Banget si Putri (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006238/42000006238.jpg?t=1770772840468",
+  "chapterCount": 64,
+  "introduction": "Kiana Lauren salah didiagnosis dengan keterbelakangan intelektual saat berusia enam tahun, digantikan oleh Keira Lauren. Lima belas tahun kemudian, dia ditemukan kembali oleh Ratna, nyonya besar Keluarga Lauren. Kembalinya Kiana mengguncang keluarga itu. Dengan identitas samaran, dia membungkam semua pihak. Penguasa Keluarga Raymond, Vincent Raymond, mantan kekasihnya, menunjukkan sisi rapuhnya. Kebenaran tentang masa kecil Kiana pun terbongkar.",
+  "tags": [
+    "Balas Dendam",
+    "Pembalikan Identitas",
+    "Kembali Bangkit",
+    "Intrik Keluarga",
+    "Kekuatan Khusus",
+    "Wanita Mandiri"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 10000,
+      "tagName": "Kembali Bangkit",
+      "tagEnName": "Comeback Story"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1371,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1452,
+      "tagName": "Wanita Mandiri",
+      "tagEnName": "Independent Woman"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1771578000000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-02-20 17:00:00",
+  "inLibrary": false
+}
