@@ -560,10 +560,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             MainPageData(dynamicMainPageTitle, "worldcup")
         )
 
-    private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/main/world_cup_cover.png"
+    private val defaultLogo = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/world_cup_cover.png"
 
     companion object {
-        const val OFFLINE_POSTER_URL = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/assets/channel_offline.png"
+        const val OFFLINE_POSTER_URL = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/assets/channel_offline.png"
         private const val CACHE_TTL_MS = 5 * 60 * 1000L // 5 menit
         val channelStatusCache = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
         @Volatile var cacheTimestamp = 0L

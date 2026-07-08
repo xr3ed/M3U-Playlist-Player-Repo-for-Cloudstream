@@ -366,8 +366,8 @@ class M3UPlaylistPlayer(
                                   "📢 PEMBERITAHUAN: Playlist & aplikasi ini 100% GRATIS! " +
                                   "Jika Anda membeli playlist atau aplikasi ini, Anda telah ditipu. ──"
                     
-                    val liveIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png"
-                    val scheduleIconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/schedule_icon.png"
+                    val liveIconUrl = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png"
+                    val scheduleIconUrl = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/schedule_icon.png"
                     
                     if (currentProgram != null) {
                         val startStr = if (currentProgram.startUnixMs > 0) timeSdf.format(currentProgram.startUnixMs) else "--:--"
