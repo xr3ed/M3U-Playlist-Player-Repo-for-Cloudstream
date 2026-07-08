@@ -24,11 +24,6 @@ import com.lagradost.api.Log
 /**
  * Full-screen BottomSheet that loads [targetUrl] in a real WebView so Cloudflare's
  * JS challenge / Turnstile CAPTCHA can run in a genuine browser environment.
- *
- * Detection strategy:
- *  - A background Handler polls for `cf_clearance` in the CookieManager every 2 s.
- *  - This avoids false positives from page-title checks during CF's multi-redirect flow.
- *  - Once found, the cookies are persisted and the dialog closes automatically.
  */
 class CloudflareWebViewDialog(
     private val targetUrl: String,
@@ -50,7 +45,9 @@ class CloudflareWebViewDialog(
             "checking your browser",
             "attention required",
             "ddos-guard",
-            "one more step"
+            "one more step",
+            "tunggu sebentar",
+            "tunggu sebentar..."
         )
 
         fun isChallengeTitle(title: String): Boolean =
@@ -107,26 +104,15 @@ class CloudflareWebViewDialog(
     private fun scheduleNextPoll() {
         pollElapsedMs += POLL_INTERVAL_MS
         updateStatus("⏳ Waiting for cookies… (${pollElapsedMs / 1000}s)")
-
-        // If Turnstile hasn't solved in 2s, slide up the bottom sheet so user can interact
-        if (pollElapsedMs >= POLL_INTERVAL_MS) {
-            (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.apply {
-                skipCollapsed = true
-                peekHeight = android.view.WindowManager.LayoutParams.MATCH_PARENT
-                state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
-
         handler.postDelayed(cookiePollRunnable, POLL_INTERVAL_MS)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.apply {
-            // Start completely hidden (background mode)
-            state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
-            skipCollapsed = false
-            peekHeight = 0
+            // Show fully expanded immediately so WebView is visible
+            state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
         }
         return dialog
     }
@@ -190,7 +176,7 @@ class CloudflareWebViewDialog(
             isIndeterminate = true
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.WRAP_CONTENT
             ).also { it.bottomMargin = 12 }
         }
         root.addView(progressBar)
