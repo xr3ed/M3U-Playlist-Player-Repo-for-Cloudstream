@@ -363,7 +363,17 @@ class ShortMaxProvider : MainAPI() {
     ): Boolean {
         val parts = data.split("|")
         if (parts.size < 2) return false
-        val shortPlayId = parts[0]
+        var shortPlayId = parts[0]
+        if (shortPlayId.startsWith("http://") || shortPlayId.startsWith("https://")) {
+            val parsedId = when {
+                shortPlayId.contains("/play/") -> shortPlayId.substringAfter("/play/").substringBefore("?").substringBefore("/")
+                shortPlayId.contains("/detail/") -> shortPlayId.substringAfter("/detail/").substringBefore("?").substringBefore("/")
+                else -> shortPlayId.substringAfterLast("/").substringBefore("?")
+            }
+            if (parsedId.isNotEmpty()) {
+                shortPlayId = parsedId
+            }
+        }
         val episodeNum = parts[1]
 
         val rawEpisode = try {
@@ -385,6 +395,15 @@ class ShortMaxProvider : MainAPI() {
         val episodeObj = json.optJSONObject("episode") ?: return false
         val videoUrlObj = episodeObj.optJSONObject("videoUrl") ?: return false
 
+        // Siapkan header pemutar video (Cookie + User-Agent)
+        val currentUA = getCfUserAgent(CommonActivity.activity) ?: USER_AGENT
+        val currentCookies = getCfCookies(CommonActivity.activity)
+        val headersMap = mutableMapOf(
+            "Referer" to "$mainUrl/",
+            "User-Agent" to currentUA
+        )
+        currentCookies?.let { headersMap["Cookie"] = it }
+
         var foundLink = false
         for (key in listOf("video_1080", "video_720", "video_480")) {
             val videoPath = videoUrlObj.optString(key)
@@ -403,10 +422,7 @@ class ShortMaxProvider : MainAPI() {
                         type = ExtractorLinkType.M3U8
                     ) {
                         this.quality = quality
-                        this.headers = mapOf(
-                            "Referer" to "$mainUrl/",
-                            "User-Agent" to (getCfUserAgent(CommonActivity.activity) ?: USER_AGENT)
-                        )
+                        this.headers = headersMap
                     }
                 )
                 foundLink = true
