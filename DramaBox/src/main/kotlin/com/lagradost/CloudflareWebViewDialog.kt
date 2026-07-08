@@ -71,7 +71,7 @@ class CloudflareWebViewDialog(
                     style = document.createElement('style');
                     style.id = 'cf-clean-style';
                     style.innerHTML = ' \
-                        html, body { background-color: #FFFFFF !important; color: transparent !important; margin: 0 !important; padding: 0 !important; } \
+                        html, body { background-color: #1C1C1E !important; color: transparent !important; margin: 0 !important; padding: 0 !important; } \
                         h1, h2, h3, p, div, span, a { color: transparent !important; text-shadow: none !important; } \
                         #challenge-stage { \
                             display: flex !important; \
@@ -216,14 +216,32 @@ class CloudflareWebViewDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        
         val root = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(24), dp(16), dp(24))
-            setBackgroundColor(Color.WHITE)
+            orientation = if (isLandscape) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+            setPadding(dp(16), dp(16), dp(16), dp(16))
+            setBackgroundColor(Color.parseColor("#1C1C1E"))
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
+        }
+
+        val controlParent = if (isLandscape) {
+            LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1f
+                ).apply {
+                    rightMargin = dp(16)
+                }
+            }
+        } else {
+            root
         }
 
         val avatar = TextView(requireContext()).apply {
@@ -232,43 +250,52 @@ class CloudflareWebViewDialog(
             gravity = Gravity.CENTER
             val circle = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(Color.parseColor("#FCECD2"))
+                setColor(Color.parseColor("#2D2D30"))
             }
             background = circle
-            layoutParams = LinearLayout.LayoutParams(dp(64), dp(64)).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(56), dp(56)).apply {
                 gravity = Gravity.CENTER_HORIZONTAL
-                bottomMargin = dp(12)
+                bottomMargin = dp(8)
             }
         }
-        root.addView(avatar)
+        controlParent.addView(avatar)
 
-        root.addView(TextView(requireContext()).apply {
+        val titleTv = TextView(requireContext()).apply {
             text = "Cloudflare Bypass"
             textSize = 18f
-            setTextColor(Color.parseColor("#2D3436"))
+            setTextColor(Color.parseColor("#E5E5EA"))
             typeface = android.graphics.Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setPadding(0, 0, 0, dp(4))
-        })
+            setPadding(0, 0, 0, dp(8))
+        }
+        controlParent.addView(titleTv)
 
         val wvFrame = FrameLayout(requireContext()).apply {
             val border = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = dp(12).toFloat()
-                setColor(Color.WHITE)
-                setStroke(dp(2), Color.parseColor("#CCCCCC"))
+                setColor(Color.parseColor("#1C1C1E"))
+                setStroke(dp(2), Color.parseColor("#3A3A3C"))
             }
             background = border
-            setPadding(dp(2), dp(8), dp(2), dp(8))
+            setPadding(dp(2), dp(2), dp(2), dp(2))
             
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                0,
-                1f
-            ).also {
-                it.bottomMargin = dp(16)
-                it.leftMargin = dp(4)
-                it.rightMargin = dp(4)
+            layoutParams = if (isLandscape) {
+                LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1.4f
+                )
+            } else {
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    0,
+                    1f
+                ).apply {
+                    bottomMargin = dp(12)
+                    leftMargin = dp(4)
+                    rightMargin = dp(4)
+                }
             }
         }
         webView = buildWebView()
@@ -285,6 +312,7 @@ class CloudflareWebViewDialog(
             textSize = 48f
             gravity = Gravity.CENTER
             visibility = View.GONE
+            setBackgroundColor(Color.parseColor("#1C1C1E"))
         }
         wvFrame.addView(
             successOverlay,
@@ -293,8 +321,6 @@ class CloudflareWebViewDialog(
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
         )
-        
-        root.addView(wvFrame)
 
         statusText = TextView(requireContext()).apply {
             text = "⏳ Status: Menunggu verifikasi..."
@@ -314,27 +340,12 @@ class CloudflareWebViewDialog(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
-                bottomMargin = dp(12)
+                bottomMargin = dp(8)
                 leftMargin = dp(4)
                 rightMargin = dp(4)
             }
         }
-        root.addView(statusText)
-
-        root.addView(TextView(requireContext()).apply {
-            text = "\"Proses ini menembus proteksi Cloudflare secara otomatis\""
-            textSize = 10.5f
-            setTextColor(Color.parseColor("#D63031"))
-            setTypeface(typeface, android.graphics.Typeface.ITALIC)
-            gravity = Gravity.CENTER
-            
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = dp(16)
-            }
-        })
+        controlParent.addView(statusText)
 
         progressBar = ProgressBar(
             requireContext(), null, android.R.attr.progressBarStyleHorizontal
@@ -344,7 +355,7 @@ class CloudflareWebViewDialog(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 dp(3)
             ).also {
-                it.bottomMargin = dp(16)
+                it.bottomMargin = dp(12)
                 it.leftMargin = dp(4)
                 it.rightMargin = dp(4)
             }
@@ -353,17 +364,19 @@ class CloudflareWebViewDialog(
                 indeterminateTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#0984E3"))
             }
         }
-        root.addView(progressBar)
+        controlParent.addView(progressBar)
 
         val normalBtnBg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = dp(12).toFloat()
-            setColor(Color.parseColor("#6C5CE7"))
+            setColor(Color.parseColor("#2D2D30"))
+            setStroke(dp(1), Color.parseColor("#48484A"))
         }
         val focusedBtnBg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = dp(12).toFloat()
-            setColor(Color.parseColor("#F39C12"))
+            setColor(Color.parseColor("#3A3A3C"))
+            setStroke(dp(2), Color.parseColor("#0984E3"))
         }
 
         btnCancel = TextView(requireContext()).apply {
@@ -375,7 +388,7 @@ class CloudflareWebViewDialog(
             background = normalBtnBg
             isFocusable = true
             isFocusableInTouchMode = true
-            setPadding(dp(16), dp(12), dp(16), dp(12))
+            setPadding(dp(16), dp(10), dp(16), dp(10))
             
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -397,7 +410,14 @@ class CloudflareWebViewDialog(
                 dismissAllowingStateLoss()
             }
         }
-        root.addView(btnCancel)
+        controlParent.addView(btnCancel)
+
+        if (isLandscape) {
+            root.addView(controlParent)
+            root.addView(wvFrame)
+        } else {
+            root.addView(wvFrame)
+        }
 
         return root
     }
@@ -424,7 +444,7 @@ class CloudflareWebViewDialog(
     private fun buildWebView(): WebView {
         val wv = WebView(requireContext())
 
-        wv.setBackgroundColor(Color.WHITE)
+        wv.setBackgroundColor(Color.parseColor("#1C1C1E"))
         wv.isFocusable = true
         wv.isFocusableInTouchMode = true
 
