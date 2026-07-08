@@ -364,7 +364,7 @@ private fun removeRepoAndPlugins(context: Context) {
             extensionsDir.walkTopDown().forEach { file ->
                 if (file.isFile && file.extension == "cs3") {
                     val name = file.name.lowercase()
-                    if (name.contains("m3uplaylistplayer") || name.contains("xr3edevent") || name.contains("rbtvplus")) {
+                    if (name.contains("m3uplaylistplayer") || name.contains("xr3edevent") || name.contains("rbtvplus") || name.contains("dramabox") || name.contains("shortmax")) {
                         file.delete()
                     }
                 }
