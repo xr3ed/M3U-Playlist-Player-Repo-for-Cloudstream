@@ -16,23 +16,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.math.min
 import android.content.Context
-
-import android.app.Activity
-import android.app.Dialog
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.webkit.CookieManager
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.view.ViewGroup
-import android.view.Window
-import android.view.Gravity
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.util.TypedValue
-import java.util.Timer
-import java.util.TimerTask
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -47,6 +31,12 @@ class ShortMaxProvider : MainAPI() {
             get() = context?.getKey("SHORTMAX_CF_COOKIES")
             set(value) {
                 context?.setKey("SHORTMAX_CF_COOKIES", value)
+            }
+
+        var cfUserAgent: String?
+            get() = context?.getKey("SHORTMAX_CF_USER_AGENT")
+            set(value) {
+                context?.setKey("SHORTMAX_CF_USER_AGENT", value)
             }
 
         fun decryptCryptoJS(encryptedText: String): String {
@@ -104,174 +94,32 @@ class ShortMaxProvider : MainAPI() {
         }
     }
 
-    private fun dp(context: Context, dpVal: Int): Int {
-        val density = context.resources.displayMetrics.density
-        return (dpVal * density).toInt()
-    }
-
-    private fun getResumedActivity(): Activity? {
-        try {
-            val activityThreadClass = Class.forName("android.app.ActivityThread")
-            val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
-            val activityThread = currentActivityThreadMethod.invoke(null) ?: return null
-            val mActivitiesField = activityThreadClass.getDeclaredField("mActivities")
-            mActivitiesField.isAccessible = true
-            val activities = mActivitiesField.get(activityThread) as? Map<*, *> ?: return null
-            for (activityRecord in activities.values) {
-                if (activityRecord == null) continue
-                val pausedField = activityRecord.javaClass.getDeclaredField("paused")
-                pausedField.isAccessible = true
-                val paused = pausedField.get(activityRecord) as? Boolean ?: true
-                if (!paused) {
-                    val activityField = activityRecord.javaClass.getDeclaredField("activity")
-                    activityField.isAccessible = true
-                    val activity = activityField.get(activityRecord) as? Activity
-                    if (activity != null && !activity.isFinishing) {
-                        return activity
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
-    private suspend fun solveCloudflare(activity: Activity, url: String): Boolean = suspendCancellableCoroutine { continuation ->
+    private suspend fun solveCloudflare(activity: AppCompatActivity, url: String): Boolean = suspendCancellableCoroutine { continuation ->
         activity.runOnUiThread {
-            val dialog = Dialog(activity)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.window?.let { window ->
-                window.setBackgroundDrawable(ColorDrawable(Color.parseColor("#121216")))
-                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            }
-            dialog.setCancelable(true)
-            dialog.setOnCancelListener {
-                if (continuation.isActive) continuation.resume(false)
-            }
-
-            val rootLayout = LinearLayout(activity).apply {
-                orientation = LinearLayout.VERTICAL
-                setBackgroundColor(Color.parseColor("#121216"))
-                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                val pad = dp(activity, 16)
-                setPadding(pad, pad, pad, pad)
-            }
-
-            // Title layout
-            val titleLayout = LinearLayout(activity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    bottomMargin = dp(activity, 4)
+            var resumed = false
+            fun safeResume(success: Boolean) {
+                if (!resumed) {
+                    resumed = true
+                    continuation.resume(success)
                 }
             }
-
-            val shieldEmoji = TextView(activity).apply {
-                text = "🛡️ "
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
-            }
-            val titleTv = TextView(activity).apply {
-                text = "Cloudflare Bypass"
-                setTextColor(Color.WHITE)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
-                typeface = android.graphics.Typeface.DEFAULT_BOLD
-            }
-            titleLayout.addView(shieldEmoji)
-            titleLayout.addView(titleTv)
-            rootLayout.addView(titleLayout)
-
-            // Status Layout
-            val statusTv = TextView(activity).apply {
-                text = "⏳ Waiting for cookies... (0s)"
-                setTextColor(Color.parseColor("#DFE6E9"))
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    bottomMargin = dp(activity, 4)
+            val dialog = CloudflareWebViewDialog(
+                targetUrl = url,
+                onFinished = { success -> safeResume(success) }
+            )
+            continuation.invokeOnCancellation {
+                activity.runOnUiThread {
+                    runCatching { dialog.dismissAllowingStateLoss() }
                 }
             }
-            rootLayout.addView(statusTv)
-
-            // Subtitle
-            val subtitleTv = TextView(activity).apply {
-                text = "Solve any CAPTCHA shown below. The dialog will close automatically once done."
-                setTextColor(Color.parseColor("#B2BEC3"))
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    bottomMargin = dp(activity, 12)
-                }
-            }
-            rootLayout.addView(subtitleTv)
-
-            // Progress Bar
-            val progressBar = ProgressBar(activity, null, android.R.attr.progressBarStyleHorizontal).apply {
-                isIndeterminate = true
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(activity, 3)).apply {
-                    bottomMargin = dp(activity, 12)
-                }
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    progressTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#0984E3"))
-                    indeterminateTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#0984E3"))
-                }
-            }
-            rootLayout.addView(progressBar)
-
-            // WebView
-            val webView = WebView(activity).apply {
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.userAgentString = USER_AGENT
-                setBackgroundColor(Color.parseColor("#121216"))
-                
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView?, urlStr: String?) {
-                        super.onPageFinished(view, urlStr)
-                        val title = view?.title ?: ""
-                        if (urlStr != null && !urlStr.contains("challenges.cloudflare.com") && !title.contains("Just a moment", ignoreCase = true)) {
-                            try {
-                                val cookies = CookieManager.getInstance().getCookie(urlStr)
-                                if (cookies != null) {
-                                    cfCookies = cookies
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                            dialog.dismiss()
-                            if (continuation.isActive) continuation.resume(true)
-                        }
-                    }
-                }
-            }
-            rootLayout.addView(webView)
-
-            dialog.setContentView(rootLayout)
-            dialog.show()
-
-            // Timer update
-            var elapsedSeconds = 0
-            val timer = Timer()
-            timer.scheduleAtFixedRate(object : TimerTask() {
-                override fun run() {
-                    activity.runOnUiThread {
-                        if (dialog.isShowing) {
-                            elapsedSeconds++
-                            statusTv.text = "⏳ Waiting for cookies... (${elapsedSeconds}s)"
-                        } else {
-                            timer.cancel()
-                        }
-                    }
-                }
-            }, 1000, 1000)
-
-            webView.loadUrl(url)
+            dialog.show(activity.supportFragmentManager, "cf_bypass_shortmax")
         }
     }
 
     private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
         val headersMap = mutableMapOf(
             "Referer" to "$mainUrl/",
-            "User-Agent" to USER_AGENT
+            "User-Agent" to (cfUserAgent ?: USER_AGENT)
         )
         cfCookies?.let { headersMap["Cookie"] = it }
 
@@ -285,12 +133,12 @@ class ShortMaxProvider : MainAPI() {
             checkResponse(response)
             return response
         } catch (e: Exception) {
-            val activity = getResumedActivity() ?: throw e
+            val activity = (CommonActivity.activity as? AppCompatActivity) ?: throw e
             val solved = solveCloudflare(activity, mainUrl)
             if (solved) {
                 val newHeadersMap = mutableMapOf(
                     "Referer" to "$mainUrl/",
-                    "User-Agent" to USER_AGENT
+                    "User-Agent" to (cfUserAgent ?: USER_AGENT)
                 )
                 cfCookies?.let { newHeadersMap["Cookie"] = it }
                 val retryResponse = if (params != null) {
@@ -465,7 +313,7 @@ class ShortMaxProvider : MainAPI() {
                         this.quality = quality
                         this.headers = mapOf(
                             "Referer" to "$mainUrl/",
-                            "User-Agent" to USER_AGENT
+                            "User-Agent" to (cfUserAgent ?: USER_AGENT)
                         )
                     }
                 )
