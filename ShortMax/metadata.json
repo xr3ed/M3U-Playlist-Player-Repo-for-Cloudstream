@@ -1,8 +1,8 @@
 {
   "pluginClassName": "com.lagradost.ShortMaxPlugin",
-  "displayName": "ShortMax",
+  "displayName": "#Dracin ShortMax",
   "description": "Ekstensi Cloudstream untuk menonton drama pendek ShortMax",
   "author": "xr3ed",
-  "version": 2,
+  "version": 3,
   "tvTypes": ["TvSeries"]
 }

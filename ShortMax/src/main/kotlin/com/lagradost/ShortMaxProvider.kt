@@ -80,7 +80,7 @@ class ShortMaxProvider : MainAPI() {
     }
 
     override var mainUrl = com.lagradost.ShortMax.BuildConfig.SHORTMAX_URL
-    override var name = "ShortMax"
+    override var name = "#Dracin ShortMax"
     override val supportedTypes = setOf(TvType.TvSeries)
     override var lang = "id"
     override val hasMainPage = true

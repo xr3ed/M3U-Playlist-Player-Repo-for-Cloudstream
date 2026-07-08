@@ -37,7 +37,7 @@ class DramaBoxProvider : MainAPI() {
         private val seenHomepageUrls = java.util.concurrent.ConcurrentSkipListSet<String>()
 
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
-        private const val PASSWORD = "Sansekai-SekaiDrama"
+        private val PASSWORD = com.lagradost.DramaBox.BuildConfig.SHORTMAX_KEY
         private var cfDeferred: CompletableDeferred<Boolean>? = null
 
         var cfCookies: String?
@@ -89,7 +89,7 @@ class DramaBoxProvider : MainAPI() {
         }
     }
 
-    override var mainUrl = "https://drama.sansekai.my.id"
+    override var mainUrl = com.lagradost.DramaBox.BuildConfig.SHORTMAX_URL
 
     private fun showToast(msg: String) {
         val act = CommonActivity.activity
@@ -186,7 +186,7 @@ class DramaBoxProvider : MainAPI() {
         }
     }
 
-    override var name = "DramaBox"
+    override var name = "#Dracin DramaBox"
     override val supportedTypes = setOf(TvType.TvSeries)
     override var lang = "id"
     override val hasMainPage = true
@@ -399,57 +399,6 @@ class DramaBoxProvider : MainAPI() {
         throw lastException ?: Exception("Network request failed")
     }
 
-    private fun getLocalCache(key: String, durationMs: Long): String? {
-        val ctx = context ?: return null
-        val cacheTime = ctx.getKey<Long>("dramabox_cache_time_$key") ?: return null
-        if (System.currentTimeMillis() - cacheTime > durationMs) {
-            return null
-        }
-        return ctx.getKey<String>("dramabox_cache_$key")
-    }
-
-    private fun setLocalCache(key: String, data: String) {
-        val ctx = context ?: return
-        ctx.setKey("dramabox_cache_$key", data)
-        ctx.setKey("dramabox_cache_time_$key", System.currentTimeMillis())
-    }
-
-    private suspend fun fetchWithFallback(
-        relativePath: String,
-        fallbackUrl: String,
-        fallbackParams: Map<String, String> = emptyMap()
-    ): String {
-        val jsdelivrUrl = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/$relativePath"
-
-        try {
-            println("DramaBox: Fetching from jsDelivr -> $jsdelivrUrl")
-            return getWithRetry(jsdelivrUrl)
-        } catch (e: Exception) {
-            println("DramaBox: jsDelivr failed, fallback to direct API -> $fallbackUrl")
-            return getWithRetry(fallbackUrl, fallbackParams)
-        }
-    }
-
-
-    private suspend fun fetchPageData(
-        cacheKey: String,
-        relativePath: String,
-        fallbackUrl: String,
-        fallbackParams: Map<String, String> = emptyMap(),
-        durationMs: Long = 30 * 60 * 1000L // 30 menit
-    ): String {
-        val cached = getLocalCache(cacheKey, durationMs)
-        if (cached != null) {
-            println("DramaBox: Using local cache for $cacheKey")
-            return cached
-        }
-        val data = fetchWithFallback(relativePath, fallbackUrl, fallbackParams)
-        if (data.isNotEmpty()) {
-            setLocalCache(cacheKey, data)
-        }
-        return data
-    }
-
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
@@ -465,12 +414,7 @@ class DramaBoxProvider : MainAPI() {
         try {
             if (page > 1) {
                 // Hanya muat Kategori Lainnya saat scroll halaman berikutnya (dengan filter duplikat)
-                val forYouRes = fetchPageData(
-                    "foryou_$page",
-                    "foryou_$page.json",
-                    "https://nax1.cc/api/dramabox/foryou",
-                    mapOf("page" to page.toString())
-                )
+                val forYouRes = requestWithCf("$mainUrl/api/dramabox/foryou", mapOf("page" to page.toString()))
                 val forYouList = parseSekaiDramaList(forYouRes, filterDuplicates = true)
                 if (forYouList.isNotEmpty()) {
                     homePages.add(HomePageList("Lainnya", forYouList))
@@ -484,64 +428,49 @@ class DramaBoxProvider : MainAPI() {
 
             // Halaman Pertama (page == 1): Muat semua kategori
             // 1. Pilihan VIP
-            val vipRes = fetchPageData("vip", "vip.json", "https://nax1.cc/api/dramabox/vip")
+            val vipRes = requestWithCf("$mainUrl/api/dramabox/vip")
             val vipList = parseVipDramaList(vipRes, filterDuplicates = false)
             if (vipList.isNotEmpty()) {
                 homePages.add(HomePageList("Pilihan VIP", vipList))
             }
 
             // 2. Trending
-            val trendingRes = fetchPageData("trending", "trending.json", "https://nax1.cc/api/dramabox/trending")
+            val trendingRes = requestWithCf("$mainUrl/api/dramabox/trending")
             val trendingList = parseSekaiDramaList(trendingRes, filterDuplicates = false)
             if (trendingList.isNotEmpty()) {
                 homePages.add(HomePageList("Trending", trendingList))
             }
 
             // 3. Terbaru
-            val latestRes = fetchPageData("latest", "latest.json", "https://nax1.cc/api/dramabox/latest")
+            val latestRes = requestWithCf("$mainUrl/api/dramabox/latest")
             val latestList = parseSekaiDramaList(latestRes, filterDuplicates = false)
             if (latestList.isNotEmpty()) {
                 homePages.add(HomePageList("Terbaru", latestList))
             }
 
             // 4. Pencarian Populer
-            val popSearchRes = fetchPageData("populersearch", "populersearch.json", "https://nax1.cc/api/dramabox/populersearch")
+            val popSearchRes = requestWithCf("$mainUrl/api/dramabox/populersearch")
             val popSearchList = parseSekaiDramaList(popSearchRes, filterDuplicates = false)
             if (popSearchList.isNotEmpty()) {
                 homePages.add(HomePageList("Pencarian Populer", popSearchList))
             }
 
             // 5. Sulih Suara Populer
-            val voicePopRes = fetchPageData(
-                "dubindo_terpopuler",
-                "dubindo_terpopuler.json",
-                "https://nax1.cc/api/dramabox/dubindo",
-                mapOf("classify" to "terpopuler")
-            )
+            val voicePopRes = requestWithCf("$mainUrl/api/dramabox/dubindo", mapOf("classify" to "terpopuler"))
             val voicePopList = parseSekaiDramaList(voicePopRes, filterDuplicates = false)
             if (voicePopList.isNotEmpty()) {
                 homePages.add(HomePageList("Sulih Suara Populer", voicePopList))
             }
 
             // 6. Sulih Suara Terbaru
-            val voiceNewRes = fetchPageData(
-                "dubindo_terbaru",
-                "dubindo_terbaru.json",
-                "https://nax1.cc/api/dramabox/dubindo",
-                mapOf("classify" to "terbaru")
-            )
+            val voiceNewRes = requestWithCf("$mainUrl/api/dramabox/dubindo", mapOf("classify" to "terbaru"))
             val voiceNewList = parseSekaiDramaList(voiceNewRes, filterDuplicates = false)
             if (voiceNewList.isNotEmpty()) {
                 homePages.add(HomePageList("Sulih Suara Terbaru", voiceNewList))
             }
 
             // 7. Lainnya (Halaman 1)
-            val forYouRes = fetchPageData(
-                "foryou_1",
-                "foryou_1.json",
-                "https://nax1.cc/api/dramabox/foryou",
-                mapOf("page" to "1")
-            )
+            val forYouRes = requestWithCf("$mainUrl/api/dramabox/foryou", mapOf("page" to "1"))
             val forYouList = parseSekaiDramaList(forYouRes, filterDuplicates = true)
             if (forYouList.isNotEmpty()) {
                 homePages.add(HomePageList("Lainnya", forYouList))
@@ -636,7 +565,6 @@ class DramaBoxProvider : MainAPI() {
         val cached = searchCache[query]
         if (cached != null) return cached
 
-        // 1. Coba pencarian langsung dari API web
         try {
             val rawRes = requestWithCf("$mainUrl/api/dramabox/search", mapOf("query" to query))
             val json = JSONObject(rawRes)
@@ -651,20 +579,9 @@ class DramaBoxProvider : MainAPI() {
         } catch (e: Exception) {
             println("DramaBox: Direct search failed: ${e.message}")
         }
-
-        // 2. Fallback pencarian ke nax1.cc
-        try {
-            val resStr = getWithRetry("https://nax1.cc/api/dramabox/search", mapOf("query" to query))
-            val results = parseSekaiDramaList(resStr)
-            if (results.isNotEmpty()) {
-                searchCache[query] = results
-            }
-            return results
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
         return emptyList()
     }
+
     override suspend fun load(url: String): LoadResponse? {
         val bookId = when {
             url.contains("/play/") -> url.substringAfter("/play/").substringBefore("?").substringBefore("/")
@@ -676,45 +593,15 @@ class DramaBoxProvider : MainAPI() {
         val cached = detailCache[bookId]
         if (cached != null) return cached
 
-        val cacheKeyDetail = "detail_$bookId"
-        val cacheKeyEpisodes = "episodes_$bookId"
-        val cacheDuration = 2 * 60 * 60 * 1000L // 2 jam
-
-        val detailRes: String
-        val episodesRes: String
-
-        val cachedDetail = getLocalCache(cacheKeyDetail, cacheDuration)
-        val cachedEpisodes = getLocalCache(cacheKeyEpisodes, cacheDuration)
-
         try {
-            if (cachedDetail != null && cachedEpisodes != null) {
-                println("DramaBox: Using local disk cache for detail/episodes of $bookId")
-                detailRes = cachedDetail
-                episodesRes = cachedEpisodes
-            } else {
-                val (dRes, eRes) = coroutineScope {
-                    val detailDeferred = async {
-                        fetchWithFallback(
-                            "detail/$bookId.json",
-                            "https://nax1.cc/api/dramabox/detail",
-                            mapOf("bookId" to bookId)
-                        )
-                    }
-                    val episodesDeferred = async {
-                        fetchWithFallback(
-                            "allepisode/$bookId.json",
-                            "https://nax1.cc/api/dramabox/allepisode",
-                            mapOf("bookId" to bookId)
-                        )
-                    }
-                    detailDeferred.await() to episodesDeferred.await()
+            val (detailRes, episodesRes) = coroutineScope {
+                val detailDeferred = async {
+                    requestWithCf("$mainUrl/api/dramabox/detail", mapOf("bookId" to bookId))
                 }
-                detailRes = dRes
-                episodesRes = eRes
-                if (detailRes.isNotEmpty() && episodesRes.isNotEmpty()) {
-                    setLocalCache(cacheKeyDetail, detailRes)
-                    setLocalCache(cacheKeyEpisodes, episodesRes)
+                val episodesDeferred = async {
+                    requestWithCf("$mainUrl/api/dramabox/allepisode", mapOf("bookId" to bookId))
                 }
+                detailDeferred.await() to episodesDeferred.await()
             }
 
             val detailJson = JSONObject(detailRes)
@@ -735,7 +622,6 @@ class DramaBoxProvider : MainAPI() {
                     firstEpisodeCover = coverUrl
                 }
 
-                // Simpan hanya bookId dan chapterIndex (tanpa videoPath untuk menghemat jatah limit dan menghindari link kedaluwarsa)
                 episodes.add(
                     newEpisode(
                         "$bookId|$chapterIndex"
@@ -821,7 +707,7 @@ class DramaBoxProvider : MainAPI() {
                 ) {
                     this.quality = Qualities.P720.value
                     this.headers = mapOf(
-                        "Referer" to "https://drama.sansekai.my.id/",
+                        "Referer" to "$mainUrl/",
                         "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                     )
                 }
@@ -829,10 +715,10 @@ class DramaBoxProvider : MainAPI() {
             return true
         }
 
-        // 2. Jika tidak ada URL video (karena dimuat dari GitHub CDN), fetch URL tanda tangan segar dari nax1.cc secara runtime
+        // 2. Ambil URL video segar dari API dinamis mainUrl
         try {
-            println("DramaBox: calling nax1.cc for fresh signed URL, bookId=$bookId, episodeIndex=$episodeIndex")
-            val episodesRes = getWithRetry("https://nax1.cc/api/dramabox/allepisode", mapOf("bookId" to bookId))
+            println("DramaBox: calling mainUrl for fresh signed URL, bookId=$bookId, episodeIndex=$episodeIndex")
+            val episodesRes = requestWithCf("$mainUrl/api/dramabox/allepisode", mapOf("bookId" to bookId))
             val chapterList = JSONArray(episodesRes)
             
             // Temukan episode yang cocok berdasarkan index
@@ -872,10 +758,10 @@ class DramaBoxProvider : MainAPI() {
                 }
 
                 var finalVideoPath = videoPath ?: ""
-                println("DramaBox: parsed videoPath from nax1.cc = $finalVideoPath")
+                println("DramaBox: parsed videoPath = $finalVideoPath")
                 if (finalVideoPath.isNotEmpty()) {
                     if (finalVideoPath.contains(".encrypt.mp4") || finalVideoPath.contains("etavirp_nuyila")) {
-                        finalVideoPath = "https://nax1.cc/api/dramabox/decrypt-stream?url=" + java.net.URLEncoder.encode(finalVideoPath, "UTF-8")
+                        finalVideoPath = "$mainUrl/api/dramabox/decrypt-stream?url=" + java.net.URLEncoder.encode(finalVideoPath, "UTF-8")
                         println("DramaBox: encrypted video, set decrypt URL = $finalVideoPath")
                     }
                     val isM3u8 = finalVideoPath.contains(".m3u8", ignoreCase = true)
@@ -889,12 +775,12 @@ class DramaBoxProvider : MainAPI() {
                         ) {
                             this.quality = Qualities.P720.value
                             this.headers = mapOf(
-                                "Referer" to "https://drama.sansekai.my.id/",
+                                "Referer" to "$mainUrl/",
                                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
                             )
                         }
                     )
-                    println("DramaBox: successfully extracted link from nax1.cc")
+                    println("DramaBox: successfully extracted link")
                     return true
                 } else {
                     println("DramaBox: finalVideoPath is empty!")
@@ -906,79 +792,6 @@ class DramaBoxProvider : MainAPI() {
             println("DramaBox: Exception in loadLinks step 2: ${e.message}")
             e.printStackTrace()
         }
-
-        // 3. Fallback terakhir ke regexd.com (jika API gagal)
-        try {
-            val url = "https://regexd.com/base.php"
-            val headers = mapOf(
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                "X-Requested-With" to "XMLHttpRequest",
-                "Referer" to "$url?bookId=$bookId"
-            )
-            println("DramaBox: starting fallback to regexd.com...")
-            val resText = app.post(
-                url = "https://regexd.com/base.php",
-                data = mapOf(
-                    "ajax" to "1",
-                    "bookId" to bookId,
-                    "lang" to "in",
-                    "episode" to episodeIndex.toString()
-                ),
-                headers = headers,
-                timeout = 20
-            ).text
-
-            val json = JSONObject(resText)
-            val chapterObj = json.optJSONObject("chapter") ?: run {
-                println("DramaBox: fallback failed, no chapter object found!")
-                return false
-            }
-            
-            val m3u8Url = chapterObj.optString("m3u8Url").ifEmpty { chapterObj.optString("m3u8") }
-            if (m3u8Url.isNotEmpty() && (m3u8Url.startsWith("http://") || m3u8Url.startsWith("https://"))) {
-                callback.invoke(
-                    newExtractorLink(
-                        name = "$name Bypass HLS",
-                        source = name,
-                        url = m3u8Url,
-                        type = ExtractorLinkType.M3U8
-                    ) {
-                        this.quality = Qualities.P720.value
-                        this.headers = mapOf(
-                            "Referer" to mainUrl,
-                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-                        )
-                    }
-                )
-                println("DramaBox: playing from fallback HLS = $m3u8Url")
-                return true
-            }
-
-            val mp4Url = chapterObj.optString("mp4")
-            if (mp4Url.isNotEmpty() && (mp4Url.startsWith("http://") || mp4Url.startsWith("https://"))) {
-                callback.invoke(
-                    newExtractorLink(
-                        name = "$name Bypass MP4",
-                        source = name,
-                        url = mp4Url,
-                        type = ExtractorLinkType.VIDEO
-                    ) {
-                        this.quality = Qualities.P720.value
-                        this.headers = mapOf(
-                            "Referer" to mainUrl,
-                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-                        )
-                    }
-                )
-                println("DramaBox: playing from fallback MP4 = $mp4Url")
-                return true
-            }
-        } catch (e: Exception) {
-            println("DramaBox: Exception in fallback: ${e.message}")
-            e.printStackTrace()
-        }
-
-        println("DramaBox: loadLinks fully failed, returning false")
         return false
     }
 }

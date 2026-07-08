@@ -1,8 +1,8 @@
 {
   "pluginClassName": "com.lagradost.DramaBoxPlugin",
-  "displayName": "DramaBox",
+  "displayName": "#Dracin DramaBox",
   "description": "Ekstensi Cloudstream untuk menonton drama pendek DramaBox",
   "author": "xr3ed",
-  "version": 12,
+  "version": 13,
   "tvTypes": ["TvSeries"]
 }
