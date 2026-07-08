@@ -34,6 +34,9 @@ class DramaBoxProvider : MainAPI() {
         private val detailCache = java.util.concurrent.ConcurrentHashMap<String, LoadResponse>()
         private val searchCache = java.util.concurrent.ConcurrentHashMap<String, List<SearchResponse>>()
         private val seenHomepageUrls = java.util.concurrent.ConcurrentSkipListSet<String>()
+        private var mainPageCache: HomePageResponse? = null
+        private var mainPageCacheTime: Long = 0
+        private var mainPageDeferred: CompletableDeferred<HomePageResponse?>? = null
 
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
         private val PASSWORD = com.lagradost.DramaBox.BuildConfig.SHORTMAX_KEY
@@ -406,30 +409,64 @@ class DramaBoxProvider : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
-        val homePages = ArrayList<HomePageList>()
-
-        if (page == 1) {
-            seenHomepageUrls.clear()
-        }
-
-        println("DramaBox: Loading page $page of homepage")
-
-        try {
-            if (page > 1) {
-                // Hanya muat Kategori Lainnya saat scroll halaman berikutnya (dengan filter duplikat)
+        if (page > 1) {
+            val homePages = ArrayList<HomePageList>()
+            try {
                 val forYouRes = requestWithCf("$mainUrl/api/dramabox/foryou", mapOf("page" to page.toString()))
                 val forYouList = parseSekaiDramaList(forYouRes, filterDuplicates = true)
                 if (forYouList.isNotEmpty()) {
                     homePages.add(HomePageList("Lainnya", forYouList))
                 }
-                return if (homePages.isNotEmpty()) {
-                    newHomePageResponse(homePages, hasNext = page < 11)
-                } else {
-                    null
-                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return if (homePages.isNotEmpty()) {
+                newHomePageResponse(homePages, hasNext = page < 11)
+            } else {
+                null
+            }
+        }
+
+        // Halaman Pertama (page == 1): Dedup & Cache
+        val deferred = synchronized(Companion) {
+            // Jika cache valid (kurang dari 15 detik), langsung kembalikan cache
+            if (mainPageCache != null && System.currentTimeMillis() - mainPageCacheTime < 15000) {
+                return mainPageCache
             }
 
-            // Halaman Pertama (page == 1): Muat semua kategori
+            // Jika ada request halaman utama yang sedang berjalan, tunggu request tersebut
+            mainPageDeferred?.let { return@synchronized it }
+
+            val newDeferred = CompletableDeferred<HomePageResponse?>()
+            mainPageDeferred = newDeferred
+
+            // Jalankan request di IO Thread Pool secara asynchronous
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).async {
+                try {
+                    val response = fetchMainPageFromNetwork()
+                    if (response != null) {
+                        mainPageCache = response
+                        mainPageCacheTime = System.currentTimeMillis()
+                    }
+                    newDeferred.complete(response)
+                } catch (e: Exception) {
+                    newDeferred.complete(null)
+                } finally {
+                    synchronized(Companion) {
+                        mainPageDeferred = null
+                    }
+                }
+            }
+            newDeferred
+        }
+        return deferred.await()
+    }
+
+    private suspend fun fetchMainPageFromNetwork(): HomePageResponse? {
+        val homePages = ArrayList<HomePageList>()
+        seenHomepageUrls.clear()
+        println("DramaBox: Fetching page 1 from network (deduplicated)")
+        try {
             // 1. Pilihan VIP
             val vipRes = requestWithCf("$mainUrl/api/dramabox/vip")
             val vipList = parseVipDramaList(vipRes, filterDuplicates = false)
@@ -481,7 +518,6 @@ class DramaBoxProvider : MainAPI() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return if (homePages.isNotEmpty()) {
             newHomePageResponse(homePages, hasNext = true)
         } else {
