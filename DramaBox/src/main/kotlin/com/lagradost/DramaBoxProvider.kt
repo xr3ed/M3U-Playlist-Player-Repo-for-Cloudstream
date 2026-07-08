@@ -89,7 +89,7 @@ class DramaBoxProvider : MainAPI() {
         }
     }
 
-    override var mainUrl = "https://nax1.cc"
+    override var mainUrl = com.lagradost.DramaBox.BuildConfig.SHORTMAX_URL
 
     private fun showToast(msg: String) {
         val act = CommonActivity.activity
