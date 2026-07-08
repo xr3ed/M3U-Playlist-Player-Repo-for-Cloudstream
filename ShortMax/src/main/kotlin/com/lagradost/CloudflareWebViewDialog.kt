@@ -118,6 +118,7 @@ class CloudflareWebViewDialog(
 
     private val handler = Handler(Looper.getMainLooper())
     private var cookiesSaved = false
+    private var challengePageLoaded = false
     private var pollElapsedMs = 0L
 
     private val targetHost: String by lazy {
@@ -472,6 +473,25 @@ class CloudflareWebViewDialog(
                 view: WebView?, request: WebResourceRequest?
             ): Boolean = false
 
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                if (cookiesSaved) return
+
+                // If challenge page has finished loading once, any new page load starts (redirect/submit)
+                // is treated as success. We hide WebView immediately to prevent the original site from flashing.
+                if (challengePageLoaded) {
+                    webView?.visibility = View.GONE
+                    successOverlay?.visibility = View.VISIBLE
+                    updateStatus("✅ Verifikasi berhasil!")
+                    
+                    CookieManager.getInstance().flush()
+                    val cookieStr = CookieManager.getInstance().getCookie(targetHost) ?: ""
+                    if (cookieStr.contains("cf_clearance")) {
+                        saveCookiesAndDismiss(cookieStr)
+                    }
+                }
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 if (cookiesSaved) return
@@ -482,6 +502,7 @@ class CloudflareWebViewDialog(
                 Log.d(TAG, "onPageFinished  title='$title'  url=$url")
 
                 if (isChallengeTitle(title)) {
+                    challengePageLoaded = true
                     updateStatus("⏳ Silakan centang kotak di atas")
                 } else {
                     if (isErrorTitle(title)) {
