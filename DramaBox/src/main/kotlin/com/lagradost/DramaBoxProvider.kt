@@ -238,9 +238,9 @@ class DramaBoxProvider : MainAPI() {
         currentCookies?.let { headersMap["Cookie"] = it }
 
         val response = if (params != null) {
-            app.get(url, params = params, headers = headersMap).text
+            app.get(url, params = params, headers = headersMap, timeout = 30).text
         } else {
-            app.get(url, headers = headersMap).text
+            app.get(url, headers = headersMap, timeout = 30).text
         }
         System.out.println("DramaBox response: ${response.take(300)}")
 
@@ -261,9 +261,9 @@ class DramaBoxProvider : MainAPI() {
                 )
                 newCookies?.let { newHeadersMap["Cookie"] = it }
                 val retryResponse = if (params != null) {
-                    app.get(url, params = params, headers = newHeadersMap).text
+                    app.get(url, params = params, headers = newHeadersMap, timeout = 30).text
                 } else {
-                    app.get(url, headers = newHeadersMap).text
+                    app.get(url, headers = newHeadersMap, timeout = 30).text
                 }
                 checkResponse(retryResponse)
                 return retryResponse
@@ -755,21 +755,14 @@ class DramaBoxProvider : MainAPI() {
 
         try {
             if (detailRes == null || episodesRes == null) {
-                val (dRes, eRes) = coroutineScope {
-                    val detailDeferred = async {
-                        fetchWithFallback(
-                            "detail/$bookId.json",
-                            "$mainUrl/api/dramabox/detail/$bookId"
-                        )
-                    }
-                    val episodesDeferred = async {
-                        fetchWithFallback(
-                            "allepisode/$bookId.json",
-                            "$mainUrl/api/dramabox/allepisode/$bookId"
-                        )
-                    }
-                    detailDeferred.await() to episodesDeferred.await()
-                }
+                val dRes = fetchWithFallback(
+                    "detail/$bookId.json",
+                    "$mainUrl/api/dramabox/detail/$bookId"
+                )
+                val eRes = fetchWithFallback(
+                    "allepisode/$bookId.json",
+                    "$mainUrl/api/dramabox/allepisode/$bookId"
+                )
                 detailRes = dRes
                 episodesRes = eRes
                 
