@@ -15,10 +15,26 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.math.min
 import android.content.Context
 
+import android.app.Activity
+import android.app.Dialog
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.webkit.CookieManager
+import android.widget.LinearLayout
+import android.view.ViewGroup
+import android.view.Window
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+
 class ShortMaxProvider : MainAPI() {
     companion object {
         var context: Context? = null
         private val PASSWORD = com.lagradost.ShortMax.BuildConfig.SHORTMAX_KEY
+
+        private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+        private var cfCookies: String? = null
 
         fun decryptCryptoJS(encryptedText: String): String {
             val ciphertextBytes = Base64.decode(encryptedText, Base64.DEFAULT)
@@ -75,6 +91,124 @@ class ShortMaxProvider : MainAPI() {
         }
     }
 
+    private fun getResumedActivity(): Activity? {
+        try {
+            val activityThreadClass = Class.forName("android.app.ActivityThread")
+            val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
+            val activityThread = currentActivityThreadMethod.invoke(null) ?: return null
+            val mActivitiesField = activityThreadClass.getDeclaredField("mActivities")
+            mActivitiesField.isAccessible = true
+            val activities = mActivitiesField.get(activityThread) as? Map<*, *> ?: return null
+            for (activityRecord in activities.values) {
+                if (activityRecord == null) continue
+                val pausedField = activityRecord.javaClass.getDeclaredField("paused")
+                pausedField.isAccessible = true
+                val paused = pausedField.get(activityRecord) as? Boolean ?: true
+                if (!paused) {
+                    val activityField = activityRecord.javaClass.getDeclaredField("activity")
+                    activityField.isAccessible = true
+                    val activity = activityField.get(activityRecord) as? Activity
+                    if (activity != null && !activity.isFinishing) {
+                        return activity
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private suspend fun solveCloudflare(activity: Activity, url: String): Boolean = suspendCancellableCoroutine { continuation ->
+        activity.runOnUiThread {
+            val dialog = Dialog(activity)
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.window?.let { window ->
+                window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            }
+            dialog.setCancelable(true)
+            dialog.setOnCancelListener {
+                if (continuation.isActive) continuation.resume(false)
+            }
+
+            val container = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                setBackgroundColor(Color.WHITE)
+                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            }
+
+            val webView = WebView(activity).apply {
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+                settings.userAgentString = USER_AGENT
+                
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, urlStr: String?) {
+                        super.onPageFinished(view, urlStr)
+                        val title = view?.title ?: ""
+                        if (urlStr != null && !urlStr.contains("challenges.cloudflare.com") && !title.contains("Just a moment", ignoreCase = true)) {
+                            try {
+                                val cookies = CookieManager.getInstance().getCookie(urlStr)
+                                if (cookies != null) {
+                                    cfCookies = cookies
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            dialog.dismiss()
+                            if (continuation.isActive) continuation.resume(true)
+                        }
+                    }
+                }
+            }
+
+            container.addView(webView)
+            dialog.setContentView(container)
+            dialog.show()
+            webView.loadUrl(url)
+        }
+    }
+
+    private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
+        val headersMap = mutableMapOf(
+            "Referer" to "$mainUrl/",
+            "User-Agent" to USER_AGENT
+        )
+        cfCookies?.let { headersMap["Cookie"] = it }
+
+        val response = if (params != null) {
+            app.get(url, params = params, headers = headersMap).text
+        } else {
+            app.get(url, headers = headersMap).text
+        }
+
+        try {
+            checkResponse(response)
+            return response
+        } catch (e: Exception) {
+            val activity = getResumedActivity() ?: throw e
+            val solved = solveCloudflare(activity, mainUrl)
+            if (solved) {
+                val newHeadersMap = mutableMapOf(
+                    "Referer" to "$mainUrl/",
+                    "User-Agent" to USER_AGENT
+                )
+                cfCookies?.let { newHeadersMap["Cookie"] = it }
+                val retryResponse = if (params != null) {
+                    app.get(url, params = params, headers = newHeadersMap).text
+                } else {
+                    app.get(url, headers = newHeadersMap).text
+                }
+                checkResponse(retryResponse)
+                return retryResponse
+            } else {
+                throw e
+            }
+        }
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         val path = if (request.data == "foryou") {
             "/api/shortmax/foryou?page=$page"
@@ -82,8 +216,7 @@ class ShortMaxProvider : MainAPI() {
             "/api/shortmax/rekomendasi"
         }
 
-        val rawHome = app.get("$mainUrl$path", headers = mapOf("Referer" to "$mainUrl/")).text
-        checkResponse(rawHome)
+        val rawHome = requestWithCf("$mainUrl$path")
         val decrypted = decryptCryptoJS(JSONObject(rawHome).getString("data"))
 
         val results = if (request.data == "foryou") {
@@ -132,8 +265,7 @@ class ShortMaxProvider : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val rawSearch = app.get("$mainUrl/api/shortmax/search", params = mapOf("query" to query), headers = mapOf("Referer" to "$mainUrl/")).text
-        checkResponse(rawSearch)
+        val rawSearch = requestWithCf("$mainUrl/api/shortmax/search", mapOf("query" to query))
         val decrypted = decryptCryptoJS(JSONObject(rawSearch).getString("data"))
         val json = JSONObject(decrypted)
         val results = json.optJSONArray("results") ?: return emptyList()
@@ -166,8 +298,7 @@ class ShortMaxProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         val shortPlayId = url
-        val rawDetail = app.get("$mainUrl/api/shortmax/detail?shortPlayId=$shortPlayId", headers = mapOf("Referer" to "$mainUrl/")).text
-        checkResponse(rawDetail)
+        val rawDetail = requestWithCf("$mainUrl/api/shortmax/detail?shortPlayId=$shortPlayId")
         val decryptedDetail = decryptCryptoJS(JSONObject(rawDetail).getString("data"))
         val json = JSONObject(decryptedDetail)
 
@@ -210,8 +341,7 @@ class ShortMaxProvider : MainAPI() {
         val shortPlayId = parts[0]
         val episodeNum = parts[1]
 
-        val rawEpisode = app.get("$mainUrl/api/shortmax/episode?shortPlayId=$shortPlayId&episodeNumber=$episodeNum", headers = mapOf("Referer" to "$mainUrl/")).text
-        checkResponse(rawEpisode)
+        val rawEpisode = requestWithCf("$mainUrl/api/shortmax/episode?shortPlayId=$shortPlayId&episodeNumber=$episodeNum")
         val decryptedEpisode = decryptCryptoJS(JSONObject(rawEpisode).getString("data"))
         val json = JSONObject(decryptedEpisode)
 
@@ -238,7 +368,7 @@ class ShortMaxProvider : MainAPI() {
                         this.quality = quality
                         this.headers = mapOf(
                             "Referer" to "$mainUrl/",
-                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            "User-Agent" to USER_AGENT
                         )
                     }
                 )
