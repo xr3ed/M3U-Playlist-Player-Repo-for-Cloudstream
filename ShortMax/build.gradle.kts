@@ -1,4 +1,4 @@
-version = 8
+version = 9
 
 android {
     namespace = "com.lagradost.ShortMax"

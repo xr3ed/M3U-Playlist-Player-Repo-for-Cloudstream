@@ -71,7 +71,7 @@ class CloudflareWebViewDialog(
                     style = document.createElement('style');
                     style.id = 'cf-clean-style';
                     style.innerHTML = ' \
-                        html, body { background-color: #1C1C1E !important; color: transparent !important; margin: 0 !important; padding: 0 !important; } \
+                        html, body { background-color: #1A1A2E !important; color: transparent !important; margin: 0 !important; padding: 0 !important; } \
                         h1, h2, h3, p, div, span, a { color: transparent !important; text-shadow: none !important; } \
                         #challenge-stage { \
                             display: flex !important; \
@@ -233,8 +233,7 @@ class CloudflareWebViewDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val displayMetrics = resources.displayMetrics
-        val isLandscape = displayMetrics.widthPixels > displayMetrics.heightPixels
+        val isLandscape = resources.configuration.screenWidthDp > resources.configuration.screenHeightDp
         
         val root = LinearLayout(requireContext()).apply {
             orientation = if (isLandscape) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
@@ -243,7 +242,7 @@ class CloudflareWebViewDialog(
             val roundedCardBg = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = dp(24).toFloat()
-                setColor(Color.parseColor("#1C1C1E"))
+                setColor(Color.parseColor("#1A1A2E"))
                 setStroke(dp(1), Color.parseColor("#2C2C2E"))
             }
             background = roundedCardBg
@@ -300,26 +299,27 @@ class CloudflareWebViewDialog(
             val border = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = dp(12).toFloat()
-                setColor(Color.parseColor("#1C1C1E"))
-                setStroke(dp(2), Color.parseColor("#3A3A3C"))
+                setColor(Color.parseColor("#1A1A2E"))
+                setStroke(dp(1), Color.parseColor("#3A3A3C"))
             }
             background = border
             setPadding(dp(2), dp(2), dp(2), dp(2))
             
             layoutParams = if (isLandscape) {
                 LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    1.4f
-                )
+                    dp(300),
+                    dp(80)
+                ).apply {
+                    gravity = Gravity.CENTER_VERTICAL
+                }
             } else {
                 LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    dp(180)
+                    dp(300),
+                    dp(80)
                 ).apply {
+                    gravity = Gravity.CENTER_HORIZONTAL
                     bottomMargin = dp(12)
-                    leftMargin = dp(4)
-                    rightMargin = dp(4)
+                    topMargin = dp(8)
                 }
             }
         }
@@ -328,16 +328,19 @@ class CloudflareWebViewDialog(
             webView,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
+                dp(500)
+            ).apply {
+                topMargin = -dp(78)
+            }
         )
         
         successOverlay = TextView(requireContext()).apply {
             text = "✅"
-            textSize = 48f
+            textSize = 28f
             gravity = Gravity.CENTER
             visibility = View.GONE
-            setBackgroundColor(Color.parseColor("#1C1C1E"))
+            setBackgroundColor(Color.parseColor("#1A1A2E"))
+            setTextColor(Color.WHITE)
         }
         wvFrame.addView(
             successOverlay,
@@ -469,7 +472,7 @@ class CloudflareWebViewDialog(
     private fun buildWebView(): WebView {
         val wv = WebView(requireContext())
 
-        wv.setBackgroundColor(Color.parseColor("#1C1C1E"))
+        wv.setBackgroundColor(Color.parseColor("#1A1A2E"))
         wv.isFocusable = true
         wv.isFocusableInTouchMode = true
 
