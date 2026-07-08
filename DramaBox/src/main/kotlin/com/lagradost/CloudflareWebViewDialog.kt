@@ -206,8 +206,25 @@ class CloudflareWebViewDialog(
     override fun onStart() {
         super.onStart()
         dialog?.window?.let { window ->
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.WHITE))
+            val displayMetrics = requireContext().resources.displayMetrics
+            val isLandscape = displayMetrics.widthPixels > displayMetrics.heightPixels
+            
+            val width = if (isLandscape) {
+                min(displayMetrics.widthPixels - dp(48), dp(580))
+            } else {
+                min(displayMetrics.widthPixels - dp(32), dp(360))
+            }
+            
+            val height = if (isLandscape) {
+                min(displayMetrics.heightPixels - dp(48), dp(320))
+            } else {
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            
+            window.setLayout(width, height)
+            window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window.setDimAmount(0.6f)
         }
     }
 
@@ -216,12 +233,21 @@ class CloudflareWebViewDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        val displayMetrics = resources.displayMetrics
+        val isLandscape = displayMetrics.widthPixels > displayMetrics.heightPixels
         
         val root = LinearLayout(requireContext()).apply {
             orientation = if (isLandscape) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
             setPadding(dp(16), dp(16), dp(16), dp(16))
-            setBackgroundColor(Color.parseColor("#1C1C1E"))
+            
+            val roundedCardBg = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(24).toFloat()
+                setColor(Color.parseColor("#1C1C1E"))
+                setStroke(dp(1), Color.parseColor("#2C2C2E"))
+            }
+            background = roundedCardBg
+            
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -289,8 +315,7 @@ class CloudflareWebViewDialog(
             } else {
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    0,
-                    1f
+                    dp(180)
                 ).apply {
                     bottomMargin = dp(12)
                     leftMargin = dp(4)
