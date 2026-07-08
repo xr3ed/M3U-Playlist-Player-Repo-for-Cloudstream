@@ -26,8 +26,8 @@ import com.lagradost.api.Log
 import kotlin.math.min
 
 /**
- * Minimalist DialogFragment that loads [targetUrl] in a small WebView and injects
- * JavaScript to isolate and display only the Turnstile CAPTCHA widget.
+ * Minimalist DialogFragment that loads [targetUrl] in a small WebView and crops it
+ * to show only the Turnstile CAPTCHA widget dynamically for both portrait & landscape.
  */
 class CloudflareWebViewDialog(
     private val targetUrl: String,
@@ -40,86 +40,25 @@ class CloudflareWebViewDialog(
         private const val POLL_INTERVAL_MS = 2_000L   // check cookies every 2 s
         private const val POLL_TIMEOUT_MS  = 120_000L // give up after 2 minutes
 
-        private val CHALLENGE_TITLES = listOf(
-            "just a moment",
-            "just a moment...",
-            "checking your browser",
-            "attention required",
-            "ddos-guard",
-            "one more step",
-            "tunggu sebentar",
-            "tunggu sebentar..."
-        )
-
-        private val ERROR_TITLES = listOf(
-            "502", "503", "504", "bad gateway", "internal server error", "error", "connection timed out"
-        )
-
         fun isChallengeTitle(title: String): Boolean =
-            CHALLENGE_TITLES.any { title.lowercase().contains(it) }
-
-        fun isErrorTitle(title: String): Boolean =
-            ERROR_TITLES.any { title.lowercase().contains(it) }
-
-        // Negative margin CSS + 100ms verification token monitor:
-        // Automatically signals the native Android JSInterface the split second Turnstile resolves,
-        // allowing us to hide the WebView instantly before any redirect occurs.
-        private const val CLEAN_CF_JS = """
-            (function() {
-                var style = document.getElementById('cf-clean-style');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'cf-clean-style';
-                    style.innerHTML = ' \
-                        html, body { background-color: #1A1A2E !important; color: transparent !important; margin: 0 !important; padding: 0 !important; } \
-                        h1, h2, h3, p, div, span, a { color: transparent !important; text-shadow: none !important; } \
-                        #challenge-stage { \
-                            display: flex !important; \
-                            justify-content: center !important; \
-                            align-items: center !important; \
-                            width: 100% !important; \
-                            margin: 0 auto !important; \
-                        } \
-                        #logo, .logo, #zone-name, .zone-name, img { \
-                            display: none !important; \
-                        } \
-                    ';
-                    document.head.appendChild(style);
-                }
-                
-                if (!window.hasTurnstileMonitor) {
-                    window.hasTurnstileMonitor = true;
-                    var checkInterval = setInterval(function() {
-                        var cfRes = document.getElementsByName('cf-turnstile-response')[0];
-                        var gRes = document.getElementsByName('g-recaptcha-response')[0];
-                        if ((cfRes && cfRes.value) || (gRes && gRes.value)) {
-                            clearInterval(checkInterval);
-                            if (window.Android && window.Android.onVerificationSuccess) {
-                                window.Android.onVerificationSuccess();
-                            }
-                        }
-                    }, 100);
-                }
-            })()
-        """
-
-        private const val REMOVE_CLEAN_CF_JS = """
-            (function() {
-                var el = document.getElementById('cf-clean-style');
-                if (el) el.remove();
-            })()
-        """
+            listOf(
+                "just a moment",
+                "just a moment...",
+                "checking your browser",
+                "attention required",
+                "ddos-guard",
+                "one more step"
+            ).any { title.lowercase().contains(it) }
     }
 
     private var webView: WebView? = null
     private var statusText: TextView? = null
     private var progressBar: ProgressBar? = null
-    private var btnCancel: TextView? = null
     private var successOverlay: TextView? = null
+    private var btnCancel: TextView? = null
 
     private val handler = Handler(Looper.getMainLooper())
     private var cookiesSaved = false
-    private var challengePageLoaded = false
     private var pollElapsedMs = 0L
 
     private val targetHost: String by lazy {
@@ -131,19 +70,9 @@ class CloudflareWebViewDialog(
         }
     }
 
-    // Javascript Interface to handle instant callback on verification success
-    inner class JSInterface {
-        @android.webkit.JavascriptInterface
-        fun onVerificationSuccess() {
-            handler.post {
-                if (!cookiesSaved && isAdded) {
-                    CookieManager.getInstance().flush()
-                    val cookieStr = CookieManager.getInstance().getCookie(targetHost) ?: ""
-                    Log.d(TAG, "Instant JS callback verification success. Cookies: $cookieStr")
-                    saveCookiesAndDismiss(cookieStr)
-                }
-            }
-        }
+    private fun dp(value: Int): Int {
+        val density = requireContext().resources.displayMetrics.density
+        return (value * density).toInt()
     }
 
     private val cookiePollRunnable = object : Runnable {
@@ -167,7 +96,7 @@ class CloudflareWebViewDialog(
                     }
                 }
                 pollElapsedMs >= POLL_TIMEOUT_MS -> {
-                    updateStatus("⚠️ Waktu habis. Silakan coba lagi.")
+                    updateStatus("⏱️ Timed out. Try solving the CAPTCHA then tap Bypass again.")
                 }
                 else -> {
                     scheduleNextPoll()
@@ -176,19 +105,9 @@ class CloudflareWebViewDialog(
         }
     }
 
-    private fun dp(dpVal: Int): Int {
-        val density = requireContext().resources.displayMetrics.density
-        return (dpVal * density).toInt()
-    }
-
     private fun scheduleNextPoll() {
         pollElapsedMs += POLL_INTERVAL_MS
-        val title = webView?.title ?: ""
-        if (isErrorTitle(title)) {
-            updateStatus("⚠️ Server gangguan: $title")
-        } else {
-            updateStatus("⏳ Menunggu verifikasi… (${pollElapsedMs / 1000}s)")
-        }
+        updateStatus("⏳ Waiting for cookies… (${pollElapsedMs / 1000}s)")
         handler.postDelayed(cookiePollRunnable, POLL_INTERVAL_MS)
     }
 
@@ -207,7 +126,7 @@ class CloudflareWebViewDialog(
         super.onStart()
         dialog?.window?.let { window ->
             val displayMetrics = requireContext().resources.displayMetrics
-            val isLandscape = displayMetrics.widthPixels > displayMetrics.heightPixels
+            val isLandscape = resources.configuration.screenWidthDp > resources.configuration.screenHeightDp
             
             val width = if (isLandscape) {
                 min(displayMetrics.widthPixels - dp(48), dp(580))
@@ -269,31 +188,42 @@ class CloudflareWebViewDialog(
             root
         }
 
-        val avatar = TextView(requireContext()).apply {
-            text = "🛡️"
-            textSize = 28f
-            gravity = Gravity.CENTER
-            val circle = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(Color.parseColor("#2D2D30"))
-            }
-            background = circle
-            layoutParams = LinearLayout.LayoutParams(dp(56), dp(56)).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-                bottomMargin = dp(8)
-            }
-        }
-        controlParent.addView(avatar)
-
-        val titleTv = TextView(requireContext()).apply {
-            text = "Cloudflare Bypass"
-            textSize = 18f
-            setTextColor(Color.parseColor("#E5E5EA"))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
+        val headerLayout = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
             setPadding(0, 0, 0, dp(8))
         }
-        controlParent.addView(titleTv)
+        headerLayout.addView(TextView(requireContext()).apply {
+            text = "🛡️"
+            textSize = 20f
+            setPadding(0, 0, dp(8), 0)
+        })
+        headerLayout.addView(TextView(requireContext()).apply {
+            text = "Cloudflare Bypass"
+            textSize = 16f
+            setTextColor(Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+        })
+        controlParent.addView(headerLayout)
+
+        statusText = TextView(requireContext()).apply {
+            text = "Loading challenge page…"
+            textSize = 12f
+            setTextColor(Color.parseColor("#A0A0B0"))
+            setPadding(0, 0, 0, dp(6))
+        }
+        controlParent.addView(statusText)
+
+        progressBar = ProgressBar(
+            requireContext(), null, android.R.attr.progressBarStyleHorizontal
+        ).apply {
+            isIndeterminate = true
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).also { it.bottomMargin = dp(12) }
+        }
+        controlParent.addView(progressBar)
 
         val wvFrame = FrameLayout(requireContext()).apply {
             val border = GradientDrawable().apply {
@@ -319,7 +249,7 @@ class CloudflareWebViewDialog(
                 ).apply {
                     gravity = Gravity.CENTER_HORIZONTAL
                     bottomMargin = dp(12)
-                    topMargin = dp(8)
+                    topMargin = dp(4)
                 }
             }
         }
@@ -335,12 +265,13 @@ class CloudflareWebViewDialog(
         )
         
         successOverlay = TextView(requireContext()).apply {
-            text = "✅"
-            textSize = 28f
+            text = "✅ Berhasil"
+            textSize = 14f
             gravity = Gravity.CENTER
             visibility = View.GONE
             setBackgroundColor(Color.parseColor("#1A1A2E"))
-            setTextColor(Color.WHITE)
+            setTextColor(Color.parseColor("#4CAF50"))
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
         }
         wvFrame.addView(
             successOverlay,
@@ -349,50 +280,6 @@ class CloudflareWebViewDialog(
                 FrameLayout.LayoutParams.MATCH_PARENT
             )
         )
-
-        statusText = TextView(requireContext()).apply {
-            text = "⏳ Status: Menunggu verifikasi..."
-            textSize = 11f
-            setTextColor(Color.WHITE)
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            val ribbonBg = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(8).toFloat()
-                setColor(Color.parseColor("#E84393"))
-            }
-            background = ribbonBg
-            setPadding(dp(12), dp(8), dp(12), dp(8))
-            
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                bottomMargin = dp(8)
-                leftMargin = dp(4)
-                rightMargin = dp(4)
-            }
-        }
-        controlParent.addView(statusText)
-
-        progressBar = ProgressBar(
-            requireContext(), null, android.R.attr.progressBarStyleHorizontal
-        ).apply {
-            isIndeterminate = true
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(3)
-            ).also {
-                it.bottomMargin = dp(12)
-                it.leftMargin = dp(4)
-                it.rightMargin = dp(4)
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                progressTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#0984E3"))
-                indeterminateTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#0984E3"))
-            }
-        }
-        controlParent.addView(progressBar)
 
         val normalBtnBg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
@@ -449,14 +336,12 @@ class CloudflareWebViewDialog(
         CookieManager.getInstance().apply {
             setAcceptCookie(true)
             setAcceptThirdPartyCookies(webView, true)
-            removeAllCookies(null)
             flush()
         }
 
         webView?.loadUrl(targetUrl)
         handler.postDelayed(cookiePollRunnable, POLL_INTERVAL_MS)
 
-        // Default focus on Cancel button for TV-friendly remote navigation
         btnCancel?.post {
             btnCancel?.requestFocus()
         }
@@ -466,7 +351,6 @@ class CloudflareWebViewDialog(
     private fun buildWebView(): WebView {
         val wv = WebView(requireContext())
 
-        // Set native white background and focusability for Android TV D-pad navigation
         wv.setBackgroundColor(Color.parseColor("#1A1A2E"))
         wv.isFocusable = true
         wv.isFocusableInTouchMode = true
@@ -481,19 +365,11 @@ class CloudflareWebViewDialog(
             loadsImagesAutomatically = true
         }
 
-        // Register Android JS Interface for instant success callbacks
-        wv.addJavascriptInterface(JSInterface(), "Android")
-
         wv.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 if (!cookiesSaved) {
-                    val title = view?.title ?: ""
-                    if (isChallengeTitle(title)) {
-                        wv.evaluateJavascript(CLEAN_CF_JS, null)
-                    } else {
-                        wv.evaluateJavascript(REMOVE_CLEAN_CF_JS, null)
-                    }
+                    updateStatus("Loading… $newProgress%")
                 }
             }
         }
@@ -503,62 +379,37 @@ class CloudflareWebViewDialog(
                 view: WebView?, request: WebResourceRequest?
             ): Boolean = false
 
-            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
-                super.onPageStarted(view, url, favicon)
-                if (cookiesSaved) return
-
-                // If challenge page has finished loading once, any new page load starts (redirect/submit)
-                // is treated as success. We hide WebView immediately to prevent the original site from flashing.
-                if (challengePageLoaded) {
-                    webView?.visibility = View.GONE
-                    successOverlay?.visibility = View.VISIBLE
-                    updateStatus("✅ Verifikasi berhasil!")
-                    
-                    CookieManager.getInstance().flush()
-                    val cookieStr = CookieManager.getInstance().getCookie(targetHost) ?: ""
-                    if (cookieStr.contains("cf_clearance")) {
-                        saveCookiesAndDismiss(cookieStr)
-                    }
-                }
-            }
-
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 if (cookiesSaved) return
-
-                wv.evaluateJavascript(CLEAN_CF_JS, null)
 
                 val title = view?.title ?: ""
                 Log.d(TAG, "onPageFinished  title='$title'  url=$url")
 
                 if (isChallengeTitle(title)) {
-                    challengePageLoaded = true
-                    updateStatus("⏳ Silakan centang kotak di atas")
+                    updateStatus("🔄 Challenge active – solve the CAPTCHA above")
                 } else {
-                    if (isErrorTitle(title)) {
-                        updateStatus("⚠️ Server gangguan: $title")
+                    updateStatus("✏️ Page loaded – checking cookies…")
+                    CookieManager.getInstance().flush()
+
+                    val cookiesFromTarget = CookieManager.getInstance().getCookie(targetHost) ?: ""
+                    val cookiesFromUrl = url?.let {
+                        runCatching {
+                            val uri = android.net.Uri.parse(it)
+                            CookieManager.getInstance().getCookie("${uri.scheme}://${uri.host}")
+                        }.getOrNull()
+                    } ?: ""
+
+                    val bestCookies = when {
+                        cookiesFromTarget.contains("cf_clearance") -> cookiesFromTarget
+                        cookiesFromUrl.contains("cf_clearance")    -> cookiesFromUrl
+                        else                                        -> null
                     }
-                }
 
-                CookieManager.getInstance().flush()
-
-                val cookiesFromTarget = CookieManager.getInstance().getCookie(targetHost) ?: ""
-                val cookiesFromUrl = url?.let {
-                    runCatching {
-                        val uri = android.net.Uri.parse(it)
-                        CookieManager.getInstance().getCookie("${uri.scheme}://${uri.host}")
-                    }.getOrNull()
-                } ?: ""
-
-                val bestCookies = when {
-                    cookiesFromTarget.contains("cf_clearance") -> cookiesFromTarget
-                    cookiesFromUrl.contains("cf_clearance")    -> cookiesFromUrl
-                    else                                        -> null
-                }
-
-                if (bestCookies != null) {
-                    handler.removeCallbacks(cookiePollRunnable)
-                    saveCookiesAndDismiss(bestCookies)
+                    if (bestCookies != null) {
+                        handler.removeCallbacks(cookiePollRunnable)
+                        saveCookiesAndDismiss(bestCookies)
+                    }
                 }
             }
         }
@@ -572,7 +423,6 @@ class CloudflareWebViewDialog(
 
         handler.removeCallbacks(cookiePollRunnable)
 
-        // Hide WebView and show Success Overlay immediately
         webView?.visibility = View.GONE
         successOverlay?.visibility = View.VISIBLE
 
@@ -583,14 +433,14 @@ class CloudflareWebViewDialog(
         }
 
         Log.d(TAG, "✅ Saved cookies: $cookieStr")
-        updateStatus("✅ Verifikasi berhasil!")
+        updateStatus("✅ Done! Cookies saved.")
 
         webView?.postDelayed({
             if (isAdded) {
                 onFinished?.invoke(true)
                 dismissAllowingStateLoss()
             }
-        }, 1200)
+        }, 1500)
     }
 
     override fun onDismiss(dialog: android.content.DialogInterface) {
@@ -603,45 +453,13 @@ class CloudflareWebViewDialog(
 
     private fun updateStatus(msg: String) {
         activity?.runOnUiThread {
-            if (statusText == null) return@runOnUiThread
-            
-            // Format status message text nicely inside the ribbon
-            statusText?.text = when {
-                msg.startsWith("⏳") -> "⏳ Status: " + msg.substring(1).trim()
-                msg.startsWith("✅") -> "✅ Status: " + msg.substring(1).trim()
-                msg.startsWith("⚠️") -> "⚠️ Status: " + msg.substring(1).trim()
-                else -> "⏳ Status: $msg"
-            }
-
-            // Change ribbon background dynamically
-            when {
-                msg.startsWith("✅") -> {
-                    progressBar?.visibility = View.GONE
-                    val greenBg = GradientDrawable().apply {
-                        shape = GradientDrawable.RECTANGLE
-                        cornerRadius = dp(8).toFloat()
-                        setColor(Color.parseColor("#2ECC71")) // Success Green
-                    }
-                    statusText?.background = greenBg
-                }
-                msg.startsWith("⚠️") -> {
-                    progressBar?.visibility = View.GONE
-                    val redBg = GradientDrawable().apply {
-                        shape = GradientDrawable.RECTANGLE
-                        cornerRadius = dp(8).toFloat()
-                        setColor(Color.parseColor("#E74C3C")) // Error Red
-                    }
-                    statusText?.background = redBg
-                }
-                else -> {
-                    progressBar?.visibility = View.VISIBLE
-                    val pinkBg = GradientDrawable().apply {
-                        shape = GradientDrawable.RECTANGLE
-                        cornerRadius = dp(8).toFloat()
-                        setColor(Color.parseColor("#E84393")) // Warning/Wait Pink
-                    }
-                    statusText?.background = pinkBg
-                }
+            statusText?.text = msg
+            if (msg.startsWith("✅")) {
+                progressBar?.visibility = View.GONE
+                statusText?.setTextColor(Color.parseColor("#4CAF50"))
+            } else {
+                progressBar?.visibility = View.VISIBLE
+                statusText?.setTextColor(Color.parseColor("#A0A0B0"))
             }
         }
     }
@@ -653,8 +471,6 @@ class CloudflareWebViewDialog(
             destroy()
         }
         webView = null
-        btnCancel = null
-        successOverlay = null
         super.onDestroyView()
     }
 }
