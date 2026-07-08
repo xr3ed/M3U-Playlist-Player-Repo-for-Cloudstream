@@ -301,7 +301,12 @@ class ShortMaxProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val shortPlayId = url
+        val shortPlayId = when {
+            url.contains("/detail/") -> url.substringAfter("/detail/").substringBefore("?").substringBefore("/")
+            else -> url.substringAfterLast("/").substringBefore("?")
+        }
+        if (shortPlayId.isEmpty()) return null
+
         val rawDetail = try {
             requestWithCf("$mainUrl/api/shortmax/detail?shortPlayId=$shortPlayId")
         } catch (e: Exception) {
