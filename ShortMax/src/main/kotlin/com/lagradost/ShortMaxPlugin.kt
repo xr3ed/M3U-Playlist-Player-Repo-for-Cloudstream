@@ -8,14 +8,12 @@ import android.content.Context
 class ShortMaxPlugin: Plugin() {
     override fun load(context: Context) {
         verifyApp(context)
-        // Register provider kita ke Cloudstream
-        ShortMaxProvider.context = context
         registerMainAPI(ShortMaxProvider())
 
         openSettings = openSettingsLabel@{
             val ctx = it as? androidx.appcompat.app.AppCompatActivity ?: return@openSettingsLabel
-            ShortMaxProvider.cfCookies = null
-            ShortMaxProvider.cfUserAgent = null
+            ShortMaxProvider.setCfCookies(ctx, null)
+            ShortMaxProvider.setCfUserAgent(ctx, null)
             android.webkit.CookieManager.getInstance().removeAllCookies(null)
             android.webkit.CookieManager.getInstance().flush()
             android.widget.Toast.makeText(ctx, "CF Cookies & Cache ShortMax bersih!", android.widget.Toast.LENGTH_SHORT).show()

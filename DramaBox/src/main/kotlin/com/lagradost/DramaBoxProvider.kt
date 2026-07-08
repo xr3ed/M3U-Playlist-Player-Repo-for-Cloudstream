@@ -31,7 +31,6 @@ import kotlin.math.min
 
 class DramaBoxProvider : MainAPI() {
     companion object {
-        var context: Context? = null
         private val detailCache = java.util.concurrent.ConcurrentHashMap<String, LoadResponse>()
         private val searchCache = java.util.concurrent.ConcurrentHashMap<String, List<SearchResponse>>()
         private val seenHomepageUrls = java.util.concurrent.ConcurrentSkipListSet<String>()
@@ -40,17 +39,15 @@ class DramaBoxProvider : MainAPI() {
         private val PASSWORD = com.lagradost.DramaBox.BuildConfig.SHORTMAX_KEY
         private var cfDeferred: CompletableDeferred<Boolean>? = null
 
-        var cfCookies: String?
-            get() = context?.getKey<String>("SHORTMAX_CF_COOKIES")
-            set(value) {
-                context?.setKey("SHORTMAX_CF_COOKIES", value)
-            }
+        fun getCfCookies(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_COOKIES")
+        fun setCfCookies(context: Context?, value: String?) {
+            context?.setKey("SHORTMAX_CF_COOKIES", value)
+        }
 
-        var cfUserAgent: String?
-            get() = context?.getKey<String>("SHORTMAX_CF_USER_AGENT")
-            set(value) {
-                context?.setKey("SHORTMAX_CF_USER_AGENT", value)
-            }
+        fun getCfUserAgent(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_USER_AGENT")
+        fun setCfUserAgent(context: Context?, value: String?) {
+            context?.setKey("SHORTMAX_CF_USER_AGENT", value)
+        }
 
         fun decryptCryptoJS(encryptedText: String): String {
             val ciphertextBytes = Base64.decode(encryptedText, Base64.DEFAULT)
@@ -147,12 +144,15 @@ class DramaBoxProvider : MainAPI() {
     }
 
     private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
-        System.out.println("DramaBox request: $url | cfCookies: $cfCookies | cfUA: $cfUserAgent")
+        val ctx = CommonActivity.activity
+        val currentCookies = getCfCookies(ctx)
+        val currentUA = getCfUserAgent(ctx)
+        System.out.println("DramaBox request: $url | cfCookies: $currentCookies | cfUA: $currentUA")
         val headersMap = mutableMapOf(
             "Referer" to "$mainUrl/",
-            "User-Agent" to (cfUserAgent ?: USER_AGENT)
+            "User-Agent" to (currentUA ?: USER_AGENT)
         )
-        cfCookies?.let { headersMap["Cookie"] = it }
+        currentCookies?.let { headersMap["Cookie"] = it }
 
         val response = if (params != null) {
             app.get(url, params = params, headers = headersMap).text
@@ -165,15 +165,17 @@ class DramaBoxProvider : MainAPI() {
             return response
         } catch (e: Exception) {
             val activity = (CommonActivity.activity as? AppCompatActivity) ?: throw e
-            cfCookies = null
-            cfUserAgent = null
+            setCfCookies(ctx, null)
+            setCfUserAgent(ctx, null)
             val solved = solveCloudflare(activity, mainUrl)
             if (solved) {
+                val newCookies = getCfCookies(ctx)
+                val newUA = getCfUserAgent(ctx)
                 val newHeadersMap = mutableMapOf(
                     "Referer" to "$mainUrl/",
-                    "User-Agent" to (cfUserAgent ?: USER_AGENT)
+                    "User-Agent" to (newUA ?: USER_AGENT)
                 )
-                cfCookies?.let { newHeadersMap["Cookie"] = it }
+                newCookies?.let { newHeadersMap["Cookie"] = it }
                 val retryResponse = if (params != null) {
                     app.get(url, params = params, headers = newHeadersMap).text
                 } else {

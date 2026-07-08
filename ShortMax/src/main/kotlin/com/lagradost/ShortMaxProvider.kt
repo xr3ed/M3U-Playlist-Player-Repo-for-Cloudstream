@@ -24,23 +24,20 @@ import kotlinx.coroutines.Deferred
 
 class ShortMaxProvider : MainAPI() {
     companion object {
-        var context: Context? = null
         private var cfDeferred: Deferred<Boolean>? = null
         private val PASSWORD = com.lagradost.ShortMax.BuildConfig.SHORTMAX_KEY
 
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
 
-        var cfCookies: String?
-            get() = context?.getKey<String>("SHORTMAX_CF_COOKIES")
-            set(value) {
-                context?.setKey("SHORTMAX_CF_COOKIES", value)
-            }
+        fun getCfCookies(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_COOKIES")
+        fun setCfCookies(context: Context?, value: String?) {
+            context?.setKey("SHORTMAX_CF_COOKIES", value)
+        }
 
-        var cfUserAgent: String?
-            get() = context?.getKey<String>("SHORTMAX_CF_USER_AGENT")
-            set(value) {
-                context?.setKey("SHORTMAX_CF_USER_AGENT", value)
-            }
+        fun getCfUserAgent(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_USER_AGENT")
+        fun setCfUserAgent(context: Context?, value: String?) {
+            context?.setKey("SHORTMAX_CF_USER_AGENT", value)
+        }
 
         fun decryptCryptoJS(encryptedText: String): String {
             val ciphertextBytes = Base64.decode(encryptedText, Base64.DEFAULT)
@@ -146,11 +143,14 @@ class ShortMaxProvider : MainAPI() {
     }
 
     private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
+        val ctx = CommonActivity.activity
+        val currentCookies = getCfCookies(ctx)
+        val currentUA = getCfUserAgent(ctx)
         val headersMap = mutableMapOf(
             "Referer" to "$mainUrl/",
-            "User-Agent" to (cfUserAgent ?: USER_AGENT)
+            "User-Agent" to (currentUA ?: USER_AGENT)
         )
-        cfCookies?.let { headersMap["Cookie"] = it }
+        currentCookies?.let { headersMap["Cookie"] = it }
 
         val response = if (params != null) {
             app.get(url, params = params, headers = headersMap).text
@@ -163,15 +163,17 @@ class ShortMaxProvider : MainAPI() {
             return response
         } catch (e: Exception) {
             val activity = (CommonActivity.activity as? AppCompatActivity) ?: throw e
-            cfCookies = null
-            cfUserAgent = null
+            setCfCookies(ctx, null)
+            setCfUserAgent(ctx, null)
             val solved = solveCloudflare(activity, mainUrl)
             if (solved) {
+                val newCookies = getCfCookies(ctx)
+                val newUA = getCfUserAgent(ctx)
                 val newHeadersMap = mutableMapOf(
                     "Referer" to "$mainUrl/",
-                    "User-Agent" to (cfUserAgent ?: USER_AGENT)
+                    "User-Agent" to (newUA ?: USER_AGENT)
                 )
-                cfCookies?.let { newHeadersMap["Cookie"] = it }
+                newCookies?.let { newHeadersMap["Cookie"] = it }
                 val retryResponse = if (params != null) {
                     app.get(url, params = params, headers = newHeadersMap).text
                 } else {
@@ -401,7 +403,7 @@ class ShortMaxProvider : MainAPI() {
                         this.quality = quality
                         this.headers = mapOf(
                             "Referer" to "$mainUrl/",
-                            "User-Agent" to (cfUserAgent ?: USER_AGENT)
+                            "User-Agent" to (getCfUserAgent(CommonActivity.activity) ?: USER_AGENT)
                         )
                     }
                 )

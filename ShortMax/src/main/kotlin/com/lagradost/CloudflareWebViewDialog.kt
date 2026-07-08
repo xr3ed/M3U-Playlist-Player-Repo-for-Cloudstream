@@ -546,9 +546,10 @@ class CloudflareWebViewDialog(
         webView?.visibility = View.GONE
         successOverlay?.visibility = View.VISIBLE
 
-        ShortMaxProvider.cfCookies = cookieStr
+        val ctx = context ?: activity
+        ShortMaxProvider.setCfCookies(ctx, cookieStr)
         webView?.settings?.userAgentString?.let { ua ->
-            ShortMaxProvider.cfUserAgent = ua
+            ShortMaxProvider.setCfUserAgent(ctx, ua)
         }
 
         Log.d(TAG, "✅ Saved cookies: $cookieStr")

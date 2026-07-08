@@ -531,9 +531,10 @@ class CloudflareWebViewDialog(
         webView?.visibility = View.GONE
         successOverlay?.visibility = View.VISIBLE
 
-        DramaBoxProvider.cfCookies = cookieStr
+        val ctx = context ?: activity
+        DramaBoxProvider.setCfCookies(ctx, cookieStr)
         webView?.settings?.userAgentString?.let { ua ->
-            DramaBoxProvider.cfUserAgent = ua
+            DramaBoxProvider.setCfUserAgent(ctx, ua)
         }
 
         Log.d(TAG, "✅ Saved cookies: $cookieStr")
