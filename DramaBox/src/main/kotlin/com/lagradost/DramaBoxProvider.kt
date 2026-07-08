@@ -20,6 +20,14 @@ import com.lagradost.cloudstream3.utils.DataStore.getKey
 import com.lagradost.cloudstream3.utils.DataStore.setKey
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import androidx.appcompat.app.AppCompatActivity
+import com.lagradost.cloudstream3.CommonActivity
+import kotlinx.coroutines.CompletableDeferred
+import java.security.MessageDigest
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
+import javax.crypto.spec.IvParameterSpec
+import kotlin.math.min
 
 class DramaBoxProvider : MainAPI() {
     companion object {
@@ -27,9 +35,157 @@ class DramaBoxProvider : MainAPI() {
         private val detailCache = java.util.concurrent.ConcurrentHashMap<String, LoadResponse>()
         private val searchCache = java.util.concurrent.ConcurrentHashMap<String, List<SearchResponse>>()
         private val seenHomepageUrls = java.util.concurrent.ConcurrentSkipListSet<String>()
+
+        private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+        private const val PASSWORD = "Sansekai-SekaiDrama"
+        private var cfDeferred: CompletableDeferred<Boolean>? = null
+
+        var cfCookies: String?
+            get() = context?.getKey("SHORTMAX_CF_COOKIES")
+            set(value) {
+                context?.setKey("SHORTMAX_CF_COOKIES", value)
+            }
+
+        var cfUserAgent: String?
+            get() = context?.getKey("SHORTMAX_CF_USER_AGENT")
+            set(value) {
+                context?.setKey("SHORTMAX_CF_USER_AGENT", value)
+            }
+
+        fun decryptCryptoJS(encryptedText: String): String {
+            val ciphertextBytes = Base64.decode(encryptedText, Base64.DEFAULT)
+            val header = "Salted__".toByteArray(Charsets.US_ASCII)
+            if (ciphertextBytes.size < 16 || !ciphertextBytes.sliceArray(0..7).contentEquals(header)) {
+                throw IllegalArgumentException("Invalid CryptoJS ciphertext")
+            }
+            val salt = ciphertextBytes.sliceArray(8..15)
+            val encrypted = ciphertextBytes.sliceArray(16 until ciphertextBytes.size)
+
+            val passwordBytes = PASSWORD.toByteArray(Charsets.UTF_8)
+            val keyIv = ByteArray(48)
+            var prev = ByteArray(0)
+            var keyIvOffset = 0
+            val md = MessageDigest.getInstance("MD5")
+
+            while (keyIvOffset < keyIv.size) {
+                md.reset()
+                md.update(prev)
+                md.update(passwordBytes)
+                md.update(salt)
+                prev = md.digest()
+                val copyLen = min(prev.size, keyIv.size - keyIvOffset)
+                System.arraycopy(prev, 0, keyIv, keyIvOffset, copyLen)
+                keyIvOffset += copyLen
+            }
+
+            val key = keyIv.sliceArray(0..31)
+            val iv = keyIv.sliceArray(32..47)
+
+            val secretKey = SecretKeySpec(key, "AES")
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(iv))
+
+            return String(cipher.doFinal(encrypted), Charsets.UTF_8)
+        }
     }
 
-    override var mainUrl = "https://www.dramabox.com"
+    override var mainUrl = "https://drama.sansekai.my.id"
+
+    private fun showToast(msg: String) {
+        val act = CommonActivity.activity
+        if (act != null) {
+            act.runOnUiThread {
+                android.widget.Toast.makeText(act, msg, android.widget.Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun checkResponse(response: String) {
+        val trimmed = response.trim()
+        if (trimmed.startsWith("<!DOCTYPE", ignoreCase = true) || trimmed.startsWith("<html", ignoreCase = true)) {
+            throw Exception("Harap selesaikan tantangan Cloudflare (Klik Buka di Peramban / Ikon Bumi di kanan atas)!")
+        }
+    }
+
+    private suspend fun solveCloudflare(activity: AppCompatActivity, url: String): Boolean {
+        val deferred = synchronized(this) {
+            cfDeferred?.let { return@synchronized it }
+
+            val newDeferred = CompletableDeferred<Boolean>()
+            cfDeferred = newDeferred
+
+            activity.runOnUiThread {
+                var resumed = false
+                fun safeResume(success: Boolean) {
+                    if (!resumed) {
+                        resumed = true
+                        newDeferred.complete(success)
+                    }
+                }
+                val dialog = CloudflareWebViewDialog(
+                    targetUrl = url,
+                    onFinished = { success -> safeResume(success) }
+                )
+                newDeferred.invokeOnCompletion {
+                    activity.runOnUiThread {
+                        runCatching { dialog.dismissAllowingStateLoss() }
+                    }
+                }
+                dialog.show(activity.supportFragmentManager, "cf_bypass_dramabox")
+            }
+            newDeferred
+        }
+
+        val result = deferred.await()
+
+        synchronized(this) {
+            if (cfDeferred === deferred) {
+                cfDeferred = null
+            }
+        }
+        return result
+    }
+
+    private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
+        val headersMap = mutableMapOf(
+            "Referer" to "$mainUrl/",
+            "User-Agent" to (cfUserAgent ?: USER_AGENT)
+        )
+        cfCookies?.let { headersMap["Cookie"] = it }
+
+        val response = if (params != null) {
+            app.get(url, params = params, headers = headersMap).text
+        } else {
+            app.get(url, headers = headersMap).text
+        }
+
+        try {
+            checkResponse(response)
+            return response
+        } catch (e: Exception) {
+            val activity = (CommonActivity.activity as? AppCompatActivity) ?: throw e
+            cfCookies = null
+            cfUserAgent = null
+            val solved = solveCloudflare(activity, mainUrl)
+            if (solved) {
+                val newHeadersMap = mutableMapOf(
+                    "Referer" to "$mainUrl/",
+                    "User-Agent" to (cfUserAgent ?: USER_AGENT)
+                )
+                cfCookies?.let { newHeadersMap["Cookie"] = it }
+                val retryResponse = if (params != null) {
+                    app.get(url, params = params, headers = newHeadersMap).text
+                } else {
+                    app.get(url, headers = newHeadersMap).text
+                }
+                checkResponse(retryResponse)
+                return retryResponse
+            } else {
+                throw e
+            }
+        }
+    }
+
     override var name = "DramaBox"
     override val supportedTypes = setOf(TvType.TvSeries)
     override var lang = "id"
@@ -480,6 +636,23 @@ class DramaBoxProvider : MainAPI() {
         val cached = searchCache[query]
         if (cached != null) return cached
 
+        // 1. Coba pencarian langsung dari API web
+        try {
+            val rawRes = requestWithCf("$mainUrl/api/dramabox/search", mapOf("query" to query))
+            val json = JSONObject(rawRes)
+            val decrypted = decryptCryptoJS(json.getString("data"))
+            if (decrypted.isNotEmpty()) {
+                val results = parseSekaiDramaList(decrypted)
+                if (results.isNotEmpty()) {
+                    searchCache[query] = results
+                    return results
+                }
+            }
+        } catch (e: Exception) {
+            println("DramaBox: Direct search failed: ${e.message}")
+        }
+
+        // 2. Fallback pencarian ke nax1.cc
         try {
             val resStr = getWithRetry("https://nax1.cc/api/dramabox/search", mapOf("query" to query))
             val results = parseSekaiDramaList(resStr)
