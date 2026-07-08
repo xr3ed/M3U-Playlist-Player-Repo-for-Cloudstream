@@ -71,7 +71,8 @@ class CloudflareWebViewDialog(
                     style = document.createElement('style');
                     style.id = 'cf-clean-style';
                     style.innerHTML = ' \
-                        html, body { background-color: #FFFFFF !important; color: #2D3436 !important; margin: 0 !important; padding: 0 !important; } \
+                        html, body { background-color: #FFFFFF !important; color: transparent !important; margin: 0 !important; padding: 0 !important; } \
+                        h1, h2, h3, p, div, span, a { color: transparent !important; text-shadow: none !important; } \
                         #challenge-stage { \
                             display: flex !important; \
                             justify-content: center !important; \
