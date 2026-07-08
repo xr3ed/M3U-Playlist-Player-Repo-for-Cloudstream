@@ -19,10 +19,13 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 
 class ShortMaxProvider : MainAPI() {
     companion object {
         var context: Context? = null
+        private var cfDeferred: Deferred<Boolean>? = null
         private val PASSWORD = com.lagradost.ShortMax.BuildConfig.SHORTMAX_KEY
 
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
@@ -87,6 +90,15 @@ class ShortMaxProvider : MainAPI() {
         MainPageData("ShortMax - Rekomendasi", "rekomendasi")
     )
 
+    private fun showToast(msg: String) {
+        val act = CommonActivity.activity
+        if (act != null) {
+            act.runOnUiThread {
+                android.widget.Toast.makeText(act, msg, android.widget.Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     private fun checkResponse(response: String) {
         val trimmed = response.trim()
         if (trimmed.startsWith("<!DOCTYPE", ignoreCase = true) || trimmed.startsWith("<html", ignoreCase = true)) {
@@ -94,26 +106,43 @@ class ShortMaxProvider : MainAPI() {
         }
     }
 
-    private suspend fun solveCloudflare(activity: AppCompatActivity, url: String): Boolean = suspendCancellableCoroutine { continuation ->
-        activity.runOnUiThread {
-            var resumed = false
-            fun safeResume(success: Boolean) {
-                if (!resumed) {
-                    resumed = true
-                    continuation.resume(success)
+    private suspend fun solveCloudflare(activity: AppCompatActivity, url: String): Boolean {
+        val deferred = synchronized(this) {
+            cfDeferred?.let { return@synchronized it }
+
+            val newDeferred = CompletableDeferred<Boolean>()
+            cfDeferred = newDeferred
+
+            activity.runOnUiThread {
+                var resumed = false
+                fun safeResume(success: Boolean) {
+                    if (!resumed) {
+                        resumed = true
+                        newDeferred.complete(success)
+                    }
                 }
-            }
-            val dialog = CloudflareWebViewDialog(
-                targetUrl = url,
-                onFinished = { success -> safeResume(success) }
-            )
-            continuation.invokeOnCancellation {
-                activity.runOnUiThread {
-                    runCatching { dialog.dismissAllowingStateLoss() }
+                val dialog = CloudflareWebViewDialog(
+                    targetUrl = url,
+                    onFinished = { success -> safeResume(success) }
+                )
+                newDeferred.invokeOnCompletion {
+                    activity.runOnUiThread {
+                        runCatching { dialog.dismissAllowingStateLoss() }
+                    }
                 }
+                dialog.show(activity.supportFragmentManager, "cf_bypass_shortmax")
             }
-            dialog.show(activity.supportFragmentManager, "cf_bypass_shortmax")
+            newDeferred
         }
+
+        val result = deferred.await()
+
+        synchronized(this) {
+            if (cfDeferred === deferred) {
+                cfDeferred = null
+            }
+        }
+        return result
     }
 
     private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
@@ -134,6 +163,8 @@ class ShortMaxProvider : MainAPI() {
             return response
         } catch (e: Exception) {
             val activity = (CommonActivity.activity as? AppCompatActivity) ?: throw e
+            cfCookies = null
+            cfUserAgent = null
             val solved = solveCloudflare(activity, mainUrl)
             if (solved) {
                 val newHeadersMap = mutableMapOf(
@@ -155,14 +186,32 @@ class ShortMaxProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        cfCookies = null
+        cfUserAgent = null
         val path = if (request.data == "foryou") {
             "/api/shortmax/foryou?page=$page"
         } else {
             "/api/shortmax/rekomendasi"
         }
 
-        val rawHome = requestWithCf("$mainUrl$path")
-        val decrypted = decryptCryptoJS(JSONObject(rawHome).getString("data"))
+        val rawHome = try {
+            requestWithCf("$mainUrl$path")
+        } catch (e: Exception) {
+            showToast("Server sedang gangguan. Silakan coba lagi nanti.")
+            return null
+        }
+
+        val decrypted = try {
+            val json = JSONObject(rawHome)
+            if (json.has("data")) {
+                decryptCryptoJS(json.getString("data"))
+            } else {
+                throw Exception("Respon server tidak valid.")
+            }
+        } catch (e: Exception) {
+            showToast("Server sedang gangguan. Silakan coba lagi nanti.")
+            return null
+        }
 
         val results = if (request.data == "foryou") {
             val jsonObj = JSONObject(decrypted)
@@ -210,8 +259,20 @@ class ShortMaxProvider : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val rawSearch = requestWithCf("$mainUrl/api/shortmax/search", mapOf("query" to query))
-        val decrypted = decryptCryptoJS(JSONObject(rawSearch).getString("data"))
+        val rawSearch = try {
+            requestWithCf("$mainUrl/api/shortmax/search", mapOf("query" to query))
+        } catch (e: Exception) {
+            showToast("Gagal mencari drama. Server sedang gangguan.")
+            return emptyList()
+        }
+
+        val decrypted = try {
+            val json = JSONObject(rawSearch)
+            decryptCryptoJS(json.getString("data"))
+        } catch (e: Exception) {
+            showToast("Gagal mencari drama. Server sedang gangguan.")
+            return emptyList()
+        }
         val json = JSONObject(decrypted)
         val results = json.optJSONArray("results") ?: return emptyList()
 
@@ -243,8 +304,20 @@ class ShortMaxProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         val shortPlayId = url
-        val rawDetail = requestWithCf("$mainUrl/api/shortmax/detail?shortPlayId=$shortPlayId")
-        val decryptedDetail = decryptCryptoJS(JSONObject(rawDetail).getString("data"))
+        val rawDetail = try {
+            requestWithCf("$mainUrl/api/shortmax/detail?shortPlayId=$shortPlayId")
+        } catch (e: Exception) {
+            showToast("Gagal memuat detail drama. Server sedang gangguan.")
+            return null
+        }
+
+        val decryptedDetail = try {
+            val json = JSONObject(rawDetail)
+            decryptCryptoJS(json.getString("data"))
+        } catch (e: Exception) {
+            showToast("Gagal memuat detail drama. Server sedang gangguan.")
+            return null
+        }
         val json = JSONObject(decryptedDetail)
 
         val title = json.optString("title").takeIf { it.isNotEmpty() } ?: "Drama $shortPlayId"
@@ -286,8 +359,20 @@ class ShortMaxProvider : MainAPI() {
         val shortPlayId = parts[0]
         val episodeNum = parts[1]
 
-        val rawEpisode = requestWithCf("$mainUrl/api/shortmax/episode?shortPlayId=$shortPlayId&episodeNumber=$episodeNum")
-        val decryptedEpisode = decryptCryptoJS(JSONObject(rawEpisode).getString("data"))
+        val rawEpisode = try {
+            requestWithCf("$mainUrl/api/shortmax/episode?shortPlayId=$shortPlayId&episodeNumber=$episodeNum")
+        } catch (e: Exception) {
+            showToast("Gagal memuat video. Server sedang gangguan.")
+            return false
+        }
+
+        val decryptedEpisode = try {
+            val json = JSONObject(rawEpisode)
+            decryptCryptoJS(json.getString("data"))
+        } catch (e: Exception) {
+            showToast("Gagal memuat video. Server sedang gangguan.")
+            return false
+        }
         val json = JSONObject(decryptedEpisode)
 
         val episodeObj = json.optJSONObject("episode") ?: return false
