@@ -731,18 +731,24 @@ class DramaBoxProvider : MainAPI() {
         val cacheKeyEpisodes = "episodes_$bookId"
         val cacheDuration = 2 * 60 * 60 * 1000L // 2 jam
 
-        val detailRes: String
-        val episodesRes: String
+        var detailRes: String? = getLocalCache(cacheKeyDetail, cacheDuration)
+        var episodesRes: String? = getLocalCache(cacheKeyEpisodes, cacheDuration)
 
-        val cachedDetail = getLocalCache(cacheKeyDetail, cacheDuration)
-        val cachedEpisodes = getLocalCache(cacheKeyEpisodes, cacheDuration)
+        // Validasi apakah cache disk valid
+        if (detailRes != null && episodesRes != null) {
+            try {
+                JSONObject(decryptIfEncrypted(detailRes))
+                JSONArray(decryptIfEncrypted(episodesRes))
+                println("DramaBox: Using local disk cache for detail/episodes of $bookId")
+            } catch (e: Exception) {
+                println("DramaBox: Cache is invalid, discarding cache for $bookId: ${e.message}")
+                detailRes = null
+                episodesRes = null
+            }
+        }
 
         try {
-            if (cachedDetail != null && cachedEpisodes != null) {
-                println("DramaBox: Using local disk cache for detail/episodes of $bookId")
-                detailRes = cachedDetail
-                episodesRes = cachedEpisodes
-            } else {
+            if (detailRes == null || episodesRes == null) {
                 val (dRes, eRes) = coroutineScope {
                     val detailDeferred = async {
                         fetchWithFallback(
@@ -760,9 +766,15 @@ class DramaBoxProvider : MainAPI() {
                 }
                 detailRes = dRes
                 episodesRes = eRes
-                if (detailRes.isNotEmpty() && episodesRes.isNotEmpty()) {
+                
+                // Pastikan respon valid sebelum di-cache
+                try {
+                    JSONObject(decryptIfEncrypted(detailRes))
+                    JSONArray(decryptIfEncrypted(episodesRes))
                     setLocalCache(cacheKeyDetail, detailRes)
                     setLocalCache(cacheKeyEpisodes, episodesRes)
+                } catch (e: Exception) {
+                    println("DramaBox: Fetch success but payload is invalid, not caching: ${e.message}")
                 }
             }
 
