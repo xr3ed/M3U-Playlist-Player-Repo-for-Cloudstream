@@ -263,20 +263,14 @@ class DramaBoxProvider : MainAPI() {
         fallbackUrl: String,
         fallbackParams: Map<String, String> = emptyMap()
     ): String {
-        val rawGithubUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/database/dramabox/$relativePath"
         val jsdelivrUrl = "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/$relativePath"
 
         try {
-            println("DramaBox: Fetching from Raw GitHub -> $rawGithubUrl")
-            return getWithRetry(rawGithubUrl)
-        } catch (e1: Exception) {
-            println("DramaBox: Raw GitHub failed, trying jsDelivr -> $jsdelivrUrl")
-            try {
-                return getWithRetry(jsdelivrUrl)
-            } catch (e2: Exception) {
-                println("DramaBox: jsDelivr failed, fallback to direct API -> $fallbackUrl")
-                return getWithRetry(fallbackUrl, fallbackParams)
-            }
+            println("DramaBox: Fetching from jsDelivr -> $jsdelivrUrl")
+            return getWithRetry(jsdelivrUrl)
+        } catch (e: Exception) {
+            println("DramaBox: jsDelivr failed, fallback to direct API -> $fallbackUrl")
+            return getWithRetry(fallbackUrl, fallbackParams)
         }
     }
 

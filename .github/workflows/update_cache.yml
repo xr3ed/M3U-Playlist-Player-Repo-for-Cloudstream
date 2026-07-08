@@ -39,3 +39,12 @@ jobs:
             git commit -m "Update SekaiDrama cache [skip ci]"
             git push
           fi
+
+      - name: Purge jsDelivr CDN Cache for Database Pages
+        run: |
+          curl -s https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/trending.json
+          curl -s https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/latest.json
+          curl -s https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/populersearch.json
+          curl -s https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/dubindo_terpopuler.json
+          curl -s https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/dubindo_terbaru.json
+          curl -s https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/database/dramabox/foryou_1.json

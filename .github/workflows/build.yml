@@ -76,6 +76,8 @@ jobs:
           RBTV_MAIN_URL: ${{ secrets.RBTV_MAIN_URL }}
           RBTV_API_HOST: ${{ secrets.RBTV_API_HOST }}
           XSTREAM_TMDB_API: ${{ secrets.XSTREAM_TMDB_API }}
+          SHORTMAX_URL: ${{ secrets.SHORTMAX_URL }}
+          SHORTMAX_KEY: ${{ secrets.SHORTMAX_KEY }}
 
       - name: Collect Build Artifacts
         run: |
