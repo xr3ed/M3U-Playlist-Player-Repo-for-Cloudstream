@@ -560,7 +560,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             MainPageData(dynamicMainPageTitle, "worldcup")
         )
 
-    private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/world_cup_cover.png"
+    private val defaultLogo = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/main/world_cup_cover.png"
 
     companion object {
         const val OFFLINE_POSTER_URL = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/assets/channel_offline.png"
