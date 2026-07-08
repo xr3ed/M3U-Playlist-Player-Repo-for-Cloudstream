@@ -75,6 +75,8 @@ subprojects {
             buildConfigField("String", "SIMKL_API", "\"${getSecret("SIMKL_API")}\"")
             buildConfigField("String", "MAL_API", "\"${getSecret("MAL_API")}\"")
             buildConfigField("String", "LIBRARY_PACKAGE_NAME", "\"com.xr3ed\"")
+            buildConfigField("String", "SHORTMAX_URL", "\"${getSecret("SHORTMAX_URL", "dummy")}\"")
+            buildConfigField("String", "SHORTMAX_KEY", "\"${getSecret("SHORTMAX_KEY", "dummy")}\"")
             buildConfigField("String", "CRICIFY_PROVIDER_SECRET1", "\"${getSecret("CRICIFY_PROVIDER_SECRET1")}\"")
             buildConfigField("String", "CRICIFY_PROVIDER_SECRET2", "\"${getSecret("CRICIFY_PROVIDER_SECRET2")}\"")
             buildConfigField("String", "PIKASHOW_API_KEY", "\"${getSecret("PIKASHOW_API_KEY")}\"")

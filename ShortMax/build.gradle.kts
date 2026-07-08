@@ -1,7 +1,7 @@
-version = 12
+version = 1
 
 android {
-    namespace = "com.lagradost.DramaBox"
+    namespace = "com.lagradost.ShortMax"
     buildFeatures {
         buildConfig = true
     }
@@ -9,7 +9,7 @@ android {
 
 cloudstream {
     language = "id"
-    description = "Ekstensi Cloudstream untuk menonton drama pendek DramaBox"
+    description = "Ekstensi Cloudstream untuk menonton drama pendek ShortMax"
     authors = listOf("xr3ed")
     status = 1
     tvTypes = listOf("TvSeries")

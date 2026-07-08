@@ -1,0 +1,8 @@
+{
+  "pluginClassName": "com.lagradost.ShortMaxPlugin",
+  "displayName": "ShortMax",
+  "description": "Ekstensi Cloudstream untuk menonton drama pendek ShortMax",
+  "author": "xr3ed",
+  "version": 1,
+  "tvTypes": ["TvSeries"]
+}

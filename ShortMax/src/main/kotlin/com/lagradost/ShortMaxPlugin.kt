@@ -5,11 +5,11 @@ import com.lagradost.cloudstream3.plugins.Plugin
 import android.content.Context
 
 @CloudstreamPlugin
-class DramaBoxPlugin: Plugin() {
+class ShortMaxPlugin: Plugin() {
     override fun load(context: Context) {
         verifyApp(context)
         // Register provider kita ke Cloudstream
-        DramaBoxProvider.context = context
-        registerMainAPI(DramaBoxProvider())
+        ShortMaxProvider.context = context
+        registerMainAPI(ShortMaxProvider())
     }
 }
