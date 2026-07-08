@@ -72,9 +72,6 @@ class CloudflareWebViewDialog(
                     style.id = 'cf-clean-style';
                     style.innerHTML = ' \
                         html, body { background-color: #FFFFFF !important; color: #2D3436 !important; margin: 0 !important; padding: 0 !important; } \
-                        #challenge-container, .main-content { \
-                            margin-top: -245px !important; \
-                        } \
                         #challenge-stage { \
                             display: flex !important; \
                             justify-content: center !important; \
@@ -270,7 +267,7 @@ class CloudflareWebViewDialog(
             
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(136) // 120dp webview + padding
+                dp(200) // 120dp webview + padding
             ).also {
                 it.bottomMargin = dp(16)
                 it.leftMargin = dp(4)
