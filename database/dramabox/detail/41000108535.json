@@ -1,0 +1,50 @@
+{
+  "bookId": "41000108535",
+  "bookName": "Sang Penguasa yang Bangkit (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000108535/41000108535.jpg?t=1733205805800",
+  "chapterCount": 98,
+  "introduction": "Ada desas-desus bahwa jika seseorang berhasil mendapatkan restu dari Lord Cloud, dia akan menjadi seorang yang terhormat. Tiga puluh tahun sebelumnya, Lars Baxter diberitahu bahwa jika seseorang meremehkannya, dia harus melawan dan memberi tahu mereka bahwa dia bukanlah orang yang bisa diremehkan, tetapi seorang pria yang harus dihormati!",
+  "tags": [
+    "Balas Dendam",
+    "Serangan Balik",
+    "Tokoh Legendaris",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1332,
+      "tagName": "Tokoh Legendaris",
+      "tagEnName": "Divine Tycoon"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-12-03 17:26:19",
+  "inLibrary": false
+}

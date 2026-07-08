@@ -1,0 +1,57 @@
+{
+  "bookId": "42000018258",
+  "bookName": "Tak Bisa Kabur dari Raja Naga",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
+  "chapterCount": 52,
+  "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
+  "tags": [
+    "Pembalikan Identitas",
+    "Cinta Paksaan",
+    "Takdir Cinta",
+    "Romansa",
+    "BG",
+    "Gairah"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1378,
+      "tagName": "Cinta Paksaan",
+      "tagEnName": "Forced Love"
+    },
+    {
+      "tagId": 1382,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    },
+    {
+      "tagId": 10047,
+      "tagName": "Gairah",
+      "tagEnName": "Steamy"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1783303200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-06 10:00:00",
+  "inLibrary": false
+}

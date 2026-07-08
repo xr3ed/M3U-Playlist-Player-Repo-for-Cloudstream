@@ -1,0 +1,56 @@
+{
+  "bookId": "42000016403",
+  "bookName": "Balas Dendam Sang Putra Bungsu (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016403/42000016403.jpg?t=1781174500189",
+  "chapterCount": 70,
+  "introduction": "Wira Juan, pewaris terakhir Keluarga Juan yang dibantai, kembali ke Kota Jasta setelah menghilang bertahun-tahun. Kini ia memimpin Asosiasi Pedang Langit dan diam-diam melindungi lima kakak angkatnya. Sambil membalas budi, ia menghukum para penjahat, mencari kebenaran pembantaian keluarganya, hingga akhirnya berhadapan dengan dalang utama dari Kota Nagara.",
+  "tags": [
+    "Balas Dendam",
+    "Serangan Balik",
+    "Keadilan",
+    "Kekuatan Khusus",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 10037,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-12 14:50:15",
+  "inLibrary": false
+}

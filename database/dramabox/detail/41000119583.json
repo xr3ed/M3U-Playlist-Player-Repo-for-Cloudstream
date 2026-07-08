@@ -1,0 +1,56 @@
+{
+  "bookId": "41000119583",
+  "bookName": "Cerita Cinta Cheerleader Cantik",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000119583/41000119583.jpg?t=1766975046618",
+  "chapterCount": 57,
+  "introduction": "Jane adalah maskot tim cheerleader SMA yang sering dibully temannya. Karena rumahnya hancur oleh tornado, Jane terpaksa tinggal bersama musuh bebuyutannya sejak kecil, William, yang sudah lama tak ditemuinya. Tanpa diduga, William ternyata adalah kapten tim basket sekolah yang baru, tinggi, dan tampan.",
+  "tags": [
+    "Musuh Jadi Kekasih",
+    "Serangan Balik",
+    "Sahabat Masa Kecil",
+    "Modern",
+    "Romansa",
+    "BG"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1390,
+      "tagName": "Musuh Jadi Kekasih",
+      "tagEnName": "Enemy to Lover"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1381,
+      "tagName": "Sahabat Masa Kecil",
+      "tagEnName": "Childhood Sweetheart"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-08-04 18:41:21",
+  "inLibrary": false
+}

@@ -1,0 +1,56 @@
+{
+  "bookId": "41000112706",
+  "bookName": "Alunan Cinta",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000112706/41000112706.jpg?t=1740384131838",
+  "chapterCount": 65,
+  "introduction": "Sanny menyerahkan keperawanannya pada pria asing. Sang kakak, Emma, mengetahui bahwa pria yang meniduri adiknya adalah CEO Grup Paragon, Hansen Yuwono. Emma mengaku di depan Hansen bahwa dialah wanita yang tidur dengannya pada malam itu.Siapa sangka, takdir justru mendekatkan Sanny dengan Hansen kembali. Sanny bekerja di perusahaan Hansen sebagai pengacara. Cinta pun kembali tumbuh di antara mereka berdua.",
+  "tags": [
+    "Salah Identitas",
+    "CEO",
+    "Pengacara",
+    "Cinta Pandangan Pertama",
+    "Kesempatan Kedua",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1403,
+      "tagName": "Salah Identitas",
+      "tagEnName": "Mistaken Identity"
+    },
+    {
+      "tagId": 1362,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1442,
+      "tagName": "Pengacara",
+      "tagEnName": "Lawyer"
+    },
+    {
+      "tagId": 1384,
+      "tagName": "Cinta Pandangan Pertama",
+      "tagEnName": "Love at First Sight"
+    },
+    {
+      "tagId": 1392,
+      "tagName": "Kesempatan Kedua",
+      "tagEnName": "Second Chance"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-28 17:18:17",
+  "inLibrary": false
+}

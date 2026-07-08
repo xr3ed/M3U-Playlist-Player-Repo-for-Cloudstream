@@ -1,0 +1,51 @@
+{
+  "bookId": "42000016616",
+  "bookName": "Cinta yang Sulit Diraih (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016616/42000016616.jpg?t=1781260379671",
+  "chapterCount": 61,
+  "introduction": "18 tahun lalu, Hesti Atmaja memaksa cucu perempuannya, Shinta Kusno, yang bergolongan darah Rh negatif, mendonorkan banyak darah demi menyelamatkan Henry Kusno. Saat Shinta sekarat, ia justru dibuang. Beruntung, Doni Candra menemukannya dan membesarkannya sebagai Yoana. Kini, Keluarga Kusno mencarinya, sementara Yoana bekerja di Grup Vista. Tanpa tahu jati dirinya, Henry dan Gita terus menindas dan mempermalukannya.",
+  "tags": [
+    "Keluarga",
+    "Pembalikan Identitas",
+    "Modern",
+    "Wanita Kuat",
+    "Salah Identitas"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    },
+    {
+      "tagId": 1403,
+      "tagName": "Salah Identitas",
+      "tagEnName": "Mistaken Identity"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1781575200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-16 10:00:00",
+  "inLibrary": false
+}

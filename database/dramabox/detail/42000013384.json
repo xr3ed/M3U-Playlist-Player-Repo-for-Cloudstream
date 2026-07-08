@@ -1,0 +1,57 @@
+{
+  "bookId": "42000013384",
+  "bookName": "Kukira Petani, Ternyata CEO",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000013384/42000013384.jpg?t=1779700914197",
+  "chapterCount": 51,
+  "introduction": "Setelah dikhianati keluarga dan pacarnya, Alisa Stevan menerima pernikahan pesanan dengan Revin Lazuardi. Alisa pikir Revin Adalah seorang petani miskin, tetapi faktanya Revin adalah CEO Grup Lazuardi. Di bawah perlindungan Revin, Alisa pun perlahan bangkit dan membalas semua orang yang pernah menyakitinya.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Cinta Setelah Menikah",
+    "Romansa",
+    "Modern",
+    "BG",
+    "Serangan Balik"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1393,
+      "tagName": "Cinta Setelah Menikah",
+      "tagEnName": "Love After Marriage"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1780365600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-02 10:00:00",
+  "inLibrary": false
+}

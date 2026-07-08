@@ -1,0 +1,56 @@
+{
+  "bookId": "41000102847",
+  "bookName": "Membangun Cinta di Era 80-an",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000102847/41000102847.jpg?t=1711076182854",
+  "chapterCount": 82,
+  "introduction": "Nala, seorang mahasiswi modern melintasi ruang dan waktu kembali ke tahun 1980-an. Di sana, dia bertemu dengan Riko, seorang pemilik peternakan babi yang telah bercerai dan memiliki dua anak.Nala mulai menjalin hubungan dengan Riko dan bersiap untuk menikah dengannya. Di saat yang sama, dia harus berhadapan dengan keluarga Riko yang penuh dengan berbagai masalah dan rintangan. Di tengah situasi tersebut, Nala juga menjadi lebih kuat.",
+  "tags": [
+    "Bangkitnya Orang Biasa",
+    "Keluarga",
+    "Serangan Balik",
+    "Perjalanan Waktu",
+    "Terlahir Kembali",
+    "Intrik Keluarga"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1398,
+      "tagName": "Bangkitnya Orang Biasa",
+      "tagEnName": "Underdog Story"
+    },
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1404,
+      "tagName": "Perjalanan Waktu",
+      "tagEnName": "Time Travel"
+    },
+    {
+      "tagId": 1405,
+      "tagName": "Terlahir Kembali",
+      "tagEnName": "Rebirth"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-03-22 14:37:05",
+  "inLibrary": false
+}

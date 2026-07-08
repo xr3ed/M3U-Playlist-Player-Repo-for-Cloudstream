@@ -1,0 +1,56 @@
+{
+  "bookId": "41000107149",
+  "bookName": "Jatuh Cinta pada Berandal Berjas",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000107149/41000107149.jpg?t=1730107651851",
+  "chapterCount": 56,
+  "introduction": "Jeni harus bekerja di dua tempat sebagai penari klub dan pelayan hotel demi ibunya. Suatu malam, Milan, ketua mafia berandal yang terkenal, memasuki klub Jeni, berharap untuk mendapatkan kembali “kekuasaannya”. Setiap wanita merasa kecewa, kecuali Jeni. Dia langsung jatuh cinta pada Jeni tanpa mengetahui bahwa teman Jeni, Anton, juga rela mengorbankan segalanya demi dia. Dia harus membuat pilihan. Mafia yang amat dominan atau anak muda yang polos? Siapa yang akan dia pilih?",
+  "tags": [
+    "Serangan Balik",
+    "Mafia",
+    "Gadis Naif",
+    "Cinta Segitiga",
+    "Cinta Pandangan Pertama",
+    "Cinta Rahasia"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1364,
+      "tagName": "Mafia",
+      "tagEnName": "Mafia"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1380,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1384,
+      "tagName": "Cinta Pandangan Pertama",
+      "tagEnName": "Love at First Sight"
+    },
+    {
+      "tagId": 1386,
+      "tagName": "Cinta Rahasia",
+      "tagEnName": "Secret Crush"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-10-29 11:27:09",
+  "inLibrary": false
+}

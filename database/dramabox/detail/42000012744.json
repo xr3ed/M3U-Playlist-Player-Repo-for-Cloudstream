@@ -1,0 +1,57 @@
+{
+  "bookId": "42000012744",
+  "bookName": "Edukasi Seks Oleh Sahabatku",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012744/42000012744.jpg?t=1779241038582",
+  "chapterCount": 58,
+  "introduction": "Setelah pesta yang memalukan, Elsa meminta bantuan Candra, teman masa kecilnya yang playboy, untuk membangun lagi kepercayaan dirinya. Mereka sepakat membuat aturan sederhana: tidak berciuman. Namun, saat perasaan tumbuh dan aturan itu dilanggar, Elsa harus memilih antara pria incarannya dan cinta yang selalu ada di hadapannya.",
+  "tags": [
+    "Cinta Segitiga",
+    "Sahabat Masa Kecil",
+    "Teman Jadi Kekasih",
+    "Playboy",
+    "Gadis Naif",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1380,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1381,
+      "tagName": "Sahabat Masa Kecil",
+      "tagEnName": "Childhood Sweetheart"
+    },
+    {
+      "tagId": 1391,
+      "tagName": "Teman Jadi Kekasih",
+      "tagEnName": "Friend to Lover"
+    },
+    {
+      "tagId": 1366,
+      "tagName": "Playboy",
+      "tagEnName": "Playboy"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1779501600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-23 10:00:00",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000011079",
+  "bookName": "Hasrat untuk Sahabat Kakakku",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011079/42000011079.jpg?t=1778046744986",
+  "chapterCount": 56,
+  "introduction": "Setelah tanpa sengaja mengirim email berisi fanfiksi eksplisit kepada teman sekamarnya yang baru, yang ternyata adalah sahabat kakaknya, Alia harus menghadapi ketegangan yang kian memanas serta aturan tidak tertulis dalam persahabatan kakaknya demi meraih pria impiannya.",
+  "tags": [
+    "Keluarga",
+    "Cinta Terlarang",
+    "Cinta Rahasia",
+    "Modern",
+    "Romansa",
+    "BG"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1379,
+      "tagName": "Cinta Terlarang",
+      "tagEnName": "Forbidden Love"
+    },
+    {
+      "tagId": 1386,
+      "tagName": "Cinta Rahasia",
+      "tagEnName": "Secret Crush"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1778119200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-07 10:00:00",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000008375",
+  "bookName": "Saat Bertemu Lagi (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008375/42000008375.jpg?t=1774337175134",
+  "chapterCount": 72,
+  "introduction": "Luna Yarvi, agen internasional yang menyamar sebagai guru privat, mendidik Leo Tyaga, pewaris muda keras kepala. Ketegasannya menembus sikap liar Leo dan membuka luka lama. Mengetahui Leo putra penolongnya, Luna menjadi pelindung. Konflik menumbuhkan cinta hingga takdir memisahkan. Tiga tahun berlalu, Leo sukses, Luna hidup sederhana; reuni menyalakan cinta penyelamat jiwa.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Perbedaan Usia",
+    "Pemberontak",
+    "Wanita Mandiri",
+    "Takdir Cinta"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1383,
+      "tagName": "Perbedaan Usia",
+      "tagEnName": "Age-Gap Love"
+    },
+    {
+      "tagId": 1372,
+      "tagName": "Pemberontak",
+      "tagEnName": "Rebellious"
+    },
+    {
+      "tagId": 1452,
+      "tagName": "Wanita Mandiri",
+      "tagEnName": "Independent Woman"
+    },
+    {
+      "tagId": 1382,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1774584000000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-27 12:00:00",
+  "inLibrary": false
+}

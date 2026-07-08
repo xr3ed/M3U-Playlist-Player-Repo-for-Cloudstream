@@ -1,0 +1,56 @@
+{
+  "bookId": "41000102734",
+  "bookName": "Legenda Tak Terkalahkan",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000102734/41000102734.jpg?t=1710295633186",
+  "chapterCount": 94,
+  "introduction": "Sebagai pewaris Istana Nagar, Tyler Ellis tinggal di sisi Kaia Clarke sebagai seorang pria biasa untuk membalas budi karena telah menyelamatkan nyawanya di masa lalu. Dia membantu dan mendukung keluarga Clarke, tetapi setelah Kaia naik ke status yang lebih tinggi, dia berusaha untuk bercerai dengannya. Tanpa disangka, suami yang ia benci itu memiliki pengaruh atas tokoh-tokoh berpengaruh.",
+  "tags": [
+    "Balas Dendam",
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Bangsawan",
+    "Pura-Pura Bodoh",
+    "Kekuatan Khusus"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1327,
+      "tagName": "Bangsawan",
+      "tagEnName": "Royalty"
+    },
+    {
+      "tagId": 1333,
+      "tagName": "Pura-Pura Bodoh",
+      "tagEnName": "Playing Dumb"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-03-13 11:31:18",
+  "inLibrary": false
+}

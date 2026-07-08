@@ -1,0 +1,50 @@
+{
+  "bookId": "41000102848",
+  "bookName": "Mengharumkan Nama Kampung Halaman",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000102848/41000102848.jpg?t=1711078643761",
+  "chapterCount": 89,
+  "introduction": "Pada Tahun Baru, Joe mengunjungi keluarga mertuanya untuk mengucapkan selamat tahun baru, tetapi dia malah mendapat perlakuan dingin dari seluruh keluarga istrinya. Mereka tidak tahu bahwa identitas asli Joe adalah Presdir Grup Sava yang masuk dalam 10 besar nasional!",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "CEO",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1324,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-03-22 14:29:27",
+  "inLibrary": false
+}

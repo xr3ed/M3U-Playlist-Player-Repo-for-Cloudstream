@@ -1,0 +1,56 @@
+{
+  "bookId": "42000018275",
+  "bookName": "Suami Sampah Itu Jadi Milikmu (Sulih Suara) ",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018275/42000018275.jpg?t=1782265935888",
+  "chapterCount": 53,
+  "tags": [
+    "Wanita Kuat",
+    "Perselingkuhan",
+    "Pembalikan Identitas",
+    "Kabur Saat Hamil",
+    "Putri Kaya",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    },
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1397,
+      "tagName": "Kabur Saat Hamil",
+      "tagEnName": "Secret Baby"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782439200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-26 10:00:00",
+  "inLibrary": false
+}

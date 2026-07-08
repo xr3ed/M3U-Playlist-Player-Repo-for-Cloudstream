@@ -1,0 +1,56 @@
+{
+  "bookId": "41000112449",
+  "bookName": "Ketika Hati yang Hilang Kembali",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000112449/41000112449.jpg?t=1739778825426",
+  "chapterCount": 100,
+  "introduction": "Raline adalah pengagum rahasia yang rendah, sementara Randy adalah pria tampan dan dingin yang hanya memiliki cinta pertamanya di matanya. Tak disangka, Randy berulang kali mendekat, membuat hati Raline yang tenang kembali bergelombang, sampai dia mendengar langsung kata-kata meremehkan Randy, \"Dia hanya gadis dari keluarga miskin, bagaimana aku bisa menyukainya.\" Raline pergi dengan hati hancur, tetapi Randy tidak tenang, memohon dengan merendahkan diri...",
+  "tags": [
+    "Perselingkuhan",
+    "Playboy",
+    "Cinta Segitiga",
+    "Cinta Rahasia",
+    "Musuh Jadi Kekasih",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1366,
+      "tagName": "Playboy",
+      "tagEnName": "Playboy"
+    },
+    {
+      "tagId": 1380,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1386,
+      "tagName": "Cinta Rahasia",
+      "tagEnName": "Secret Crush"
+    },
+    {
+      "tagId": 1390,
+      "tagName": "Musuh Jadi Kekasih",
+      "tagEnName": "Enemy to Lover"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-02-17 18:11:45",
+  "inLibrary": false
+}

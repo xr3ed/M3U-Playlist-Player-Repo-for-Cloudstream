@@ -1,0 +1,57 @@
+{
+  "bookId": "42000018274",
+  "bookName": "Nak, Ibulah Bosmu (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018274/42000018274.jpg?t=1782264774806",
+  "chapterCount": 54,
+  "introduction": "Susi Narendra, lulusan terbaik universitas ternama, menjadi ibu tunggal setelah suaminya meninggal. Demi putranya, Sandi Ferdian, ia menyelamatkan Grup Ferdian dari kebangkrutan dan membesarkannya hingga sukses. Namun Sandi yang manja mengklaim semua keberhasilan itu sebagai jasanya, meremehkan Susi, dan membiarkan kekasihnya, Eni Kasnadi, mempermalukannya. Kecewa atas kedurhakaan putranya, Susi meninggalkan perusahaan dan memutuskan hubungan dengannya.",
+  "tags": [
+    "Balas Dendam",
+    "Wanita Kuat",
+    "Pembalikan Identitas",
+    "Bangkitnya Orang Biasa",
+    "Serangan Balik",
+    "Penyesalan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1398,
+      "tagName": "Bangkitnya Orang Biasa",
+      "tagEnName": "Underdog Story"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1654,
+      "tagName": "Penyesalan",
+      "tagEnName": "All-Too-Late"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782871200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-01 10:00:00",
+  "inLibrary": false
+}

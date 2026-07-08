@@ -1,0 +1,56 @@
+{
+  "bookId": "41000103905",
+  "bookName": "Cinta Membutuhkan Timbal Balik",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000103905/41000103905.jpg?t=1718248060448",
+  "chapterCount": 102,
+  "introduction": "Vanya adalah putri orang terkaya yang menyembunyikan identitasnya. Dia bekerja di perusahaannya sendiri. Namun, CEO dari perusahaan ternyata adalah pacarnya, yaitu Revan, yang pergi tanpa pamit selama tiga tahun. Awalnya dia berpikir bahwa kesalahpahaman bisa diselesaikan, tetapi sang wanita licik Riri menghasutnya, menyebabkan kesalahpahaman antara Vanya dan Revan makin parah ...",
+  "tags": [
+    "Pembalikan Identitas",
+    "Keluarga",
+    "CEO",
+    "Bangsawan",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1362,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1367,
+      "tagName": "Bangsawan",
+      "tagEnName": "Royalty"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-06-13 13:42:01",
+  "inLibrary": false
+}

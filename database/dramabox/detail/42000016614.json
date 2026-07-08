@@ -1,0 +1,57 @@
+{
+  "bookId": "42000016614",
+  "bookName": "Kepulangan Sang Kaisar",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016614/42000016614.jpg?t=1781260120157",
+  "chapterCount": 60,
+  "introduction": "Arya, pemuda miskin yang naik takhta setelah memadamkan pemberontakan, kembali menyamar ke kampungnya untuk menepati janji pada mantan tunangan Hana. Ia ingin menjadikannya permaisuri. Namun ia melihat pejabat korup menindas rakyat dan dipukuli saat membela mereka. Hana menghina dan mengkhianatinya. Ia mengetahui Citra merawatnya serta korupsi termasuk perobohan Akademi Yugi. Menahan amarah Arya menyusun rencana mengundang pejabat korup lalu mengungkap dirinya sebagai raja.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Sejarah",
+    "Pria Dominan",
+    "Balas Dendam",
+    "Serangan Balik",
+    "Orang Biasa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1319,
+      "tagName": "Sejarah",
+      "tagEnName": "Historical"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    },
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1331,
+      "tagName": "Orang Biasa",
+      "tagEnName": "A Nobody"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1781402400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-14 10:00:01",
+  "inLibrary": false
+}

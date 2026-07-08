@@ -1,0 +1,56 @@
+{
+  "bookId": "41000102444",
+  "bookName": "Singgasana Bayangan",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000102444/41000102444.jpg?t=1709107635977",
+  "chapterCount": 142,
+  "introduction": "Felix Young, yang dikenal sebagai Yang Mulia secara diam-diam mendukung istrinya, Madison Xavier, untuk mencapai posisi jabatan yang lebih tinggi. Namun, pada hari Madison diangkat sebagai Dewa Perang, Madison mengajukan gugatan cerai. Terpukul, Felix bertekad untuk mendapatkan kembali segala sesuatu yang pernah dia berikan padanya.",
+  "tags": [
+    "Serangan Balik",
+    "Balas Dendam",
+    "Bangsawan",
+    "Dewa Perang",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1327,
+      "tagName": "Bangsawan",
+      "tagEnName": "Royalty"
+    },
+    {
+      "tagId": 1330,
+      "tagName": "Dewa Perang",
+      "tagEnName": "War God"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-02-28 16:40:33",
+  "inLibrary": false
+}

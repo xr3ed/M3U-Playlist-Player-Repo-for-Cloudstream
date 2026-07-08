@@ -1,0 +1,56 @@
+{
+  "bookId": "41000112479",
+  "bookName": "Cinta Bersemi Di Malam",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000112479/41000112479.jpg?t=1739849559148",
+  "chapterCount": 60,
+  "introduction": "Nindi yang menghadapi pahitnya kehidupan akhirnya memutuskan mengganti identitasnya sebagai Indri untuk balas dendam pada kakak angkatnya yang bernama Siska. Di tengah rencana balas dendamnya, Indri malah jatuh cinta pada suami Siska, Nico Indrawan, mereka menikah karena terpaksa dan Nico mengira selama ini anaknya, Tiara, lahir dari rahim Siska. Pada akhirnya kebenaran pun terungkap dan balas dendam Indri pun berjalan sesuai keinginannya.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Balas Dendam",
+    "Wanita Mandiri",
+    "Cinta Paksaan",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1452,
+      "tagName": "Wanita Mandiri",
+      "tagEnName": "Independent Woman"
+    },
+    {
+      "tagId": 1378,
+      "tagName": "Cinta Paksaan",
+      "tagEnName": "Forced Love"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-02-18 18:43:02",
+  "inLibrary": false
+}

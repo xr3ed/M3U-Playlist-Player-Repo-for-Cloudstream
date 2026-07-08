@@ -1,0 +1,57 @@
+{
+  "bookId": "42000008201",
+  "bookName": "Jadi Tuan Muda dalam Semalam (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008201/42000008201.jpg?t=1773979591463",
+  "chapterCount": 70,
+  "introduction": "Emir Feris tinggal bersama ibunya di kawasan kumuh selama 22 tahun. Lantaran tidak mampu memenuhi gaya hidup mewah pacarnya, Emir pun diputuskan secara sepihak.Namun, siapa sangka, di malam yang sama, kakek Emir yang merupakan orang terkaya di daerah tersebut datang mencari Emir?",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Perselingkuhan",
+    "Bangkitnya Orang Biasa",
+    "Orang Biasa",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1341,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1339,
+      "tagName": "Bangkitnya Orang Biasa",
+      "tagEnName": "Underdog Story"
+    },
+    {
+      "tagId": 1331,
+      "tagName": "Orang Biasa",
+      "tagEnName": "A Nobody"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1774411200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-25 12:00:00",
+  "inLibrary": false
+}

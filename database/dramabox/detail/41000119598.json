@@ -1,0 +1,56 @@
+{
+  "bookId": "41000119598",
+  "bookName": "Cinta yang Kurelakan",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000119598/41000119598.jpg?t=1754361121026",
+  "chapterCount": 55,
+  "introduction": "Maira kehilangan penglihatannya saat menyelamatkan Gyan. Gyan melamarnya, tetapi setelah menikah dan penglihatan Maira pulih, dia menemukan suaminya berselingkuh dengan sekretarisnya dan bahkan menampungnya di rumah mereka. Maira sangat terpukul. Dia akhirnya memutuskan untuk pergi jauh. Pada saat itulah Gyan menyesal. Namun, Maira kini telah mengabdikan dirinya pada bidang medis, dengan seorang kakak seperguruan yang setia diam-diam menjaganya.",
+  "tags": [
+    "Cinta Segitiga",
+    "Perselingkuhan",
+    "Balas Dendam",
+    "Dokter",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1380,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1440,
+      "tagName": "Dokter",
+      "tagEnName": "Doctor"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-08-05 13:50:28",
+  "inLibrary": false
+}

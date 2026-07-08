@@ -1,0 +1,57 @@
+{
+  "bookId": "42000019281",
+  "bookName": "Pasangan yang Ditolak",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019281/42000019281.jpg?t=1782877112957",
+  "chapterCount": 58,
+  "introduction": "Seorang kembar yang tidak dicintai, dikhianati oleh keluarga dan orang tercintanya. Dia yang diburu dan ditinggalkan melarikan diri ke Raja Alpha yang kejam. Kekuatan tersembunyi, rahasia mematikan, dan kegelapan terlarang menantinya. Serigala betina yang terbuang itu menjadi ratu kegelapan.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Manusia Serigala",
+    "Wanita Kuat",
+    "Balas Dendam",
+    "Fantasi",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1363,
+      "tagName": "Manusia Serigala",
+      "tagEnName": "Werewolf"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1355,
+      "tagName": "Fantasi",
+      "tagEnName": "Fantasy"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1783130400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-04 10:00:00",
+  "inLibrary": false
+}

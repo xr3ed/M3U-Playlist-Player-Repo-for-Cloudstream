@@ -1,0 +1,50 @@
+{
+  "bookId": "41000103847",
+  "bookName": "Pengembara Pulang ke Rumah",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000103847/41000103847.jpg?t=1717656650654",
+  "chapterCount": 88,
+  "introduction": "20 tahun yang lalu, Tony Sunarto diadopsi oleh ketua direktur Grup Yunda karena kecelakaan mobil dan berpisah dari orang tuanya. 20 tahun kemudian, Tony mengembara pulang ke kampung halamannya. Dia mengenali orang tuanya dari sepasang liontin giok ibu dan anak.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Keluarga",
+    "Kekuatan Khusus",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1348,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2024-06-06 16:49:17",
+  "inLibrary": false
+}

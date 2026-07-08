@@ -1,0 +1,56 @@
+{
+  "bookId": "42000019623",
+  "bookName": "Koki Legendaris",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019623/42000019623.jpg?t=1782983726059",
+  "chapterCount": 57,
+  "introduction": "Helen, juru masak istana legendaris yang dijuluki Raja sebagai Dewi Kuliner, meninggal tepat sebelum menerima penghargaan tertinggi. Terlahir kembali 100 tahun kemudian, dia menjadi asisten dapur di restoran ternama dan berjuang menyelamatkan restoran itu dari pengkhianatan serta kehancuran.",
+  "tags": [
+    "Serangan Balik",
+    "Terlahir Kembali",
+    "Wanita Karier",
+    "Wanita Kuat",
+    "Pembalikan Identitas",
+    "Bangkitnya Orang Biasa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1405,
+      "tagName": "Terlahir Kembali",
+      "tagEnName": "Rebirth"
+    },
+    {
+      "tagId": 1375,
+      "tagName": "Wanita Karier",
+      "tagEnName": "Career Woman"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1398,
+      "tagName": "Bangkitnya Orang Biasa",
+      "tagEnName": "Underdog Story"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-03 10:22:24",
+  "inLibrary": false
+}

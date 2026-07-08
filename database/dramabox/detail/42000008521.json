@@ -1,0 +1,57 @@
+{
+  "bookId": "42000008521",
+  "bookName": "Di Balik Ruang Rahasia CEO",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008521/42000008521.jpg?t=1774488530527",
+  "chapterCount": 74,
+  "introduction": "Saat karyawan magang, Mila, tanpa sengaja menemukan ruang rahasia CEO Leo, dia terseret ke dalam permainan berbahaya penuh hasrat terlarang. Saat kekuasaan, nafsu, dan norma keluarga bertabrakan, hubungan rahasia mereka di kantor terancam menjadi skandal publik. Apakah mereka berani keluar dari bayangan dan menghadapi perasaan ketika semuanya terbongkar?",
+  "tags": [
+    "Pembalikan Identitas",
+    "Cinta Terlarang",
+    "CEO",
+    "Romansa Kantor",
+    "Modern",
+    "Intrik Keluarga"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1662,
+      "tagName": "Cinta Terlarang",
+      "tagEnName": "Forbidden Love"
+    },
+    {
+      "tagId": 1324,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1418,
+      "tagName": "Romansa Kantor",
+      "tagEnName": "Office Romance"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1350,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1774627200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-28 00:00:00",
+  "inLibrary": false
+}

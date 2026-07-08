@@ -1,0 +1,57 @@
+{
+  "bookId": "42000011674",
+  "bookName": "Dari Malam Itu Hingga Selamanya (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011674/42000011674.jpg?t=1778477903028",
+  "chapterCount": 57,
+  "introduction": "Seorang mahasiswi miskin bernama Viona, yang hidupnya serba kekurangan, bertekad untuk mendapatkan uang demi biaya kuliahnya. Ia menerima kesepakatan yang tak masuk akal: menghabiskan satu malam bersama Elvan, satu-satunya pewaris Grup Santosa. Meskipun Elvan adalah pria yang dikutuk dengan kemandulan, dokter justru memberinya kabar gembira bahwa dia mengandung anak kembar. Sejak saat itu, hidup Viona berubah total...",
+  "tags": [
+    "CEO",
+    "Modern",
+    "Romansa",
+    "BG",
+    "Kehamilan",
+    "Cinta Semalam"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1362,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    },
+    {
+      "tagId": 1641,
+      "tagName": "Kehamilan",
+      "tagEnName": "Pregnancy"
+    },
+    {
+      "tagId": 1385,
+      "tagName": "Cinta Semalam",
+      "tagEnName": "One Night Stand"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1778637600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-13 10:00:00",
+  "inLibrary": false
+}

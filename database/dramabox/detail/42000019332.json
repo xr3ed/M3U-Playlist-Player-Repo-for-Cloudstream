@@ -1,0 +1,56 @@
+{
+  "bookId": "42000019332",
+  "bookName": "Menjadi Kekasih Naga",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019332/42000019332.jpg?t=1782891332485",
+  "chapterCount": 35,
+  "introduction": "Aleya terlahir kembali sebelum takdir tragisnya terjadi. Dikhianati saudari dan tunangannya hingga tewas di Lubang Naga pada kehidupan sebelumnya, kini Aleya bertekad mengubah nasibnya. Dia beralih pada Nadan, leluhur naga yang tersegel, dan mengandung sembilan pewaris naga.",
+  "tags": [
+    "Balas Dendam",
+    "Terlahir Kembali",
+    "Intrik Keluarga",
+    "Penebusan",
+    "Kehamilan",
+    "Kekuatan Khusus"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1405,
+      "tagName": "Terlahir Kembali",
+      "tagEnName": "Rebirth"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1459,
+      "tagName": "Penebusan",
+      "tagEnName": "Redemption"
+    },
+    {
+      "tagId": 1641,
+      "tagName": "Kehamilan",
+      "tagEnName": "Pregnancy"
+    },
+    {
+      "tagId": 1371,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-01 16:45:39",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000008313",
+  "bookName": "Istriku Tiga, Takdirku Gila S2 (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008313/42000008313.jpg?t=1774255575124",
+  "chapterCount": 70,
+  "introduction": "Arsa Wira, seorang pria modern, melakukan perjalanan lintas waktu ke masa kuno dan memperoleh sebuah sistem poin afeksi. Dia menikahi tiga istri yang cantik jelita dan menjadi orang yang sangat kaya. Masalah mulai terjadi ketika tiba-tiba saja istri keduanya diculik.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Perjalanan Waktu",
+    "Sistem",
+    "Penebusan",
+    "Tokoh Legendaris",
+    "Kekuatan Khusus"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1344,
+      "tagName": "Perjalanan Waktu",
+      "tagEnName": "Time Travel"
+    },
+    {
+      "tagId": 1346,
+      "tagName": "Sistem",
+      "tagEnName": "Gamified World"
+    },
+    {
+      "tagId": 1478,
+      "tagName": "Penebusan",
+      "tagEnName": "Redemption"
+    },
+    {
+      "tagId": 1332,
+      "tagName": "Tokoh Legendaris",
+      "tagEnName": "Divine Tycoon"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1774504800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-26 14:00:00",
+  "inLibrary": false
+}

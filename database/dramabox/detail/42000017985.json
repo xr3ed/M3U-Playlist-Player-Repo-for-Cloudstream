@@ -1,0 +1,56 @@
+{
+  "bookId": "42000017985",
+  "bookName": "Satu Malam yang Mengubah Takdirku",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
+  "chapterCount": 56,
+  "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
+  "tags": [
+    "Kabur Saat Hamil",
+    "Salah Identitas",
+    "Cinta Semalam",
+    "Balas Dendam",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1397,
+      "tagName": "Kabur Saat Hamil",
+      "tagEnName": "Secret Baby"
+    },
+    {
+      "tagId": 1403,
+      "tagName": "Salah Identitas",
+      "tagEnName": "Mistaken Identity"
+    },
+    {
+      "tagId": 1385,
+      "tagName": "Cinta Semalam",
+      "tagEnName": "One Night Stand"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-27 03:34:59",
+  "inLibrary": false
+}

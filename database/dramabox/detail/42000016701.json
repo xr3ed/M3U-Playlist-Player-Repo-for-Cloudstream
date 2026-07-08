@@ -1,0 +1,57 @@
+{
+  "bookId": "42000016701",
+  "bookName": "Calon Kaisar yang Dikhianati (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016701/42000016701.jpg?t=1781502372875",
+  "chapterCount": 64,
+  "introduction": "Arya Tama pernah berjanji akan menjadikan Tiara Kusuma permaisuri jika ia menjadi kaisar. Bertahun-tahun kemudian, ia pulang menyamar demi menepati janji, tapi justru melihat Tiara berkhianat dan berpihak pada pejabat zalim. Setelah dihina dan dipukuli, Arya menyiapkan jamuan untuk membongkar semua kejahatan. Saat identitasnya sebagai kaisar terungkap, Tiara menyesal, tapi semuanya sudah terlambat.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Pura-Pura Bodoh",
+    "Kembali Bangkit",
+    "Sejarah",
+    "Pria Dominan",
+    "Serangan Balik"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1333,
+      "tagName": "Pura-Pura Bodoh",
+      "tagEnName": "Playing Dumb"
+    },
+    {
+      "tagId": 10001,
+      "tagName": "Kembali Bangkit",
+      "tagEnName": "Comeback Story"
+    },
+    {
+      "tagId": 1319,
+      "tagName": "Sejarah",
+      "tagEnName": "Historical"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1781668800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-17 12:00:00",
+  "inLibrary": false
+}

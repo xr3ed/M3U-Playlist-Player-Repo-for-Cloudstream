@@ -1,0 +1,57 @@
+{
+  "bookId": "42000017391",
+  "bookName": "Pengantin Perawan Raja Naga",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017391/42000017391.jpg?t=1781687794585",
+  "chapterCount": 53,
+  "introduction": "Sinopsis: Setelah ibu tirinya melelang kesuciannya, Lily dibeli oleh Faris, Sang Raja Naga yang mengerikan. Demi menolong saudaranya, Lily menyetujuinya. Ternyata, Faris tengah sekarat akibat kutukan kuno, seorang perawan harus jatuh cinta dan menyerahkan diri kepadanya secara sukarela dalam waktu 30 hari, atau Faris akan mati.",
+  "tags": [
+    "Fantasi",
+    "Gairah",
+    "Musuh Jadi Kekasih",
+    "Cinta Paksaan",
+    "Takdir Cinta",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1355,
+      "tagName": "Fantasi",
+      "tagEnName": "Fantasy"
+    },
+    {
+      "tagId": 10047,
+      "tagName": "Gairah",
+      "tagEnName": "Steamy"
+    },
+    {
+      "tagId": 1390,
+      "tagName": "Musuh Jadi Kekasih",
+      "tagEnName": "Enemy to Lover"
+    },
+    {
+      "tagId": 1378,
+      "tagName": "Cinta Paksaan",
+      "tagEnName": "Forced Love"
+    },
+    {
+      "tagId": 1382,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782489600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-27 00:00:00",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "41000118123",
+  "bookName": "Nafsu Terlarang",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000118123/41000118123.jpg?t=1751874058203",
+  "chapterCount": 87,
+  "introduction": "Lima tahun lalu, Kaiden Loren melanggar pantangan. Citra Joana membiusnya kemudian melarikan diri. Citra menyembunyikan identitas, tapi mereka tetap bertemu lagi. Dibawah batang hidung Kaiden, Citra berusaha merencanakan untuk kabur lagi. Namun tanpa diduga, kali ini dia adalah mangsa. Perangkap sang pemburu sudah dipasang sejak pertama kali mereka bertemu.",
+  "tags": [
+    "Pengantin Kabur",
+    "Cinta Terlarang",
+    "Kesempatan Kedua",
+    "Modern",
+    "Romansa",
+    "BG"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1396,
+      "tagName": "Pengantin Kabur",
+      "tagEnName": "Runaway Bride"
+    },
+    {
+      "tagId": 1379,
+      "tagName": "Cinta Terlarang",
+      "tagEnName": "Forbidden Love"
+    },
+    {
+      "tagId": 1392,
+      "tagName": "Kesempatan Kedua",
+      "tagEnName": "Second Chance"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1752483600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-07-14 17:00:00",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000008365",
+  "bookName": "Murka Putri Dunia Bawah (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008365/42000008365.jpg?t=1774335305643",
+  "chapterCount": 73,
+  "introduction": "Fera, putri penguasa dunia bawah, menyembunyikan identitasnya setelah menikah.  Putrinya, Xyra, terserang penyakit jantung saat ulang tahun. Dalam perjalanan ke rumah sakit, Fera bentrok dengan kekasih ayahnya, Dea. Dengan dukungan keluarga, Fera akhirnya membalas dendam dan mengusir suaminya yang selingkuh tanpa harta.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Balas Dendam",
+    "Mafia",
+    "Serangan Balik",
+    "Perselingkuhan",
+    "Keluarga"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1364,
+      "tagName": "Mafia",
+      "tagEnName": "Mafia"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1775023200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-01 14:00:00",
+  "inLibrary": false
+}

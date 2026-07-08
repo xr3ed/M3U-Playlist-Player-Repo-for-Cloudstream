@@ -1,0 +1,56 @@
+{
+  "bookId": "41000112972",
+  "bookName": "Dewa Pedang",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000112972/41000112972.jpg?t=1740990995512",
+  "chapterCount": 71,
+  "introduction": "Dulu kala, Dewa Pedang mengalahkan semua iblis jahat di segala penjuru dunia. Namun, karena suatu kesalahan yang menyebabkan kematian istrinya, dia merasa sangat bersalah. Sebagai hukuman, setiap hari ia menebas Batu Pengikat Langit sebanyak sepuluh ribu kali. Akhirnya Dewa Pedang pun meninggal karena kehabisan tenaga. Ajaibnya, jiwanya tidak musnah dan merasuki tubuh seorang pemuda lemah. Sejak saat itu, putaran hidupnya yang legendaris dituliskan kembali.",
+  "tags": [
+    "Terlahir Kembali",
+    "Pertukaran Jiwa",
+    "Bangkitnya Orang Biasa",
+    "Penebusan",
+    "Dewa Perang",
+    "Fantasi"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1345,
+      "tagName": "Terlahir Kembali",
+      "tagEnName": "Rebirth"
+    },
+    {
+      "tagId": 1477,
+      "tagName": "Pertukaran Jiwa",
+      "tagEnName": "Transmigration"
+    },
+    {
+      "tagId": 1339,
+      "tagName": "Bangkitnya Orang Biasa",
+      "tagEnName": "Underdog Story"
+    },
+    {
+      "tagId": 1478,
+      "tagName": "Penebusan",
+      "tagEnName": "Redemption"
+    },
+    {
+      "tagId": 1330,
+      "tagName": "Dewa Perang",
+      "tagEnName": "War God"
+    },
+    {
+      "tagId": 1321,
+      "tagName": "Fantasi",
+      "tagEnName": "Fantasy"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-03-03 17:40:29",
+  "inLibrary": false
+}
