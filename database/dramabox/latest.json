@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "231K",
+      "hotCode": "245K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "20.4K",
+      "hotCode": "20.8K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,12 +174,52 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "11.9K",
+      "hotCode": "10.9K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783216800000,
     "shelfTime": "2026-07-05 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020247",
+    "bookName": "Istri Baik Apaan?",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
+    "chapterCount": 62,
+    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
+    "tags": [
+      "Balas Dendam",
+      "Melawan Balik",
+      "Kebangkitan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 818,
+        "tagName": "Balas Dendam"
+      },
+      {
+        "tagId": 822,
+        "tagName": "Melawan Balik"
+      },
+      {
+        "tagId": 825,
+        "tagName": "Kebangkitan"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Juan Lee,  Nadia Meka",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "8.4K",
+      "sort": 4
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783404954000,
+    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -235,8 +275,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "9.3K",
-      "sort": 4
+      "hotCode": "7.8K",
+      "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783396800000,
@@ -296,52 +336,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "8.4K",
-      "sort": 5
+      "hotCode": "6.6K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783303200000,
     "shelfTime": "2026-07-06 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020247",
-    "bookName": "Istri Baik Apaan?",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
-    "chapterCount": 62,
-    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
-    "tags": [
-      "Balas Dendam",
-      "Melawan Balik",
-      "Kebangkitan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 818,
-        "tagName": "Balas Dendam"
-      },
-      {
-        "tagId": 822,
-        "tagName": "Melawan Balik"
-      },
-      {
-        "tagId": 825,
-        "tagName": "Kebangkitan"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Juan Lee,  Nadia Meka",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "7.6K",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783404954000,
-    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -397,12 +397,67 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "6.8K",
+      "hotCode": "6K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783047239000,
     "shelfTime": "2026-07-03 10:53:59",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018065",
+    "bookName": "Menantu Naga Tak Terkalahkan",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018065/42000018065.jpg?t=1782196194297",
+    "chapterCount": 74,
+    "introduction": "Arga, murid terakhir Guru Zanar dari Pegunungan Ulmar, turun gunung setelah tiga tahun kultivasi dan mencapai Tingkat Tapak Dewa. Atas perintah gurunya, ia datang untuk menikahi Laila dari Keluarga Sanjaya. Meski memiliki kemampuan medis dan bela diri luar biasa, Arga terus diremehkan karena berasal dari desa. Bahkan setelah menyelamatkan banyak orang dan mengalahkan para ahli, ia tetap dianggap pembual. Hingga identitas aslinya terungkap dan semua orang menyadari kesalahan m",
+    "tags": [
+      "Serangan Balik",
+      "Kekuatan Khusus",
+      "Keadilan",
+      "Pria Dominan",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      },
+      {
+        "tagId": 10037,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Arga Maudi,  Laila Baskara",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "4.3K",
+      "sort": 8
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783310400000,
+    "shelfTime": "2026-07-06 12:00:00",
     "inLibrary": false
   },
   {
@@ -453,7 +508,7 @@
     "rankVo": {
       "rankType": 3,
       "hotCode": "4.1K",
-      "sort": 8
+      "sort": 9
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783476000000,
@@ -461,19 +516,25 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000018065",
-    "bookName": "Menantu Naga Tak Terkalahkan",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018065/42000018065.jpg?t=1782196194297",
-    "chapterCount": 74,
-    "introduction": "Arga, murid terakhir Guru Zanar dari Pegunungan Ulmar, turun gunung setelah tiga tahun kultivasi dan mencapai Tingkat Tapak Dewa. Atas perintah gurunya, ia datang untuk menikahi Laila dari Keluarga Sanjaya. Meski memiliki kemampuan medis dan bela diri luar biasa, Arga terus diremehkan karena berasal dari desa. Bahkan setelah menyelamatkan banyak orang dan mengalahkan para ahli, ia tetap dianggap pembual. Hingga identitas aslinya terungkap dan semua orang menyadari kesalahan m",
+    "bookId": "42000019699",
+    "bookName": "Salah Memilih, Kehilangan Segalanya",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019699/42000019699.jpg?t=1783043090757",
+    "chapterCount": 60,
+    "introduction": "Jax, penguasa tersembunyi dunia militer, politik, dan bisnis Negara Kora, menikahi Eva tiga tahun lalu demi memenuhi wasiat mendiang tetuanya. Menyembunyikan identitasnya, dia menyelamatkan perusahaan keluarga Eva yang nyaris bangkrut dan membantunya mendapatkan kontrak besar. Namun, Eva justru mengira semua itu berkat Will, pria yang mengejarnya. Dia meremehkan Jax yang dianggap pengangguran dan ingin menceraikannya. Saat Jax mengungkap jati dirinya dan menghukum semua yang ",
     "tags": [
+      "Pembalikan Identitas",
       "Serangan Balik",
       "Kekuatan Khusus",
-      "Keadilan",
+      "Modern",
       "Pria Dominan",
-      "Modern"
+      "Balas Dendam"
     ],
     "tagV3s": [
+      {
+        "tagId": 1338,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
       {
         "tagId": 1340,
         "tagName": "Serangan Balik",
@@ -485,9 +546,9 @@
         "tagEnName": "The Chosen One"
       },
       {
-        "tagId": 10037,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       },
       {
         "tagId": 1323,
@@ -495,69 +556,24 @@
         "tagEnName": "Powerful Male Lead"
       },
       {
-        "tagId": 1318,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Arga Maudi,  Laila Baskara",
+    "protagonist": "Jax Candra,  Eva Halim",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
       "hotCode": "3.6K",
-      "sort": 9
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783310400000,
-    "shelfTime": "2026-07-06 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020105",
-    "bookName": "Ternyata Dia Suamiku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020105/42000020105.jpg?t=1783316962278",
-    "chapterCount": 78,
-    "introduction": "Ilona menjalani pernikahan perjodohan dengan Javian, pria yang hampir tak pernah ditemuinya selama setahun. Saat Ilona mulai jatuh cinta pada bosnya, Logan Sabadi, dia menerima sebuah fakta mengejutkan. Logan dan Javian ternyata adalah orang yang sama!",
-    "tags": [
-      "Romansa",
-      "Identitas Tersembunyi",
-      "Nikah Dulu Cinta Belakangan ",
-      "Salah Paham"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 807,
-        "tagName": "Romansa"
-      },
-      {
-        "tagId": 813,
-        "tagName": "Identitas Tersembunyi"
-      },
-      {
-        "tagId": 816,
-        "tagName": "Nikah Dulu Cinta Belakangan "
-      },
-      {
-        "tagId": 826,
-        "tagName": "Salah Paham"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Logan Sabadi,  Ilona Andini",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "3.5K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783389600000,
-    "shelfTime": "2026-07-07 10:00:00",
+    "bookShelfTime": 1783048678000,
+    "shelfTime": "2026-07-03 11:17:58",
     "inLibrary": false
   }
 ]
