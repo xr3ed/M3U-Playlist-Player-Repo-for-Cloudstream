@@ -133,9 +133,9 @@ jobs:
           # Force push ke branch builds
           git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" builds:builds --force
           
-          # Buat dan push git tag untuk versi rilis ini
-          git tag "build-${{ github.run_number }}"
-          git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "build-${{ github.run_number }}"
+          # Buat dan push git tag untuk versi rilis ini (force push tag agar aman)
+          git tag "build-${{ github.run_number }}" --force
+          git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "build-${{ github.run_number }}" --force
           
           # Hubungkan ke remote dan bersihkan tag lama (sisakan 5 terbaru)
           git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
