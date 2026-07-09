@@ -30,17 +30,31 @@ Repositori resmi untuk memasang ekstensi pemutar M3U dan live streaming olahraga
 
 ## 📥 Cara Pemasangan di Cloudstream
 
-Ikuti langkah mudah berikut untuk menambahkan repositori ke aplikasi Cloudstream Anda:
+Ikuti langkah mudah berikut untuk menambahkan repositori ke aplikasi Cloudstream Anda. Anda dapat memilih salah satu jalur repositori berikut sesuai kebutuhan:
 
-1. **Salin Tautan Repositori:**
-   ```text
-   https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/refs/heads/builds/xr3ed.json
-   ```
+### 1. Jalur jsDelivr CDN (Direkomendasikan ⭐)
+Jalur ini sangat direkomendasikan karena **bebas dari masalah limitasi unduhan (Error 429 / Too Many Requests)**.
+* **Tautan Repositori:**
+  ```text
+  https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/xr3ed-jsdelivr.json
+  ```
+
+### 2. Jalur GitHub Raw
+Jalur langsung ke GitHub. Gunakan jalur ini hanya jika koneksi Anda ke CDN terhambat dan IP Anda tidak dibatasi limitasi GitHub.
+* **Tautan Repositori:**
+  ```text
+  https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3ed.json
+  ```
+
+---
+
+### Langkah Pemasangan di Aplikasi:
+1. **Salin salah satu Tautan Repositori** di atas (disarankan jalur **jsDelivr CDN**).
 2. Buka aplikasi **Cloudstream**.
 3. Masuk ke menu **Settings** > **Extensions**.
 4. Ketuk tombol **Add Repository** di pojok kanan bawah.
 5. Tempel tautan repositori yang sudah disalin, beri nama (misal: `xr3ed Repo`), lalu ketuk **Add**.
-6. Cari ekstensi yang Anda butuhkan (seperti **Xr3edEvent** atau **RBTVPlus**) pada daftar repositori baru tersebut, lalu ketuk **Install**.
+6. Cari ekstensi yang Anda butuhkan (seperti **Xr3edEvent**, **RBTVPlus**, atau **#Dracin Melolo**) pada daftar repositori baru tersebut, lalu ketuk **Install**.
 
 ---
 
