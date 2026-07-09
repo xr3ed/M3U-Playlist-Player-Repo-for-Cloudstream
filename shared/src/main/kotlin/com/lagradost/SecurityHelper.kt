@@ -333,7 +333,7 @@ private fun showUpdateDialog(activity: Activity) {
 }
 
 private fun removeRepoAndPlugins(context: Context) {
-    val prefNames = listOf("${context.packageName}_preferences", "utils_datastore")
+    val prefNames = listOf("${context.packageName}_preferences", "utils_datastore", "rebuild_preference")
     for (name in prefNames) {
         try {
             val prefs = context.getSharedPreferences(name, Context.MODE_PRIVATE)
