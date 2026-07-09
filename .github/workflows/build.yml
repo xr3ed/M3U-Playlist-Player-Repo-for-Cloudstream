@@ -107,3 +107,10 @@ jobs:
           folder: build-out
           branch: builds
           clean: true
+
+      - name: Purge jsDelivr Cache
+        run: |
+          for file in xr3ed.json plugins.json DramaBox.cs3 ShortMax.cs3 Melolo.cs3 RBTVPlus.cs3 Xr3edEvent.cs3 M3UPlaylistPlayer.cs3; do
+            echo "Purging jsDelivr cache for $file..."
+            curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$file"
+          done
