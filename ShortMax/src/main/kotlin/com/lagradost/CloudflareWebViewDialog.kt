@@ -39,47 +39,15 @@ class CloudflareWebViewDialog(
         private const val POLL_INTERVAL_MS = 2_000L   // check cookies every 2 s
         private const val POLL_TIMEOUT_MS  = 120_000L // give up after 2 minutes
 
-        private const val CLEAN_CF_JS = """
-            (function() {
-                var style = document.getElementById('cf-clean-style');
+        private const val COMPACT_CF_JS = """
+            javascript:(function() {
+                var style = document.getElementById('cf-compact-style');
                 if (!style) {
                     style = document.createElement('style');
-                    style.id = 'cf-clean-style';
-                    style.innerHTML = ' \
-                        html, body { background-color: #1A1A2E !important; margin: 0 !important; padding: 0 !important; } \
-                        h1, h2, h3, p, div, span, a { color: #1A1A2E !important; text-shadow: none !important; } \
-                        #challenge-stage { \
-                            display: flex !important; \
-                            justify-content: center !important; \
-                            align-items: center !important; \
-                            width: 100% !important; \
-                            margin: 0 auto !important; \
-                        } \
-                        #logo, .logo, #zone-name, .zone-name, img { \
-                            display: none !important; \
-                        } \
-                    ';
+                    style.id = 'cf-compact-style';
+                    style.innerHTML = 'html, body { background: #1A1A2E !important; margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow: hidden !important; } #challenge-stage, .cf-turnstile, #turnstile-wrapper { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; display: flex !important; justify-content: center !important; align-items: center !important; z-index: 999999 !important; background: #1A1A2E !important; } body > *:not(#challenge-stage):not(.cf-turnstile):not(#turnstile-wrapper) { display: none !important; }';
                     document.head.appendChild(style);
                 }
-                
-                var count = 0;
-                var interval = setInterval(function() {
-                    var captcha = document.getElementById('challenge-stage') || 
-                                  document.querySelector('iframe[src*="challenges.cloudflare.com"]') ||
-                                  document.querySelector('iframe[src*="turnstile"]');
-                    if (captcha) {
-                        var rect = captcha.getBoundingClientRect();
-                        if (rect.width > 0 && rect.height > 0) {
-                            var x = rect.left + window.pageXOffset - (window.innerWidth / 2) + (rect.width / 2);
-                            var y = rect.top + window.pageYOffset - (window.innerHeight / 2) + (rect.height / 2);
-                            window.scrollTo(x, y);
-                        }
-                    }
-                    count++;
-                    if (count > 50) {
-                        clearInterval(interval);
-                    }
-                }, 100);
             })();
         """
 
@@ -125,6 +93,8 @@ class CloudflareWebViewDialog(
 
             val cookieStr = CookieManager.getInstance().getCookie(targetHost) ?: ""
             Log.d(TAG, "Poll [$pollElapsedMs ms] cookies for $targetHost → $cookieStr")
+
+            webView?.evaluateJavascript(COMPACT_CF_JS, null)
 
             when {
                 cookieStr.contains("cf_clearance") -> {
@@ -302,8 +272,6 @@ class CloudflareWebViewDialog(
         wv.setBackgroundColor(Color.parseColor("#1A1A2E"))
         wv.isFocusable = true
         wv.isFocusableInTouchMode = true
-        wv.isVerticalScrollBarEnabled = false
-        wv.isHorizontalScrollBarEnabled = false
 
         wv.settings.apply {
             javaScriptEnabled = true
@@ -321,6 +289,7 @@ class CloudflareWebViewDialog(
                 if (!cookiesSaved) {
                     updateStatus("Loading… $newProgress%")
                 }
+                view?.evaluateJavascript(COMPACT_CF_JS, null)
             }
         }
 
@@ -331,9 +300,8 @@ class CloudflareWebViewDialog(
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
+                view?.evaluateJavascript(COMPACT_CF_JS, null)
                 if (cookiesSaved) return
-
-                view?.evaluateJavascript(CLEAN_CF_JS, null)
 
                 val title = view?.title ?: ""
                 Log.d(TAG, "onPageFinished  title='$title'  url=$url")

@@ -1,4 +1,4 @@
-version = 24
+version = 23
 
 android {
     namespace = "com.lagradost.DramaBox"
