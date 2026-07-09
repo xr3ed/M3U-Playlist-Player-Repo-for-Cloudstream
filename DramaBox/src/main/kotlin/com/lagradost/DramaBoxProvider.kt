@@ -163,6 +163,39 @@ class DramaBoxProvider : MainAPI() {
         return result
     }
 
+    private suspend fun validateOrSolveCf(activity: AppCompatActivity) {
+        if (mainUrl.contains("nax1.cc")) return
+        val ctx = activity
+        val cookies = getCfCookies(ctx)
+        val ua = getCfUserAgent(ctx)
+
+        var needSolve = false
+        if (cookies == null || !cookies.contains("cf_clearance") || ua == null) {
+            needSolve = true
+        } else {
+            try {
+                val headersMap = mapOf(
+                    "Referer" to "$mainUrl/",
+                    "User-Agent" to ua,
+                    "Cookie" to cookies
+                )
+                val testRes = app.get(mainUrl, headers = headersMap, timeout = 10).text
+                val trimmed = testRes.trim()
+                if (trimmed.startsWith("<!DOCTYPE", ignoreCase = true) || trimmed.startsWith("<html", ignoreCase = true)) {
+                    needSolve = true
+                }
+            } catch (e: Exception) {
+                needSolve = true
+            }
+        }
+
+        if (needSolve) {
+            setCfCookies(ctx, null)
+            setCfUserAgent(ctx, null)
+            solveCloudflare(activity, mainUrl)
+        }
+    }
+
     private fun getLocalCache(key: String, durationMs: Long): String? {
         val ctx = CommonActivity.activity ?: return null
         val cacheTime = ctx.getKey<Long>("dramabox_cache_time_$key") ?: return null
@@ -490,6 +523,16 @@ class DramaBoxProvider : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
+        if (page == 1) {
+            val activity = (CommonActivity.activity as? AppCompatActivity)
+            if (activity != null) {
+                try {
+                    validateOrSolveCf(activity)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
         if (page > 1) {
             val homePages = ArrayList<HomePageList>()
             try {
