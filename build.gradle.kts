@@ -67,8 +67,8 @@ subprojects {
 
             // Inject secrets into BuildConfig
             buildConfigField("String", "CLONER_SIGNATURE", "\"${getSecret("CLONER_SIGNATURE", "dummy")}\"")
-            buildConfigField("String", "UPDATE_JSON_URL", "\"${getSecret("UPDATE_JSON_URL", "dummy")}\"")
-            buildConfigField("String", "FALLBACK_RELEASE_URL", "\"${getSecret("FALLBACK_RELEASE_URL", "dummy")}\"")
+            buildConfigField("String", "UPDATE_JSON_URL", "\"${getSecret("UPDATE_JSON_URL", "https://cdn.jsdelivr.net/gh/xr3ed/CloudStreamXR@main/update.json")}\"")
+            buildConfigField("String", "FALLBACK_RELEASE_URL", "\"${getSecret("FALLBACK_RELEASE_URL", "https://github.com/xr3ed/CloudStreamXR/releases/latest/download/app-cloned.apk")}\"")
             buildConfigField("String", "MOVIEBOX_SECRET_KEY_DEFAULT", "\"${getSecret("MOVIEBOX_SECRET_KEY_DEFAULT")}\"")
             buildConfigField("String", "MOVIEBOX_SECRET_KEY_ALT", "\"${getSecret("MOVIEBOX_SECRET_KEY_ALT")}\"")
             buildConfigField("String", "CASTLE_SUFFIX", "\"${getSecret("CASTLE_SUFFIX")}\"")
