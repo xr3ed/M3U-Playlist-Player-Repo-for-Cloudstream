@@ -52,31 +52,12 @@ class CloudflareWebViewDialog(
 
     private val CLEAN_CF_JS = """
         (function() {
-            var style = document.getElementById('cf-clean-style');
+            var style = document.getElementById('cf-scroll-style');
             if (!style) {
                 style = document.createElement('style');
-                style.id = 'cf-clean-style';
+                style.id = 'cf-scroll-style';
                 style.innerHTML = ' \
-                    html, body { \
-                        background-color: #1A1A2E !important; \
-                        color: transparent !important; \
-                        margin: 0 !important; \
-                        padding: 0 !important; \
-                        overflow: hidden !important; \
-                    } \
-                    #challenge-container, #challenge-stage, .challenge-form { \
-                        position: absolute !important; \
-                        top: 0 !important; \
-                        left: 0 !important; \
-                        width: 100% !important; \
-                        height: 100% !important; \
-                        display: flex !important; \
-                        justify-content: center !important; \
-                        align-items: center !important; \
-                        margin: 0 !important; \
-                        padding: 0 !important; \
-                        z-index: 999999 !important; \
-                    } \
+                    html, body { background-color: #1A1A2E !important; } \
                     #logo, .logo, #zone-name, .zone-name, h1, h2, h3, p, #cf-spinner, .cf-spinner { \
                         display: none !important; \
                         visibility: hidden !important; \
@@ -84,6 +65,16 @@ class CloudflareWebViewDialog(
                     } \
                 ';
                 document.head.appendChild(style);
+            }
+
+            var stage = document.getElementById('challenge-stage');
+            if (!stage) {
+                stage = document.querySelector('iframe');
+            }
+            if (stage) {
+                var rect = stage.getBoundingClientRect();
+                var y = rect.top + window.pageYOffset;
+                window.scrollTo(0, Math.max(0, y - 8));
             }
         })()
     """.trimIndent()
@@ -138,6 +129,14 @@ class CloudflareWebViewDialog(
                     scheduleNextPoll()
                 }
             }
+        }
+    }
+
+    private val scrollRunnable = object : Runnable {
+        override fun run() {
+            if (cookiesSaved || !isAdded) return
+            webView?.evaluateJavascript(CLEAN_CF_JS, null)
+            handler.postDelayed(this, 1000L)
         }
     }
 
@@ -251,7 +250,7 @@ class CloudflareWebViewDialog(
             webView,
             FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
+                dp(500)
             )
         )
         
@@ -287,6 +286,7 @@ class CloudflareWebViewDialog(
 
         webView?.loadUrl(targetUrl)
         handler.postDelayed(cookiePollRunnable, POLL_INTERVAL_MS)
+        handler.post(scrollRunnable)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -369,6 +369,7 @@ class CloudflareWebViewDialog(
         cookiesSaved = true
 
         handler.removeCallbacks(cookiePollRunnable)
+        handler.removeCallbacks(scrollRunnable)
 
         webView?.visibility = View.GONE
         successOverlay?.visibility = View.VISIBLE
@@ -394,6 +395,7 @@ class CloudflareWebViewDialog(
         super.onDismiss(dialog)
         if (!cookiesSaved) {
             handler.removeCallbacks(cookiePollRunnable)
+            handler.removeCallbacks(scrollRunnable)
             onFinished?.invoke(false)
         }
     }
@@ -413,6 +415,7 @@ class CloudflareWebViewDialog(
 
     override fun onDestroyView() {
         handler.removeCallbacks(cookiePollRunnable)
+        handler.removeCallbacks(scrollRunnable)
         webView?.apply {
             stopLoading()
             destroy()
