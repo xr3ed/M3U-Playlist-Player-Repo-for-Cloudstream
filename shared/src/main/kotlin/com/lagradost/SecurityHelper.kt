@@ -39,15 +39,14 @@ private var activeDialog: Dialog? = null
 
 private fun getBuildConfigString(context: Context, fieldName: String, defaultValue: String = ""): String {
     return try {
-        val packageName = context.packageName
         val className = when {
-            packageName.contains("DramaBox", ignoreCase = true) -> "com.lagradost.DramaBox.BuildConfig"
-            packageName.contains("ShortMax", ignoreCase = true) -> "com.lagradost.ShortMax.BuildConfig"
-            packageName.contains("Melolo", ignoreCase = true) -> "com.lagradost.Melolo.BuildConfig"
-            packageName.contains("RBTVPlus", ignoreCase = true) -> "com.lagradost.RBTVPlus.BuildConfig"
-            packageName.contains("Xr3edEvent", ignoreCase = true) -> "com.lagradost.Xr3edEvent.BuildConfig"
-            packageName.contains("M3UPlaylistPlayer", ignoreCase = true) -> "com.lagradost.M3UPlaylistPlayer.BuildConfig"
-            else -> "$packageName.BuildConfig"
+            try { Class.forName("com.lagradost.DramaBox.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.DramaBox.BuildConfig"
+            try { Class.forName("com.lagradost.ShortMax.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.ShortMax.BuildConfig"
+            try { Class.forName("com.lagradost.Melolo.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.Melolo.BuildConfig"
+            try { Class.forName("com.lagradost.RBTVPlus.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.RBTVPlus.BuildConfig"
+            try { Class.forName("com.lagradost.Xr3edEvent.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.Xr3edEvent.BuildConfig"
+            try { Class.forName("com.lagradost.M3UPlaylistPlayer.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.M3UPlaylistPlayer.BuildConfig"
+            else -> "com.lagradost.DramaBox.BuildConfig"
         }
         val clazz = Class.forName(className)
         val field = clazz.getField(fieldName)
