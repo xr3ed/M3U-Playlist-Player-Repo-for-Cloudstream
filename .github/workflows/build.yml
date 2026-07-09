@@ -108,17 +108,40 @@ jobs:
             echo "Error: plugins.json not found in build/ directory!" && exit 1
           fi
 
-      - name: Deploy to builds Branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build-out
-          branch: builds
-          clean: true
-
-      - name: Purge jsDelivr Cache
+      - name: Deploy to builds Branch with Cache Busting
         run: |
-          echo "Purging current repository cache..."
-          for file in xr3ed.json xr3ed-jsdelivr.json plugins.json plugins-jsdelivr.json DramaBox.cs3 ShortMax.cs3 Melolo.cs3 RBTVPlus.cs3 Xr3edEvent.cs3 M3UPlaylistPlayer.cs3; do
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Pindah ke folder build-out
+          cd build-out
+          
+          # Inisialisasi git repository lokal di folder output
+          git init
+          git checkout -b builds
+          git add .
+          git commit -m "Deploying to builds 🚀"
+          
+          # Dapatkan commit SHA baru yang akan di-push
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "Generated Commit SHA: $COMMIT_SHA"
+          
+          # Ganti @builds dengan @$COMMIT_SHA pada manifest agar CDN jsDelivr selalu mengunduh biner segar tanpa cache
+          sed -i "s|@builds|@$COMMIT_SHA|g" plugins-jsdelivr.json
+          sed -i "s|@builds|@$COMMIT_SHA|g" xr3ed-jsdelivr.json
+          
+          # Update komit dengan file manifest yang sudah diubah
+          git add plugins-jsdelivr.json xr3ed-jsdelivr.json
+          git commit --amend --no-edit
+          
+          # Force push ke branch builds di remote repository
+          git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" builds:builds --force
+
+      - name: Purge jsDelivr Cache for Index Manifests
+        run: |
+          echo "Purging index manifests cache..."
+          # Hanya bersihkan index manifest utama, karena file .cs3 kini diakses via link spesifik komit sehingga bebas cache 100%
+          for file in xr3ed.json xr3ed-jsdelivr.json plugins.json; do
             echo "Purging $file..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$file"
           done
