@@ -37,27 +37,14 @@ import kotlin.system.exitProcess
 private var isPopupRegistered = false
 private var activeDialog: Dialog? = null
 
-private fun getBuildConfigString(context: Context, fieldName: String, defaultValue: String = ""): String {
-    return try {
-        val className = when {
-            try { Class.forName("com.lagradost.DramaBox.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.DramaBox.BuildConfig"
-            try { Class.forName("com.lagradost.ShortMax.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.ShortMax.BuildConfig"
-            try { Class.forName("com.lagradost.Melolo.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.Melolo.BuildConfig"
-            try { Class.forName("com.lagradost.RBTVPlus.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.RBTVPlus.BuildConfig"
-            try { Class.forName("com.lagradost.Xr3edEvent.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.Xr3edEvent.BuildConfig"
-            try { Class.forName("com.lagradost.M3UPlaylistPlayer.BuildConfig"); true } catch (e: Exception) { false } -> "com.lagradost.M3UPlaylistPlayer.BuildConfig"
-            else -> "com.lagradost.DramaBox.BuildConfig"
-        }
-        val clazz = Class.forName(className)
-        val field = clazz.getField(fieldName)
-        field.get(null) as String
-    } catch (e: Exception) {
-        defaultValue
-    }
-}
 
-fun verifyApp(context: Context) {
-    android.util.Log.d("SecurityHelper", "verifyApp() called for package: ${context.packageName}")
+
+fun verifyApp(context: Context, clonerSignature: String = "dummy") {
+    val caller = Thread.currentThread().stackTrace.find { 
+        (it.className.contains("com.lagradost") || it.className.contains("com.xr3ed")) && 
+        !it.className.contains("SecurityHelper") 
+    }
+    android.util.Log.d("SecurityHelper", "verifyApp() called from: ${caller?.className}.${caller?.methodName} for package: ${context.packageName}")
     try {
         val devFile = File(context.getExternalFilesDir(null), "dev_mode")
         if (devFile.exists()) {
@@ -68,7 +55,7 @@ fun verifyApp(context: Context) {
         e.printStackTrace()
     }
 
-    val expectedSignature = getBuildConfigString(context, "CLONER_SIGNATURE", "dummy")
+    val expectedSignature = clonerSignature
     android.util.Log.d("SecurityHelper", "verifyApp() expectedSignature: $expectedSignature")
     if (expectedSignature == "dummy" || expectedSignature.isEmpty()) {
         android.util.Log.d("SecurityHelper", "verifyApp() signature is dummy, triggering block!")
@@ -456,8 +443,15 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
 
     Thread {
         try {
-            var apkUrl = getBuildConfigString(activity, "FALLBACK_RELEASE_URL", "")
-            var updateUrl = getBuildConfigString(activity, "UPDATE_JSON_URL", "")
+            fun getConfig(ctx: android.content.Context, field: String): String {
+                val classNames = listOf("com.lagradost.DramaBox.BuildConfig","com.lagradost.ShortMax.BuildConfig","com.lagradost.Melolo.BuildConfig","com.lagradost.RBTVPlus.BuildConfig","com.xr3ed.BuildConfig")
+                for (cn in classNames) {
+                    try { val c = ctx.classLoader.loadClass(cn); return c.getField(field).get(null) as String } catch (_: Throwable) {}
+                }
+                return ""
+            }
+            var apkUrl = getConfig(activity, "FALLBACK_RELEASE_URL")
+            var updateUrl = getConfig(activity, "UPDATE_JSON_URL")
             if (updateUrl.contains("raw.githubusercontent.com")) {
                 try {
                     val temp = updateUrl.replace("https://raw.githubusercontent.com/", "")
