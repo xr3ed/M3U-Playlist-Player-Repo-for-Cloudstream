@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "213K",
+      "hotCode": "231K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "174K",
+      "hotCode": "181K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,7 +174,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "157K",
+      "hotCode": "162K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
@@ -229,7 +229,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "138K",
+      "hotCode": "139K",
       "sort": 4
     },
     "markNamesConnectKey": ", ",
@@ -290,73 +290,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "115K",
+      "hotCode": "130K",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782502499000,
     "shelfTime": "2026-06-27 03:34:59",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017472",
-    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
-    "chapterCount": 70,
-    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
-    "tags": [
-      "Keadilan",
-      "Serangan Balik",
-      "Putri Kaya",
-      "Balas Dendam",
-      "Intrik Keluarga",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 10038,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Wendy,  Alvaro,  Wilian,  Yukia",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "102K",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782360000000,
-    "shelfTime": "2026-06-25 12:00:00",
     "inLibrary": false
   },
   {
@@ -412,12 +351,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "98.9K",
-      "sort": 7
+      "hotCode": "98.5K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1764052944000,
     "shelfTime": "2025-11-25 14:42:24",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017472",
+    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
+    "chapterCount": 70,
+    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
+    "tags": [
+      "Keadilan",
+      "Serangan Balik",
+      "Putri Kaya",
+      "Balas Dendam",
+      "Intrik Keluarga",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 10038,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Wendy,  Alvaro,  Wilian,  Yukia",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "96.1K",
+      "sort": 7
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782360000000,
+    "shelfTime": "2026-06-25 12:00:00",
     "inLibrary": false
   },
   {
@@ -473,7 +473,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "87K",
+      "hotCode": "81.7K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -534,7 +534,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "70.2K",
+      "hotCode": "67.6K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",
@@ -595,7 +595,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "64.2K",
+      "hotCode": "62.5K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",

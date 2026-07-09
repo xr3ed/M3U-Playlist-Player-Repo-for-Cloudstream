@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "213K",
+      "hotCode": "231K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "19.8K",
+      "hotCode": "20.4K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,113 +174,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "12.5K",
+      "hotCode": "11.9K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783216800000,
     "shelfTime": "2026-07-05 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020247",
-    "bookName": "Istri Baik Apaan?",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
-    "chapterCount": 62,
-    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
-    "tags": [
-      "Balas Dendam",
-      "Melawan Balik",
-      "Kebangkitan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 818,
-        "tagName": "Balas Dendam"
-      },
-      {
-        "tagId": 822,
-        "tagName": "Melawan Balik"
-      },
-      {
-        "tagId": 825,
-        "tagName": "Kebangkitan"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Juan Lee,  Nadia Meka",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "9K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783404954000,
-    "shelfTime": "2026-07-07 14:15:54",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018258",
-    "bookName": "Tak Bisa Kabur dari Raja Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
-    "chapterCount": 52,
-    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
-    "tags": [
-      "Pembalikan Identitas",
-      "Cinta Paksaan",
-      "Takdir Cinta",
-      "Romansa",
-      "BG",
-      "Gairah"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1382,
-        "tagName": "Takdir Cinta",
-        "tagEnName": "Destined Love"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1358,
-        "tagName": "BG",
-        "tagEnName": "BG"
-      },
-      {
-        "tagId": 10047,
-        "tagName": "Gairah",
-        "tagEnName": "Steamy"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Sam Malik,  Lia Halim",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "8.6K",
-      "sort": 5
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783303200000,
-    "shelfTime": "2026-07-06 10:00:00",
     "inLibrary": false
   },
   {
@@ -336,12 +235,113 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "7.2K",
-      "sort": 6
+      "hotCode": "9.3K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783396800000,
     "shelfTime": "2026-07-07 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018258",
+    "bookName": "Tak Bisa Kabur dari Raja Naga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
+    "chapterCount": 52,
+    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
+    "tags": [
+      "Pembalikan Identitas",
+      "Cinta Paksaan",
+      "Takdir Cinta",
+      "Romansa",
+      "BG",
+      "Gairah"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1378,
+        "tagName": "Cinta Paksaan",
+        "tagEnName": "Forced Love"
+      },
+      {
+        "tagId": 1382,
+        "tagName": "Takdir Cinta",
+        "tagEnName": "Destined Love"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1358,
+        "tagName": "BG",
+        "tagEnName": "BG"
+      },
+      {
+        "tagId": 10047,
+        "tagName": "Gairah",
+        "tagEnName": "Steamy"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Sam Malik,  Lia Halim",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "8.4K",
+      "sort": 5
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783303200000,
+    "shelfTime": "2026-07-06 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020247",
+    "bookName": "Istri Baik Apaan?",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
+    "chapterCount": 62,
+    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
+    "tags": [
+      "Balas Dendam",
+      "Melawan Balik",
+      "Kebangkitan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 818,
+        "tagName": "Balas Dendam"
+      },
+      {
+        "tagId": 822,
+        "tagName": "Melawan Balik"
+      },
+      {
+        "tagId": 825,
+        "tagName": "Kebangkitan"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Juan Lee,  Nadia Meka",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "7.6K",
+      "sort": 6
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783404954000,
+    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -397,7 +397,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "6.9K",
+      "hotCode": "6.8K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
@@ -406,18 +406,17 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000019281",
-    "bookName": "Pasangan yang Ditolak",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019281/42000019281.jpg?t=1782877112957",
-    "chapterCount": 58,
-    "introduction": "Seorang kembar yang tidak dicintai, dikhianati oleh keluarga dan orang tercintanya. Dia yang diburu dan ditinggalkan melarikan diri ke Raja Alpha yang kejam. Kekuatan tersembunyi, rahasia mematikan, dan kegelapan terlarang menantinya. Serigala betina yang terbuang itu menjadi ratu kegelapan.",
+    "bookId": "42000020144",
+    "bookName": "Istri CEO Tak Bisa Disembunyikan (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020144/42000020144.jpg?t=1783322991127",
+    "chapterCount": 60,
+    "introduction": "Kang Ji‑won menyembunyikan identitasnya sebagai istri CEO dan desainer terkenal saat bekerja di perusahaan suaminya, Min Woo‑bin. Namun, Lee Yun‑ju mengaku sebagai istri Min Woo‑bin dan terus menindas Kang Ji‑won. Saat karya desainnya dicuri, Kang Ji‑won membongkar semua kebohongan dan mengungkap jati dirinya di depan semua orang.",
     "tags": [
       "Pembalikan Identitas",
-      "Manusia Serigala",
-      "Wanita Kuat",
-      "Balas Dendam",
-      "Fantasi",
-      "Romansa"
+      "Serangan Balik",
+      "Wanita Mandiri",
+      "Modern",
+      "Wanita Kuat"
     ],
     "tagV3s": [
       {
@@ -426,34 +425,29 @@
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1363,
-        "tagName": "Manusia Serigala",
-        "tagEnName": "Werewolf"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       },
       {
         "tagId": 1361,
         "tagName": "Wanita Kuat",
         "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1355,
-        "tagName": "Fantasi",
-        "tagEnName": "Fantasy"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Kaden,  Amelia",
+    "protagonist": "Min Woo‑bin,  Kang Ji‑won",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
@@ -462,8 +456,63 @@
       "sort": 8
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783130400000,
-    "shelfTime": "2026-07-04 10:00:00",
+    "bookShelfTime": 1783476000000,
+    "shelfTime": "2026-07-08 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018065",
+    "bookName": "Menantu Naga Tak Terkalahkan",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018065/42000018065.jpg?t=1782196194297",
+    "chapterCount": 74,
+    "introduction": "Arga, murid terakhir Guru Zanar dari Pegunungan Ulmar, turun gunung setelah tiga tahun kultivasi dan mencapai Tingkat Tapak Dewa. Atas perintah gurunya, ia datang untuk menikahi Laila dari Keluarga Sanjaya. Meski memiliki kemampuan medis dan bela diri luar biasa, Arga terus diremehkan karena berasal dari desa. Bahkan setelah menyelamatkan banyak orang dan mengalahkan para ahli, ia tetap dianggap pembual. Hingga identitas aslinya terungkap dan semua orang menyadari kesalahan m",
+    "tags": [
+      "Serangan Balik",
+      "Kekuatan Khusus",
+      "Keadilan",
+      "Pria Dominan",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      },
+      {
+        "tagId": 10037,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Arga Maudi,  Laila Baskara",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "3.6K",
+      "sort": 9
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783310400000,
+    "shelfTime": "2026-07-06 12:00:00",
     "inLibrary": false
   },
   {
@@ -504,72 +553,11 @@
     "rankVo": {
       "rankType": 3,
       "hotCode": "3.5K",
-      "sort": 9
+      "sort": 10
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783389600000,
     "shelfTime": "2026-07-07 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019699",
-    "bookName": "Salah Memilih, Kehilangan Segalanya",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019699/42000019699.jpg?t=1783043090757",
-    "chapterCount": 60,
-    "introduction": "Jax, penguasa tersembunyi dunia militer, politik, dan bisnis Negara Kora, menikahi Eva tiga tahun lalu demi memenuhi wasiat mendiang tetuanya. Menyembunyikan identitasnya, dia menyelamatkan perusahaan keluarga Eva yang nyaris bangkrut dan membantunya mendapatkan kontrak besar. Namun, Eva justru mengira semua itu berkat Will, pria yang mengejarnya. Dia meremehkan Jax yang dianggap pengangguran dan ingin menceraikannya. Saat Jax mengungkap jati dirinya dan menghukum semua yang ",
-    "tags": [
-      "Pembalikan Identitas",
-      "Serangan Balik",
-      "Kekuatan Khusus",
-      "Modern",
-      "Pria Dominan",
-      "Balas Dendam"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1338,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1340,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      },
-      {
-        "tagId": 1318,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      },
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Jax Candra,  Eva Halim",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "3.3K",
-      "sort": 10
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783048678000,
-    "shelfTime": "2026-07-03 11:17:58",
     "inLibrary": false
   }
 ]

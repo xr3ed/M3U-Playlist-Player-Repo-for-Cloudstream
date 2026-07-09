@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "21.2K",
+      "hotCode": "22.5K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "19K",
+      "hotCode": "20.5K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -122,49 +122,43 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000012810",
-    "bookName": "Diantar oleh Takdir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012810/42000012810.jpg?t=1779263881245",
+    "bookId": "42000017520",
+    "bookName": "Diantar oleh Takdir (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
     "chapterCount": 66,
     "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
     "tags": [
-      "Pembalikan Identitas",
-      "Cinta Setelah Menikah",
-      "Romansa",
       "Balas Dendam",
-      "Serangan Balik",
-      "Perselingkuhan"
+      "Pembalikan Identitas",
+      "Ilmuwan",
+      "Modern",
+      "Wanita Kuat"
     ],
     "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
       {
         "tagId": 1394,
         "tagName": "Balas Dendam",
         "tagEnName": "Revenge"
       },
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
+        "tagId": 10033,
+        "tagName": "Ilmuwan",
+        "tagEnName": "Researcher"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
       }
     ],
     "isEntry": 0,
@@ -174,12 +168,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "13.1K",
+      "hotCode": "14.8K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1779523200000,
-    "shelfTime": "2026-05-23 16:00:00",
+    "bookShelfTime": 1781798400000,
+    "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
   },
   {
@@ -235,7 +229,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "10.5K",
+      "hotCode": "11.8K",
       "sort": 4
     },
     "markNamesConnectKey": ", ",
@@ -296,73 +290,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "10.4K",
+      "hotCode": "11.2K",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1778378400000,
     "shelfTime": "2026-05-10 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000012097",
-    "bookName": "Bayi Ajaib Pembawa Harta (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012097/42000012097.jpg?t=1778743523068",
-    "chapterCount": 71,
-    "introduction": "Dewa Kekayaan bereinkarnasi sebagai Angel, bayi dalam kandungan Gisel yang dipaksa cerai oleh Evan. Dari rahim, Angel membimbing ibunya berinvestasi hingga meraih kekayaan. Di lelang, mereka menghadapi Evan dan membuka rahasia di depan publik. Ibu dan anak bersatu, membalas hinaan, dan bertekad menjadi orang terkaya.",
-    "tags": [
-      "Bayi Lucu",
-      "Wanita Kuat",
-      "Serangan Balik",
-      "Pembalikan Identitas",
-      "Bangkitnya Orang Biasa",
-      "Penebusan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1460,
-        "tagName": "Bayi Lucu",
-        "tagEnName": "Genius Babies"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1398,
-        "tagName": "Bangkitnya Orang Biasa",
-        "tagEnName": "Underdog Story"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Gisel Ongko,  Evan Wijaya",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "9.9K",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1778750374000,
-    "shelfTime": "2026-05-14 17:19:34",
     "inLibrary": false
   },
   {
@@ -418,12 +351,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "9.7K",
-      "sort": 7
+      "hotCode": "11.1K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782360000000,
     "shelfTime": "2026-06-25 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000012097",
+    "bookName": "Bayi Ajaib Pembawa Harta (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012097/42000012097.jpg?t=1778743523068",
+    "chapterCount": 71,
+    "introduction": "Dewa Kekayaan bereinkarnasi sebagai Angel, bayi dalam kandungan Gisel yang dipaksa cerai oleh Evan. Dari rahim, Angel membimbing ibunya berinvestasi hingga meraih kekayaan. Di lelang, mereka menghadapi Evan dan membuka rahasia di depan publik. Ibu dan anak bersatu, membalas hinaan, dan bertekad menjadi orang terkaya.",
+    "tags": [
+      "Bayi Lucu",
+      "Wanita Kuat",
+      "Serangan Balik",
+      "Pembalikan Identitas",
+      "Bangkitnya Orang Biasa",
+      "Penebusan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1460,
+        "tagName": "Bayi Lucu",
+        "tagEnName": "Genius Babies"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1398,
+        "tagName": "Bangkitnya Orang Biasa",
+        "tagEnName": "Underdog Story"
+      },
+      {
+        "tagId": 1459,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Gisel Ongko,  Evan Wijaya",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "10.9K",
+      "sort": 7
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1778750374000,
+    "shelfTime": "2026-05-14 17:19:34",
     "inLibrary": false
   },
   {
@@ -479,12 +473,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "6.8K",
+      "hotCode": "7.6K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1781402401000,
     "shelfTime": "2026-06-14 10:00:01",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000016017",
+    "bookName": "Ibuku Triliuner Rahasia (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016017/42000016017.jpg?t=1781071314892",
+    "chapterCount": 52,
+    "introduction": "Setelah para ibu komite sekolah menjebak putranya, seorang ibu sederhana dipermalukan dan disingkirkan. Namun, mereka tak tahu wanita yang dianggap bukan siapa-siapa itu sebenarnya triliuner rahasia di balik sekolah tersebut. Kini, nasib mereka ada di tangannya.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Wanita Kuat",
+      "Modern",
+      "Serangan Balik",
+      "CEO"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1362,
+        "tagName": "CEO",
+        "tagEnName": "Billionaire"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Andrew Tiago,  Widya Sintana",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "6.6K",
+      "sort": 9
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1781164800000,
+    "shelfTime": "2026-06-11 16:00:00",
     "inLibrary": false
   },
   {
@@ -540,73 +595,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "5.8K",
-      "sort": 9
+      "hotCode": "6.2K",
+      "sort": 10
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1774584000000,
     "shelfTime": "2026-03-27 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017376",
-    "bookName": "Musim Panas Terakhir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017376/42000017376.jpg?t=1781684491601",
-    "chapterCount": 73,
-    "introduction": "Evan meninggalkan Sella demi membalas budi kepada keluarga Joana. Tidak lama kemudian, Sella kehilangan kedua orang tuanya dan divonis mengidap kanker stadium akhir. Setelah memutuskan untuk mengakhiri hidupnya melalui eutanasia, dia kembali dipertemukan dengan Evan dan Joana. Bahkan, Joana meminta Sella menjadi pendamping di pernikahannya. Tidak ada yang tahu bahwa pada hari mereka mengucap janji suci, Sella justru akan mengucapkan selamat tinggal pada dunia.",
-    "tags": [
-      "Mengejar Istri",
-      "Penebusan",
-      "Gadis Naif",
-      "Kesempatan Kedua",
-      "Modern",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1401,
-        "tagName": "Mengejar Istri",
-        "tagEnName": "Winning Her Back"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1374,
-        "tagName": "Gadis Naif",
-        "tagEnName": "Innocent Damsel"
-      },
-      {
-        "tagId": 1392,
-        "tagName": "Kesempatan Kedua",
-        "tagEnName": "Second Chance"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": " Sella Fadea,  Evan Yanda,  Joana Karsa ",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "5.7K",
-      "sort": 10
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782705600000,
-    "shelfTime": "2026-06-29 12:00:00",
     "inLibrary": false
   }
 ]
