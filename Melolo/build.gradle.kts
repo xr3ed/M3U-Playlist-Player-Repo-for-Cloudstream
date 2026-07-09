@@ -13,7 +13,7 @@ cloudstream {
     authors = listOf("xr3ed")
     status = 1
     tvTypes = listOf("TvSeries")
-    iconUrl = "https://www.cutad.web.id/favicon.svg"
+    iconUrl = "https://play-lh.googleusercontent.com/pE_o4iwh3TLbIfoiEZsnUggStQFH2Vemw6B37Ql9swvZWmFPIGLJEaTbqECs4GlvEXvp7hr7speou3MDen5Reg=w240-h240-rw"
 }
 
 dependencies {

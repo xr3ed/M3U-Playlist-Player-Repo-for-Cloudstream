@@ -301,10 +301,10 @@ class M3UPlaylistPlayer(
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val cleanUrl = if (url.startsWith("https://www.facebook.com/pesbuk.ibal#")) {
-            url.substringAfter("https://www.facebook.com/pesbuk.ibal#")
-        } else {
-            url
+        val cleanUrl = when {
+            url.startsWith("https://lynk.id/xr3ed#") -> url.substringAfter("https://lynk.id/xr3ed#")
+            url.startsWith("https://www.facebook.com/pesbuk.ibal#") -> url.substringAfter("https://www.facebook.com/pesbuk.ibal#")
+            else -> url
         }
         return withContext(Dispatchers.IO) {
             val playlist = fetchPlaylist()
@@ -408,7 +408,7 @@ class M3UPlaylistPlayer(
 
             newLiveStreamLoadResponse(
                 title,
-                "https://www.facebook.com/pesbuk.ibal#$cleanUrl",
+                "https://lynk.id/xr3ed#$cleanUrl",
                 cleanUrl
             ) {
                 this.posterUrl = logoUrl

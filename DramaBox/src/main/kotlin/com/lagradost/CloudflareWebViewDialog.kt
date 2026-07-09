@@ -235,6 +235,7 @@ class CloudflareWebViewDialog(
     private fun buildWebView(): WebView {
         val wv = WebView(requireContext())
         wv.setBackgroundColor(Color.parseColor("#151624"))
+        wv.visibility = View.INVISIBLE
 
         wv.settings.apply {
             javaScriptEnabled = true
@@ -285,6 +286,7 @@ class CloudflareWebViewDialog(
 
                 if (isChallengeTitle(title)) {
                     updateStatus("👉 Silakan ketuk kotak \"Verifikasi bahwa Anda adalah manusia\" di bawah.")
+                    webView?.visibility = View.VISIBLE
                 } else {
                     updateStatus("⏳ Menunggu konfirmasi keamanan dari server...")
                     CookieManager.getInstance().flush()

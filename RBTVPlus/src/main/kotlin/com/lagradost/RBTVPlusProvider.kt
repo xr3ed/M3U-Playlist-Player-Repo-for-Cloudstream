@@ -848,15 +848,21 @@ class RBTVPlusProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val uri = URI(url)
+        val cleanUrl = if (url.contains("lynk.id")) {
+            val hash = url.substringAfterLast("#", "")
+            "https://www.cutad.web.id/watch?$hash"
+        } else {
+            url
+        }
+        val uri = URI(cleanUrl)
         val queryMap = uri.query?.split("&")?.associate {
             val parts = it.split("=")
             parts[0] to parts.getOrNull(1)
         } ?: emptyMap()
         
-        val matchId = queryMap["id"] ?: return null
+        val matchId = queryMap["id"] ?: queryMap["matchId"] ?: return null
         val sportType = queryMap["sportType"] ?: "1"
-        val streamId = queryMap["stream_id"] ?: matchId
+        val streamId = queryMap["stream_id"] ?: queryMap["streamId"] ?: matchId
         val encodedTitle = queryMap["title"]
         val matchTitle = if (!encodedTitle.isNullOrEmpty()) {
             try {
@@ -872,7 +878,7 @@ class RBTVPlusProvider : MainAPI() {
 
         return newLiveStreamLoadResponse(
             matchTitle,
-            url,
+            "https://lynk.id/xr3ed#$loadData",
             loadData
         ) {
             this.posterUrl = null

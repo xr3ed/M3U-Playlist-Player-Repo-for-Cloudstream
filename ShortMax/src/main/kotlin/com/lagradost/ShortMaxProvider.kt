@@ -306,6 +306,7 @@ class ShortMaxProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         val shortPlayId = when {
+            url.contains("lynk.id") -> url.substringAfterLast("#", "")
             url.contains("/detail/") -> url.substringAfter("/detail/").substringBefore("?").substringBefore("/")
             else -> url.substringAfterLast("/").substringBefore("?")
         }
@@ -346,7 +347,7 @@ class ShortMaxProvider : MainAPI() {
 
         return newTvSeriesLoadResponse(
             name = title,
-            url = shortPlayId,
+            url = "https://lynk.id/xr3ed#$shortPlayId",
             type = TvType.TvSeries,
             episodes = episodes
         ) {

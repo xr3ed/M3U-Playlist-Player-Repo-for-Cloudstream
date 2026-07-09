@@ -7,6 +7,7 @@ import android.content.Context
 @CloudstreamPlugin
 class MeloloPlugin: Plugin() {
     override fun load(context: Context) {
+        verifyApp(context)
         registerMainAPI(MeloloProvider())
     }
 }

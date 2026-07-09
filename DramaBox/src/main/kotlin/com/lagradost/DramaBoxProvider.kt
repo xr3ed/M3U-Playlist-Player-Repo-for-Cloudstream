@@ -23,6 +23,8 @@ import kotlinx.coroutines.coroutineScope
 import androidx.appcompat.app.AppCompatActivity
 import com.lagradost.cloudstream3.CommonActivity
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -41,6 +43,11 @@ class DramaBoxProvider : MainAPI() {
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
         private val PASSWORD = com.lagradost.DramaBox.BuildConfig.SHORTMAX_KEY
         private var cfDeferred: CompletableDeferred<Boolean>? = null
+
+        private val CUTAD_URL = String(Base64.decode(com.lagradost.DramaBox.BuildConfig.MELOLO_URL, Base64.DEFAULT), Charsets.UTF_8)
+        private val CUTAD_API_URL = "$CUTAD_URL/api/dramabox"
+        private var cutadRankCache: List<SearchResponse>? = null
+        private var cutadRankCacheTime = 0L
 
         fun getCfCookies(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_COOKIES")
         fun setCfCookies(context: Context?, value: String?) {
@@ -86,6 +93,74 @@ class DramaBoxProvider : MainAPI() {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(iv))
 
             return String(cipher.doFinal(encrypted), Charsets.UTF_8)
+        }
+    }
+
+    private var cutadSessionCookie: String? = null
+    private val cutadHeaders = mapOf(
+        "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer" to "$CUTAD_URL/"
+    )
+    private val cutadMutex = Mutex()
+
+    private suspend fun getCutadHeaders(forceRefresh: Boolean = false): Map<String, String> {
+        cutadMutex.withLock {
+            if (cutadSessionCookie == null || forceRefresh) {
+                try {
+                    val response = app.get(CUTAD_URL, headers = cutadHeaders)
+                    val setCookie = response.headers["set-cookie"]
+                    if (setCookie != null) {
+                        cutadSessionCookie = setCookie.substringBefore(";")
+                    }
+                } catch (e: Exception) {
+                    // Ignore
+                }
+            }
+        }
+        val currentCookie = cutadSessionCookie
+        return if (currentCookie != null) {
+            cutadHeaders + mapOf("Cookie" to currentCookie)
+        } else {
+            cutadHeaders
+        }
+    }
+
+    private suspend fun fetchCutadRankList(): List<SearchResponse> {
+        val cached = cutadRankCache
+        val cacheTime = cutadRankCacheTime
+        if (cached != null && System.currentTimeMillis() - cacheTime < 5 * 60 * 1000L) {
+            return cached
+        }
+        return try {
+            val headers = getCutadHeaders()
+            val response = app.get("$CUTAD_API_URL?action=rank", headers = headers).text
+            val items = JSONObject(response).optJSONArray("items")
+            val list = ArrayList<SearchResponse>()
+            if (items != null) {
+                for (i in 0 until items.length()) {
+                    val obj = items.optJSONObject(i) ?: continue
+                    val id = obj.optString("id")
+                    val name = obj.optString("name")
+                    val cover = obj.optString("cover")
+                    if (id.isNotEmpty() && name.isNotEmpty()) {
+                        list.add(
+                            newTvSeriesSearchResponse(
+                                name = name.trim(),
+                                url = "https://lynk.id/xr3ed#cutad_$id",
+                                type = TvType.TvSeries
+                            ) {
+                                this.posterUrl = cover
+                            }
+                        )
+                    }
+                }
+            }
+            cutadRankCache = list
+            cutadRankCacheTime = System.currentTimeMillis()
+            list
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
         }
     }
 
@@ -594,37 +669,60 @@ class DramaBoxProvider : MainAPI() {
     private suspend fun fetchMainPageFromNetwork(): HomePageResponse? {
         val homePages = ArrayList<HomePageList>()
         seenHomepageUrls.clear()
-        println("DramaBox: Fetching page 1 from network (deduplicated)")
+        println("DramaBox: Fetching page 1 from network (deduplicated & merged)")
         try {
+            // Fetch Cutad rank list first
+            val cutadRankList = fetchCutadRankList()
+
             // 1. Pilihan VIP
             val vipRes = fetchPageData("vip", "vip.json", "$mainUrl/api/dramabox/vip")
             val vipList = parseVipDramaList(vipRes, filterDuplicates = false)
-            if (vipList.isNotEmpty()) {
-                homePages.add(HomePageList("Pilihan VIP", vipList))
-            }
 
             // 2. Trending
             val trendingRes = fetchPageData("trending", "trending.json", "$mainUrl/api/dramabox/trending")
             val trendingList = parseSekaiDramaList(trendingRes, filterDuplicates = false)
-            if (trendingList.isNotEmpty()) {
-                homePages.add(HomePageList("Trending", trendingList))
-            }
 
             // 3. Terbaru
             val latestRes = fetchPageData("latest", "latest.json", "$mainUrl/api/dramabox/latest")
             val latestList = parseSekaiDramaList(latestRes, filterDuplicates = false)
-            if (latestList.isNotEmpty()) {
-                homePages.add(HomePageList("Terbaru", latestList))
-            }
 
             // 4. Pencarian Populer
             val popSearchRes = fetchPageData("populersearch", "populersearch.json", "$mainUrl/api/dramabox/populersearch")
             val popSearchList = parseSekaiDramaList(popSearchRes, filterDuplicates = false)
-            if (popSearchList.isNotEmpty()) {
-                homePages.add(HomePageList("Pencarian Populer", popSearchList))
+
+            // Merge & Alternate Drama Populer
+            val rawSekaiPop = trendingList + popSearchList + vipList
+            val mergedPop = ArrayList<SearchResponse>()
+            val maxLen = maxOf(rawSekaiPop.size, cutadRankList.size)
+            for (i in 0 until maxLen) {
+                if (i < cutadRankList.size) mergedPop.add(cutadRankList[i])
+                if (i < rawSekaiPop.size) mergedPop.add(rawSekaiPop[i])
+            }
+            val finalPopList = mergeAndDeduplicate(emptyList(), mergedPop)
+            if (finalPopList.isNotEmpty()) {
+                homePages.add(HomePageList("Drama Populer", finalPopList))
             }
 
-            // 5. Sulih Suara Populer
+            // Merge & Alternate Drama Terbaru
+            val cutadLatestList = cutadRankList.sortedByDescending { 
+                it.url.substringAfterLast("cutad_").toLongOrNull() ?: 0L 
+            }
+            val mergedLatest = ArrayList<SearchResponse>()
+            val maxLatestLen = maxOf(latestList.size, cutadLatestList.size)
+            for (i in 0 until maxLatestLen) {
+                if (i < cutadLatestList.size) mergedLatest.add(cutadLatestList[i])
+                if (i < latestList.size) mergedLatest.add(latestList[i])
+            }
+            val finalLatestList = mergeAndDeduplicate(emptyList(), mergedLatest)
+            if (finalLatestList.isNotEmpty()) {
+                homePages.add(HomePageList("Drama Terbaru", finalLatestList))
+            }
+
+            // Kumpulkan semua drama bertag dub/sulih suara dari daftar utama
+            val extractedDubs = (cutadRankList + trendingList + popSearchList + vipList + latestList)
+                .filter { isDubbedTitle(it.name) }
+
+            // 5. Sulih Suara (Kategori Tunggal Gabungan)
             val voicePopRes = fetchPageData(
                 "dubindo_terpopuler",
                 "dubindo_terpopuler.json",
@@ -632,11 +730,7 @@ class DramaBoxProvider : MainAPI() {
                 mapOf("classify" to "terpopuler")
             )
             val voicePopList = parseSekaiDramaList(voicePopRes, filterDuplicates = false)
-            if (voicePopList.isNotEmpty()) {
-                homePages.add(HomePageList("Sulih Suara Populer", voicePopList))
-            }
 
-            // 6. Sulih Suara Terbaru
             val voiceNewRes = fetchPageData(
                 "dubindo_terbaru",
                 "dubindo_terbaru.json",
@@ -644,8 +738,10 @@ class DramaBoxProvider : MainAPI() {
                 mapOf("classify" to "terbaru")
             )
             val voiceNewList = parseSekaiDramaList(voiceNewRes, filterDuplicates = false)
-            if (voiceNewList.isNotEmpty()) {
-                homePages.add(HomePageList("Sulih Suara Terbaru", voiceNewList))
+
+            val finalVoiceList = mergeAndDeduplicate(voicePopList + voiceNewList, extractedDubs)
+            if (finalVoiceList.isNotEmpty()) {
+                homePages.add(HomePageList("Sulih Suara", finalVoiceList))
             }
 
             // 7. Lainnya (Halaman 1)
@@ -678,7 +774,7 @@ class DramaBoxProvider : MainAPI() {
                 val bookId = book.optString("bookId")
                 val bookName = book.optString("bookName")
                 val cover = book.optString("coverWap").ifEmpty { book.optString("cover") }
-                val url = "$mainUrl/play/$bookId"
+                val url = "https://lynk.id/xr3ed#sekai_$bookId"
                 
                 if (filterDuplicates) {
                     if (seenHomepageUrls.contains(url)) {
@@ -717,7 +813,7 @@ class DramaBoxProvider : MainAPI() {
                         val bookId = book.optString("bookId")
                         val bookName = book.optString("bookName")
                         val cover = book.optString("coverWap").ifEmpty { book.optString("cover") }
-                        val url = "$mainUrl/play/$bookId"
+                        val url = "https://lynk.id/xr3ed#sekai_$bookId"
                         
                         if (filterDuplicates) {
                             if (seenHomepageUrls.contains(url)) {
@@ -744,38 +840,141 @@ class DramaBoxProvider : MainAPI() {
         return results.distinctBy { it.url }
     }
 
+    private fun mergeAndDeduplicate(sekaiList: List<SearchResponse>, cutadList: List<SearchResponse>): List<SearchResponse> {
+        val merged = ArrayList<SearchResponse>()
+        val seenTitles = HashSet<String>()
+        
+        for (item in cutadList) {
+            val cleanTitle = cleanTitleForCompare(item.name)
+            if (cleanTitle.isNotEmpty() && !seenTitles.contains(cleanTitle)) {
+                seenTitles.add(cleanTitle)
+                merged.add(item)
+            }
+        }
+        
+        for (item in sekaiList) {
+            val cleanTitle = cleanTitleForCompare(item.name)
+            if (cleanTitle.isNotEmpty() && !seenTitles.contains(cleanTitle)) {
+                seenTitles.add(cleanTitle)
+                merged.add(item)
+            }
+        }
+        
+        return merged
+    }
+
+    private fun cleanTitleForCompare(title: String): String {
+        return title.lowercase()
+            .replace(Regex("[^a-zA-Z0-9]"), "")
+            .trim()
+    }
+
+    private fun isDubbedTitle(title: String): Boolean {
+        val lower = title.lowercase()
+        return lower.contains("dub") || lower.contains("sulih")
+    }
+
     override suspend fun search(query: String): List<SearchResponse> {
         val cached = searchCache[query]
         if (cached != null) return cached
 
+        val sekaiResults = ArrayList<SearchResponse>()
         try {
             val rawRes = requestWithCf("$mainUrl/api/dramabox/search", mapOf("query" to query))
             val json = JSONObject(rawRes)
             val decrypted = decryptCryptoJS(json.getString("data"))
             if (decrypted.isNotEmpty()) {
                 val results = parseSekaiDramaList(decrypted)
-                if (results.isNotEmpty()) {
-                    searchCache[query] = results
-                    return results
-                }
+                sekaiResults.addAll(results)
             }
         } catch (e: Exception) {
             println("DramaBox: Direct search failed: ${e.message}")
         }
-        return emptyList()
+
+        val filteredCutad = try {
+            val cutadRank = fetchCutadRankList()
+            cutadRank.filter { it.name.contains(query, ignoreCase = true) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        val merged = mergeAndDeduplicate(sekaiResults, filteredCutad)
+        if (merged.isNotEmpty()) {
+            searchCache[query] = merged
+        }
+        return merged
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val bookId = when {
+        val rawBookId = when {
+            url.contains("lynk.id") -> url.substringAfterLast("#", "")
             url.contains("/play/") -> url.substringAfter("/play/").substringBefore("?").substringBefore("/")
             url.contains("/detail/") -> url.substringAfter("/detail/").substringBefore("?").substringBefore("/")
             else -> url.substringAfterLast("/").substringBefore("?")
         }
-        if (bookId.isEmpty()) return null
+        if (rawBookId.isEmpty()) return null
 
-        val cached = detailCache[bookId]
+        val isCutad = rawBookId.startsWith("cutad_")
+        val isSekai = rawBookId.startsWith("sekai_")
+        val bookId = when {
+            isCutad -> rawBookId.removePrefix("cutad_")
+            isSekai -> rawBookId.removePrefix("sekai_")
+            else -> rawBookId
+        }
+
+        val cached = detailCache[rawBookId]
         if (cached != null) return cached
 
+        if (isCutad) {
+            try {
+                val headers = getCutadHeaders()
+                val detailUrl = "$CUTAD_API_URL?action=detail&id=$bookId"
+                println("DramaBox: Fetching Cutad detail from: $detailUrl")
+                val detailRes = app.get(detailUrl, headers = headers).text
+                
+                val detailJson = JSONObject(detailRes)
+                val bookInfo = detailJson.optJSONObject("bookInfo") ?: JSONObject()
+                val bookName = bookInfo.optString("bookName").ifEmpty { "DramaBox" }.trim()
+                val cover = bookInfo.optString("cover")
+                val introduction = bookInfo.optString("introduction").ifEmpty { "Saksikan drama pendek menarik di DramaBox." }
+                val chapterList = detailJson.optJSONArray("chapterList") ?: JSONArray()
+
+                val episodes = ArrayList<Episode>()
+                for (i in 0 until chapterList.length()) {
+                    val ch = chapterList.optJSONObject(i) ?: continue
+                    val indexStr = ch.optString("indexStr")
+                    val episodeIndex = indexStr.toIntOrNull() ?: (i + 1)
+                    val chapterName = "Episode $episodeIndex"
+                    
+                    episodes.add(
+                        newEpisode(
+                            "cutad_$bookId|$episodeIndex"
+                        ) {
+                            this.name = chapterName
+                            this.episode = episodeIndex
+                            this.season = 1
+                        }
+                    )
+                }
+
+                val response = newTvSeriesLoadResponse(
+                    name = bookName,
+                    url = "https://lynk.id/xr3ed#cutad_$bookId",
+                    type = TvType.TvSeries,
+                    episodes = episodes
+                ) {
+                    this.posterUrl = cover
+                    this.plot = introduction
+                }
+                detailCache[rawBookId] = response
+                return response
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            }
+        }
+
+        // Default: Sekai
         val cacheKeyDetail = "detail_$bookId"
         val cacheKeyEpisodes = "episodes_$bookId"
         val cacheDuration = 2 * 60 * 60 * 1000L // 2 jam
@@ -840,7 +1039,7 @@ class DramaBoxProvider : MainAPI() {
 
                 episodes.add(
                     newEpisode(
-                        "$bookId|$chapterIndex"
+                        "sekai_$bookId|$chapterIndex"
                     ) {
                         this.name = chapterName
                         this.episode = chapterIndex
@@ -852,7 +1051,7 @@ class DramaBoxProvider : MainAPI() {
 
             val response = newTvSeriesLoadResponse(
                 name = bookName,
-                url = url,
+                url = "https://lynk.id/xr3ed#sekai_$bookId",
                 type = TvType.TvSeries,
                 episodes = episodes
             ) {
@@ -862,7 +1061,7 @@ class DramaBoxProvider : MainAPI() {
                     this.backgroundPosterUrl = firstEpisodeCover
                 }
             }
-            detailCache[bookId] = response
+            detailCache[rawBookId] = response
             return response
         } catch (e: Exception) {
             e.printStackTrace()
@@ -882,22 +1081,61 @@ class DramaBoxProvider : MainAPI() {
             println("DramaBox: parts size too small: ${parts.size}")
             return false
         }
-        var bookId = parts[0]
-        if (bookId.startsWith("http://") || bookId.startsWith("https://")) {
-            val parsedId = when {
-                bookId.contains("/play/") -> bookId.substringAfter("/play/").substringBefore("?").substringBefore("/")
-                bookId.contains("/detail/") -> bookId.substringAfter("/detail/").substringBefore("?").substringBefore("/")
-                else -> bookId.substringAfterLast("/").substringBefore("?")
-            }
-            if (parsedId.isNotEmpty()) {
-                bookId = parsedId
-            }
+        var rawBookId = parts[0]
+        if (rawBookId.startsWith("http://") || rawBookId.startsWith("https://")) {
+            rawBookId = rawBookId.substringAfterLast("/").substringBefore("?")
+        }
+        val isCutad = rawBookId.startsWith("cutad_")
+        val isSekai = rawBookId.startsWith("sekai_")
+        val bookId = when {
+            isCutad -> rawBookId.removePrefix("cutad_")
+            isSekai -> rawBookId.removePrefix("sekai_")
+            else -> rawBookId
         }
         val episodeIndex = parts[1].toIntOrNull() ?: 0
         val cachedVideoPath = parts.getOrNull(2)
-        println("DramaBox: parsed bookId=$bookId, episodeIndex=$episodeIndex, cachedVideoPath=$cachedVideoPath")
+        println("DramaBox: parsed bookId=$bookId, episodeIndex=$episodeIndex, cachedVideoPath=$cachedVideoPath, isCutad=$isCutad")
 
-        // 1. Cek masa kedaluwarsa tautan cache
+        // 1. Coba ambil stream dari Cutad terlebih dahulu untuk performa HLS instan (jika tersedia)
+        if (isCutad || isSekai || rawBookId == bookId) {
+            try {
+                val finalVideoPath = "$CUTAD_API_URL?action=stream&bookId=$bookId&episode=$episodeIndex"
+                val headers = getCutadHeaders()
+                val currentUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                val headersMap = mutableMapOf(
+                    "Referer" to "$CUTAD_URL/",
+                    "User-Agent" to currentUA
+                )
+                cutadSessionCookie?.let { headersMap["Cookie"] = it }
+
+                // Verifikasi keberadaan HLS stream di Cutad dengan timeout singkat
+                val checkRes = app.get(finalVideoPath, headers = headers, timeout = 3).text
+                if (checkRes.contains("#EXTM3U")) {
+                    callback.invoke(
+                        newExtractorLink(
+                            name = "$name (HLS)",
+                            source = name,
+                            url = finalVideoPath,
+                            type = ExtractorLinkType.M3U8
+                        ) {
+                            this.quality = Qualities.P720.value
+                            this.headers = headersMap
+                        }
+                    )
+                    println("DramaBox: successfully registered Cutad stream link: $finalVideoPath")
+                    return true
+                }
+            } catch (e: Exception) {
+                println("DramaBox: Cutad stream check failed/not found, fallback to Sekai: ${e.message}")
+            }
+        }
+
+        // Jika dipastikan sumber Cutad murni tapi gagal dimuat di Cutad
+        if (isCutad) {
+            return false
+        }
+
+        // Default: Sekai
         var useCached = false
         if (!cachedVideoPath.isNullOrEmpty() && (cachedVideoPath.startsWith("http://") || cachedVideoPath.startsWith("https://"))) {
             val expiresStr = cachedVideoPath.substringAfter("Expires=", "").substringBefore("&")
