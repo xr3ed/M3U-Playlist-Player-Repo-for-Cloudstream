@@ -304,6 +304,10 @@ class CloudflareWebViewDialog(
 
         handler.removeCallbacks(cookiePollRunnable)
 
+        webView?.stopLoading()
+        webView?.visibility = View.GONE
+        progressBar?.visibility = View.GONE
+
         val ctx = context ?: activity
         ShortMaxProvider.setCfCookies(ctx, cookieStr)
         webView?.settings?.userAgentString?.let { ua ->
@@ -311,14 +315,14 @@ class CloudflareWebViewDialog(
         }
 
         Log.d(TAG, "✅ Saved cookies: $cookieStr")
-        updateStatus("✅ Done! Cookies saved.")
+        updateStatus("✅ Verifikasi berhasil!")
 
-        webView?.postDelayed({
+        handler.postDelayed({
             if (isAdded) {
                 onFinished?.invoke(true)
                 dismissAllowingStateLoss()
             }
-        }, 1500)
+        }, 1200)
     }
 
     override fun onDismiss(dialog: android.content.DialogInterface) {
