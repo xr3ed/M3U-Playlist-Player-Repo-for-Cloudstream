@@ -1,38 +1,102 @@
 [
   {
-    "bookId": "42000012744",
-    "bookName": "Edukasi Seks Oleh Sahabatku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012744/42000012744.jpg?t=1779241038582",
-    "chapterCount": 58,
-    "introduction": "Setelah pesta yang memalukan, Elsa meminta bantuan Candra, teman masa kecilnya yang playboy, untuk membangun lagi kepercayaan dirinya. Mereka sepakat membuat aturan sederhana: tidak berciuman. Namun, saat perasaan tumbuh dan aturan itu dilanggar, Elsa harus memilih antara pria incarannya dan cinta yang selalu ada di hadapannya.",
+    "bookId": "42000014158",
+    "bookName": "Saat Istri Terbuang Bangkit (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000014158/42000014158.jpg?t=1779936480296",
+    "chapterCount": 62,
+    "introduction": "Nadia Putri menikah dengan Dimas dan menopang Keluarga Halim, namun saat kembali ia dikhianati oleh suami yang membawa istri kedua. Disiksa dan dijebak, Nadia bangkit dengan klinik warisan kakeknya, membongkar kemunafikan keluarga Halim, dan mendapat izin cerai. Ia menyingkap tipu daya Citra hingga tumbang, sementara keluarga Halim dihukum. Saat menangani wabah, Nadia menemukan cinta sejati bersama putra mahkota.",
     "tags": [
-      "Cinta Segitiga",
-      "Sahabat Masa Kecil",
-      "Teman Jadi Kekasih",
-      "Playboy",
-      "Gadis Naif",
-      "Modern"
+      "Serangan Balik",
+      "Bangsawan",
+      "Cinta Retak",
+      "Balas Dendam",
+      "Perselingkuhan",
+      "Penebusan"
     ],
     "tagV3s": [
       {
-        "tagId": 1380,
-        "tagName": "Cinta Segitiga",
-        "tagEnName": "Love Triangle"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
       },
       {
-        "tagId": 1381,
-        "tagName": "Sahabat Masa Kecil",
-        "tagEnName": "Childhood Sweetheart"
+        "tagId": 1367,
+        "tagName": "Bangsawan",
+        "tagEnName": "Royalty"
       },
       {
-        "tagId": 1391,
-        "tagName": "Teman Jadi Kekasih",
-        "tagEnName": "Friend to Lover"
+        "tagId": 1636,
+        "tagName": "Cinta Retak",
+        "tagEnName": "Love After Divorce"
       },
       {
-        "tagId": 1366,
-        "tagName": "Playboy",
-        "tagEnName": "Playboy"
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1459,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464076\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "992K",
+    "bookShelfTime": 1779959715000,
+    "shelfTime": "2026-05-28 17:15:15",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000000446",
+    "bookName": "Benih Cinta Petani Miliarder",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000000446/42000000446.jpg?t=1766740772315",
+    "chapterCount": 59,
+    "introduction": "Demi membiayai pengobatan ayah angkatnya, Louise setuju menggantikan saudari angkatnya Christina untuk dinikahkan dengan Troy, seorang petani. Diluar dugaan, Troy ternyata seorang miliarder tersembunyi. Namun saat hubungan mereka yang pada awalnya kaku perlahan menjadi cinta, Christina yang menyadari kesalahannya menolak Troy berusaha merebut Troy dari Louise dengan segala cara!",
+    "tags": [
+      "Pembalikan Identitas",
+      "Cinta Setelah Menikah",
+      "Intrik Keluarga",
+      "Gadis Naif",
+      "Modern",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1393,
+        "tagName": "Cinta Setelah Menikah",
+        "tagEnName": "Love After Marriage"
+      },
+      {
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
       },
       {
         "tagId": 1374,
@@ -43,145 +107,6 @@
         "tagId": 1352,
         "tagName": "Modern",
         "tagEnName": "Modern"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125749\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "7M",
-    "bookShelfTime": 1779501600000,
-    "shelfTime": "2026-05-23 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018343",
-    "bookName": "Merebut Kembali Segalanya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018343/42000018343.jpg?t=1782272767362",
-    "chapterCount": 58,
-    "introduction": "Rea, ahli waris yang kehilangan segalanya, akhirnya kembali ke keluarganya yang elite. Alih-alih memilih cinta, dia memprioritaskan kekuasaan dan bertekad merebut kembali haknya. Drama ini menyajikan konflik emosional yang tajam, ketika ikatan keluarga, ambisi, dan keputusan besar saling bertabrakan.",
-    "tags": [
-      "Intrik Keluarga",
-      "Wanita Kuat",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Putri Kaya",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "126K",
-      "recCopy": "Sedang Tren TOP 4",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125749\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.1M",
-    "bookShelfTime": 1782280257000,
-    "shelfTime": "2026-06-24 13:50:57",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017391",
-    "bookName": "Pengantin Perawan Raja Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017391/42000017391.jpg?t=1781687794585",
-    "chapterCount": 53,
-    "introduction": "Sinopsis: Setelah ibu tirinya melelang kesuciannya, Lily dibeli oleh Faris, Sang Raja Naga yang mengerikan. Demi menolong saudaranya, Lily menyetujuinya. Ternyata, Faris tengah sekarat akibat kutukan kuno, seorang perawan harus jatuh cinta dan menyerahkan diri kepadanya secara sukarela dalam waktu 30 hari, atau Faris akan mati.",
-    "tags": [
-      "Fantasi",
-      "Gairah",
-      "Musuh Jadi Kekasih",
-      "Cinta Paksaan",
-      "Takdir Cinta",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1355,
-        "tagName": "Fantasi",
-        "tagEnName": "Fantasy"
-      },
-      {
-        "tagId": 10047,
-        "tagName": "Gairah",
-        "tagEnName": "Steamy"
-      },
-      {
-        "tagId": 1390,
-        "tagName": "Musuh Jadi Kekasih",
-        "tagEnName": "Enemy to Lover"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1382,
-        "tagName": "Takdir Cinta",
-        "tagEnName": "Destined Love"
       },
       {
         "tagId": 1357,
@@ -194,208 +119,52 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
     },
     "isEntry": 0,
     "index": 0,
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125749\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.8M",
-    "bookShelfTime": 1782489600000,
-    "shelfTime": "2026-06-27 00:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464076\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "6.6M",
+    "bookShelfTime": 1763370872000,
+    "shelfTime": "2025-11-17 17:14:32",
     "inLibrary": false
   },
   {
-    "bookId": "42000016017",
-    "bookName": "Ibuku Triliuner Rahasia (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016017/42000016017.jpg?t=1781071314892",
-    "chapterCount": 52,
-    "introduction": "Setelah para ibu komite sekolah menjebak putranya, seorang ibu sederhana dipermalukan dan disingkirkan. Namun, mereka tak tahu wanita yang dianggap bukan siapa-siapa itu sebenarnya triliuner rahasia di balik sekolah tersebut. Kini, nasib mereka ada di tangannya.",
+    "bookId": "42000015380",
+    "bookName": "Cinta yang Ternyata Dusta (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000015380/42000015380.jpg?t=1780646150654",
+    "chapterCount": 57,
+    "introduction": "Setelah enam tahun menikah tanpa gairah, Linda sadar bahwa suaminya jatuh cinta pada saudari tiri sendiri, dan Linda hanya sekadar formalitas dalam pernikahan mereka. Merasa dikhianati, Linda mengungkapkan kebenaran pada saudari tirinya dan meninggalkan suaminya. Namun, pada akhirnya justru sang suamilah yang menyesal.",
     "tags": [
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Wanita Kuat",
-      "Modern",
-      "Serangan Balik",
-      "CEO"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1362,
-        "tagName": "CEO",
-        "tagEnName": "Billionaire"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "73K",
-      "recCopy": "Sedang Tren TOP 9",
-      "sort": 9
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125749\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "5.4M",
-    "bookShelfTime": 1781164800000,
-    "shelfTime": "2026-06-11 16:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019700",
-    "bookName": "Raja Mecha Terakhir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019700/42000019700.jpg?t=1783043760736",
-    "chapterCount": 58,
-    "introduction": "Hancur karena kematian orang tuanya, Coki Tanu, sang Raja Mech, menyamar sebagai petugas kebersihan setelah diselamatkan oleh Freya. Namun saat Freya, wanita yang diam-diam dicintainya, dikhianati dan dipaksa mengikuti duel mech mematikan, Colt harus mengungkap identitas aslinya. Dengan membuka Neural Sync legendaris 100%, dia mengendalikan Tempest untuk menghancurkan musuh-musuhnya dan menyelamatkan dunia dari kawanan alien yang mengancam kepunahan.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Balas Dendam",
-      "Penebusan",
-      "Kekuatan Khusus",
-      "Sci-Fi",
-      "Pria Dominan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1338,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1478,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      },
-      {
-        "tagId": 1320,
-        "tagName": "Sci-Fi",
-        "tagEnName": "Sci-Fi"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 2,
-      "name": "Terbaru",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "19.3K",
-      "recCopy": "Terbaru TOP 2",
-      "sort": 2
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125749\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "384K",
-    "bookShelfTime": 1783047144000,
-    "shelfTime": "2026-07-03 10:52:24",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000011079",
-    "bookName": "Hasrat untuk Sahabat Kakakku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011079/42000011079.jpg?t=1778046744986",
-    "chapterCount": 56,
-    "introduction": "Setelah tanpa sengaja mengirim email berisi fanfiksi eksplisit kepada teman sekamarnya yang baru, yang ternyata adalah sahabat kakaknya, Alia harus menghadapi ketegangan yang kian memanas serta aturan tidak tertulis dalam persahabatan kakaknya demi meraih pria impiannya.",
-    "tags": [
-      "Keluarga",
       "Cinta Terlarang",
-      "Cinta Rahasia",
-      "Modern",
+      "Romansa Tragis",
       "Romansa",
+      "Modern",
       "BG"
     ],
     "tagV3s": [
-      {
-        "tagId": 1408,
-        "tagName": "Keluarga",
-        "tagEnName": "Family Bonds"
-      },
       {
         "tagId": 1379,
         "tagName": "Cinta Terlarang",
         "tagEnName": "Forbidden Love"
       },
       {
-        "tagId": 1386,
-        "tagName": "Cinta Rahasia",
-        "tagEnName": "Secret Crush"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
+        "tagId": 1635,
+        "tagName": "Romansa Tragis",
+        "tagEnName": "Toxic Love"
       },
       {
         "tagId": 1357,
         "tagName": "Romansa",
         "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       },
       {
         "tagId": 1358,
@@ -408,17 +177,224 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464076\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "374K",
+    "bookShelfTime": 1780654162000,
+    "shelfTime": "2026-06-05 18:09:22",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000012351",
+    "bookName": "Cinta Yang Pernah Dihina",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012351/42000012351.jpg?t=1778840150491",
+    "chapterCount": 60,
+    "introduction": "Mireya, gadis gemuk yang selalu tak terlihat, diam-diam berpacaran dengan Raditya, pria idaman sekolah. Namun ia hancur saat mendengar Raditya mengaku hanya mempermainkannya. Mireya pun menghilang. Tujuh tahun kemudian, ia kembali sebagai Nayara—berubah total, membesarkan putrinya sendiri, dan bertemu lagi dengan Raditya yang kini dokter bedah toraks ternama.",
+    "tags": [
+      "Ibu Tunggal",
+      "Kabur Saat Hamil",
+      "Romansa",
+      "Si Tak Terlihat",
+      "Cinta Pandangan Pertama",
+      "Cinta Rahasia"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1377,
+        "tagName": "Ibu Tunggal",
+        "tagEnName": "Single Mom"
+      },
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1454,
+        "tagName": "Si Tak Terlihat",
+        "tagEnName": "Wallflower"
+      },
+      {
+        "tagId": 1384,
+        "tagName": "Cinta Pandangan Pertama",
+        "tagEnName": "Love at First Sight"
+      },
+      {
+        "tagId": 1386,
+        "tagName": "Cinta Rahasia",
+        "tagEnName": "Secret Crush"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
     },
     "isEntry": 0,
     "index": 0,
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125749\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "3.1M",
-    "bookShelfTime": 1778119200000,
-    "shelfTime": "2026-05-07 10:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464076\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.5M",
+    "bookShelfTime": 1779008400000,
+    "shelfTime": "2026-05-17 17:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000002976",
+    "bookName": "Kupasrahkan Diriku Pada Cintamu (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000002976/42000002976.jpg?t=1766999911887",
+    "chapterCount": 54,
+    "introduction": "Saat datang menemui kekasihnya, Olivia secara tak sengaja bertemu dengan Ellis, seorang CEO miliarder paruh baya yang sekaligus ayah kekasihnya. Perkenalan Olivia dengan Ellis menuntun Olivia yang polos memasuki dunia percintaan yang berbeda, yang penuh hasrat dan dominasi...  ",
+    "tags": [
+      "Ketahuan Selingkuh",
+      "Perbedaan Usia",
+      "CEO",
+      "Gadis Naif",
+      "Cinta Terlarang",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1461,
+        "tagName": "Ketahuan Selingkuh",
+        "tagEnName": "Caught Cheating"
+      },
+      {
+        "tagId": 1383,
+        "tagName": "Perbedaan Usia",
+        "tagEnName": "Age-Gap Love"
+      },
+      {
+        "tagId": 1362,
+        "tagName": "CEO",
+        "tagEnName": "Billionaire"
+      },
+      {
+        "tagId": 1374,
+        "tagName": "Gadis Naif",
+        "tagEnName": "Innocent Damsel"
+      },
+      {
+        "tagId": 1379,
+        "tagName": "Cinta Terlarang",
+        "tagEnName": "Forbidden Love"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464077\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "9.4M",
+    "bookShelfTime": 1767004293000,
+    "shelfTime": "2025-12-29 18:31:33",
+    "inLibrary": false
+  },
+  {
+    "bookId": "41000117548",
+    "bookName": "Cinta Beracun",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000117548/41000117548.jpg?t=1750747674745",
+    "chapterCount": 81,
+    "introduction": "Dengan hati yang penuh luka, Susan menahan rasa sedihnya dengan berfoya-foya dan menggoda semua pria di kalangan orang kaya. Sampai suatu saat, dirinya bertemu dengan seorang pengawal yang sangat tampan. Susan langsung mengejar pria itu dan menggodanya selama bertahun-tahun. Sampai suatu hari, dia mendapati bahwa pengawal tampan itu ternyata hanya mendekatinya karena jatuh cinta dengan adik tirinya, yang merupakan sumber dari segala penderitaannya sejak kecil.",
+    "tags": [
+      "Perselingkuhan",
+      "Gadis Naif",
+      "Cinta Terlarang",
+      "Cinta Segitiga",
+      "Modern",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1374,
+        "tagName": "Gadis Naif",
+        "tagEnName": "Innocent Damsel"
+      },
+      {
+        "tagId": 1379,
+        "tagName": "Cinta Terlarang",
+        "tagEnName": "Forbidden Love"
+      },
+      {
+        "tagId": 1380,
+        "tagName": "Cinta Segitiga",
+        "tagEnName": "Love Triangle"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 4,
+      "name": "Anggota Saja",
+      "color": "#4D65ED"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464077\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "93.1M",
+    "bookShelfTime": 1750752708000,
+    "shelfTime": "2025-06-24 16:11:48",
     "inLibrary": false
   },
   {
@@ -427,61 +403,61 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 3,
     "tagCardVo": {
-      "tagId": 1636,
-      "tagName": "Cinta Retak",
-      "tagEnName": "Love After Divorce",
+      "tagId": 1369,
+      "tagName": "Dewa Perang",
+      "tagEnName": "War God",
       "tagBooks": [
         {
-          "bookId": "42000011037",
-          "bookName": "Dewa Kekayaan Turun",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011037/42000011037.jpg?t=1778032385533",
+          "bookId": "42000010769",
+          "bookName": "Istri Sah Ternyata Jenderal",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010769/42000010769.jpg?t=1777454982692",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "0839bdad1151286f732b4a86f1782ae2"
+            "log_id": "acca0e0efb1675681c648f7452bb799c"
           },
-          "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125644\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"acca0e0efb1675681c648f7452bb799c\",\"ret_time\":\"1783589464007\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         },
         {
-          "bookId": "41000122181",
-          "bookName": "Sesal yang Datang Terlambat",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122181/41000122181.jpg?t=1759139404273",
+          "bookId": "42000011025",
+          "bookName": "Cinta Selama Ribuan Tahun",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011025/42000011025.jpg?t=1777728375247",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "0839bdad1151286f732b4a86f1782ae2"
+            "log_id": "acca0e0efb1675681c648f7452bb799c"
           },
-          "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125644\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"acca0e0efb1675681c648f7452bb799c\",\"ret_time\":\"1783589464007\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         },
         {
-          "bookId": "41000123125",
-          "bookName": "Putri yang Tak Akan Tunduk",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000123125/41000123125.jpg?t=1761616639089",
+          "bookId": "42000011029",
+          "bookName": "Cinta di Ujung Pedang",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011029/42000011029.jpg?t=1777729444443",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "0839bdad1151286f732b4a86f1782ae2"
+            "log_id": "acca0e0efb1675681c648f7452bb799c"
           },
-          "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125644\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"acca0e0efb1675681c648f7452bb799c\",\"ret_time\":\"1783589464007\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         },
         {
-          "bookId": "41000122755",
-          "bookName": "Setelah Cinta Terlambat Datang",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122755/41000122755.jpg?t=1760691249847",
+          "bookId": "41000122842",
+          "bookName": "Cinta di Kehidupan Kedua",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122842/41000122842.jpg?t=1761012687567",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "0839bdad1151286f732b4a86f1782ae2"
+            "log_id": "acca0e0efb1675681c648f7452bb799c"
           },
-          "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125644\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"acca0e0efb1675681c648f7452bb799c\",\"ret_time\":\"1783589464007\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         }
       ]
     },
@@ -490,49 +466,49 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000019623",
-    "bookName": "Koki Legendaris",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019623/42000019623.jpg?t=1782983726059",
-    "chapterCount": 57,
-    "introduction": "Helen, juru masak istana legendaris yang dijuluki Raja sebagai Dewi Kuliner, meninggal tepat sebelum menerima penghargaan tertinggi. Terlahir kembali 100 tahun kemudian, dia menjadi asisten dapur di restoran ternama dan berjuang menyelamatkan restoran itu dari pengkhianatan serta kehancuran.",
+    "bookId": "42000000999",
+    "bookName": "Jangan Tangisi Kepergianku (Sulih Suara)  ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000000999/42000000999.jpg?t=1764839213039",
+    "chapterCount": 75,
+    "introduction": "Demi membalas budi, Neil menandatangani kontrak dengan ayahnya Keira untuk menikahi Keira dan membantunya pulih dari perpisahan dengan cinta pertamanya, Simon. Namun Keira yang masih tak mampu melepaskan bayang-bayang Simon hanya menganggap Neil sekedar pengganti. Setelah kontrak berakhir, Neil bercerai dan mengejar cita-citanya sebagai astronaut, sementara Keira yang akhirnya menyadari ketergantungan dirinya pada Neil bertekad merebut hatinya dan kembali menikah dengannya.",
     "tags": [
-      "Serangan Balik",
-      "Terlahir Kembali",
-      "Wanita Karier",
-      "Wanita Kuat",
-      "Pembalikan Identitas",
-      "Bangkitnya Orang Biasa"
+      "Bangkitnya Orang Biasa",
+      "Penyesalan",
+      "Balas Dendam",
+      "Perselingkuhan",
+      "Orang Biasa",
+      "Kesempatan Kedua"
     ],
     "tagV3s": [
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1405,
-        "tagName": "Terlahir Kembali",
-        "tagEnName": "Rebirth"
-      },
-      {
-        "tagId": 1375,
-        "tagName": "Wanita Karier",
-        "tagEnName": "Career Woman"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1398,
+        "tagId": 1339,
         "tagName": "Bangkitnya Orang Biasa",
         "tagEnName": "Underdog Story"
+      },
+      {
+        "tagId": 1658,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1341,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1331,
+        "tagName": "Orang Biasa",
+        "tagEnName": "A Nobody"
+      },
+      {
+        "tagId": 1422,
+        "tagName": "Kesempatan Kedua",
+        "tagEnName": "Second Chance"
       }
     ],
     "bookSource": {
@@ -540,138 +516,68 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
     },
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "194K",
-      "recCopy": "Sedang Tren TOP 1",
-      "sort": 1
-    },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125750\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "490K",
-    "bookShelfTime": 1783045344000,
-    "shelfTime": "2026-07-03 10:22:24",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464077\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "17.6M",
+    "bookShelfTime": 1765252800000,
+    "shelfTime": "2025-12-09 12:00:00",
     "inLibrary": false
   },
   {
-    "bookId": "42000011575",
-    "bookName": "30 Hari Jadi Istri Mafia",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011575/42000011575.jpg?t=1778318760673",
-    "chapterCount": 52,
-    "introduction": "Pada malam Valentine, perawat Linda Harin menyelamatkan seorang pria asing yang sekarat. Kemudian, dia mengetahui bahwa pria itu adalah Satrio Marun, seorang raja mafia yang ditakuti. Satrio menawarkan ultimatum yang kejam, menikah dengannya atau mati. Terjebak dalam dunianya yang berbahaya, gairah berbenturan dengan perlawanan. Saat kontrak cinta 30 hari berakhir, Linda harus memilih antara kebebasan atau hidup di sisi seorang raja mafia yang kejam.",
+    "bookId": "42000001340",
+    "bookName": "Cintaku Gagal Membuatmu Hangat (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000001340/42000001340.jpg?t=1765518703932",
+    "chapterCount": 82,
+    "introduction": "Menikah tujuh tahun, suami Rania selalu dingin seperti es. Di hari ulang tahunnya, dia terbang ke luar negeri mencari suami dan putrinya, tetapi dia menemukan bahwa suaminya yang tidak mengingat hari ulang tahunnya, malah membawa putrinya merayakan ulang tahun wanita lain. Suaminya yang dingin dan jauh kepada semua orang, justru tersenyum hanya kepada wanita itu. Bahkan putri Rania ingin menganggap wanita itu sebagai ibunya. Rania akhirnya benar-benar menyerah.",
     "tags": [
-      "Balas Dendam",
-      "Bangkitnya Orang Biasa",
-      "Mafia",
-      "Wanita Karier",
-      "Cinta Paksaan",
-      "Cinta Setelah Menikah"
+      "Penyesalan",
+      "Cinta Retak",
+      "Perselingkuhan",
+      "Mengejar Istri",
+      "Cinta Segitiga",
+      "Modern"
     ],
     "tagV3s": [
       {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
+        "tagId": 1654,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
       },
       {
-        "tagId": 1398,
-        "tagName": "Bangkitnya Orang Biasa",
-        "tagEnName": "Underdog Story"
-      },
-      {
-        "tagId": 1364,
-        "tagName": "Mafia",
-        "tagEnName": "Mafia"
-      },
-      {
-        "tagId": 1375,
-        "tagName": "Wanita Karier",
-        "tagEnName": "Career Woman"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125750\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.8M",
-    "bookShelfTime": 1778463295000,
-    "shelfTime": "2026-05-11 09:34:55",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000012810",
-    "bookName": "Diantar oleh Takdir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012810/42000012810.jpg?t=1779263881245",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Cinta Setelah Menikah",
-      "Romansa",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Perselingkuhan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
+        "tagId": 1636,
+        "tagName": "Cinta Retak",
+        "tagEnName": "Love After Divorce"
       },
       {
         "tagId": 1400,
         "tagName": "Perselingkuhan",
         "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1401,
+        "tagName": "Mengejar Istri",
+        "tagEnName": "Winning Her Back"
+      },
+      {
+        "tagId": 1380,
+        "tagName": "Cinta Segitiga",
+        "tagEnName": "Love Triangle"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       }
     ],
     "bookSource": {
@@ -679,28 +585,91 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "0839bdad1151286f732b4a86f1782ae2"
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
     },
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "175K",
-      "recCopy": "Sedang Tren TOP 2",
-      "sort": 2
-    },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"0839bdad1151286f732b4a86f1782ae2\",\"ret_time\":\"1783563125750\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "18.6M",
-    "bookShelfTime": 1779523200000,
-    "shelfTime": "2026-05-23 16:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464077\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "48M",
+    "bookShelfTime": 1765528013000,
+    "shelfTime": "2025-12-12 16:26:53",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000009695",
+    "bookName": "Sampai Jumpa Selamanya (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000009695/42000009695.jpg?t=1776233712962",
+    "chapterCount": 89,
+    "introduction": "Erika Raka, doktor lulusan Universitas Matar yang dibesarkan di panti asuhan, menikahi Charles Setyo demi membalas budi Keluarga Setyo dan melahirkan anaknya. Namun, Charles selalu mencintai adik angkatnya. Setelah kecelakaan membuka matanya, Erika memilih bercerai dan meninggalkan pernikahan tanpa cinta demi memulai hidup baru.",
+    "tags": [
+      "Penyesalan",
+      "Mengejar Istri",
+      "Kabur Saat Hamil",
+      "Bangkitnya Orang Biasa",
+      "Penebusan",
+      "Dokter"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1654,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1401,
+        "tagName": "Mengejar Istri",
+        "tagEnName": "Winning Her Back"
+      },
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1398,
+        "tagName": "Bangkitnya Orang Biasa",
+        "tagEnName": "Underdog Story"
+      },
+      {
+        "tagId": 1459,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      },
+      {
+        "tagId": 1440,
+        "tagName": "Dokter",
+        "tagEnName": "Doctor"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "9bd4cd9ecf6912749ce511f65396d170"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"9bd4cd9ecf6912749ce511f65396d170\",\"ret_time\":\"1783589464077\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.4M",
+    "bookShelfTime": 1776310021000,
+    "shelfTime": "2026-04-16 11:27:01",
     "inLibrary": false
   }
 ]

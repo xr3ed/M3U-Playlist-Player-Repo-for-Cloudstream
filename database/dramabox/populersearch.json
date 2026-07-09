@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "21.3K",
+      "hotCode": "21.2K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "13.3K",
+      "hotCode": "19K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,73 +174,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "11.5K",
+      "hotCode": "13.1K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1779523200000,
     "shelfTime": "2026-05-23 16:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017472",
-    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
-    "chapterCount": 70,
-    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
-    "tags": [
-      "Keadilan",
-      "Serangan Balik",
-      "Putri Kaya",
-      "Balas Dendam",
-      "Intrik Keluarga",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 10038,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Wendy,  Alvaro,  Wilian,  Yukia",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "8.6K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782360000000,
-    "shelfTime": "2026-06-25 12:00:00",
     "inLibrary": false
   },
   {
@@ -296,8 +235,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "7.6K",
-      "sort": 5
+      "hotCode": "10.5K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783045344000,
@@ -357,8 +296,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "6.2K",
-      "sort": 6
+      "hotCode": "10.4K",
+      "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1778378400000,
@@ -418,8 +357,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "5.9K",
-      "sort": 7
+      "hotCode": "9.9K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1778750374000,
@@ -427,64 +366,64 @@
     "inLibrary": false
   },
   {
-    "bookId": "41000122939",
-    "bookName": "Istriku Tiga, Takdirku Gila (Sulih Suara) ",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122939/41000122939.jpg?t=1765787838538",
-    "chapterCount": 74,
-    "introduction": "Arsa melakukan perjalanan waktu ke Dinasti Kina kuno. Kebetulan, pemerintah saat itu sedang memaksa para pemuda lajang untuk menikah. Di antara para calon istri itu, ada seorang putri kerajaan, putri dari keluarga jenderal, dan putri dari keluarga kaya. Saat Arsa masih bingung memilih, sebuah sistem tiba-tiba muncul dan memaksanya untuk menikahi ketiga wanita itu. Dia hanya bisa mendapatkan berbagai hadiah menarik dengan meningkatkan tingkat kasih sayang dari mereka...",
+    "bookId": "42000017472",
+    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
+    "chapterCount": 70,
+    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
     "tags": [
-      "Perjalanan Waktu",
-      "Sistem",
-      "Kekuatan Khusus",
-      "Sejarah",
-      "Bangsawan",
-      "Pria Dominan"
+      "Keadilan",
+      "Serangan Balik",
+      "Putri Kaya",
+      "Balas Dendam",
+      "Intrik Keluarga",
+      "Modern"
     ],
     "tagV3s": [
       {
-        "tagId": 1344,
-        "tagName": "Perjalanan Waktu",
-        "tagEnName": "Time Travel"
+        "tagId": 10038,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
       },
       {
-        "tagId": 1346,
-        "tagName": "Sistem",
-        "tagEnName": "Gamified World"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
       },
       {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
       },
       {
-        "tagId": 1319,
-        "tagName": "Sejarah",
-        "tagEnName": "Historical"
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
       },
       {
-        "tagId": 1327,
-        "tagName": "Bangsawan",
-        "tagEnName": "Royalty"
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
       },
       {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Arsa Wira",
+    "protagonist": "Wendy,  Alvaro,  Wilian,  Yukia",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "5.7K",
-      "sort": 8
+      "hotCode": "9.7K",
+      "sort": 7
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1761537600000,
-    "shelfTime": "2025-10-27 12:00:00",
+    "bookShelfTime": 1782360000000,
+    "shelfTime": "2026-06-25 12:00:00",
     "inLibrary": false
   },
   {
@@ -540,8 +479,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "5.6K",
-      "sort": 9
+      "hotCode": "6.8K",
+      "sort": 8
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1781402401000,
@@ -601,12 +540,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "5.4K",
-      "sort": 10
+      "hotCode": "5.8K",
+      "sort": 9
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1774584000000,
     "shelfTime": "2026-03-27 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017376",
+    "bookName": "Musim Panas Terakhir",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017376/42000017376.jpg?t=1781684491601",
+    "chapterCount": 73,
+    "introduction": "Evan meninggalkan Sella demi membalas budi kepada keluarga Joana. Tidak lama kemudian, Sella kehilangan kedua orang tuanya dan divonis mengidap kanker stadium akhir. Setelah memutuskan untuk mengakhiri hidupnya melalui eutanasia, dia kembali dipertemukan dengan Evan dan Joana. Bahkan, Joana meminta Sella menjadi pendamping di pernikahannya. Tidak ada yang tahu bahwa pada hari mereka mengucap janji suci, Sella justru akan mengucapkan selamat tinggal pada dunia.",
+    "tags": [
+      "Mengejar Istri",
+      "Penebusan",
+      "Gadis Naif",
+      "Kesempatan Kedua",
+      "Modern",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1401,
+        "tagName": "Mengejar Istri",
+        "tagEnName": "Winning Her Back"
+      },
+      {
+        "tagId": 1459,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      },
+      {
+        "tagId": 1374,
+        "tagName": "Gadis Naif",
+        "tagEnName": "Innocent Damsel"
+      },
+      {
+        "tagId": 1392,
+        "tagName": "Kesempatan Kedua",
+        "tagEnName": "Second Chance"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": " Sella Fadea,  Evan Yanda,  Joana Karsa ",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "5.7K",
+      "sort": 10
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782705600000,
+    "shelfTime": "2026-06-29 12:00:00",
     "inLibrary": false
   }
 ]

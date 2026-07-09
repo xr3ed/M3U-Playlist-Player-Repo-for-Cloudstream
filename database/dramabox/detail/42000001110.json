@@ -1,0 +1,56 @@
+{
+  "bookId": "42000001110",
+  "bookName": "Terikat Darah: Kekasih Sang Raja Mafia",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000001110/42000001110.jpg?t=1765188169500",
+  "chapterCount": 56,
+  "introduction": "Lily yang dijual ibu tirinya ke sebuah lelang perawan, ditolong Salvatore, seorang bos mafia yang dulu pernah diselamatkan Lily dengan transfusi darahnya yang langka. Demi menjaga Lily yang tipe darahnya sama, Salvatore mengadakan perjanjian dengan Lily dan memicu kecemburuan Bianca yang menganggap Salvatore tunangannya. Saat hubungan Lily dan Salvatore semakin erat, aksi Bianca pun semakin nekat dan membahayakan jiwa…",
+  "tags": [
+    "Mafia",
+    "Cinta Segitiga",
+    "Gadis Naif",
+    "Takdir Cinta",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1364,
+      "tagName": "Mafia",
+      "tagEnName": "Mafia"
+    },
+    {
+      "tagId": 1380,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1382,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-12-08 18:39:15",
+  "inLibrary": false
+}

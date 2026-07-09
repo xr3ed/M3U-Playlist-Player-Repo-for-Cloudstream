@@ -1,0 +1,57 @@
+{
+  "bookId": "42000007063",
+  "bookName": "Pernikahan Kedua Si OB (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000007063/42000007063.jpg?t=1772676807814",
+  "chapterCount": 56,
+  "introduction": "Calvin Pratama, pendiri Tudra Biotek yang hidup menyamar sebagai petugas kebersihan, diusir putranya sendiri. Ia lalu menyelamatkan Kania dan menikah dengan ibunya, Selena Hartono, CEO Grup Jarwa. Saat Selena difitnah dan Calvin dituduh pencuri karena vas Bulan Lotus, Selena tegas membelanya sebagai suami. Di tengah hinaan publik, identitas asli Calvin dan rencana balas dendamnya perlahan terungkap.",
+  "tags": [
+    "Balas Dendam",
+    "Pembalikan Identitas",
+    "Tokoh Legendaris",
+    "Kekuatan Khusus",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1332,
+      "tagName": "Tokoh Legendaris",
+      "tagEnName": "Divine Tycoon"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1773997200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-20 17:00:00",
+  "inLibrary": false
+}

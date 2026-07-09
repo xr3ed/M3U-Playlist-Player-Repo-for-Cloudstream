@@ -1,0 +1,51 @@
+{
+  "bookId": "42000006269",
+  "bookName": "Aku Bos Sebenarnya",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006269/42000006269.jpg?t=1770788604781",
+  "chapterCount": 64,
+  "introduction": "Hera Yadira, pewaris keluarga kaya yang menyembunyikan identitasnya, kembali dari Abian dan justru dianggap relawan miskin. Ia dipermalukan mantan pacar dan keluarganya di depan umum. Irvan Sean melihat keistimewaannya dan mengajukan kontrak pernikahan yang mengguncang kalangan elit. Ditekan tanpa henti, Hera membalas dan mengungkap jati dirinya sebagai Ketua Grup Rayad, aliansi investasi terkemuka dunia.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Wanita Kuat",
+    "Putri Kaya",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1771084800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-02-15 00:00:01",
+  "inLibrary": false
+}

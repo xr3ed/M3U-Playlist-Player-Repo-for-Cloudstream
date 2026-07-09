@@ -1,0 +1,57 @@
+{
+  "bookId": "42000017376",
+  "bookName": "Musim Panas Terakhir",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017376/42000017376.jpg?t=1781684491601",
+  "chapterCount": 73,
+  "introduction": "Evan meninggalkan Sella demi membalas budi kepada keluarga Joana. Tidak lama kemudian, Sella kehilangan kedua orang tuanya dan divonis mengidap kanker stadium akhir. Setelah memutuskan untuk mengakhiri hidupnya melalui eutanasia, dia kembali dipertemukan dengan Evan dan Joana. Bahkan, Joana meminta Sella menjadi pendamping di pernikahannya. Tidak ada yang tahu bahwa pada hari mereka mengucap janji suci, Sella justru akan mengucapkan selamat tinggal pada dunia.",
+  "tags": [
+    "Mengejar Istri",
+    "Penebusan",
+    "Gadis Naif",
+    "Kesempatan Kedua",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1401,
+      "tagName": "Mengejar Istri",
+      "tagEnName": "Winning Her Back"
+    },
+    {
+      "tagId": 1459,
+      "tagName": "Penebusan",
+      "tagEnName": "Redemption"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1392,
+      "tagName": "Kesempatan Kedua",
+      "tagEnName": "Second Chance"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782705600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-29 12:00:00",
+  "inLibrary": false
+}

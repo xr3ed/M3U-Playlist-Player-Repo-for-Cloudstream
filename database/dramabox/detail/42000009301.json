@@ -1,0 +1,56 @@
+{
+  "bookId": "42000009301",
+  "bookName": "Miliarder di Balik Layar (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000009301/42000009301.jpg?t=1775630305460",
+  "chapterCount": 63,
+  "introduction": "Kris Salim adalah CEO rahasia dari perusahaan terkemuka, Grup Titanio. Dia pernah berbaik hati membantu seorang wanita menjadi sukses, tetapi malah berujung dicampakkan. Tiba-tiba, dunia elite geger oleh kabar lamaran untuk seorang miliarder misterius, sebuah langkah yang akan mengubah segalanya.",
+  "tags": [
+    "Perselingkuhan",
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "CEO",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1341,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1324,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-08 17:04:21",
+  "inLibrary": false
+}

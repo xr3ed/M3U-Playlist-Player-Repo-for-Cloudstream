@@ -1,0 +1,57 @@
+{
+  "bookId": "42000006111",
+  "bookName": "Kekasih yang Terlupa (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006111/42000006111.jpg?t=1770608387272",
+  "chapterCount": 81,
+  "introduction": "Luna yang tengah hamil mengetahui bahwa pacarnya, Juna Petra, yang tengah mengidap kanker ternyata merupakan pewaris keluarga Petra. Keluarga Petra berjanji pada Juna bahwa akan mengobati penyakitnya asalkan dia putus dari Luna. Juna menolak mentah-mentah. Namun, Luna memutuskan untuk pergi agar kekasihnya bisa diobati. Setelah pergi, Luna terlibat kecelakan mobil. Juna mengira Luna telah mati, tapi faktanya, Luna hanya kehilangan ingatan dan telah melahirkan anak mereka.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Kabur Saat Hamil",
+    "Amnesia",
+    "Keluarga",
+    "Gadis Naif",
+    "Putri Kaya"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1397,
+      "tagName": "Kabur Saat Hamil",
+      "tagEnName": "Secret Baby"
+    },
+    {
+      "tagId": 1402,
+      "tagName": "Amnesia",
+      "tagEnName": "Amnesia"
+    },
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1772251200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-02-28 12:00:00",
+  "inLibrary": false
+}

@@ -1,0 +1,56 @@
+{
+  "bookId": "42000011236",
+  "bookName": "Cinta yang Dijahit Penyesalan (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011236/42000011236.jpg?t=1778137967710",
+  "chapterCount": 71,
+  "introduction": "Melia Suwandi berpacaran dengan pria yang berpura-pura miskin bernama Yanto Juanda. Melia kemudian menyadari dirinya hamil dan secara tidak sengaja mengetahui identitas asli Yanto. Melia terpaksa putus dengan Yanto dan melahirkan anak mereka sendirian, membuat Yanto menyimpan dendam terhadap Melia.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Kabur Saat Hamil",
+    "Penyesalan",
+    "Ibu Tunggal",
+    "Cinta Rahasia",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1397,
+      "tagName": "Kabur Saat Hamil",
+      "tagEnName": "Secret Baby"
+    },
+    {
+      "tagId": 1654,
+      "tagName": "Penyesalan",
+      "tagEnName": "All-Too-Late"
+    },
+    {
+      "tagId": 1377,
+      "tagName": "Ibu Tunggal",
+      "tagEnName": "Single Mom"
+    },
+    {
+      "tagId": 1386,
+      "tagName": "Cinta Rahasia",
+      "tagEnName": "Secret Crush"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-07 17:16:25",
+  "inLibrary": false
+}

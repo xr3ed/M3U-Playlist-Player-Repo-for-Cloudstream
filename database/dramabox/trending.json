@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "194K",
+      "hotCode": "213K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,67 +113,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "175K",
+      "hotCode": "174K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1779523200000,
     "shelfTime": "2026-05-23 16:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017520",
-    "bookName": "Diantar oleh Takdir (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
-    "tags": [
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Ilmuwan",
-      "Modern",
-      "Wanita Kuat"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 10033,
-        "tagName": "Ilmuwan",
-        "tagEnName": "Researcher"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Han Do-yoon,  Nam Yun-joo",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "148K",
-      "sort": 3
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1781798400000,
-    "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
   },
   {
@@ -229,12 +174,128 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "126K",
-      "sort": 4
+      "hotCode": "157K",
+      "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782280257000,
     "shelfTime": "2026-06-24 13:50:57",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017520",
+    "bookName": "Diantar oleh Takdir (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
+    "chapterCount": 66,
+    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Ilmuwan",
+      "Modern",
+      "Wanita Kuat"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 10033,
+        "tagName": "Ilmuwan",
+        "tagEnName": "Researcher"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Han Do-yoon,  Nam Yun-joo",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "138K",
+      "sort": 4
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1781798400000,
+    "shelfTime": "2026-06-19 00:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017985",
+    "bookName": "Satu Malam yang Mengubah Takdirku",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
+    "chapterCount": 56,
+    "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
+    "tags": [
+      "Kabur Saat Hamil",
+      "Salah Identitas",
+      "Cinta Semalam",
+      "Balas Dendam",
+      "Modern",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1403,
+        "tagName": "Salah Identitas",
+        "tagEnName": "Mistaken Identity"
+      },
+      {
+        "tagId": 1385,
+        "tagName": "Cinta Semalam",
+        "tagEnName": "One Night Stand"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Johny Kirta,  Judy Laros",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "115K",
+      "sort": 5
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782502499000,
+    "shelfTime": "2026-06-27 03:34:59",
     "inLibrary": false
   },
   {
@@ -290,8 +351,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "125K",
-      "sort": 5
+      "hotCode": "102K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782360000000,
@@ -351,73 +412,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "95.8K",
-      "sort": 6
+      "hotCode": "98.9K",
+      "sort": 7
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1764052944000,
     "shelfTime": "2025-11-25 14:42:24",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017985",
-    "bookName": "Satu Malam yang Mengubah Takdirku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
-    "chapterCount": 56,
-    "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
-    "tags": [
-      "Kabur Saat Hamil",
-      "Salah Identitas",
-      "Cinta Semalam",
-      "Balas Dendam",
-      "Modern",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1397,
-        "tagName": "Kabur Saat Hamil",
-        "tagEnName": "Secret Baby"
-      },
-      {
-        "tagId": 1403,
-        "tagName": "Salah Identitas",
-        "tagEnName": "Mistaken Identity"
-      },
-      {
-        "tagId": 1385,
-        "tagName": "Cinta Semalam",
-        "tagEnName": "One Night Stand"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Johny Kirta,  Judy Laros",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "94.2K",
-      "sort": 7
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782502499000,
-    "shelfTime": "2026-06-27 03:34:59",
     "inLibrary": false
   },
   {
@@ -473,7 +473,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "90.2K",
+      "hotCode": "87K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -534,7 +534,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "73K",
+      "hotCode": "70.2K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",
@@ -595,7 +595,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "69.4K",
+      "hotCode": "64.2K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",

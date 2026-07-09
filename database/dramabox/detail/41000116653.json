@@ -1,0 +1,56 @@
+{
+  "bookId": "41000116653",
+  "bookName": "Sst, Jangan Bilang Siapa-Siapa",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000116653/41000116653.jpg?t=1765787487854",
+  "chapterCount": 57,
+  "introduction": "Pada suatu malam di sebuah bar, Vincent yang kesal karena ayahnya akan menikah lagi dengan seorang janda beranak satu, menyelamatkan Fiona, yang dijual pacarnya ke seorang preman. Keesokan harinya di saat pernikahan ayahnya, Vincent baru tahu kalau Fiona adalah calon adik tiri barunya. Kesal karena menganggap ibu dan anak itu hanya mengincar harta keluarga, Vincent bertekad mengerjai Fiona agar dia dan ibunya diusir dari keluarga Vincent.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Intrik Keluarga",
+    "Kekuatan Khusus",
+    "Gadis Naif",
+    "Musuh Jadi Kekasih",
+    "Saudara Tiri"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1371,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1390,
+      "tagName": "Musuh Jadi Kekasih",
+      "tagEnName": "Enemy to Lover"
+    },
+    {
+      "tagId": 1456,
+      "tagName": "Saudara Tiri",
+      "tagEnName": "Step-Siblings"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-06-03 14:14:54",
+  "inLibrary": false
+}

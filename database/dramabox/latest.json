@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "194K",
+      "hotCode": "213K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "19.3K",
+      "hotCode": "19.8K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,12 +174,52 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "13.4K",
+      "hotCode": "12.5K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783216800000,
     "shelfTime": "2026-07-05 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020247",
+    "bookName": "Istri Baik Apaan?",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
+    "chapterCount": 62,
+    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
+    "tags": [
+      "Balas Dendam",
+      "Melawan Balik",
+      "Kebangkitan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 818,
+        "tagName": "Balas Dendam"
+      },
+      {
+        "tagId": 822,
+        "tagName": "Melawan Balik"
+      },
+      {
+        "tagId": 825,
+        "tagName": "Kebangkitan"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Juan Lee,  Nadia Meka",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "9K",
+      "sort": 4
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783404954000,
+    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -235,113 +275,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "11.6K",
-      "sort": 4
+      "hotCode": "8.6K",
+      "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783303200000,
     "shelfTime": "2026-07-06 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020247",
-    "bookName": "Istri Baik Apaan?",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
-    "chapterCount": 62,
-    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
-    "tags": [
-      "Balas Dendam",
-      "Melawan Balik",
-      "Kebangkitan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 818,
-        "tagName": "Balas Dendam"
-      },
-      {
-        "tagId": 822,
-        "tagName": "Melawan Balik"
-      },
-      {
-        "tagId": 825,
-        "tagName": "Kebangkitan"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Juan Lee,  Nadia Meka",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "8.2K",
-      "sort": 5
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783404954000,
-    "shelfTime": "2026-07-07 14:15:54",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019702",
-    "bookName": "Aku Raja Tersembunyi",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019702/42000019702.jpg?t=1783044085787",
-    "chapterCount": 63,
-    "introduction": "Di penerbangan menuju Kota Akios, Kris bertemu Hannah, pewaris Andian Tekno. Kris awalnya menolak pernikahan palsu yang ditawarkan Hannah. Setelah ditinggalkan tunangannya, Kris pun mengungkapkan identitas aslinya sebagai CEO Grup Titanio. Dia memutuskan memulai lembaran baru bersama Hannah.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Serangan Balik",
-      "Penyesalan",
-      "Putri Kaya",
-      "Cinta Setelah Menikah",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1654,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Kris Salim,  Hannah Andian",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "6.7K",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783047239000,
-    "shelfTime": "2026-07-03 10:53:59",
     "inLibrary": false
   },
   {
@@ -397,8 +336,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.3K",
-      "sort": 7
+      "hotCode": "7.2K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783396800000,
@@ -406,28 +345,29 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000018257",
-    "bookName": "Saat Mereka Kehilanganku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018257/42000018257.jpg?t=1782210199409",
-    "chapterCount": 58,
-    "introduction": "Difitnah dan dibunuh, Sara mendapat kesempatan untuk mengulang hidupnya. Kali ini, dia memilih meninggalkan tim basket dan bergabung dengan tim hoki es, di mana dia akhirnya dihargai. Saat tim basket menyadari betapa pentingnya Sara bagi mereka, semuanya sudah terlambat.",
+    "bookId": "42000019702",
+    "bookName": "Aku Raja Tersembunyi",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019702/42000019702.jpg?t=1783044085787",
+    "chapterCount": 63,
+    "introduction": "Di penerbangan menuju Kota Akios, Kris bertemu Hannah, pewaris Andian Tekno. Kris awalnya menolak pernikahan palsu yang ditawarkan Hannah. Setelah ditinggalkan tunangannya, Kris pun mengungkapkan identitas aslinya sebagai CEO Grup Titanio. Dia memutuskan memulai lembaran baru bersama Hannah.",
     "tags": [
-      "Terlahir Kembali",
-      "Wanita Kuat",
+      "Pembalikan Identitas",
+      "Serangan Balik",
       "Penyesalan",
-      "Kembali Bangkit",
+      "Putri Kaya",
+      "Cinta Setelah Menikah",
       "Modern"
     ],
     "tagV3s": [
       {
-        "tagId": 1405,
-        "tagName": "Terlahir Kembali",
-        "tagEnName": "Rebirth"
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
       },
       {
         "tagId": 1654,
@@ -435,9 +375,14 @@
         "tagEnName": "All-Too-Late"
       },
       {
-        "tagId": 10000,
-        "tagName": "Kembali Bangkit",
-        "tagEnName": "Comeback Story"
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
+      },
+      {
+        "tagId": 1393,
+        "tagName": "Cinta Setelah Menikah",
+        "tagEnName": "Love After Marriage"
       },
       {
         "tagId": 1352,
@@ -447,17 +392,17 @@
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Andi Basri,  Sara Rusli",
+    "protagonist": "Kris Salim,  Hannah Andian",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "4.6K",
-      "sort": 8
+      "hotCode": "6.9K",
+      "sort": 7
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783391952000,
-    "shelfTime": "2026-07-07 10:39:12",
+    "bookShelfTime": 1783047239000,
+    "shelfTime": "2026-07-03 10:53:59",
     "inLibrary": false
   },
   {
@@ -513,8 +458,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "4.4K",
-      "sort": 9
+      "hotCode": "4.1K",
+      "sort": 8
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783130400000,
@@ -522,64 +467,109 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000018259",
-    "bookName": "Mawar Selalu Berduri",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018259/42000018259.jpg?t=1782210396199",
-    "chapterCount": 71,
-    "introduction": "Bella tumbuh disayang keluarga, namun hidupnya berubah saat hamil dan berhenti sekolah. Menjelang melahirkan, ia mengetahui bahwa pernikahan dan kehamilannya hanyalah rencana ayah dan suaminya untuk mendapatkan darah tali pusar demi menyelamatkan putri lain. Hancur oleh pengkhianatan itu, Bella memalsukan kematiannya dan menghilang. Saat ayah dan suaminya menyesal serta mencari kebenaran, mereka akhirnya sadar akan kesalahan mereka, tetapi semuanya sudah terlambat.",
+    "bookId": "42000020105",
+    "bookName": "Ternyata Dia Suamiku",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020105/42000020105.jpg?t=1783316962278",
+    "chapterCount": 78,
+    "introduction": "Ilona menjalani pernikahan perjodohan dengan Javian, pria yang hampir tak pernah ditemuinya selama setahun. Saat Ilona mulai jatuh cinta pada bosnya, Logan Sabadi, dia menerima sebuah fakta mengejutkan. Logan dan Javian ternyata adalah orang yang sama!",
     "tags": [
-      "Mengejar Istri",
-      "Penyesalan",
-      "Cinta Retak",
-      "Perselingkuhan",
-      "Penebusan",
-      "Modern"
+      "Romansa",
+      "Identitas Tersembunyi",
+      "Nikah Dulu Cinta Belakangan ",
+      "Salah Paham"
     ],
     "tagV3s": [
       {
-        "tagId": 1401,
-        "tagName": "Mengejar Istri",
-        "tagEnName": "Winning Her Back"
+        "tagId": 807,
+        "tagName": "Romansa"
       },
       {
-        "tagId": 1654,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
+        "tagId": 813,
+        "tagName": "Identitas Tersembunyi"
       },
       {
-        "tagId": 1636,
-        "tagName": "Cinta Retak",
-        "tagEnName": "Love After Divorce"
+        "tagId": 816,
+        "tagName": "Nikah Dulu Cinta Belakangan "
       },
       {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
+        "tagId": 826,
+        "tagName": "Salah Paham"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Akson Lee,  Bella Ongko",
+    "protagonist": "Logan Sabadi,  Ilona Andini",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "4.3K",
+      "hotCode": "3.5K",
+      "sort": 9
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783389600000,
+    "shelfTime": "2026-07-07 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000019699",
+    "bookName": "Salah Memilih, Kehilangan Segalanya",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019699/42000019699.jpg?t=1783043090757",
+    "chapterCount": 60,
+    "introduction": "Jax, penguasa tersembunyi dunia militer, politik, dan bisnis Negara Kora, menikahi Eva tiga tahun lalu demi memenuhi wasiat mendiang tetuanya. Menyembunyikan identitasnya, dia menyelamatkan perusahaan keluarga Eva yang nyaris bangkrut dan membantunya mendapatkan kontrak besar. Namun, Eva justru mengira semua itu berkat Will, pria yang mengejarnya. Dia meremehkan Jax yang dianggap pengangguran dan ingin menceraikannya. Saat Jax mengungkap jati dirinya dan menghukum semua yang ",
+    "tags": [
+      "Pembalikan Identitas",
+      "Serangan Balik",
+      "Kekuatan Khusus",
+      "Modern",
+      "Pria Dominan",
+      "Balas Dendam"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1338,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Jax Candra,  Eva Halim",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "3.3K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783310400000,
-    "shelfTime": "2026-07-06 12:00:00",
+    "bookShelfTime": 1783048678000,
+    "shelfTime": "2026-07-03 11:17:58",
     "inLibrary": false
   }
 ]

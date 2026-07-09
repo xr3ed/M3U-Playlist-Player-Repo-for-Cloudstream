@@ -1,0 +1,57 @@
+{
+  "bookId": "42000017384",
+  "bookName": "Rival Pencuri Hatiku",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017384/42000017384.jpg?t=1781685945807",
+  "chapterCount": 56,
+  "introduction": "Lusia tak menyangka akan diselingkuhi dan dicampakkan. Dia pun memutuskan berpura-pura berpacaran dengan rival mantan pacarnya demi balas dendam.",
+  "tags": [
+    "Musuh Jadi Kekasih",
+    "Kekasih Kontrak",
+    "Balas Dendam",
+    "Pura-pura Bodoh",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1390,
+      "tagName": "Musuh Jadi Kekasih",
+      "tagEnName": "Enemy to Lover"
+    },
+    {
+      "tagId": 1621,
+      "tagName": "Kekasih Kontrak",
+      "tagEnName": "Contract Lover"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1370,
+      "tagName": "Pura-pura Bodoh",
+      "tagEnName": "Playing Dumb"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1781971200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-21 00:00:00",
+  "inLibrary": false
+}

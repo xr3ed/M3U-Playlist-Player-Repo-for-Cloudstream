@@ -1,0 +1,57 @@
+{
+  "bookId": "42000007062",
+  "bookName": "Janji Kuno  (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000007062/42000007062.jpg?t=1772676613330",
+  "chapterCount": 72,
+  "introduction": "Di pemakaman Tuan Yudi di Kota Yango, seorang wanita bercadar tiba-tiba muncul dan menuntut janji kuno: meminta keturunan terbaik Keluarga Yopie sebagai pelayannya. Nyonya Mira, yang mengira wanita itu selingkuhan Tuan Yudi, marah dan menarik cadarnya. Saat wajahnya terungkap, Nyonya Mira terkejut. Misteri asal-usul wanita itu mengungkap rahasia kelam dan perseteruan kedua keluarga yang telah berlangsung selama seabad.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Intrik Keluarga",
+    "Serangan Balik",
+    "Balas Dendam",
+    "Kekuatan Khusus",
+    "Sejarah"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1371,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1353,
+      "tagName": "Sejarah",
+      "tagEnName": "Historical"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1773565200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-15 17:00:00",
+  "inLibrary": false
+}

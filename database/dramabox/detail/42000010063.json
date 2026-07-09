@@ -1,0 +1,57 @@
+{
+  "bookId": "42000010063",
+  "bookName": "Rahasiaku di Tangan Kakak Tiri",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010063/42000010063.jpg?t=1776760381953",
+  "chapterCount": 56,
+  "introduction": "Hidup Febi Andela berubah kacau saat dia tanpa sengaja menyerahkan tulisan rahasia paling memalukannya pada Alex Nolka, yang ternyata menjadi kakak tirinya. Kini Alex memegang rahasia itu sambil hidup di bawah satu atap, dan tanpa disadari, perasaan di antara mereka justru makin berbahaya.",
+  "tags": [
+    "Cinta Terlarang",
+    "Saudara Tiri",
+    "Musuh Jadi Kekasih",
+    "Kekuatan Khusus",
+    "Gadis Naif",
+    "Cinta Rahasia"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1379,
+      "tagName": "Cinta Terlarang",
+      "tagEnName": "Forbidden Love"
+    },
+    {
+      "tagId": 1456,
+      "tagName": "Saudara Tiri",
+      "tagEnName": "Step-Siblings"
+    },
+    {
+      "tagId": 1390,
+      "tagName": "Musuh Jadi Kekasih",
+      "tagEnName": "Enemy to Lover"
+    },
+    {
+      "tagId": 1371,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1386,
+      "tagName": "Cinta Rahasia",
+      "tagEnName": "Secret Crush"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1777172400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-26 11:00:00",
+  "inLibrary": false
+}

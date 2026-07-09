@@ -1,0 +1,57 @@
+{
+  "bookId": "41000122409",
+  "bookName": "Suami untuk Tiga Tahun",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122409/41000122409.jpg?t=1760084620640",
+  "chapterCount": 65,
+  "introduction": "Ezra yang sudah hidup ribuan tahun menepati janji pada muridnya yang sekarat untuk menjaga keluarganya selama tiga tahun. Selama waktu itu, dia menikahi cucu sang murid, tapi malah diperlakukan dingin dan diremehkan. Meski sering disulitkan, Ezra tetap sabar. Begitu tiga tahun berlalu, dia pergi tanpa penyesalan.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Penyesalan",
+    "Kekuatan Khusus",
+    "Pemberontak",
+    "Pria Dominan",
+    "Supranatural"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1658,
+      "tagName": "Penyesalan",
+      "tagEnName": "All-Too-Late"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1335,
+      "tagName": "Pemberontak",
+      "tagEnName": "Rebellious"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    },
+    {
+      "tagId": 1322,
+      "tagName": "Supranatural",
+      "tagEnName": "Supernatural"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1760950800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2025-10-20 17:00:00",
+  "inLibrary": false
+}

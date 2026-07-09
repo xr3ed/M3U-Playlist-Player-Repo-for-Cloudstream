@@ -1,0 +1,57 @@
+{
+  "bookId": "42000011039",
+  "bookName": "Kotak Misteri Cinta(Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011039/42000011039.jpg?t=1778032916584",
+  "chapterCount": 71,
+  "introduction": "Untuk menyelidiki calon pasangan perjodohannya, putri konglomerat Elina menyamar sebagai mahasiswa miskin. Tanpa diduga, tunangannya Dion menjadikannya target permainan kotak misteri cinta.Elina berpura-pura terjebak sambil diam-diam mengumpulkan bukti. Saat batas waktu sebulan tiba dan mereka menunggu dia dipermalukan, Elina justru mengungkap identitasnya sebagai satu-satunya pewaris Grup Tano dan membalik para pemburu menjadi mangsa.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Keadilan",
+    "Pura-pura Bodoh",
+    "Putri Kaya",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 10038,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1370,
+      "tagName": "Pura-pura Bodoh",
+      "tagEnName": "Playing Dumb"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1778126400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-07 12:00:00",
+  "inLibrary": false
+}

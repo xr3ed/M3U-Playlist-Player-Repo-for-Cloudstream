@@ -1,24 +1,291 @@
 [
   {
-    "bookId": "42000011578",
-    "bookName": "Aku Milik Sang Alpha Kejam",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011578/42000011578.jpg?t=1778319012831",
-    "chapterCount": 60,
-    "introduction": "Tujuh tahun setelah malam yang menghancurkan hidupnya, Elisa Hartono mendapatkan kembali wujud serigalanya. Namun, Elisa justru dijual pada Andrew Juanda, si Alpha yang terkenal kejam. Tanpa Elisa sadari, Andrew adalah pasangan hidup keduanya sekaligus ayah kandung putranya.",
+    "bookId": "42000010858",
+    "bookName": "Mantan Istri Ternyata Bos Besar",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010858/42000010858.jpg?t=1777527536975",
+    "chapterCount": 51,
+    "introduction": "Setelah Shen Wan keluar dari rumah sakit setelah melahirkan, dia mengetahui bahwa suaminya, Gu Huai, telah meminta An Xin, seorang pekerja magang yang tampak persis seperti Bai Yueguang, untuk duduk di kursi penumpang eksklusifnya dan mengenakan gaun couture miliknya sendiri. Dia meminta An Xin segera keluar dari mobil. Setelah Gu Huai meminta maaf...",
     "tags": [
-      "Manusia Serigala",
-      "Pembalikan Identitas",
-      "Kabur Saat Hamil",
-      "Gadis Naif",
-      "Cinta Terlarang",
-      "Cinta Setelah Menikah"
+      "Serangan Balik",
+      "Perselingkuhan",
+      "Cinta Setelah Menikah",
+      "Modern",
+      "Romansa",
+      "BG"
     ],
     "tagV3s": [
       {
-        "tagId": 1363,
-        "tagName": "Manusia Serigala",
-        "tagEnName": "Werewolf"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
       },
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1393,
+        "tagName": "Cinta Setelah Menikah",
+        "tagEnName": "Love After Marriage"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1358,
+        "tagName": "BG",
+        "tagEnName": "BG"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "2.1M",
+    "bookShelfTime": 1777543412000,
+    "shelfTime": "2026-04-30 18:03:32",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000008375",
+    "bookName": "Saat Bertemu Lagi (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008375/42000008375.jpg?t=1774337175134",
+    "chapterCount": 72,
+    "introduction": "Luna Yarvi, agen internasional yang menyamar sebagai guru privat, mendidik Leo Tyaga, pewaris muda keras kepala. Ketegasannya menembus sikap liar Leo dan membuka luka lama. Mengetahui Leo putra penolongnya, Luna menjadi pelindung. Konflik menumbuhkan cinta hingga takdir memisahkan. Tiga tahun berlalu, Leo sukses, Luna hidup sederhana; reuni menyalakan cinta penyelamat jiwa.",
+    "tags": [
+      "Pembalikan Identitas",
+      "Serangan Balik",
+      "Perbedaan Usia",
+      "Pemberontak",
+      "Wanita Mandiri",
+      "Takdir Cinta"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1383,
+        "tagName": "Perbedaan Usia",
+        "tagEnName": "Age-Gap Love"
+      },
+      {
+        "tagId": 1372,
+        "tagName": "Pemberontak",
+        "tagEnName": "Rebellious"
+      },
+      {
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
+      },
+      {
+        "tagId": 1382,
+        "tagName": "Takdir Cinta",
+        "tagEnName": "Destined Love"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "5.8K",
+      "recCopy": "Pencarian TOP 9",
+      "sort": 9
+    },
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "13.3M",
+    "bookShelfTime": 1774584000000,
+    "shelfTime": "2026-03-27 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000001110",
+    "bookName": "Terikat Darah: Kekasih Sang Raja Mafia",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000001110/42000001110.jpg?t=1765188169500",
+    "chapterCount": 56,
+    "introduction": "Lily yang dijual ibu tirinya ke sebuah lelang perawan, ditolong Salvatore, seorang bos mafia yang dulu pernah diselamatkan Lily dengan transfusi darahnya yang langka. Demi menjaga Lily yang tipe darahnya sama, Salvatore mengadakan perjanjian dengan Lily dan memicu kecemburuan Bianca yang menganggap Salvatore tunangannya. Saat hubungan Lily dan Salvatore semakin erat, aksi Bianca pun semakin nekat dan membahayakan jiwa…",
+    "tags": [
+      "Mafia",
+      "Cinta Segitiga",
+      "Gadis Naif",
+      "Takdir Cinta",
+      "Modern",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1364,
+        "tagName": "Mafia",
+        "tagEnName": "Mafia"
+      },
+      {
+        "tagId": 1380,
+        "tagName": "Cinta Segitiga",
+        "tagEnName": "Love Triangle"
+      },
+      {
+        "tagId": 1374,
+        "tagName": "Gadis Naif",
+        "tagEnName": "Innocent Damsel"
+      },
+      {
+        "tagId": 1382,
+        "tagName": "Takdir Cinta",
+        "tagEnName": "Destined Love"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "5.9M",
+    "bookShelfTime": 1765190355000,
+    "shelfTime": "2025-12-08 18:39:15",
+    "inLibrary": false
+  },
+  {
+    "bookId": "41000110499",
+    "bookName": "Gadis Lugu Penakluk Raja Mafia (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000110499/41000110499.jpg?t=1766741103833",
+    "chapterCount": 61,
+    "introduction": "Setelah diculik oleh raja mafia, Bella yang polos dipaksa untuk menandatangani kontrak untuk membayar biaya operasi ibunya. Namun, kontrak yang bernilai 7,5 miliar ini menuntut Bella melakukan lebih banyak daripada yang pernah dia bayangkan... Sikap sang raja mafia yang keras, perlahan-lahan mulai melunak karena Bella. Sementara itu, Bella secara bertahap menemukan jati dirinya yang sebenarnya. Namun, apakah itu cinta, ataukah hanya sindrom Stockholm?",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Mafia",
+      "Gadis Naif",
+      "Cinta Paksaan",
+      "Cinta Terlarang"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1364,
+        "tagName": "Mafia",
+        "tagEnName": "Mafia"
+      },
+      {
+        "tagId": 1374,
+        "tagName": "Gadis Naif",
+        "tagEnName": "Innocent Damsel"
+      },
+      {
+        "tagId": 1378,
+        "tagName": "Cinta Paksaan",
+        "tagEnName": "Forced Love"
+      },
+      {
+        "tagId": 1379,
+        "tagName": "Cinta Terlarang",
+        "tagEnName": "Forbidden Love"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 4,
+      "name": "Anggota Saja",
+      "color": "#4D65ED"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "22.6M",
+    "bookShelfTime": 1736314759000,
+    "shelfTime": "2025-01-08 13:39:19",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000011236",
+    "bookName": "Cinta yang Dijahit Penyesalan (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011236/42000011236.jpg?t=1778137967710",
+    "chapterCount": 71,
+    "introduction": "Melia Suwandi berpacaran dengan pria yang berpura-pura miskin bernama Yanto Juanda. Melia kemudian menyadari dirinya hamil dan secara tidak sengaja mengetahui identitas asli Yanto. Melia terpaksa putus dengan Yanto dan melahirkan anak mereka sendirian, membuat Yanto menyimpan dendam terhadap Melia.",
+    "tags": [
+      "Pembalikan Identitas",
+      "Kabur Saat Hamil",
+      "Penyesalan",
+      "Ibu Tunggal",
+      "Cinta Rahasia",
+      "Modern"
+    ],
+    "tagV3s": [
       {
         "tagId": 1395,
         "tagName": "Pembalikan Identitas",
@@ -30,78 +297,19 @@
         "tagEnName": "Secret Baby"
       },
       {
-        "tagId": 1374,
-        "tagName": "Gadis Naif",
-        "tagEnName": "Innocent Damsel"
+        "tagId": 1654,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
       },
       {
-        "tagId": 1379,
-        "tagName": "Cinta Terlarang",
-        "tagEnName": "Forbidden Love"
+        "tagId": 1377,
+        "tagName": "Ibu Tunggal",
+        "tagEnName": "Single Mom"
       },
       {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129136\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "4.3M",
-    "bookShelfTime": 1778378401000,
-    "shelfTime": "2026-05-10 10:00:01",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000011177",
-    "bookName": "Merebut Kembali Segalanya",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011177/42000011177.jpg?t=1778122792367",
-    "chapterCount": 58,
-    "introduction": "Rea, ahli waris yang kehilangan segalanya, akhirnya kembali ke keluarganya yang elite. Alih-alih memilih cinta, dia memprioritaskan kekuasaan dan bertekad merebut kembali haknya. Drama ini menyajikan konflik emosional yang tajam, ketika ikatan keluarga, ambisi, dan keputusan besar saling bertabrakan.",
-    "tags": [
-      "Intrik Keluarga",
-      "Wanita Kuat",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Putri Kaya",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
+        "tagId": 1386,
+        "tagName": "Cinta Rahasia",
+        "tagEnName": "Secret Crush"
       },
       {
         "tagId": 1352,
@@ -114,323 +322,35 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "6.2K",
-      "recCopy": "Pencarian TOP 6",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "6.1M",
-    "bookShelfTime": 1778378400000,
-    "shelfTime": "2026-05-10 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019332",
-    "bookName": "Menjadi Kekasih Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019332/42000019332.jpg?t=1782891332485",
-    "chapterCount": 35,
-    "introduction": "Aleya terlahir kembali sebelum takdir tragisnya terjadi. Dikhianati saudari dan tunangannya hingga tewas di Lubang Naga pada kehidupan sebelumnya, kini Aleya bertekad mengubah nasibnya. Dia beralih pada Nadan, leluhur naga yang tersegel, dan mengandung sembilan pewaris naga.",
-    "tags": [
-      "Balas Dendam",
-      "Terlahir Kembali",
-      "Intrik Keluarga",
-      "Penebusan",
-      "Kehamilan",
-      "Kekuatan Khusus"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1405,
-        "tagName": "Terlahir Kembali",
-        "tagEnName": "Rebirth"
-      },
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1641,
-        "tagName": "Kehamilan",
-        "tagEnName": "Pregnancy"
-      },
-      {
-        "tagId": 1371,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "361K",
-    "bookShelfTime": 1782895539000,
-    "shelfTime": "2026-07-01 16:45:39",
-    "inLibrary": false
-  },
-  {
-    "isEntry": 0,
-    "index": 0,
-    "dataFrom": "算法_推荐剧",
-    "cardType": 3,
-    "tagCardVo": {
-      "tagId": 1451,
-      "tagName": "Gadis Polos",
-      "tagEnName": "Happy-Go-Lucky",
-      "tagBooks": [
-        {
-          "bookId": "42000000035",
-          "bookName": "Suamiku Ternyata Kakak Sahabatku",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000000035/42000000035.jpg?t=1762236797275",
-          "bookSource": {
-            "sceneId": "ovs_vd_tagcard_rec",
-            "expId": "bigdata_rec",
-            "strategyId": "g18f4j7b",
-            "strategyName": "BASE",
-            "log_id": "c7e1b461257305e1178e02a8b4e02802"
-          },
-          "algorithmRecomDot": "{\"log_id\":\"c7e1b461257305e1178e02a8b4e02802\",\"ret_time\":\"1783563129004\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
-        },
-        {
-          "bookId": "42000010937",
-          "bookName": "Keluar Dari Kegelapan",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010937/42000010937.jpg?t=1777535896005",
-          "bookSource": {
-            "sceneId": "ovs_vd_tagcard_rec",
-            "expId": "bigdata_rec",
-            "strategyId": "g18f4j7b",
-            "strategyName": "BASE",
-            "log_id": "c7e1b461257305e1178e02a8b4e02802"
-          },
-          "algorithmRecomDot": "{\"log_id\":\"c7e1b461257305e1178e02a8b4e02802\",\"ret_time\":\"1783563129004\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
-        },
-        {
-          "bookId": "41000117070",
-          "bookName": "Melodi Takdir: Anak dan Cinta",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000117070/41000117070.jpg?t=1749713539915",
-          "bookSource": {
-            "sceneId": "ovs_vd_tagcard_rec",
-            "expId": "bigdata_rec",
-            "strategyId": "g18f4j7b",
-            "strategyName": "BASE",
-            "log_id": "c7e1b461257305e1178e02a8b4e02802"
-          },
-          "algorithmRecomDot": "{\"log_id\":\"c7e1b461257305e1178e02a8b4e02802\",\"ret_time\":\"1783563129004\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
-        },
-        {
-          "bookId": "42000007803",
-          "bookName": "Saat Cinta Kembali",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000007803/42000007803.jpg?t=1773645373886",
-          "bookSource": {
-            "sceneId": "ovs_vd_tagcard_rec",
-            "expId": "bigdata_rec",
-            "strategyId": "g18f4j7b",
-            "strategyName": "BASE",
-            "log_id": "c7e1b461257305e1178e02a8b4e02802"
-          },
-          "algorithmRecomDot": "{\"log_id\":\"c7e1b461257305e1178e02a8b4e02802\",\"ret_time\":\"1783563129004\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
-        }
-      ]
-    },
-    "markNamesConnectKey": ", ",
-    "playCount": "7.1K",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000000651",
-    "bookName": "Suami untuk Tiga Tahun (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000000651/42000000651.jpg?t=1764042578579",
-    "chapterCount": 65,
-    "introduction": "Ezra yang sudah hidup ribuan tahun menepati janji pada muridnya yang sekarat untuk menjaga keluarganya selama tiga tahun. Selama waktu itu, dia menikahi cucu sang murid, tapi malah diperlakukan dingin dan diremehkan. Meski sering disulitkan, Ezra tetap sabar. Begitu tiga tahun berlalu, dia pergi tanpa penyesalan.",
-    "tags": [
-      "Penyesalan",
-      "Pembalikan Identitas",
-      "Penebusan",
-      "Pemberontak",
-      "Supranatural",
-      "Pria Dominan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1658,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
-      },
-      {
-        "tagId": 1338,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1478,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1335,
-        "tagName": "Pemberontak",
-        "tagEnName": "Rebellious"
-      },
-      {
-        "tagId": 1322,
-        "tagName": "Supranatural",
-        "tagEnName": "Supernatural"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "21.3K",
-      "recCopy": "Pencarian TOP 1",
-      "sort": 1
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "145M",
-    "bookShelfTime": 1764052944000,
-    "shelfTime": "2025-11-25 14:42:24",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018258",
-    "bookName": "Tak Bisa Kabur dari Raja Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
-    "chapterCount": 52,
-    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
-    "tags": [
-      "Pembalikan Identitas",
-      "Cinta Paksaan",
-      "Takdir Cinta",
-      "Romansa",
-      "BG",
-      "Gairah"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1382,
-        "tagName": "Takdir Cinta",
-        "tagEnName": "Destined Love"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1358,
-        "tagName": "BG",
-        "tagEnName": "BG"
-      },
-      {
-        "tagId": 10047,
-        "tagName": "Gairah",
-        "tagEnName": "Steamy"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 2,
-      "name": "Terbaru",
+      "cornerType": 3,
+      "name": "Sulih Suara",
       "color": "#8773DF"
     },
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "11.6K",
-      "recCopy": "Terbaru TOP 4",
-      "sort": 4
-    },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "244K",
-    "bookShelfTime": 1783303200000,
-    "shelfTime": "2026-07-06 10:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "2.5M",
+    "bookShelfTime": 1778145385000,
+    "shelfTime": "2026-05-07 17:16:25",
     "inLibrary": false
   },
   {
-    "bookId": "42000002888",
-    "bookName": "Dewa Judi (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000002888/42000002888.jpg?t=1766975617476",
-    "chapterCount": 74,
-    "introduction": "Selama liburan Tahun Baru Imlek, Yena dijebak oleh sahabatnya, Ceni, dan kalah judi 400 juta. Uang itu adalah biaya sekolah putrinya, biaya pengobatan ayahnya, dan biaya hidup keluarga mereka bertiga. Demi mendapatkan kembali uang tersebut, Sandi nekat masuk ke dalam lingkaran judi itu untuk melawan mereka dengan menggunakan teknik judi tingkat tinggi...",
+    "bookId": "42000012511",
+    "bookName": "Dendam Tak Berakhir (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012511/42000012511.jpg?t=1779095812383",
+    "chapterCount": 70,
+    "introduction": "Sandi Walda membalas kematian orang tua angkatnya yang dibunuh Grup Candika dengan mengandalkan bela diri setelah keluar dari penjara. Sambil melindungi kakak dan sahabatnya, ia terlibat dengan Keluarga Gunawan dan mengetahui dirinya keturunan mereka. Dengan menyusup, ia mengungkap perebutan harta dan kejahatan keluarga, lalu membawa para pelaku ke pengadilan demi balas dendam dan keadilan.",
     "tags": [
       "Balas Dendam",
-      "Judi",
+      "Keadilan",
       "Serangan Balik",
-      "Kekuatan Khusus",
+      "Orang Biasa",
       "Modern",
       "Pria Dominan"
     ],
@@ -441,9 +361,9 @@
         "tagEnName": "Revenge"
       },
       {
-        "tagId": 1688,
-        "tagName": "Judi",
-        "tagEnName": "Gambling"
+        "tagId": 10037,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
       },
       {
         "tagId": 1340,
@@ -451,9 +371,9 @@
         "tagEnName": "Counterattack"
       },
       {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
+        "tagId": 1331,
+        "tagName": "Orang Biasa",
+        "tagEnName": "A Nobody"
       },
       {
         "tagId": 1318,
@@ -471,7 +391,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
     },
     "isEntry": 0,
     "index": 0,
@@ -483,30 +403,104 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "27.3M",
-    "bookShelfTime": 1766987470000,
-    "shelfTime": "2025-12-29 13:51:10",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.2M",
+    "bookShelfTime": 1779336000000,
+    "shelfTime": "2026-05-21 12:00:00",
     "inLibrary": false
   },
   {
-    "bookId": "42000017520",
-    "bookName": "Diantar oleh Takdir (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "isEntry": 0,
+    "index": 0,
+    "dataFrom": "算法_推荐剧",
+    "cardType": 3,
+    "tagCardVo": {
+      "tagId": 1616,
+      "tagName": "Tentara",
+      "tagEnName": "Military",
+      "tagBooks": [
+        {
+          "bookId": "42000010895",
+          "bookName": "Skandal Di Pesta Tunangan",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010895/42000010895.jpg?t=1777531343798",
+          "bookSource": {
+            "sceneId": "ovs_vd_tagcard_rec",
+            "expId": "bigdata_rec",
+            "strategyId": "g18f4j7b",
+            "strategyName": "BASE",
+            "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+          },
+          "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467630\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+        },
+        {
+          "bookId": "42000001092",
+          "bookName": "Asalku dari Zaman Kuno",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000001092/42000001092.jpg?t=1765192599623",
+          "bookSource": {
+            "sceneId": "ovs_vd_tagcard_rec",
+            "expId": "bigdata_rec",
+            "strategyId": "g18f4j7b",
+            "strategyName": "BASE",
+            "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+          },
+          "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467630\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+        },
+        {
+          "bookId": "41000122989",
+          "bookName": "Bangkit Bersama Putriku",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122989/41000122989.jpg?t=1761271812616",
+          "bookSource": {
+            "sceneId": "ovs_vd_tagcard_rec",
+            "expId": "bigdata_rec",
+            "strategyId": "g18f4j7b",
+            "strategyName": "BASE",
+            "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+          },
+          "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467630\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+        },
+        {
+          "bookId": "42000011868",
+          "bookName": "Istri Cantik Kesayangan Militer",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011868/42000011868.jpg?t=1778576611639",
+          "bookSource": {
+            "sceneId": "ovs_vd_tagcard_rec",
+            "expId": "bigdata_rec",
+            "strategyId": "g18f4j7b",
+            "strategyName": "BASE",
+            "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+          },
+          "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467630\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+        }
+      ]
+    },
+    "markNamesConnectKey": ", ",
+    "playCount": "7.1K",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000013257",
+    "bookName": "Pewaris? Tunggu, Aku Juga Siswa Jenius",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000013257/42000013257.jpg?t=1779442244244",
+    "chapterCount": 60,
+    "introduction": "Park Seung-ji, gadis panti asuhan yang gigih belajar demi masuk Universitas Hukum Korea dan menjadi jaksa, hidupnya berubah setelah kecelakaan mengungkap dirinya sebagai pewaris asli Keluarga Kim. Meski diremehkan, dijebak putri angkat, dan menghadapi banyak rintangan, ia tetap unggul di sekolah, meraih nilai sempurna berkat Han Tae-young, lalu mengambil alih perusahaan keluarga yang terpuruk dan mengubah nasibnya sendiri.",
     "tags": [
-      "Balas Dendam",
+      "Serangan Balik",
+      "Wanita Mandiri",
       "Pembalikan Identitas",
-      "Ilmuwan",
       "Modern",
-      "Wanita Kuat"
+      "Wanita Kuat",
+      "Balas Dendam"
     ],
     "tagV3s": [
       {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
       },
       {
         "tagId": 1395,
@@ -514,9 +508,142 @@
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 10033,
-        "tagName": "Ilmuwan",
-        "tagEnName": "Researcher"
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "641K",
+    "bookShelfTime": 1779588002000,
+    "shelfTime": "2026-05-24 10:00:02",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000012100",
+    "bookName": "Suami Kontrak Ternyata Goblin (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012100/42000012100.jpg?t=1778743823651",
+    "chapterCount": 59,
+    "introduction": "Nathan Jaren, makhluk gaib yang telah hidup ribuan tahun, karena takdir masa lalu menjalin pernikahan kontrak tiga tahun dengan Clara Hatua, putri tunggal keluarga konglomerat. Dia menyembunyikan identitasnya sebagai menantu \"numpang\" dan diperlakukan sebagai pria tidak berguna. Setelah perceraian, saat Keluarga Hatua runtuh, barulah terungkap bahwa dialah yang selama ini menopang semuanya.",
+    "tags": [
+      "Pembalikan Identitas",
+      "Serangan Balik",
+      "Supranatural",
+      "Pria Dominan",
+      "Intrik Keluarga",
+      "Menantu Pria"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1338,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1322,
+        "tagName": "Supranatural",
+        "tagEnName": "Supernatural"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1350,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
+      },
+      {
+        "tagId": 1329,
+        "tagName": "Menantu Pria",
+        "tagEnName": "Son-in-Law"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.3M",
+    "bookShelfTime": 1778817600000,
+    "shelfTime": "2026-05-15 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020409",
+    "bookName": "Angin Tak Menghapus Luka Lama",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020409/42000020409.jpg?t=1783491095018",
+    "chapterCount": 50,
+    "introduction": "Sulastri terlahir kembali ke satu tahun sebelumnya dan menyadari bahwa Laras kembali menjebak putranya, Rangga. Demi melindungi keluarganya, Sulastri berusaha membongkar rencana jahat Laras dan Jaka hingga akhirnya para pelaku menerima akibat dari perbuatan mereka.",
+    "tags": [
+      "Terlahir Kembali",
+      "Balas Dendam",
+      "Keadilan",
+      "Intrik Keluarga",
+      "Modern",
+      "Wanita Kuat"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1405,
+        "tagName": "Terlahir Kembali",
+        "tagEnName": "Rebirth"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 10038,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
       },
       {
         "tagId": 1352,
@@ -534,172 +661,22 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
+      "log_id": "7a2f54352a644fd97b9ad3a6e5c152da"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
+      "cornerType": 2,
+      "name": "Terbaru",
+      "color": "#8773DF"
     },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "148K",
-      "recCopy": "Sedang Tren TOP 3",
-      "sort": 3
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "3.6M",
-    "bookShelfTime": 1781798400000,
-    "shelfTime": "2026-06-19 00:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000003970",
-    "bookName": "Ultimatum Sang Raja Mafia",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000003970/42000003970.jpg?t=1768293743402",
-    "chapterCount": 54,
-    "introduction": "Di malam Valentine, Lydia menyelamatkan seorang pria terluka, yang ternyata adalah Soren Moretti, Raja Mafia yang terkenal kejam. Soren memberi Lydia ultimatum: menikah dengannya atau mati. Karena terpaksa, Lydia setuju dengan syarat Soren harus mampu membuat Lydia jatuh cinta padanya dalam 30 hari, atau dia bebas. Dan sejak saat itu, dimulailah permainan cinta/benci yang menggairahkan sekaligus berbahaya…",
-    "tags": [
-      "Cinta Setelah Menikah",
-      "Cinta Paksaan",
-      "Musuh Jadi Kekasih",
-      "Penebusan",
-      "Mafia",
-      "Gadis Naif"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1390,
-        "tagName": "Musuh Jadi Kekasih",
-        "tagEnName": "Enemy to Lover"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1364,
-        "tagName": "Mafia",
-        "tagEnName": "Mafia"
-      },
-      {
-        "tagId": 1374,
-        "tagName": "Gadis Naif",
-        "tagEnName": "Innocent Damsel"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
+    "dataFrom": "算法_新剧提权",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "46.7M",
-    "bookShelfTime": 1768357739000,
-    "shelfTime": "2026-01-14 10:28:59",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000016614",
-    "bookName": "Kepulangan Sang Kaisar",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016614/42000016614.jpg?t=1781260120157",
-    "chapterCount": 60,
-    "introduction": "Arya, pemuda miskin yang naik takhta setelah memadamkan pemberontakan, kembali menyamar ke kampungnya untuk menepati janji pada mantan tunangan Hana. Ia ingin menjadikannya permaisuri. Namun ia melihat pejabat korup menindas rakyat dan dipukuli saat membela mereka. Hana menghina dan mengkhianatinya. Ia mengetahui Citra merawatnya serta korupsi termasuk perobohan Akademi Yugi. Menahan amarah Arya menyusun rencana mengundang pejabat korup lalu mengungkap dirinya sebagai raja.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Sejarah",
-      "Pria Dominan",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Orang Biasa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1338,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1319,
-        "tagName": "Sejarah",
-        "tagEnName": "Historical"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      },
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1340,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1331,
-        "tagName": "Orang Biasa",
-        "tagEnName": "A Nobody"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "a43583a9582c237b2e695d2004695bb9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "5.6K",
-      "recCopy": "Pencarian TOP 9",
-      "sort": 9
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a43583a9582c237b2e695d2004695bb9\",\"ret_time\":\"1783563129137\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.7M",
-    "bookShelfTime": 1781402401000,
-    "shelfTime": "2026-06-14 10:00:01",
+    "algorithmRecomDot": "{\"log_id\":\"7a2f54352a644fd97b9ad3a6e5c152da\",\"ret_time\":\"1783589467727\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "16.1K",
+    "bookShelfTime": 1783562401000,
+    "shelfTime": "2026-07-09 10:00:01",
     "inLibrary": false
   }
 ]

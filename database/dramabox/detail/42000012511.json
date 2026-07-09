@@ -1,0 +1,57 @@
+{
+  "bookId": "42000012511",
+  "bookName": "Dendam Tak Berakhir (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012511/42000012511.jpg?t=1779095812383",
+  "chapterCount": 70,
+  "introduction": "Sandi Walda membalas kematian orang tua angkatnya yang dibunuh Grup Candika dengan mengandalkan bela diri setelah keluar dari penjara. Sambil melindungi kakak dan sahabatnya, ia terlibat dengan Keluarga Gunawan dan mengetahui dirinya keturunan mereka. Dengan menyusup, ia mengungkap perebutan harta dan kejahatan keluarga, lalu membawa para pelaku ke pengadilan demi balas dendam dan keadilan.",
+  "tags": [
+    "Balas Dendam",
+    "Keadilan",
+    "Serangan Balik",
+    "Orang Biasa",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 10037,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1331,
+      "tagName": "Orang Biasa",
+      "tagEnName": "A Nobody"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1779336000000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-21 12:00:00",
+  "inLibrary": false
+}

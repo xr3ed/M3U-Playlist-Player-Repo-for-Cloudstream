@@ -1,0 +1,57 @@
+{
+  "bookId": "42000006096",
+  "bookName": "Asalku dari Zaman Kuno (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006096/42000006096.jpg?t=1770603506910",
+  "chapterCount": 73,
+  "introduction": "Reyna Kiana, seorang jenderal dari zaman kuno, secara tak sengaja melintasi waktu ke zaman modern dan menjadi nona Keluarga Kiana. Menghadapi perlakuan tidak adil dari nona palsu, Wenny Kiana, dan keluarganya, Reyna menggunakan kecerdasan dan keberaniannya untuk mengungkap rencana jahat. Berkat itu, dia kembali dipercaya. Reyna terus berkembang di zaman modern, menciptakan kisah luar biasa tentang intrik keluarga dan kebangkitan setelah melintasi waktu.",
+  "tags": [
+    "Perjalanan Waktu",
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Dewa Perang",
+    "Modern",
+    "Wanita Kuat"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1404,
+      "tagName": "Perjalanan Waktu",
+      "tagEnName": "Time Travel"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1369,
+      "tagName": "Dewa Perang",
+      "tagEnName": "War God"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1771063200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-02-14 18:00:00",
+  "inLibrary": false
+}

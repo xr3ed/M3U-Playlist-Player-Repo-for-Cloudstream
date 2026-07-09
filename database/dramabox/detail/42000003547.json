@@ -1,0 +1,56 @@
+{
+  "bookId": "42000003547",
+  "bookName": "Raja Tanpa Mahkota (Sulih Suara) ",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000003547/42000003547.jpg?t=1767688874696",
+  "chapterCount": 76,
+  "introduction": "Tiga tahun lalu, Arjun dijebak masuk penjara demi melindungi pacarnya. Setelah masa tahanannya berakhir, dia mengambil alih Grup Arjuna dan menjadi bos di balik layar. Dia bertekad untuk mengungkap kebenaran di balik alasan dia dipenjara dan menghancurkan siapa pun yang meremehkannya. Di mata orang banyak, dia hanya orang biasa. Tapi, dia mengandalkan ilmu yang dipelajarinya di penjara untuk mematahkan musuh dan menyeret para penjahat ke hadapan hukum.",
+  "tags": [
+    "Balas Dendam",
+    "Serangan Balik",
+    "Keadilan",
+    "Orang Biasa",
+    "Kekuatan Khusus",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 10037,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1331,
+      "tagName": "Orang Biasa",
+      "tagEnName": "A Nobody"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-01-07 10:39:13",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000014753",
+  "bookName": "Saudara Dalam Tipu Daya",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000014753/42000014753.jpg?t=1780392571228",
+  "chapterCount": 70,
+  "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
+  "tags": [
+    "Keadilan",
+    "Serangan Balik",
+    "Putri Kaya",
+    "Balas Dendam",
+    "Intrik Keluarga",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 10038,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1780887600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-08 11:00:00",
+  "inLibrary": false
+}

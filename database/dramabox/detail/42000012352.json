@@ -1,0 +1,57 @@
+{
+  "bookId": "42000012352",
+  "bookName": "Aku Merawat Anak Selingkuhan Suamiku",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012352/42000012352.jpg?t=1778840207518",
+  "chapterCount": 60,
+  "introduction": "Delapan tahun lalu, Mirae menyelamatkan Woojin hingga kehilangan kesuburannya. Demi cinta, ia menyembunyikan pengorbanan itu dan statusnya sebagai pewaris Grup Giwon. Selama tujuh tahun, ia merawat Jian dengan kasih sayang. Namun kebenaran terbongkar: pernikahannya palsu, Jian adalah anak Woojin dan selingkuhannya, Chaewon, yang masih dilindungi Woojin karena dikira penyelamatnya.",
+  "tags": [
+    "Penyesalan",
+    "Serangan Balik",
+    "Balas Dendam",
+    "Pembalikan Identitas",
+    "Perselingkuhan",
+    "Putri Kaya"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1654,
+      "tagName": "Penyesalan",
+      "tagEnName": "All-Too-Late"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1778918400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-16 16:00:00",
+  "inLibrary": false
+}

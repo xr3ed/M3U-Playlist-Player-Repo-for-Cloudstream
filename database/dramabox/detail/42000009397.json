@@ -1,0 +1,57 @@
+{
+  "bookId": "42000009397",
+  "bookName": "Jejak Aroma Cinta CEO",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000009397/42000009397.jpg?t=1775721197084",
+  "chapterCount": 58,
+  "introduction": "Setelah bertahun-tahun menyembunyikan identitasnya sebagai pewaris terakhir Keluarga Lito, Stella, pembuat parfum yang buta, terpaksa menikah kontrak dengan CEO dingin, Coki. Tanpa disadarinya, Stella adalah gadis yang pernah menyelamatkan hidupnya. Saat bahaya mendekat, keduanya harus menghadapi masa lalu, kebohongan, dan perasaan yang perlahan tumbuh.",
+  "tags": [
+    "Salah Identitas",
+    "Cinta Semalam",
+    "Wanita Mandiri",
+    "Cinta Paksaan",
+    "Takdir Cinta",
+    "Cinta Setelah Menikah"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1403,
+      "tagName": "Salah Identitas",
+      "tagEnName": "Mistaken Identity"
+    },
+    {
+      "tagId": 1385,
+      "tagName": "Cinta Semalam",
+      "tagEnName": "One Night Stand"
+    },
+    {
+      "tagId": 1452,
+      "tagName": "Wanita Mandiri",
+      "tagEnName": "Independent Woman"
+    },
+    {
+      "tagId": 1378,
+      "tagName": "Cinta Paksaan",
+      "tagEnName": "Forced Love"
+    },
+    {
+      "tagId": 1382,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    },
+    {
+      "tagId": 1393,
+      "tagName": "Cinta Setelah Menikah",
+      "tagEnName": "Love After Marriage"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1775872800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-11 10:00:00",
+  "inLibrary": false
+}

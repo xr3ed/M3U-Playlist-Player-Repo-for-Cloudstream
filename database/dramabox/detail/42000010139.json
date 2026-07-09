@@ -1,0 +1,57 @@
+{
+  "bookId": "42000010139",
+  "bookName": "Permainan Dimulai, Kubalas Semua (Sulih Suara) ",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010139/42000010139.jpg?t=1776848091883",
+  "chapterCount": 80,
+  "introduction": "Putrinya Eni, ketua dewan Grup Sinar, terluka parah ditabrak tuan muda kaya yang mabuk balap liar. Ibu pelaku melempar kartu hitam dan menawarkan dua miliar agar Eni menandatangani surat damai. Eni terkejut karena kartu itu adalah kartu tambahan milik suaminya, Sam, yang diam-diam berselingkuh dan punya anak haram hampir 20 tahun.",
+  "tags": [
+    "Balas Dendam",
+    "Pembalikan Identitas",
+    "Perselingkuhan",
+    "Intrik Keluarga",
+    "Wanita Mandiri",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1452,
+      "tagName": "Wanita Mandiri",
+      "tagEnName": "Independent Woman"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1776916800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-23 12:00:00",
+  "inLibrary": false
+}

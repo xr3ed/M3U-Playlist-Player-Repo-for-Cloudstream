@@ -1,0 +1,57 @@
+{
+  "bookId": "42000008324",
+  "bookName": "Siapa Pewaris yang Sebenarnya?",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008324/42000008324.jpg?t=1774260967591",
+  "chapterCount": 62,
+  "introduction": "Saudari kembar Yuni dan Jini terpisah sejak kecil. Saat Jini, pewaris Grup Surya, diduga tewas, Yuni, CEO PT ABC, kembali dan menyamar sebagai adiknya untuk mencari tahu kebenarannya. Suami Jini, Rico, diam-diam berniat merebut hartanya. Di sisi lain, Jini ternyata masih hidup, tetapi kehilangan ingatan dan memiliki wajah baru. Pada akhirnya, mereka kembali bersatu, membongkar kejahatan Rico, dan menyeretnya ke pengadilan.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Perselingkuhan",
+    "Amnesia",
+    "Balas Dendam",
+    "Keadilan",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1402,
+      "tagName": "Amnesia",
+      "tagEnName": "Amnesia"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 10038,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1774342800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-24 17:00:00",
+  "inLibrary": false
+}

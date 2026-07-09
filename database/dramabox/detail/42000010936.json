@@ -1,0 +1,56 @@
+{
+  "bookId": "42000010936",
+  "bookName": "Kegagalan yang Mengubah Takdir (Sulih Suara) ",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010936/42000010936.jpg?t=1777535616363",
+  "chapterCount": 65,
+  "introduction": "Setelah Raka gugur, dia terlahir kembali ke delapan ratus tahun yang lalu. Raka berusaha mengubah takdir Seira, tunangannya, dan membuat janji dengannya. Namun Kakak Seira selalu berusaha membunuh Raka dengan bantuan Keluarga Lukman. Apakah Raka dapat melewati rintangan dan menepati janjinya?",
+  "tags": [
+    "Balas Dendam",
+    "Perjalanan Waktu",
+    "Keadilan",
+    "Terlahir Kembali",
+    "Kekuatan Khusus",
+    "Sejarah"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1344,
+      "tagName": "Perjalanan Waktu",
+      "tagEnName": "Time Travel"
+    },
+    {
+      "tagId": 10037,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1345,
+      "tagName": "Terlahir Kembali",
+      "tagEnName": "Rebirth"
+    },
+    {
+      "tagId": 1334,
+      "tagName": "Kekuatan Khusus",
+      "tagEnName": "The Chosen One"
+    },
+    {
+      "tagId": 1319,
+      "tagName": "Sejarah",
+      "tagEnName": "Historical"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-04-30 18:53:25",
+  "inLibrary": false
+}
