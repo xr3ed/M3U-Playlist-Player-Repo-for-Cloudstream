@@ -1,5 +1,122 @@
 [
   {
+    "bookId": "42000020101",
+    "bookName": "Terjebak Dalam Penyesalan (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020101/42000020101.jpg?t=1783316171902",
+    "chapterCount": 60,
+    "introduction": "Jelita menggunakan segala cara, akhirnya berhasil jadi istri Fiero. Namun suatu hari tanpa sengaja, Jelita menemukan bahwa suaminya menyimpan obsesi yang menyimpang terhadap Talia, adik dari suaminya yang nggak ada hubungan darah. Fiero membela Talia yang membuat Jelita benaran mati rasa. Jelita tanda tangan perjanjian cerai. Dia memulai hidup barunya dengan Malin yang sudah suka padanya. Setelah itu, Fiero baru mendadak merasa bahwa Jelita adalah orang yang dia cintai.",
+    "tags": [
+      "Cinta Pahit",
+      "Cinta Segitiga",
+      "Realitas"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 809,
+        "tagName": "Cinta Pahit"
+      },
+      {
+        "tagId": 821,
+        "tagName": "Cinta Segitiga"
+      },
+      {
+        "tagId": 827,
+        "tagName": "Realitas"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 2,
+      "name": "Terbaru",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102941\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "20.8K",
+    "bookShelfTime": 1783483200000,
+    "shelfTime": "2026-07-08 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000019257",
+    "bookName": "Kembali untuk Membalas (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019257/42000019257.jpg?t=1782872450767",
+    "chapterCount": 55,
+    "introduction": "Yuna meninggalkan Keluarga Sito demi membalas budi pada orang tua kandungnya yang telah melahirkannya, namun justru diabaikan dan dijebak oleh Rita, anak angkat mereka, hingga dipenjara tiga tahun. Setelah bebas, dia mempermalukan Keluarga Karim dan memutuskan hubungan. Saat putus asa, Keluarga Sito datang menyelamatkannya, sementara Keluarga Karim masih yakin dia akan kembali suatu hari.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Serangan Balik",
+      "Wanita Mandiri",
+      "Pantang Menyerah",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
+      },
+      {
+        "tagId": 1453,
+        "tagName": "Pantang Menyerah",
+        "tagEnName": "Strong-Willed"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 2,
+      "name": "Terbaru",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "8.7K",
+    "bookShelfTime": 1783562400000,
+    "shelfTime": "2026-07-09 10:00:00",
+    "inLibrary": false
+  },
+  {
     "bookId": "42000020144",
     "bookName": "Istri CEO Tak Bisa Disembunyikan (Sulih Suara) ",
     "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020144/42000020144.jpg?t=1783322991127",
@@ -44,7 +161,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -56,58 +173,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958161\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "28.6K",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "33.2K",
     "bookShelfTime": 1783476000000,
     "shelfTime": "2026-07-08 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020101",
-    "bookName": "Terjebak Dalam Penyesalan (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020101/42000020101.jpg?t=1783316171902",
-    "chapterCount": 60,
-    "introduction": "Jelita menggunakan segala cara, akhirnya berhasil jadi istri Fiero. Namun suatu hari tanpa sengaja, Jelita menemukan bahwa suaminya menyimpan obsesi yang menyimpang terhadap Talia, adik dari suaminya yang nggak ada hubungan darah. Fiero membela Talia yang membuat Jelita benaran mati rasa. Jelita tanda tangan perjanjian cerai. Dia memulai hidup barunya dengan Malin yang sudah suka padanya. Setelah itu, Fiero baru mendadak merasa bahwa Jelita adalah orang yang dia cintai.",
-    "tags": [
-      "Cinta Pahit",
-      "Cinta Segitiga",
-      "Realitas"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 809,
-        "tagName": "Cinta Pahit"
-      },
-      {
-        "tagId": 821,
-        "tagName": "Cinta Segitiga"
-      },
-      {
-        "tagId": 827,
-        "tagName": "Realitas"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 2,
-      "name": "Terbaru",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "18.6K",
-    "bookShelfTime": 1783483200000,
-    "shelfTime": "2026-07-08 12:00:00",
     "inLibrary": false
   },
   {
@@ -161,7 +230,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -173,8 +242,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "71K",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "71.9K",
     "bookShelfTime": 1783051200000,
     "shelfTime": "2026-07-03 12:00:00",
     "inLibrary": false
@@ -230,20 +299,20 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 2,
-      "name": "Terbaru",
+      "cornerType": 3,
+      "name": "Sulih Suara",
       "color": "#8773DF"
     },
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "86.7K",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "87.3K",
     "bookShelfTime": 1782957600000,
     "shelfTime": "2026-07-02 10:00:00",
     "inLibrary": false
@@ -299,7 +368,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -311,78 +380,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "268K",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "271K",
     "bookShelfTime": 1782871200000,
     "shelfTime": "2026-07-01 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018275",
-    "bookName": "Suami Sampah Itu Jadi Milikmu (Sulih Suara) ",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018275/42000018275.jpg?t=1782265935888",
-    "chapterCount": 53,
-    "tags": [
-      "Wanita Kuat",
-      "Perselingkuhan",
-      "Pembalikan Identitas",
-      "Kabur Saat Hamil",
-      "Putri Kaya",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1397,
-        "tagName": "Kabur Saat Hamil",
-        "tagEnName": "Secret Baby"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 3,
-      "name": "Sulih Suara",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "345K",
-    "bookShelfTime": 1782439200000,
-    "shelfTime": "2026-06-26 10:00:00",
     "inLibrary": false
   },
   {
@@ -436,7 +437,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -448,10 +449,78 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "1.2M",
     "bookShelfTime": 1782360000000,
     "shelfTime": "2026-06-25 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018275",
+    "bookName": "Suami Sampah Itu Jadi Milikmu (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018275/42000018275.jpg?t=1782265935888",
+    "chapterCount": 53,
+    "tags": [
+      "Wanita Kuat",
+      "Perselingkuhan",
+      "Pembalikan Identitas",
+      "Kabur Saat Hamil",
+      "Putri Kaya",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "346K",
+    "bookShelfTime": 1782439200000,
+    "shelfTime": "2026-06-26 10:00:00",
     "inLibrary": false
   },
   {
@@ -505,7 +574,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -517,7 +586,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958162\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "276K",
     "bookShelfTime": 1782273600000,
     "shelfTime": "2026-06-24 12:00:00",
@@ -568,7 +637,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -580,8 +649,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "3.5M",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "3.6M",
     "bookShelfTime": 1781798400000,
     "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
@@ -637,7 +706,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -649,7 +718,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "1.4M",
     "bookShelfTime": 1781755200000,
     "shelfTime": "2026-06-18 12:00:00",
@@ -706,7 +775,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -718,8 +787,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "211K",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "212K",
     "bookShelfTime": 1781668800000,
     "shelfTime": "2026-06-17 12:00:00",
     "inLibrary": false
@@ -769,7 +838,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -781,7 +850,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "342K",
     "bookShelfTime": 1781575200000,
     "shelfTime": "2026-06-16 10:00:00",
@@ -838,7 +907,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -850,7 +919,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "1.3M",
     "bookShelfTime": 1781247015000,
     "shelfTime": "2026-06-12 14:50:15",
@@ -907,7 +976,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
+      "log_id": "21da30b2d82d176f6aa6d9489aa0bca4"
     },
     "isEntry": 0,
     "index": 0,
@@ -919,79 +988,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"21da30b2d82d176f6aa6d9489aa0bca4\",\"ret_time\":\"1783563102942\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "5.4M",
     "bookShelfTime": 1781164800000,
     "shelfTime": "2026-06-11 16:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000016012",
-    "bookName": "Musuh Kakakku Mencintaiku (Sulih Suara) ",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016012/42000016012.jpg?t=1781071006553",
-    "chapterCount": 50,
-    "introduction": "Anisa Cahya pindah ke kota besar untuk sekolah, membawa pesan kakaknya, Rian, agar waspada pada pria tampan dan kaya—terutama Raka Satria, musuhnya. Anisa pun bertekad menjauhi Raka. Namun, di tengah godaan Raka, ia mulai goyah, sementara Raka justru penasaran karena Anisa berbeda dari gadis lain.",
-    "tags": [
-      "Musuh Jadi Kekasih",
-      "Cinta Pandangan Pertama",
-      "CEO",
-      "Cinta Terlarang",
-      "Modern",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1390,
-        "tagName": "Musuh Jadi Kekasih",
-        "tagEnName": "Enemy to Lover"
-      },
-      {
-        "tagId": 1384,
-        "tagName": "Cinta Pandangan Pertama",
-        "tagEnName": "Love at First Sight"
-      },
-      {
-        "tagId": 1362,
-        "tagName": "CEO",
-        "tagEnName": "Billionaire"
-      },
-      {
-        "tagId": 1379,
-        "tagName": "Cinta Terlarang",
-        "tagEnName": "Forbidden Love"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "6d303ee756f17a31b36134f414a4b9f9"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 3,
-      "name": "Sulih Suara",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"6d303ee756f17a31b36134f414a4b9f9\",\"ret_time\":\"1783537958163\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "911K",
-    "bookShelfTime": 1781084703000,
-    "shelfTime": "2026-06-10 17:45:03",
     "inLibrary": false
   }
 ]

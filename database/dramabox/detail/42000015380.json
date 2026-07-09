@@ -1,0 +1,50 @@
+{
+  "bookId": "42000015380",
+  "bookName": "Cinta yang Ternyata Dusta (Sulih Suara) ",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000015380/42000015380.jpg?t=1780646150654",
+  "chapterCount": 57,
+  "introduction": "Setelah enam tahun menikah tanpa gairah, Linda sadar bahwa suaminya jatuh cinta pada saudari tiri sendiri, dan Linda hanya sekadar formalitas dalam pernikahan mereka. Merasa dikhianati, Linda mengungkapkan kebenaran pada saudari tirinya dan meninggalkan suaminya. Namun, pada akhirnya justru sang suamilah yang menyesal.",
+  "tags": [
+    "Cinta Terlarang",
+    "Romansa Tragis",
+    "Romansa",
+    "Modern",
+    "BG"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1379,
+      "tagName": "Cinta Terlarang",
+      "tagEnName": "Forbidden Love"
+    },
+    {
+      "tagId": 1635,
+      "tagName": "Romansa Tragis",
+      "tagEnName": "Toxic Love"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1358,
+      "tagName": "BG",
+      "tagEnName": "BG"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-05 18:09:22",
+  "inLibrary": false
+}

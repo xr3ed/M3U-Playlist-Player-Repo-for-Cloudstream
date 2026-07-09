@@ -1,0 +1,56 @@
+{
+  "bookId": "42000011414",
+  "bookName": "Jodoh Kita Telah Berakhir (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011414/42000011414.jpg?t=1778232778575",
+  "chapterCount": 62,
+  "introduction": "Yudi Kirana sangat mencintai Eni Taslim. Setelah disakiti cinta pertamanya, Mirza Winata, Eni hidup kacau dan impulsif menerima lamaran Yudi saat mendengar kabar pernikahan Mirza. Yudi mengorbankan mimpinya menjadi dokter demi Eni, namun Eni tetap dingin karena belum melupakan Mirza. Ketika Mirza kembali dari luar negeri, Yudi akhirnya menggugat cerai.",
+  "tags": [
+    "Cinta Segitiga",
+    "Kesempatan Kedua",
+    "Mengejar Suami",
+    "Serangan Balik",
+    "Modern",
+    "Perselingkuhan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1413,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1422,
+      "tagName": "Kesempatan Kedua",
+      "tagEnName": "Second Chance"
+    },
+    {
+      "tagId": 1681,
+      "tagName": "Mengejar Suami",
+      "tagEnName": "Winning Him Back"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1341,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-09 14:33:14",
+  "inLibrary": false
+}

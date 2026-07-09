@@ -1,0 +1,57 @@
+{
+  "bookId": "42000011578",
+  "bookName": "Aku Milik Sang Alpha Kejam",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011578/42000011578.jpg?t=1778319012831",
+  "chapterCount": 60,
+  "introduction": "Tujuh tahun setelah malam yang menghancurkan hidupnya, Elisa Hartono mendapatkan kembali wujud serigalanya. Namun, Elisa justru dijual pada Andrew Juanda, si Alpha yang terkenal kejam. Tanpa Elisa sadari, Andrew adalah pasangan hidup keduanya sekaligus ayah kandung putranya.",
+  "tags": [
+    "Manusia Serigala",
+    "Pembalikan Identitas",
+    "Kabur Saat Hamil",
+    "Gadis Naif",
+    "Cinta Terlarang",
+    "Cinta Setelah Menikah"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1363,
+      "tagName": "Manusia Serigala",
+      "tagEnName": "Werewolf"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1397,
+      "tagName": "Kabur Saat Hamil",
+      "tagEnName": "Secret Baby"
+    },
+    {
+      "tagId": 1374,
+      "tagName": "Gadis Naif",
+      "tagEnName": "Innocent Damsel"
+    },
+    {
+      "tagId": 1379,
+      "tagName": "Cinta Terlarang",
+      "tagEnName": "Forbidden Love"
+    },
+    {
+      "tagId": 1393,
+      "tagName": "Cinta Setelah Menikah",
+      "tagEnName": "Love After Marriage"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1778378400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-10 10:00:01",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000013387",
+  "bookName": "Game Cinta Para Pewaris",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000013387/42000013387.jpg?t=1779701524100",
+  "chapterCount": 70,
+  "introduction": "Mario Saver, pewaris triliunan, menyamar sebagai mahasiswa miskin untuk menguji tunangannya, Sarah Lares, di kampus Ather. Namun Sarah justru menjadikannya target \"game cinta\" dan bertaruh untuk mempermalukannya dalam sebulan. Tanpa mereka sadari, Mario sudah melihat semuanya sejak awal. Dia diam-diam mengendalikan permainan, membalik keadaan hingga para \"pemburu\" berubah menjadi \"buruan\".Permainan cinta di dunia para elite pun berbalik jadi jebakan yang tak terduga.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Penyesalan",
+    "Serangan Balik",
+    "CEO",
+    "Pura-Pura Bodoh",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1658,
+      "tagName": "Penyesalan",
+      "tagEnName": "All-Too-Late"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1324,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1333,
+      "tagName": "Pura-Pura Bodoh",
+      "tagEnName": "Playing Dumb"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1780286400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-01 12:00:00",
+  "inLibrary": false
+}
