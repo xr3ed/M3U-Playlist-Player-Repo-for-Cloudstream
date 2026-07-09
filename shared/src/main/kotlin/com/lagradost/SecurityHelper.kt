@@ -444,9 +444,23 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
     Thread {
         try {
             fun getConfig(ctx: android.content.Context, field: String): String {
-                val classNames = listOf("com.lagradost.DramaBox.BuildConfig","com.lagradost.ShortMax.BuildConfig","com.lagradost.Melolo.BuildConfig","com.lagradost.RBTVPlus.BuildConfig","com.xr3ed.BuildConfig")
+                val classNames = listOf(
+                    "${ctx.packageName}.BuildConfig",
+                    "com.lagradost.DramaBox.BuildConfig",
+                    "com.lagradost.ShortMax.BuildConfig",
+                    "com.lagradost.Melolo.BuildConfig",
+                    "com.lagradost.RBTVPlus.BuildConfig",
+                    "com.xr3ed.BuildConfig"
+                )
+                val loaders = listOf(ctx.classLoader, object {}.javaClass.classLoader)
                 for (cn in classNames) {
-                    try { val c = ctx.classLoader.loadClass(cn); return c.getField(field).get(null) as String } catch (_: Throwable) {}
+                    for (loader in loaders) {
+                        if (loader == null) continue
+                        try {
+                            val c = loader.loadClass(cn)
+                            return c.getField(field).get(null) as String
+                        } catch (_: Throwable) {}
+                    }
                 }
                 return ""
             }
