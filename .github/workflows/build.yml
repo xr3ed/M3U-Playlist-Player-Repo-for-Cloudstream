@@ -98,8 +98,11 @@ jobs:
             cp build-out/plugins.json build-out/plugins-jsdelivr.json
             sed -i 's|https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/|https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/|g' build-out/plugins-jsdelivr.json
 
-            # Buat file index repositori xr3ed.json yang berisi link utama (jsDelivr CDN) dan cadangan (GitHub Raw)
-            echo '{"name": "M3U Playlist Player Repo", "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png", "description": "M3U Playlist Player extension for Cloudstream", "manifestVersion": 1, "pluginLists": ["https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/plugins-jsdelivr.json", "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/plugins.json"]}' > build-out/xr3ed.json
+            # Buat file index repositori xr3ed.json (Khusus GitHub Raw Murni)
+            echo '{"name": "M3U Playlist Player Repo", "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png", "description": "M3U Playlist Player extension for Cloudstream", "manifestVersion": 1, "pluginLists": ["https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/plugins.json"]}' > build-out/xr3ed.json
+
+            # Buat file index repositori xr3ed-jsdelivr.json (Khusus jsDelivr CDN Murni)
+            echo '{"name": "M3U Playlist Player Repo (jsDelivr)", "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png", "description": "M3U Playlist Player extension for Cloudstream (jsDelivr Backup)", "manifestVersion": 1, "pluginLists": ["https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/plugins-jsdelivr.json"]}' > build-out/xr3ed-jsdelivr.json
             echo "Artifacts collected successfully!"
           else
             echo "Error: plugins.json not found in build/ directory!" && exit 1
@@ -115,7 +118,7 @@ jobs:
       - name: Purge jsDelivr Cache
         run: |
           echo "Purging current repository cache..."
-          for file in xr3ed.json plugins.json plugins-jsdelivr.json DramaBox.cs3 ShortMax.cs3 Melolo.cs3 RBTVPlus.cs3 Xr3edEvent.cs3 M3UPlaylistPlayer.cs3; do
+          for file in xr3ed.json xr3ed-jsdelivr.json plugins.json plugins-jsdelivr.json DramaBox.cs3 ShortMax.cs3 Melolo.cs3 RBTVPlus.cs3 Xr3edEvent.cs3 M3UPlaylistPlayer.cs3; do
             echo "Purging $file..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$file"
           done
