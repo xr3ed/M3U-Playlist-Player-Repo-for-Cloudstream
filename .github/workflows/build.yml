@@ -119,6 +119,3 @@ jobs:
             echo "Purging $file..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$file"
           done
-          echo "Purging xr3ed-Repo cache..."
-          curl -s "https://purge.jsdelivr.net/gh/xr3ed/xr3ed-Repo@main/repo.json"
-          curl -s "https://purge.jsdelivr.net/gh/xr3ed/xr3ed-Repo@builds/plugins.json"
