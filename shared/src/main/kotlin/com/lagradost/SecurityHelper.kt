@@ -466,6 +466,12 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
             }
             var apkUrl = getConfig(activity, "FALLBACK_RELEASE_URL")
             var updateUrl = getConfig(activity, "UPDATE_JSON_URL")
+            if (apkUrl.isEmpty() || apkUrl == "dummy") {
+                apkUrl = "https://github.com/xr3ed/CloudStreamXR"
+            }
+            if (updateUrl.isEmpty() || updateUrl == "dummy") {
+                updateUrl = "https://raw.githubusercontent.com/xr3ed/CloudStreamXR/main/update.json"
+            }
             if (updateUrl.contains("raw.githubusercontent.com")) {
                 try {
                     val temp = updateUrl.replace("https://raw.githubusercontent.com/", "")
