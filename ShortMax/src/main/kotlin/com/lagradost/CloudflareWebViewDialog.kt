@@ -278,6 +278,7 @@ class CloudflareWebViewDialog(
                     }
                 """.trimIndent()
                 view?.evaluateJavascript(css, null)
+                webView?.visibility = View.VISIBLE
 
                 if (cookiesSaved) return
 
@@ -286,7 +287,6 @@ class CloudflareWebViewDialog(
 
                 if (isChallengeTitle(title)) {
                     updateStatus("👉 Silakan ketuk kotak \"Verifikasi bahwa Anda adalah manusia\" di bawah.")
-                    webView?.visibility = View.VISIBLE
                 } else {
                     updateStatus("⏳ Menunggu konfirmasi keamanan dari server...")
                     CookieManager.getInstance().flush()
