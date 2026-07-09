@@ -278,9 +278,18 @@ class CloudflareWebViewDialog(
                     }
                 """.trimIndent()
                 view?.evaluateJavascript(css, null)
-                webView?.visibility = View.VISIBLE
 
                 if (cookiesSaved) return
+
+                val currentHostCookies = CookieManager.getInstance().getCookie(targetHost) ?: ""
+                if (currentHostCookies.contains("cf_clearance")) {
+                    webView?.visibility = View.GONE
+                    saveCookiesAndDismiss(currentHostCookies)
+                    return
+                }
+
+                // If not solved yet, make webview visible for CAPTCHA interaction!
+                webView?.visibility = View.VISIBLE
 
                 val title = view?.title ?: ""
                 Log.d(TAG, "onPageFinished  title='$title'  url=$url")
