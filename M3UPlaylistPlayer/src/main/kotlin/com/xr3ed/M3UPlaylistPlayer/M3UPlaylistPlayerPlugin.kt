@@ -7,10 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.lagradost.cloudstream3.utils.DataStore.setKey
 import com.lagradost.cloudstream3.utils.DataStore.getKey
 
+import com.lagradost.verifyApp
+import com.xr3ed.BuildConfig
+
 @CloudstreamPlugin
 class M3UPlaylistPlayerPlugin : Plugin() {
     override fun load(context: Context) {
-        verifyApp(context)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
         M3UPlaylistPlayer.context = context
         
         // Migrate legacy SharedPreferences playlists to DataStore (Ultima-compatible)
