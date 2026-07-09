@@ -119,15 +119,34 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
+          # Ganti @builds dengan @build-${{ github.run_number }} pada manifest agar CDN jsDelivr selalu mengunduh biner segar tanpa cache
+          sed -i "s|@builds|@build-${{ github.run_number }}|g" build-out/plugins-jsdelivr.json
+          sed -i "s|@builds|@build-${{ github.run_number }}|g" build-out/xr3ed-jsdelivr.json
+          
           cd build-out
           
           git init
           git checkout -b builds
           git add .
-          git commit -m "Deploying to builds 🚀"
+          git commit -m "Deploying to builds 🚀 (build-${{ github.run_number }})"
           
           # Force push ke branch builds
           git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" builds:builds --force
+          
+          # Buat dan push git tag untuk versi rilis ini
+          git tag "build-${{ github.run_number }}"
+          git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "build-${{ github.run_number }}"
+          
+          # Hubungkan ke remote dan bersihkan tag lama (sisakan 5 terbaru)
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --tags
+          OLD_TAGS=$(git tag -l "build-*" --sort=creatordate | head -n -5)
+          for tag in $OLD_TAGS; do
+            echo "Deleting old tag: $tag"
+            git tag -d "$tag" || true
+            git push origin :refs/tags/$tag || true
+          done
+
 
       - name: Purge jsDelivr Cache (All Files)
         run: |
