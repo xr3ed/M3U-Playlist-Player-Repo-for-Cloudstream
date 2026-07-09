@@ -36,7 +36,7 @@ Ikuti langkah mudah berikut untuk menambahkan repositori ke aplikasi Cloudstream
 Jalur ini sangat direkomendasikan karena **bebas dari masalah limitasi unduhan (Error 429 / Too Many Requests)**.
 * **Tautan Repositori:**
   ```text
-  https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/xr3ed-jsdelivr.json
+  https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3ed-jsdelivr.json
   ```
 
 ### 2. Jalur GitHub Raw
