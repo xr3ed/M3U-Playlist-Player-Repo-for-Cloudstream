@@ -126,18 +126,6 @@ jobs:
           git add .
           git commit -m "Deploying to builds 🚀"
           
-          # Dapatkan commit SHA baru yang akan di-push
-          COMMIT_SHA=$(git rev-parse HEAD)
-          echo "Generated Commit SHA: $COMMIT_SHA"
-          
-          # Ganti @builds dengan @$COMMIT_SHA pada manifest agar CDN jsDelivr selalu mengunduh biner segar tanpa cache
-          sed -i "s|@builds|@$COMMIT_SHA|g" plugins-jsdelivr.json
-          sed -i "s|@builds|@$COMMIT_SHA|g" xr3ed-jsdelivr.json
-          
-          # Update komit dengan file manifest yang sudah diubah
-          git add plugins-jsdelivr.json xr3ed-jsdelivr.json
-          git commit --amend --no-edit
-          
           # Force push ke branch builds
           git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" builds:builds --force
 
