@@ -78,6 +78,8 @@ jobs:
           XSTREAM_TMDB_API: ${{ secrets.XSTREAM_TMDB_API }}
           SHORTMAX_URL: ${{ secrets.SHORTMAX_URL }}
           SHORTMAX_KEY: ${{ secrets.SHORTMAX_KEY }}
+          MELOLO_URL: ${{ secrets.MELOLO_URL }}
+          MELOLO_API_PATH: ${{ secrets.MELOLO_API_PATH }}
 
       - name: Collect Build Artifacts
         run: |
