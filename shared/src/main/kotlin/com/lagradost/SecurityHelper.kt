@@ -24,7 +24,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import com.lagradost.RBTVPlus.BuildConfig
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedInputStream
@@ -38,8 +37,27 @@ import kotlin.system.exitProcess
 private var isPopupRegistered = false
 private var activeDialog: Dialog? = null
 
+private fun getBuildConfigString(context: Context, fieldName: String, defaultValue: String = ""): String {
+    return try {
+        val packageName = context.packageName
+        val className = when {
+            packageName.contains("DramaBox", ignoreCase = true) -> "com.lagradost.DramaBox.BuildConfig"
+            packageName.contains("ShortMax", ignoreCase = true) -> "com.lagradost.ShortMax.BuildConfig"
+            packageName.contains("Melolo", ignoreCase = true) -> "com.lagradost.Melolo.BuildConfig"
+            packageName.contains("RBTVPlus", ignoreCase = true) -> "com.lagradost.RBTVPlus.BuildConfig"
+            packageName.contains("Xr3edEvent", ignoreCase = true) -> "com.lagradost.Xr3edEvent.BuildConfig"
+            packageName.contains("M3UPlaylistPlayer", ignoreCase = true) -> "com.lagradost.M3UPlaylistPlayer.BuildConfig"
+            else -> "$packageName.BuildConfig"
+        }
+        val clazz = Class.forName(className)
+        val field = clazz.getField(fieldName)
+        field.get(null) as String
+    } catch (e: Exception) {
+        defaultValue
+    }
+}
+
 fun verifyApp(context: Context) {
-    // Opsi 1: Bypass untuk developer jika file "dev_mode" ada di data folder aplikasi
     try {
         val devFile = File(context.getExternalFilesDir(null), "dev_mode")
         if (devFile.exists()) {
@@ -49,7 +67,7 @@ fun verifyApp(context: Context) {
         e.printStackTrace()
     }
 
-    val expectedSignature = BuildConfig.CLONER_SIGNATURE
+    val expectedSignature = getBuildConfigString(context, "CLONER_SIGNATURE", "dummy")
     if (expectedSignature == "dummy" || expectedSignature.isEmpty()) {
         triggerBlock(context)
         return
@@ -61,7 +79,6 @@ fun verifyApp(context: Context) {
 }
 
 private fun triggerBlock(context: Context) {
-    // 1. Coba tampilkan dialog langsung di activity yang sedang aktif (resumed) saat ini
     val currentActivity = getResumedActivity()
     if (currentActivity != null) {
         Handler(Looper.getMainLooper()).post {
@@ -70,7 +87,6 @@ private fun triggerBlock(context: Context) {
             }
         }
     }
-    // 2. Daftarkan callback lifecycle untuk memantau jika app di-minimize atau ganti activity
     registerPopup(context)
 }
 
@@ -188,7 +204,6 @@ private fun showUpdateDialog(activity: Activity) {
         }
     }
 
-    // 1. Logo container
     val logoContainer = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
@@ -207,14 +222,13 @@ private fun showUpdateDialog(activity: Activity) {
         }
     }
     val updateEmoji = TextView(activity).apply {
-        text = "\uD83D\uDCF2"
+        text = "📱"
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f)
         gravity = Gravity.CENTER
     }
     logoContainer.addView(updateEmoji)
     card.addView(logoContainer)
 
-    // 2. Title
     val titleTv = TextView(activity).apply {
         text = "Pembaruan Tersedia"
         setTextColor(Color.parseColor("#2D3436"))
@@ -231,7 +245,6 @@ private fun showUpdateDialog(activity: Activity) {
     }
     card.addView(titleTv)
 
-    // 3. Message Body
     val bodyTv = TextView(activity).apply {
         text = "Plugin ini memerlukan aplikasi CloudstreamXR agar dapat berfungsi dengan baik. Silakan unduh di bawah ini."
         setTextColor(Color.parseColor("#2D3436"))
@@ -247,7 +260,6 @@ private fun showUpdateDialog(activity: Activity) {
     }
     card.addView(bodyTv)
 
-    // 4. Bottom pink/red banner
     val footerBanner = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
@@ -271,7 +283,6 @@ private fun showUpdateDialog(activity: Activity) {
 
     root.addView(card)
 
-    // 5. Buttons container
     val buttonContainer = LinearLayout(activity).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER
@@ -323,7 +334,6 @@ private fun showUpdateDialog(activity: Activity) {
 }
 
 private fun removeRepoAndPlugins(context: Context) {
-    // 1. Hapus dari SharedPreferences
     val prefNames = listOf("${context.packageName}_preferences", "utils_datastore")
     for (name in prefNames) {
         try {
@@ -340,7 +350,7 @@ private fun removeRepoAndPlugins(context: Context) {
                             val url = if (item is JSONObject) item.optString("url", "") else item.toString()
                             if (url.contains("M3U-Playlist-Player-Repo-for-Cloudstream") || url.contains("xr3ed")) {
                                 modified = true
-                                continue // Hapus
+                                continue
                             }
                             newArray.put(item)
                         }
@@ -357,14 +367,13 @@ private fun removeRepoAndPlugins(context: Context) {
         }
     }
 
-    // 2. Hapus File .cs3 Fisik
     try {
         val extensionsDir = File(context.filesDir, "Extensions")
         if (extensionsDir.exists() && extensionsDir.isDirectory) {
             extensionsDir.walkTopDown().forEach { file ->
                 if (file.isFile && file.extension == "cs3") {
                     val name = file.name.lowercase()
-                    if (name.contains("m3uplaylistplayer") || name.contains("xr3edevent") || name.contains("rbtvplus") || name.contains("dramabox") || name.contains("shortmax")) {
+                    if (name.contains("m3uplaylistplayer") || name.contains("xr3edevent") || name.contains("rbtvplus") || name.contains("dramabox") || name.contains("shortmax") || name.contains("melolo")) {
                         file.delete()
                     }
                 }
@@ -435,9 +444,8 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
 
     Thread {
         try {
-            // 1. Ambil URL rilis terbaru dari update.json di background (Gunakan jsDelivr CDN)
-            var apkUrl = BuildConfig.FALLBACK_RELEASE_URL
-            var updateUrl = BuildConfig.UPDATE_JSON_URL
+            var apkUrl = getBuildConfigString(activity, "FALLBACK_RELEASE_URL", "")
+            var updateUrl = getBuildConfigString(activity, "UPDATE_JSON_URL", "")
             if (updateUrl.contains("raw.githubusercontent.com")) {
                 try {
                     val temp = updateUrl.replace("https://raw.githubusercontent.com/", "")
@@ -465,7 +473,6 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
                 e.printStackTrace()
             }
 
-            // 2. Gunakan logic persis seperti di repo app-cloner untuk mengambil fileLength & stream
             val url = URL(apkUrl)
             val conn = url.openConnection() as HttpURLConnection
             conn.connect()
@@ -499,7 +506,6 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
             output.close()
             input.close()
 
-            // Verifikasi integritas unduhan (opsional jika fileLength valid)
             if (fileLength > 0 && total < fileLength) {
                 throw Exception("Koneksi terputus. Unduhan tidak lengkap ($total / $fileLength byte)")
             }

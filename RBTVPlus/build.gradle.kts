@@ -11,6 +11,9 @@ android {
         buildConfigField("String", "RBTV_MAIN_URL", "\"${System.getenv("RBTV_MAIN_URL") ?: ""}\"")
         buildConfigField("String", "RBTV_API_HOST", "\"${System.getenv("RBTV_API_HOST") ?: ""}\"")
     }
+    sourceSets {
+        getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")
+    }
 }
 
 cloudstream {
