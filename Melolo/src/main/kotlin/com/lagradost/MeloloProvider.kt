@@ -24,6 +24,7 @@ class MeloloProvider : MainAPI() {
     override var name = "Melolo"
     override var mainUrl = BASE_URL
     override var supportedTypes = setOf(TvType.TvSeries)
+    override val hasMainPage = true
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         val url = "$API_URL?action=rank"
