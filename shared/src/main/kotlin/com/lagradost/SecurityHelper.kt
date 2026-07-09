@@ -367,10 +367,10 @@ private fun removeRepoAndPlugins(context: Context) {
                             newArray.put(item)
                         }
                         if (modified) {
-                            prefs.edit().putString(key, newArray.toString()).apply()
+                            prefs.edit().putString(key, newArray.toString()).commit()
                         }
                     } catch (e: Exception) {
-                        prefs.edit().remove(key).apply()
+                        prefs.edit().remove(key).commit()
                     }
                 }
             }
