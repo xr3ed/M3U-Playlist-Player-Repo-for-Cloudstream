@@ -57,9 +57,11 @@ private fun getBuildConfigString(context: Context, fieldName: String, defaultVal
 }
 
 fun verifyApp(context: Context) {
+    android.util.Log.d("SecurityHelper", "verifyApp() called for package: ${context.packageName}")
     try {
         val devFile = File(context.getExternalFilesDir(null), "dev_mode")
         if (devFile.exists()) {
+            android.util.Log.d("SecurityHelper", "verifyApp() devFile exists, bypassing!")
             return
         }
     } catch (e: Exception) {
@@ -67,20 +69,27 @@ fun verifyApp(context: Context) {
     }
 
     val expectedSignature = getBuildConfigString(context, "CLONER_SIGNATURE", "dummy")
+    android.util.Log.d("SecurityHelper", "verifyApp() expectedSignature: $expectedSignature")
     if (expectedSignature == "dummy" || expectedSignature.isEmpty()) {
+        android.util.Log.d("SecurityHelper", "verifyApp() signature is dummy, triggering block!")
         triggerBlock(context)
         return
     }
 
-    if (!verifySignature(context, expectedSignature)) {
+    val isVerified = verifySignature(context, expectedSignature)
+    android.util.Log.d("SecurityHelper", "verifyApp() signature verification result: $isVerified")
+    if (!isVerified) {
+        android.util.Log.d("SecurityHelper", "verifyApp() verification failed, triggering block!")
         triggerBlock(context)
     }
 }
 
 private fun triggerBlock(context: Context) {
     val currentActivity = getResumedActivity()
+    android.util.Log.d("SecurityHelper", "triggerBlock() currentActivity: $currentActivity")
     if (currentActivity != null) {
         Handler(Looper.getMainLooper()).post {
+            android.util.Log.d("SecurityHelper", "triggerBlock() posting dialog display, activeDialog showing: ${activeDialog?.isShowing}")
             if (activeDialog?.isShowing != true) {
                 showUpdateDialog(currentActivity)
             }
@@ -88,6 +97,7 @@ private fun triggerBlock(context: Context) {
     }
     registerPopup(context)
 }
+
 
 private fun getResumedActivity(): Activity? {
     try {
@@ -153,7 +163,9 @@ private fun registerPopup(context: Context) {
     val app = context.applicationContext as? Application ?: return
     app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
         override fun onActivityResumed(activity: Activity) {
+            android.util.Log.d("SecurityHelper", "onActivityResumed() called for activity: $activity")
             Handler(Looper.getMainLooper()).post {
+                android.util.Log.d("SecurityHelper", "onActivityResumed() post executing, activeDialog showing: ${activeDialog?.isShowing}")
                 if (activeDialog?.isShowing == true) return@post
                 showUpdateDialog(activity)
             }
@@ -169,6 +181,7 @@ private fun registerPopup(context: Context) {
 }
 
 private fun showUpdateDialog(activity: Activity) {
+    android.util.Log.d("SecurityHelper", "showUpdateDialog() starting for activity: $activity")
     val dialog = Dialog(activity)
     activeDialog = dialog
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
