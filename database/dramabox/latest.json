@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "12.1K",
+      "hotCode": "10.9K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,12 +113,52 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "9.2K",
+      "hotCode": "10K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783216800000,
     "shelfTime": "2026-07-05 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020247",
+    "bookName": "Istri Baik Apaan?",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
+    "chapterCount": 62,
+    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
+    "tags": [
+      "Balas Dendam",
+      "Melawan Balik",
+      "Kebangkitan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 818,
+        "tagName": "Balas Dendam"
+      },
+      {
+        "tagId": 822,
+        "tagName": "Melawan Balik"
+      },
+      {
+        "tagId": 825,
+        "tagName": "Kebangkitan"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Juan Lee,  Nadia Meka",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "7.1K",
+      "sort": 3
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783404954000,
+    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -174,52 +214,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "8.8K",
-      "sort": 3
+      "hotCode": "6.4K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783396800000,
     "shelfTime": "2026-07-07 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020247",
-    "bookName": "Istri Baik Apaan?",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
-    "chapterCount": 62,
-    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
-    "tags": [
-      "Balas Dendam",
-      "Melawan Balik",
-      "Kebangkitan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 818,
-        "tagName": "Balas Dendam"
-      },
-      {
-        "tagId": 822,
-        "tagName": "Melawan Balik"
-      },
-      {
-        "tagId": 825,
-        "tagName": "Kebangkitan"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Juan Lee,  Nadia Meka",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "8.2K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783404954000,
-    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -269,7 +269,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "6.3K",
+      "hotCode": "6.1K",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
@@ -324,7 +324,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.4K",
+      "hotCode": "5.8K",
       "sort": 6
     },
     "markNamesConnectKey": ", ",
@@ -385,7 +385,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "3.9K",
+      "hotCode": "4.9K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
@@ -446,7 +446,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "3.3K",
+      "hotCode": "3.8K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -501,7 +501,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "2.9K",
+      "hotCode": "3.3K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",

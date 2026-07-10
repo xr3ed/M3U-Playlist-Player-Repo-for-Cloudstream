@@ -50,7 +50,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
@@ -63,13 +63,13 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "205K",
-      "recCopy": "Sedang Tren TOP 2",
-      "sort": 2
+      "hotCode": "264K",
+      "recCopy": "Sedang Tren TOP 1",
+      "sort": 1
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "502K",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "569K",
     "bookShelfTime": 1782895539000,
     "shelfTime": "2026-07-01 16:45:39",
     "inLibrary": false
@@ -125,7 +125,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
@@ -138,12 +138,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "126K",
+      "hotCode": "117K",
       "recCopy": "Sedang Tren TOP 5",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "1.4M",
     "bookShelfTime": 1782280257000,
     "shelfTime": "2026-06-24 13:50:57",
@@ -200,7 +200,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
@@ -212,74 +212,10 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "7.1M",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "7.2M",
     "bookShelfTime": 1779501600000,
     "shelfTime": "2026-05-23 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017391",
-    "bookName": "Pengantin Perawan Raja Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017391/42000017391.jpg?t=1781687794585",
-    "chapterCount": 53,
-    "introduction": "Sinopsis: Setelah ibu tirinya melelang kesuciannya, Lily dibeli oleh Faris, Sang Raja Naga yang mengerikan. Demi menolong saudaranya, Lily menyetujuinya. Ternyata, Faris tengah sekarat akibat kutukan kuno, seorang perawan harus jatuh cinta dan menyerahkan diri kepadanya secara sukarela dalam waktu 30 hari, atau Faris akan mati.",
-    "tags": [
-      "Fantasi",
-      "Gairah",
-      "Musuh Jadi Kekasih",
-      "Cinta Paksaan",
-      "Takdir Cinta",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1355,
-        "tagName": "Fantasi",
-        "tagEnName": "Fantasy"
-      },
-      {
-        "tagId": 10047,
-        "tagName": "Gairah",
-        "tagEnName": "Steamy"
-      },
-      {
-        "tagId": 1390,
-        "tagName": "Musuh Jadi Kekasih",
-        "tagEnName": "Enemy to Lover"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1382,
-        "tagName": "Takdir Cinta",
-        "tagEnName": "Destined Love"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "2M",
-    "bookShelfTime": 1782489600000,
-    "shelfTime": "2026-06-27 00:00:00",
     "inLibrary": false
   },
   {
@@ -333,17 +269,81 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "433K",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "441K",
     "bookShelfTime": 1783047144000,
     "shelfTime": "2026-07-03 10:52:24",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017391",
+    "bookName": "Pengantin Perawan Raja Naga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017391/42000017391.jpg?t=1781687794585",
+    "chapterCount": 53,
+    "introduction": "Sinopsis: Setelah ibu tirinya melelang kesuciannya, Lily dibeli oleh Faris, Sang Raja Naga yang mengerikan. Demi menolong saudaranya, Lily menyetujuinya. Ternyata, Faris tengah sekarat akibat kutukan kuno, seorang perawan harus jatuh cinta dan menyerahkan diri kepadanya secara sukarela dalam waktu 30 hari, atau Faris akan mati.",
+    "tags": [
+      "Fantasi",
+      "Gairah",
+      "Musuh Jadi Kekasih",
+      "Cinta Paksaan",
+      "Takdir Cinta",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1355,
+        "tagName": "Fantasi",
+        "tagEnName": "Fantasy"
+      },
+      {
+        "tagId": 10047,
+        "tagName": "Gairah",
+        "tagEnName": "Steamy"
+      },
+      {
+        "tagId": 1390,
+        "tagName": "Musuh Jadi Kekasih",
+        "tagEnName": "Enemy to Lover"
+      },
+      {
+        "tagId": 1378,
+        "tagName": "Cinta Paksaan",
+        "tagEnName": "Forced Love"
+      },
+      {
+        "tagId": 1382,
+        "tagName": "Takdir Cinta",
+        "tagEnName": "Destined Love"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "2M",
+    "bookShelfTime": 1782489600000,
+    "shelfTime": "2026-06-27 00:00:00",
     "inLibrary": false
   },
   {
@@ -397,7 +397,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
@@ -409,13 +409,13 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "rankVo": {
-      "rankType": 2,
-      "hotCode": "20.8K",
-      "recCopy": "Pencarian TOP 3",
-      "sort": 3
+      "rankType": 1,
+      "hotCode": "102K",
+      "recCopy": "Sedang Tren TOP 9",
+      "sort": 9
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "145M",
     "bookShelfTime": 1764052944000,
     "shelfTime": "2025-11-25 14:42:24",
@@ -427,61 +427,61 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 3,
     "tagCardVo": {
-      "tagId": 1456,
-      "tagName": "Saudara Tiri",
-      "tagEnName": "Step-Siblings",
+      "tagId": 1412,
+      "tagName": "Kultivasi",
+      "tagEnName": "Cultivation Fantasy",
       "tagBooks": [
         {
-          "bookId": "42000010863",
-          "bookName": "Cinta Terlarang Adik Tiriku",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010863/42000010863.jpg?t=1777527840424",
+          "bookId": "42000011480",
+          "bookName": "Sistem Menikah Jadi Dewa",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011480/42000011480.jpg?t=1778303178713",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+            "log_id": "c3f005d900de2e4660f9238d2b87c333"
           },
-          "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352106\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"c3f005d900de2e4660f9238d2b87c333\",\"ret_time\":\"1783692342960\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         },
         {
-          "bookId": "42000008706",
-          "bookName": "Mengejar Setelah Kehilangan",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008706/42000008706.jpg?t=1774606214374",
+          "bookId": "42000011317",
+          "bookName": "Bos Kecil Pengatur Takhta",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011317/42000011317.jpg?t=1778208064893",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+            "log_id": "c3f005d900de2e4660f9238d2b87c333"
           },
-          "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352106\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"c3f005d900de2e4660f9238d2b87c333\",\"ret_time\":\"1783692342960\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         },
         {
-          "bookId": "42000006397",
-          "bookName": "Putri Asli dan Palsu",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006397/42000006397.jpg?t=1772076527976",
+          "bookId": "42000010817",
+          "bookName": "Kembalinya Sang Ratu Abadi",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010817/42000010817.jpg?t=1777514662228",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+            "log_id": "c3f005d900de2e4660f9238d2b87c333"
           },
-          "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352106\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"c3f005d900de2e4660f9238d2b87c333\",\"ret_time\":\"1783692342960\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         },
         {
-          "bookId": "42000005043",
-          "bookName": "Di Cintamu Hanya Ada Dusta (Sulih Suara)",
-          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000005043/42000005043.jpg?t=1769578790330",
+          "bookId": "42000006688",
+          "bookName": "Sistem Sultan Putri",
+          "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006688/42000006688.jpg?t=1772418092733",
           "bookSource": {
             "sceneId": "ovs_vd_tagcard_rec",
             "expId": "bigdata_rec",
             "strategyId": "g18f4j7b",
             "strategyName": "BASE",
-            "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+            "log_id": "c3f005d900de2e4660f9238d2b87c333"
           },
-          "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352106\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
+          "algorithmRecomDot": "{\"log_id\":\"c3f005d900de2e4660f9238d2b87c333\",\"ret_time\":\"1783692342960\",\"scene_id\":\"ovs_vd_tagcard_rec\",\"rec_id\":\"bigdata_rec\"}"
         }
       ]
     },
@@ -540,7 +540,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
@@ -553,90 +553,15 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "23.7K",
+      "hotCode": "24.4K",
       "recCopy": "Pencarian TOP 2",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "197K",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "215K",
     "bookShelfTime": 1782957600000,
     "shelfTime": "2026-07-02 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018258",
-    "bookName": "Tak Bisa Kabur dari Raja Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
-    "chapterCount": 52,
-    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
-    "tags": [
-      "Pembalikan Identitas",
-      "Cinta Paksaan",
-      "Takdir Cinta",
-      "Romansa",
-      "BG",
-      "Gairah"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1382,
-        "tagName": "Takdir Cinta",
-        "tagEnName": "Destined Love"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1358,
-        "tagName": "BG",
-        "tagEnName": "BG"
-      },
-      {
-        "tagId": 10047,
-        "tagName": "Gairah",
-        "tagEnName": "Steamy"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cnxh_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "gowl8eq1",
-      "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 2,
-      "name": "Terbaru",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_推荐剧",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "12.1K",
-      "recCopy": "Terbaru TOP 1",
-      "sort": 1
-    },
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "336K",
-    "bookShelfTime": 1783303200000,
-    "shelfTime": "2026-07-06 10:00:00",
     "inLibrary": false
   },
   {
@@ -690,7 +615,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "26d882f478f3f2f5b285e3e100ccfa05"
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
     },
     "isEntry": 0,
     "index": 0,
@@ -703,15 +628,84 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "159K",
-      "recCopy": "Sedang Tren TOP 3",
-      "sort": 3
+      "hotCode": "149K",
+      "recCopy": "Sedang Tren TOP 4",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"26d882f478f3f2f5b285e3e100ccfa05\",\"ret_time\":\"1783675352272\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "2.4M",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343031\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "2.5M",
     "bookShelfTime": 1782502499000,
     "shelfTime": "2026-06-27 03:34:59",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017520",
+    "bookName": "Diantar oleh Takdir (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
+    "chapterCount": 66,
+    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Ilmuwan",
+      "Modern",
+      "Wanita Kuat"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 10033,
+        "tagName": "Ilmuwan",
+        "tagEnName": "Researcher"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cnxh_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "gowl8eq1",
+      "strategyName": "",
+      "log_id": "aa634ddca6c8b5031a49d30e1fc7706e"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 6,
+      "name": "Terpopuler",
+      "color": "#F54E96"
+    },
+    "dataFrom": "算法_推荐剧",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "111K",
+      "recCopy": "Sedang Tren TOP 8",
+      "sort": 8
+    },
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"aa634ddca6c8b5031a49d30e1fc7706e\",\"ret_time\":\"1783692343032\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "3.7M",
+    "bookShelfTime": 1781798400000,
+    "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
   }
 ]

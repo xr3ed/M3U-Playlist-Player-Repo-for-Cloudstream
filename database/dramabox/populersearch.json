@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "29.6K",
+      "hotCode": "39K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "23.7K",
+      "hotCode": "24.4K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -122,34 +122,34 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000000651",
-    "bookName": "Suami untuk Tiga Tahun (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000000651/42000000651.jpg?t=1764042578579",
+    "bookId": "41000122409",
+    "bookName": "Suami untuk Tiga Tahun",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122409/41000122409.jpg?t=1760084620640",
     "chapterCount": 65,
     "introduction": "Ezra yang sudah hidup ribuan tahun menepati janji pada muridnya yang sekarat untuk menjaga keluarganya selama tiga tahun. Selama waktu itu, dia menikahi cucu sang murid, tapi malah diperlakukan dingin dan diremehkan. Meski sering disulitkan, Ezra tetap sabar. Begitu tiga tahun berlalu, dia pergi tanpa penyesalan.",
     "tags": [
-      "Penyesalan",
       "Pembalikan Identitas",
-      "Penebusan",
+      "Penyesalan",
+      "Kekuatan Khusus",
       "Pemberontak",
-      "Supranatural",
-      "Pria Dominan"
+      "Pria Dominan",
+      "Supranatural"
     ],
     "tagV3s": [
-      {
-        "tagId": 1658,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
-      },
       {
         "tagId": 1338,
         "tagName": "Pembalikan Identitas",
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1478,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
+        "tagId": 1658,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
       },
       {
         "tagId": 1335,
@@ -157,14 +157,14 @@
         "tagEnName": "Rebellious"
       },
       {
-        "tagId": 1322,
-        "tagName": "Supranatural",
-        "tagEnName": "Supernatural"
-      },
-      {
         "tagId": 1323,
         "tagName": "Pria Dominan",
         "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1322,
+        "tagName": "Supranatural",
+        "tagEnName": "Supernatural"
       }
     ],
     "isEntry": 0,
@@ -174,12 +174,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "20.8K",
+      "hotCode": "22.1K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1764052944000,
-    "shelfTime": "2025-11-25 14:42:24",
+    "bookShelfTime": 1760950800000,
+    "shelfTime": "2025-10-20 17:00:00",
     "inLibrary": false
   },
   {
@@ -235,7 +235,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "16K",
+      "hotCode": "18.4K",
       "sort": 4
     },
     "markNamesConnectKey": ", ",
@@ -296,73 +296,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "13.8K",
+      "hotCode": "18.4K",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782895539000,
     "shelfTime": "2026-07-01 16:45:39",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000012810",
-    "bookName": "Diantar oleh Takdir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012810/42000012810.jpg?t=1779263881245",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Cinta Setelah Menikah",
-      "Romansa",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Perselingkuhan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Han Do-yoon,  Nam Yun-joo",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "12.3K",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1779523200000,
-    "shelfTime": "2026-05-23 16:00:00",
     "inLibrary": false
   },
   {
@@ -418,12 +357,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "11.7K",
-      "sort": 7
+      "hotCode": "13.3K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782360000000,
     "shelfTime": "2026-06-25 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000012810",
+    "bookName": "Diantar oleh Takdir",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012810/42000012810.jpg?t=1779263881245",
+    "chapterCount": 66,
+    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "tags": [
+      "Pembalikan Identitas",
+      "Cinta Setelah Menikah",
+      "Romansa",
+      "Balas Dendam",
+      "Serangan Balik",
+      "Perselingkuhan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1393,
+        "tagName": "Cinta Setelah Menikah",
+        "tagEnName": "Love After Marriage"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Han Do-yoon,  Nam Yun-joo",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "12.6K",
+      "sort": 7
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1779523200000,
+    "shelfTime": "2026-05-23 16:00:00",
     "inLibrary": false
   },
   {
@@ -479,7 +479,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "8.7K",
+      "hotCode": "8.9K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -540,7 +540,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "8.3K",
+      "hotCode": "8.4K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",
@@ -601,7 +601,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "7.2K",
+      "hotCode": "8.1K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",
