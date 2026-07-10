@@ -66,6 +66,9 @@ object EpgHelper {
         }
     }
 
+    @Volatile
+    private var lastSuccessfulFormatterIndex = 0
+
     private fun parseXmltvDate(dateStr: String): Long {
         // Hapus titik dua pada timezone offset (misal: +07:00 menjadi +0700) agar mudah di-parse
         var clean = dateStr.trim().replace(TIMEZONE_COLON_REGEX, "$1$2")
@@ -74,10 +77,26 @@ object EpgHelper {
         clean = clean.replace(OFFSET_SPACE_REGEX, "$1 $2")
 
         val formatters = formattersHolder.get() ?: return 0L
-        for (sdf in formatters) {
+        val startIndex = lastSuccessfulFormatterIndex
+        
+        // Coba format yang terakhir kali sukses terlebih dahulu
+        try {
+            val sdf = formatters[startIndex]
+            val date = sdf.parse(clean)
+            if (date != null) {
+                return date.time
+            }
+        } catch (e: java.text.ParseException) {
+            // Abaikan, coba format lainnya
+        }
+
+        for (i in formatters.indices) {
+            if (i == startIndex) continue
             try {
+                val sdf = formatters[i]
                 val date = sdf.parse(clean)
                 if (date != null) {
+                    lastSuccessfulFormatterIndex = i
                     return date.time
                 }
             } catch (e: java.text.ParseException) {

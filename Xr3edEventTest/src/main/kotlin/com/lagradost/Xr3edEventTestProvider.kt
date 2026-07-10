@@ -652,6 +652,12 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
         val API_BASE get() = BuildConfig.XR3EV_API_URL
         val PLAYER_BASE get() = BuildConfig.XR3EV_PLAYER_URL
         val STREAM_BASE get() = BuildConfig.XR3EV_STREAM_URL
+        val cleanClient: okhttp3.OkHttpClient by lazy {
+            okhttp3.OkHttpClient.Builder()
+                .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+        }
 
         private fun dec(b64: String): String {
             return String(android.util.Base64.decode(b64, android.util.Base64.DEFAULT), Charsets.UTF_8)
@@ -710,10 +716,6 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
             val workerUrl = "${Xr3edEventTestProvider.WORKER_BASE}/?id=$mappedId&t=${System.currentTimeMillis()}"
             val responseText = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                 try {
-                    val cleanClient = okhttp3.OkHttpClient.Builder()
-                        .connectTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
-                        .readTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
-                        .build()
                     val req = okhttp3.Request.Builder()
                         .url(workerUrl)
                         .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
@@ -1488,10 +1490,6 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
                         val workerUrl = "${Xr3edEventTestProvider.WORKER_BASE}/?id=$cleanId&t=${System.currentTimeMillis()}"
                         val responseText = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                             try {
-                                val cleanClient = okhttp3.OkHttpClient.Builder()
-                                    .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
-                                    .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
-                                    .build()
                                 val req = okhttp3.Request.Builder()
                                     .url(workerUrl)
                                     .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")

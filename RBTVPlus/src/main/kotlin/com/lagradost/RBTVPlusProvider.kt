@@ -69,6 +69,9 @@ class ProtoParser(val data: ByteArray) {
 }
 
 class RBTVPlusProvider : MainAPI() {
+    companion object {
+        val posterCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+    }
     // Domain dari BuildConfig — diisi via GitHub Secrets (CI) atau local.properties (lokal)
     override var mainUrl = BuildConfig.RBTV_MAIN_URL
     override var name = "RBTV+"
@@ -134,6 +137,9 @@ class RBTVPlusProvider : MainAPI() {
         sportType: Int,
         isLive: Boolean
     ): String {
+        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}"
+        val cached = posterCache[cacheKey]
+        if (cached != null) return cached
         return try {
             val width = 400
             val height = 600
@@ -323,7 +329,9 @@ class RBTVPlusProvider : MainAPI() {
             bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, baos)
             val bytes = baos.toByteArray()
             val base64 = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
-            "data:image/jpeg;base64,$base64"
+            val finalUrl = "data:image/jpeg;base64,$base64"
+            posterCache[cacheKey] = finalUrl
+            finalUrl
         } catch (e: Exception) {
             e.printStackTrace()
             ""
@@ -796,6 +804,18 @@ class RBTVPlusProvider : MainAPI() {
         // Sort matches: Sepak Bola (sportType == 1) first, all other sports after
         val sortedLiveMatches = liveMatches.sortedWith(compareBy { if (it.sportType == 1) 0 else 1 })
         addCategory("Live Event", sortedLiveMatches)
+
+        // Hapus poster lama yang tidak aktif di cache
+        val activeKeys = allMatches.map { m ->
+            val sportName = sportNames[m.sportType] ?: "Olahraga"
+            val timeSdf = java.text.SimpleDateFormat("dd MMM, HH:mm 'WIB'", java.util.Locale("id", "ID")).apply {
+                timeZone = java.util.TimeZone.getTimeZone("GMT+7")
+            }
+            val timeStr = timeSdf.format(java.util.Date(m.matchTime))
+            val isLive = (m.matchStatus in ongoingStatuses) || (now >= m.matchTime && m.matchStatus < 10000L)
+            "${sportName}_${m.leagueName ?: ""}_${m.homeName ?: ""}_${m.awayName ?: ""}_${timeStr}_${m.sportType}_$isLive"
+        }.toSet()
+        posterCache.keys.retainAll(activeKeys)
 
         return if (homePages.isNotEmpty()) {
             newHomePageResponse(homePages, hasNext = false)
