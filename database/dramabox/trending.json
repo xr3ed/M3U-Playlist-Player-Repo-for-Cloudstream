@@ -52,12 +52,134 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "245K",
+      "hotCode": "225K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783045344000,
     "shelfTime": "2026-07-03 10:22:24",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000019332",
+    "bookName": "Menjadi Kekasih Naga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019332/42000019332.jpg?t=1782891332485",
+    "chapterCount": 35,
+    "introduction": "Aleya terlahir kembali sebelum takdir tragisnya terjadi. Dikhianati saudari dan tunangannya hingga tewas di Lubang Naga pada kehidupan sebelumnya, kini Aleya bertekad mengubah nasibnya. Dia beralih pada Nadan, leluhur naga yang tersegel, dan mengandung sembilan pewaris naga.",
+    "tags": [
+      "Balas Dendam",
+      "Terlahir Kembali",
+      "Intrik Keluarga",
+      "Penebusan",
+      "Kehamilan",
+      "Kekuatan Khusus"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1405,
+        "tagName": "Terlahir Kembali",
+        "tagEnName": "Rebirth"
+      },
+      {
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
+      },
+      {
+        "tagId": 1459,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      },
+      {
+        "tagId": 1641,
+        "tagName": "Kehamilan",
+        "tagEnName": "Pregnancy"
+      },
+      {
+        "tagId": 1371,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Nadan,  Aleya",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "205K",
+      "sort": 2
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782895539000,
+    "shelfTime": "2026-07-01 16:45:39",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017985",
+    "bookName": "Satu Malam yang Mengubah Takdirku",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
+    "chapterCount": 56,
+    "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
+    "tags": [
+      "Kabur Saat Hamil",
+      "Salah Identitas",
+      "Cinta Semalam",
+      "Balas Dendam",
+      "Modern",
+      "Romansa"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1403,
+        "tagName": "Salah Identitas",
+        "tagEnName": "Mistaken Identity"
+      },
+      {
+        "tagId": 1385,
+        "tagName": "Cinta Semalam",
+        "tagEnName": "One Night Stand"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Johny Kirta,  Judy Laros",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "159K",
+      "sort": 3
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782502499000,
+    "shelfTime": "2026-06-27 03:34:59",
     "inLibrary": false
   },
   {
@@ -113,8 +235,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "184K",
-      "sort": 2
+      "hotCode": "159K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1779523200000,
@@ -174,73 +296,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "171K",
-      "sort": 3
+      "hotCode": "126K",
+      "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782280257000,
     "shelfTime": "2026-06-24 13:50:57",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017985",
-    "bookName": "Satu Malam yang Mengubah Takdirku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
-    "chapterCount": 56,
-    "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
-    "tags": [
-      "Kabur Saat Hamil",
-      "Salah Identitas",
-      "Cinta Semalam",
-      "Balas Dendam",
-      "Modern",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1397,
-        "tagName": "Kabur Saat Hamil",
-        "tagEnName": "Secret Baby"
-      },
-      {
-        "tagId": 1403,
-        "tagName": "Salah Identitas",
-        "tagEnName": "Mistaken Identity"
-      },
-      {
-        "tagId": 1385,
-        "tagName": "Cinta Semalam",
-        "tagEnName": "One Night Stand"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Johny Kirta,  Judy Laros",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "162K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782502499000,
-    "shelfTime": "2026-06-27 03:34:59",
     "inLibrary": false
   },
   {
@@ -290,8 +351,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "135K",
-      "sort": 5
+      "hotCode": "119K",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1781798400000,
@@ -351,8 +412,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "101K",
-      "sort": 6
+      "hotCode": "107K",
+      "sort": 7
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1764052944000,
@@ -360,29 +421,24 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000017472",
-    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
-    "chapterCount": 70,
-    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
+    "bookId": "42000018961",
+    "bookName": "Aku Merawat Anak Selingkuhan Suamiku (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018961/42000018961.jpg?t=1782700514161",
+    "chapterCount": 60,
+    "introduction": "Delapan tahun lalu, Mirae menyelamatkan Woojin hingga kehilangan kesuburannya. Demi cinta, ia menyembunyikan pengorbanan itu dan statusnya sebagai pewaris Grup Giwon. Selama tujuh tahun, ia merawat Jian dengan kasih sayang. Namun kebenaran terbongkar: pernikahannya palsu, Jian adalah anak Woojin dan selingkuhannya, Chaewon, yang masih dilindungi Woojin karena dikira penyelamatnya.",
     "tags": [
-      "Keadilan",
-      "Serangan Balik",
+      "Perselingkuhan",
       "Putri Kaya",
-      "Balas Dendam",
-      "Intrik Keluarga",
-      "Modern"
+      "Modern",
+      "Wanita Kuat",
+      "Penyesalan",
+      "Balas Dendam"
     ],
     "tagV3s": [
       {
-        "tagId": 10038,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
       },
       {
         "tagId": 1450,
@@ -390,34 +446,100 @@
         "tagEnName": "Heiress"
       },
       {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
         "tagId": 1352,
         "tagName": "Modern",
         "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1654,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Wendy,  Alvaro,  Wilian,  Yukia",
+    "protagonist": "Kwon Woo-jin,  Song Mi-rae",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "99.2K",
-      "sort": 7
+      "hotCode": "100K",
+      "sort": 8
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782360000000,
-    "shelfTime": "2026-06-25 12:00:00",
+    "bookShelfTime": 1782957600000,
+    "shelfTime": "2026-07-02 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018935",
+    "bookName": "Bukan Aku yang Kamu Pilih (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018935/42000018935.jpg?t=1782698035729",
+    "chapterCount": 61,
+    "introduction": "Leo, Saskia, dan Nova adalah sahabat masa kecil. Awalnya, demi kedua sahabatnya itu, Leo melepaskan kesempatan untuk melanjutkan studi ke luar negeri dan memilih kuliah di universitas yang sama. Namun, setelah Gavin muncul, kedua sahabatnya itu sering mengabaikan Leo. Lambat laun, Leo menjadi patah hati dan memutuskan untuk melanjutkan studi ke luar negeri demi mengejar mimpinya. Setelah Leo pergi, kedua sahabatnya itu menyesal dan berusaha keras mengejarnya kembali.",
+    "tags": [
+      "Penyesalan",
+      "Mengejar Suami",
+      "Pelajar",
+      "Cinta Segitiga",
+      "Modern",
+      "Balas Dendam"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1658,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1681,
+        "tagName": "Mengejar Suami",
+        "tagEnName": "Winning Him Back"
+      },
+      {
+        "tagId": 1467,
+        "tagName": "Pelajar",
+        "tagEnName": "Student"
+      },
+      {
+        "tagId": 1413,
+        "tagName": "Cinta Segitiga",
+        "tagEnName": "Love Triangle"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Leo Fadhil,  Saskia Wira,  Nova Zhenda",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "94.2K",
+      "sort": 9
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783051200000,
+    "shelfTime": "2026-07-03 12:00:00",
     "inLibrary": false
   },
   {
@@ -473,134 +595,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "82.1K",
-      "sort": 8
+      "hotCode": "92.4K",
+      "sort": 10
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1778750374000,
     "shelfTime": "2026-05-14 17:19:34",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000016614",
-    "bookName": "Kepulangan Sang Kaisar",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016614/42000016614.jpg?t=1781260120157",
-    "chapterCount": 60,
-    "introduction": "Arya, pemuda miskin yang naik takhta setelah memadamkan pemberontakan, kembali menyamar ke kampungnya untuk menepati janji pada mantan tunangan Hana. Ia ingin menjadikannya permaisuri. Namun ia melihat pejabat korup menindas rakyat dan dipukuli saat membela mereka. Hana menghina dan mengkhianatinya. Ia mengetahui Citra merawatnya serta korupsi termasuk perobohan Akademi Yugi. Menahan amarah Arya menyusun rencana mengundang pejabat korup lalu mengungkap dirinya sebagai raja.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Sejarah",
-      "Pria Dominan",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Orang Biasa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1338,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1319,
-        "tagName": "Sejarah",
-        "tagEnName": "Historical"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      },
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1340,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1331,
-        "tagName": "Orang Biasa",
-        "tagEnName": "A Nobody"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Arya Pratama,  Citra Patisa",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "67.5K",
-      "sort": 9
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1781402401000,
-    "shelfTime": "2026-06-14 10:00:01",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000016017",
-    "bookName": "Ibuku Triliuner Rahasia (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016017/42000016017.jpg?t=1781071314892",
-    "chapterCount": 52,
-    "introduction": "Setelah para ibu komite sekolah menjebak putranya, seorang ibu sederhana dipermalukan dan disingkirkan. Namun, mereka tak tahu wanita yang dianggap bukan siapa-siapa itu sebenarnya triliuner rahasia di balik sekolah tersebut. Kini, nasib mereka ada di tangannya.",
-    "tags": [
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Wanita Kuat",
-      "Modern",
-      "Serangan Balik",
-      "CEO"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1362,
-        "tagName": "CEO",
-        "tagEnName": "Billionaire"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Andrew Tiago,  Widya Sintana",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "63.9K",
-      "sort": 10
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1781164800000,
-    "shelfTime": "2026-06-11 16:00:00",
     "inLibrary": false
   }
 ]
