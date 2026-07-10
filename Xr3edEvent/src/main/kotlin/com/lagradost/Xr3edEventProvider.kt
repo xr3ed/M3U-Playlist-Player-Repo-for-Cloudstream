@@ -629,7 +629,7 @@ fun buildClearKeyInjection(licenseParam: String): Pair<String, String> {
 class Xr3edEventProvider(val context: Context) : MainAPI() {
     // Domain dari BuildConfig — diisi via GitHub Secrets (CI) atau local.properties (lokal)
     override var mainUrl = BuildConfig.XR3EV_MAIN_URL
-    override var name = "xr3ed event test"
+    override var name = "xr3ed event"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
     override val hasMainPage = true
