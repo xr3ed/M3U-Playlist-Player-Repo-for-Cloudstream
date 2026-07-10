@@ -99,6 +99,68 @@ object LocalManifestServer {
         return modified
     }
 
+    private fun injectMvex(bytes: ByteArray): ByteArray {
+        var moovIdx = -1
+        for (i in 0 until bytes.size - 7) {
+            if (bytes[i] == 0x6d.toByte() &&     // 'm'
+                bytes[i+1] == 0x6f.toByte() &&   // 'o'
+                bytes[i+2] == 0x6f.toByte() &&   // 'o'
+                bytes[i+3] == 0x76.toByte()) {   // 'v'
+                moovIdx = i - 4
+                break
+            }
+        }
+        if (moovIdx == -1) return bytes
+        
+        val moovSize = ((bytes[moovIdx].toInt() and 0xFF) shl 24) or
+                       ((bytes[moovIdx+1].toInt() and 0xFF) shl 16) or
+                       ((bytes[moovIdx+2].toInt() and 0xFF) shl 8) or
+                       (bytes[moovIdx+3].toInt() and 0xFF)
+        
+        var hasMvex = false
+        val limit = minOf(bytes.size, moovIdx + moovSize)
+        for (i in moovIdx + 8 until limit - 3) {
+            if (bytes[i] == 0x6d.toByte() &&     // 'm'
+                bytes[i+1] == 0x76.toByte() &&   // 'v'
+                bytes[i+2] == 0x65.toByte() &&   // 'e'
+                bytes[i+3] == 0x78.toByte()) {   // 'x'
+                hasMvex = true
+                break
+            }
+        }
+        if (hasMvex) return bytes
+        
+        val mvexBytes = byteArrayOf(
+            0x00, 0x00, 0x00, 0x28, // mvex size = 40
+            0x6d, 0x76, 0x65, 0x78, // 'm' 'v' 'e' 'x'
+            0x00, 0x00, 0x00, 0x20, // trex size = 32
+            0x74, 0x72, 0x65, 0x78, // 't' 'r' 'e' 'x'
+            0x00, 0x00, 0x00, 0x00, // version & flags = 0
+            0x00, 0x00, 0x00, 0x01, // track ID = 1
+            0x00, 0x00, 0x00, 0x01, // default sample description index = 1
+            0x00, 0x00, 0x00, 0x00, // default sample duration = 0
+            0x00, 0x00, 0x00, 0x00, // default sample size = 0
+            0x00, 0x00, 0x00, 0x00  // default sample flags = 0
+        )
+        
+        val newBytes = ByteArray(bytes.size + 40)
+        val insertPos = moovIdx + moovSize
+        System.arraycopy(bytes, 0, newBytes, 0, insertPos)
+        System.arraycopy(mvexBytes, 0, newBytes, insertPos, 40)
+        if (bytes.size > insertPos) {
+            System.arraycopy(bytes, insertPos, newBytes, insertPos + 40, bytes.size - insertPos)
+        }
+        
+        val newMoovSize = moovSize + 40
+        newBytes[moovIdx] = ((newMoovSize shr 24) and 0xFF).toByte()
+        newBytes[moovIdx+1] = ((newMoovSize shr 16) and 0xFF).toByte()
+        newBytes[moovIdx+2] = ((newMoovSize shr 8) and 0xFF).toByte()
+        newBytes[moovIdx+3] = (newMoovSize and 0xFF).toByte()
+        
+        android.util.Log.d("EventProvider", "LocalManifestServer: Injected mvex box into moov. Size increased from ${bytes.size} to ${newBytes.size}")
+        return newBytes
+    }
+
     fun start(): Int {
         if (serverSocket != null) return serverPort
         try {
@@ -195,6 +257,9 @@ object LocalManifestServer {
                                                  put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                                  if (ref.isNotBlank()) put("Referer", ref)
                                                  if (orig.isNotBlank()) put("Origin", orig)
+                                                 if (originalUrl.contains("secureswiftcontent.com", ignoreCase = true) || originalUrl.contains("bein", ignoreCase = true)) {
+                                                     put("X-Forwarded-For", "175.139.142.25")
+                                                 }
                                              }
                                          }
                                       
@@ -218,7 +283,10 @@ object LocalManifestServer {
                                        
                                        val clientOs = client.getOutputStream()
                                        if (isSuccess && bytes != null && bytes.isNotEmpty()) {
-                                           val modifiedBytes = stripAllPssh(bytes)
+                                           var modifiedBytes = stripAllPssh(bytes)
+                                           if (path.startsWith("/init_") || path.startsWith("/media_")) {
+                                               modifiedBytes = injectMvex(modifiedBytes)
+                                           }
                                            val headerString = "HTTP/1.1 200 OK\r\n" +
                                                               "Content-Type: video/mp4\r\n" +
                                                               "Content-Length: ${modifiedBytes.size}\r\n" +
@@ -322,7 +390,11 @@ object LocalManifestServer {
                                                
                                                // Paksa tipe MPD menjadi dynamic agar dideteksi sebagai Live (menghindari batasan durasi 30 menit / 1 jam)
                                                if (modifiedXml.contains("type=\"static\"", ignoreCase = true) || modifiedXml.contains("type='static'", ignoreCase = true)) {
-                                                   modifiedXml = modifiedXml.replace(Regex("""type\s*=\s*["']static["']""", RegexOption.IGNORE_CASE), """type="dynamic"""")
+                                                   val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply {
+                                                       timeZone = java.util.TimeZone.getTimeZone("UTC")
+                                                   }
+                                                   val currentTimeUtc = sdf.format(java.util.Date())
+                                                   modifiedXml = modifiedXml.replace(Regex("""type\s*=\s*["']static["']""", RegexOption.IGNORE_CASE), """type="dynamic" availabilityStartTime="$currentTimeUtc"""")
                                                }
                                                if (!modifiedXml.contains("minimumUpdatePeriod", ignoreCase = true)) {
                                                    modifiedXml = modifiedXml.replace(Regex("""<MPD"""), """<MPD minimumUpdatePeriod="PT2S"""")
@@ -344,9 +416,11 @@ object LocalManifestServer {
                                                }
                                               
                                               val finalUrl = response.url
+                                              android.util.Log.d("EventProvider", "LocalManifestServer original manifestUrl: $manifestUrl, response.url (finalUrl): $finalUrl")
                                               val queryParams = if (finalUrl.contains("?")) finalUrl.substringAfter("?") else ""
                                               val baseUrlString = if (finalUrl.contains("?")) finalUrl.substringBefore("?") else finalUrl
                                               val absoluteBaseUrl = baseUrlString.substringBeforeLast("/") + "/"
+                                              android.util.Log.d("EventProvider", "LocalManifestServer calculated absoluteBaseUrl: $absoluteBaseUrl")
                                               
                                                val manifestBaseUrl = Regex("""<BaseURL[^>]*>([^<]+)</BaseURL>""", RegexOption.IGNORE_CASE).find(modifiedXml)?.groupValues?.get(1)?.trim()
                                                
@@ -389,18 +463,23 @@ object LocalManifestServer {
                                                
                                                
                                                
-                                                    // Tulis ulang SegmentTemplate media agar menggunakan URL absolut ke CDN aslinya (Sesuai Aturan 2)
-                                                    modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
-                                                        val p1 = matchResult.groupValues[1]
-                                                        val absoluteMediaUrl = if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
-                                                            p1
-                                                        } else if (p1.startsWith("/")) {
-                                                            rootDomain + p1
-                                                        } else {
-                                                            baseToResolve + p1
-                                                        }
-                                                        """media="$absoluteMediaUrl""""
-                                                    }
+                                                     // Tulis ulang SegmentTemplate media agar diarahkan ke proxy lokal (agar kita dapat menyuntikkan mvex ke tiap media segment)
+                                                     modifiedXml = modifiedXml.replace(Regex("""media=["']([^"']+)["']""", RegexOption.IGNORE_CASE)) { matchResult ->
+                                                         val p1 = matchResult.groupValues[1]
+                                                         val absoluteMediaUrl = if (p1.startsWith("http://", ignoreCase = true) || p1.startsWith("https://", ignoreCase = true)) {
+                                                             p1
+                                                         } else if (p1.startsWith("/")) {
+                                                             rootDomain + p1
+                                                         } else {
+                                                             baseToResolve + p1
+                                                         }
+                                                         val encodedBase = java.net.URLEncoder.encode(baseToResolve, "UTF-8")
+                                                         val encodedParams = java.net.URLEncoder.encode(queryParams, "UTF-8")
+                                                         val encodedRef = java.net.URLEncoder.encode(refHeader, "UTF-8")
+                                                         val encodedOrigin = java.net.URLEncoder.encode(originHeader, "UTF-8")
+                                                         
+                                                         """media="http://127.0.0.1:$serverPort/media_$cleanId?rep=${'$'}RepresentationID${'$'}&amp;bw=${'$'}Bandwidth${'$'}&amp;base=$encodedBase&amp;path=$p1&amp;params=$encodedParams&amp;ref=$encodedRef&amp;orig=$encodedOrigin""""
+                                                     }
                                                  
                                                  // Tulis ulang SegmentTemplate initialization
                                                 
@@ -583,11 +662,22 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
 
     // Remap worker ID — harus sinkron dengan remap di resolveSingleChannel
     private fun remapWorkerIdForCheck(id: String): String {
+        var cleanId = id
+        val prefixes = listOf("xbein", "xtsn", "xvidx", "xdazn", "xfs", "xssc", "xone", "xvpl")
+        for (pref in prefixes) {
+            if (cleanId.startsWith(pref, ignoreCase = true)) {
+                cleanId = cleanId.substring(1)
+                break
+            }
+        }
+        if (cleanId.endsWith("myx", ignoreCase = true)) {
+            cleanId = cleanId.substring(0, cleanId.length - 1)
+        }
         return mapOf(
             "vpl6" to "tvrivp", "vpl8" to "tvri", "vpl7" to "vpl7", "tvri2" to "tvrivpxx",
             "one1" to "one_1", "one2" to "one_2",
             "dazn3es" to "dazn3_spain", "dazn1es" to "dazn1_spain", "dazn2es" to "dazn2_spain", "xssc2" to "ssc2"
-        )[id] ?: id
+        )[cleanId] ?: cleanId
     }
 
     // Dekripsi response dari bitmovin worker (AES-GCM)
@@ -618,11 +708,30 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
             val resolvedId = if (href.startsWith("go:")) href.substring(3) else channelId
             val mappedId = remapWorkerIdForCheck(resolvedId)
             val workerUrl = "${Xr3edEventTestProvider.WORKER_BASE}/?id=$mappedId&t=${System.currentTimeMillis()}"
-            val responseText = app.get(workerUrl, timeout = 8, headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")).text
+            val responseText = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                try {
+                    val cleanClient = okhttp3.OkHttpClient.Builder()
+                        .connectTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
+                        .readTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
+                        .build()
+                    val req = okhttp3.Request.Builder()
+                        .url(workerUrl)
+                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                        .build()
+                    cleanClient.newCall(req).execute().body?.string() ?: ""
+                } catch (e: Exception) { "" }
+            }
             if (responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) return false
             val decrypted = decryptWorkerPayload(responseText) ?: return false
-            val dashUrl = if (decrypted.has("dash")) decrypted.optString("dash") else decrypted.optString("hls")
+            var dashUrl = if (decrypted.has("dash")) decrypted.optString("dash") else decrypted.optString("hls")
             if (dashUrl.isNullOrBlank()) return false
+            
+            // Bersihkan URL AIV jika di-proxy oleh workers.dev / pages.dev
+            val aivRegex = Regex("""https://[^/]+\.(?:workers\.dev|pages\.dev)/[^/]+/((?:pdx-nitro|lhr-nitro)/.*)""", RegexOption.IGNORE_CASE)
+            val aivMatch = aivRegex.find(dashUrl)
+            if (aivMatch != null) {
+                dashUrl = "https://otte.cache.aiv-cdn.net/" + aivMatch.groupValues[1]
+            }
             
             // Layer 3 check: HTTP GET to verify stream accessibility
             val cleanUrl = dashUrl.split("|")[0].trim()
@@ -1343,20 +1452,54 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
                     "tvri2" -> "tvrivpxx"
                     "one1" -> "one_1"
                     "one2" -> "one_2"
-                    "dazn3es" -> "dazn3_spain"
-                    "dazn1es" -> "dazn1_spain"
-                    "dazn2es" -> "dazn2_spain"
+                    "dazn3es" -> "dazn3_spainx"
+                    "dazn1es" -> "dazn1_spainx"
+                    "dazn2es" -> "dazn2_spainx"
+                    "xdazn2es" -> "dazn2_spainx"
+                    "xbein1my" -> "bein1myx"
+                    "bein1my" -> "bein1myx"
+                    "bein2my" -> "bein2myx"
+                    "bein3my" -> "bein3myx"
                     "xssc2" -> "ssc2"
+                    "fox1mx" -> "fox1mx"
+                    "fox2mx" -> "fox2mx"
+                    "fox3mx" -> "fox3mx"
+                    "foxpremmx" -> "foxpremmx"
                     else -> idVal
                 }
                 
-                android.util.Log.d("EventProvider", "Resolving bitmovin id: $idVal")
+                var cleanId = idVal
+                val prefixes = listOf("xbein", "xtsn", "xvidx", "xdazn", "xfs", "xssc", "xone", "xvpl")
+                for (pref in prefixes) {
+                    if (cleanId.startsWith(pref, ignoreCase = true)) {
+                        cleanId = cleanId.substring(1)
+                        break
+                    }
+                }
+                if (cleanId.endsWith("myx", ignoreCase = true)) {
+                    cleanId = cleanId.substring(0, cleanId.length - 1)
+                }
+
+                android.util.Log.d("EventProvider", "Resolving bitmovin id: $cleanId")
                 
                 var successDrm = false
-                try {
-                    val workerUrl = "${Xr3edEventTestProvider.WORKER_BASE}/?id=$idVal&t=${System.currentTimeMillis()}"
-                    val responseText = app.get(workerUrl, timeout = 10, headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")).text
-                    if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) {
+                if (true) {
+                    try {
+                        val workerUrl = "${Xr3edEventTestProvider.WORKER_BASE}/?id=$cleanId&t=${System.currentTimeMillis()}"
+                        val responseText = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            try {
+                                val cleanClient = okhttp3.OkHttpClient.Builder()
+                                    .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                                    .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                                    .build()
+                                val req = okhttp3.Request.Builder()
+                                    .url(workerUrl)
+                                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                                    .build()
+                                cleanClient.newCall(req).execute().body?.string() ?: ""
+                            } catch (e: Exception) { "" }
+                        }
+                        if (!responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true) && !responseText.contains("live/media0", ignoreCase = true)) {
                         val responseJson = JSONObject(responseText.trim())
                         val ivB64 = responseJson.optString("iv")
                         val dataB64 = responseJson.optString("data")
@@ -1382,14 +1525,27 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
                             val decryptedBytes = cipher.doFinal(combinedCipher)
                             val decryptedText = String(decryptedBytes, Charsets.UTF_8)
                             val decryptedJson = JSONObject(decryptedText)
-                            val streamUrl = if (decryptedJson.has("dash")) decryptedJson.optString("dash") else decryptedJson.optString("hls")
+                            var streamUrl = if (decryptedJson.has("dash")) decryptedJson.optString("dash") else decryptedJson.optString("hls")
+                            
+                            // Bersihkan URL AIV jika di-proxy oleh workers.dev / pages.dev
+                            val aivRegex = Regex("""https://[^/]+\.(?:workers\.dev|pages\.dev)/[^/]+/((?:pdx-nitro|lhr-nitro)/.*)""", RegexOption.IGNORE_CASE)
+                            val aivMatch = aivRegex.find(streamUrl)
+                            if (aivMatch != null) {
+                                val cleanedUrl = "https://otte.cache.aiv-cdn.net/" + aivMatch.groupValues[1]
+                                android.util.Log.d("EventProvider", "Cleaned AIV URL from worker: original=$streamUrl -> cleaned=$cleanedUrl")
+                                streamUrl = cleanedUrl
+                            }
+                            
                             val drmStr = decryptedJson.optString("drm")
                              
                             if (!streamUrl.isNullOrBlank()) {
-                                val headersMap = HashMap<String, String>()
-                                headersMap["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                                
-                                val decodedStreamUrl = streamUrl.replace("%7C", "|").replace("%20", " ")
+                                 val headersMap = HashMap<String, String>()
+                                 headersMap["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                                 if (streamUrl.contains("secureswiftcontent.com", ignoreCase = true) || idVal.contains("bein", ignoreCase = true)) {
+                                     headersMap["X-Forwarded-For"] = "175.139.142.25"
+                                 }
+                                 
+                                 val decodedStreamUrl = streamUrl.replace("%7C", "|").replace("%20", " ")
                                 val partsUrl = decodedStreamUrl.split("|")
                                 if (partsUrl.size > 1) {
                                     val headerPart = partsUrl[1]
@@ -1566,6 +1722,7 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
                 } catch (e: Exception) {
                     android.util.Log.e("EventProvider", "Failed to decrypt bitmovin source", e)
                 }
+                }
                 
                 if (!successDrm) {
                     android.util.Log.d("EventProvider", "Bitmovin failed/not found. Fallback to NS Player resolver for: $idVal")
@@ -1626,6 +1783,9 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
                                     val userAgent = extractUserAgent(decryptedUrl, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                     val headersMap = HashMap<String, String>()
                                     headersMap["User-Agent"] = userAgent
+                                    if (cleanUrl.contains("secureswiftcontent.com", ignoreCase = true) || idVal.contains("bein", ignoreCase = true)) {
+                                        headersMap["X-Forwarded-For"] = "175.139.142.25"
+                                    }
                                     
                                     val parts = decodedUrlParam.split("|")
                                     if (parts.size > 1) {
