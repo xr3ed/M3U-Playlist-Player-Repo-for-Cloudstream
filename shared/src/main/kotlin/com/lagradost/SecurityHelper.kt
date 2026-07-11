@@ -388,8 +388,11 @@ private fun removeRepoAndPlugins(context: Context) {
 
 // Dynamically check for updates (only for older host APK versions without native cloner updater)
 fun checkForUpdates(context: Context) {
-    if (isUpdateChecked) return
-    isUpdateChecked = true
+    if (System.getProperty("com.xr3ed.update_checked") == "true") {
+        android.util.Log.d("SecurityHelper", "Update check already handled by another plugin.")
+        return
+    }
+    System.setProperty("com.xr3ed.update_checked", "true")
 
     var updateJsonUrl = ""
     var cloneBuildTime = 0L
