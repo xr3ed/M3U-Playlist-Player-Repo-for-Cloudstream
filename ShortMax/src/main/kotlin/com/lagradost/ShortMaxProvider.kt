@@ -299,7 +299,7 @@ class ShortMaxProvider : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         fun isDubOrIndo(title: String): Boolean {
             val titleLower = title.lowercase()
-            return titleLower.contains("dub") || titleLower.contains("indo") || titleLower.contains("sulih")
+            return titleLower.contains("dub") || titleLower.contains("indo") || titleLower.contains("sulih") || titleLower.contains("juluk")
         }
 
         if (request.data == "dubindo") {

@@ -270,9 +270,8 @@ class CloudflareWebViewDialog(
                         style = document.createElement('style');
                         style.id = 'cf-custom-style';
                         style.innerHTML = ' \
-                            html, body { background-color: #151624 !important; color: #151624 !important; } \
-                            h1, h2, h3, p, div, span, a { color: #151624 !important; text-shadow: none !important; } \
-                            #logo, .logo, #zone-name, .zone-name, img { display: none !important; } \
+                            * { background-color: #151624 !important; color: #151624 !important; border-color: #151624 !important; box-shadow: none !important; text-shadow: none !important; } \
+                            iframe { background-color: transparent !important; } \
                         ';
                         document.head.appendChild(style);
                     }
@@ -288,15 +287,14 @@ class CloudflareWebViewDialog(
                     return
                 }
 
-                // If not solved yet, make webview visible for CAPTCHA interaction!
-                webView?.visibility = View.VISIBLE
-
                 val title = view?.title ?: ""
                 Log.d(TAG, "onPageFinished  title='$title'  url=$url")
 
                 if (isChallengeTitle(title)) {
+                    webView?.visibility = View.VISIBLE
                     updateStatus("👉 Silakan ketuk kotak \"Verifikasi bahwa Anda adalah manusia\" di bawah.")
                 } else {
+                    webView?.visibility = View.GONE
                     updateStatus("⏳ Menunggu konfirmasi keamanan dari server...")
                     CookieManager.getInstance().flush()
 
