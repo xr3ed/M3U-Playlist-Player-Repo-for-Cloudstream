@@ -480,7 +480,7 @@ fun checkForUpdates(context: Context) {
         }
     }
 
-    val finalUrl = updateJsonUrl
+    val finalUrl = if (updateJsonUrl.contains("?")) "$updateJsonUrl&t=${System.currentTimeMillis()}" else "$updateJsonUrl?t=${System.currentTimeMillis()}"
     val finalLocalBuildTime = cloneBuildTime
 
     Thread {
