@@ -456,23 +456,6 @@ fun checkForUpdates(context: Context) {
     }
     System.setProperty("com.xr3ed.update_checked", "true")
 
-    // Auto Clean Cache APK if update successful
-    try {
-        val currentCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
-        val prefs = context.getSharedPreferences("plugin_updater_prefs", Context.MODE_PRIVATE)
-        val cachedCode = prefs.getInt("downloaded_version_code", -1)
-        if (cachedCode > 0 && currentCode >= cachedCode) {
-            val apkFile = File(context.externalCacheDir, "update.apk")
-            if (apkFile.exists()) {
-                apkFile.delete()
-                android.util.Log.d("SecurityHelper", "Cleaned up cached update.apk since app is updated.")
-            }
-            prefs.edit().remove("downloaded_version_code").remove("downloaded_build_time").apply()
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
     var updateJsonUrl = ""
     var cloneBuildTime = 0L
     var isNewClonerVersion = false
@@ -498,6 +481,32 @@ fun checkForUpdates(context: Context) {
         }
     } catch (e: Exception) {
         android.util.Log.d("SecurityHelper", "cloner_config.txt not found. Running as legacy fallback.")
+    }
+
+    // Auto Clean Cache APK if update successful
+    try {
+        val currentCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+        val prefs = context.getSharedPreferences("plugin_updater_prefs", Context.MODE_PRIVATE)
+        val cachedCode = prefs.getInt("downloaded_version_code", -1)
+        val cachedBuildTime = prefs.getLong("downloaded_build_time", -1L)
+        
+        var isUpdated = false
+        if (cachedBuildTime > 0 && cloneBuildTime >= cachedBuildTime) {
+            isUpdated = true
+        } else if (cachedCode > 0 && currentCode > cachedCode) {
+            isUpdated = true
+        }
+        
+        if (isUpdated) {
+            val apkFile = File(context.externalCacheDir, "update.apk")
+            if (apkFile.exists()) {
+                apkFile.delete()
+                android.util.Log.d("SecurityHelper", "Cleaned up cached update.apk since app is updated.")
+            }
+            prefs.edit().remove("downloaded_version_code").remove("downloaded_build_time").apply()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 
     // Disable host app's native updater to let plugin handle it with caching and UX optimizations
