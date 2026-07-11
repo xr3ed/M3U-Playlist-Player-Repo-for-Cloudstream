@@ -1,0 +1,50 @@
+{
+  "bookId": "42000011249",
+  "bookName": "Janji Setia Di Negeri Salju",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011249/42000011249.jpg?t=1778139999832",
+  "chapterCount": 65,
+  "introduction": "Zhang Xuan, pangeran kedua Daqian, ditakuti dan dijebak, dan dipaksa menikahi Beiliang. Dalam perjalanan, dia diselamatkan oleh Putri Qin Yunshu, dan keduanya membentuk aliansi. Zhang Xuan menyelesaikan banyak krisis, mendapatkan kepercayaan dan dukungan masyarakat, dan akhirnya membantu Qin Yunshu naik takhta. Keduanya bersama-sama memerintah negara dan menjadikan negara damai dan tenteram.",
+  "tags": [
+    "Balas Dendam",
+    "Bangsawan",
+    "Cinta Paksaan",
+    "Takdir Cinta",
+    "Sejarah"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1327,
+      "tagName": "Bangsawan",
+      "tagEnName": "Royalty"
+    },
+    {
+      "tagId": 1661,
+      "tagName": "Cinta Paksaan",
+      "tagEnName": "Forced Love"
+    },
+    {
+      "tagId": 1663,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    },
+    {
+      "tagId": 1319,
+      "tagName": "Sejarah",
+      "tagEnName": "Historical"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-08 14:19:11",
+  "inLibrary": false
+}

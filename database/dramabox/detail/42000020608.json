@@ -1,0 +1,57 @@
+{
+  "bookId": "42000020608",
+  "bookName": "Balas Dendam Sang Bapak Rumah Tangga",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020608/42000020608.jpg?t=1783586976237",
+  "chapterCount": 68,
+  "introduction": "Di hari jadi pernikahan ke-20, istri dan putra dari Rangga pergike luar negeri untuk merayakan ulang tahun pria lain yang adalah cinta pertama sang istri. Ketika mereka diculik, ia membawa uang tebusan namun dipaksa tinggal sebagai sandera pengganti agar pria lain itu bisa bebas. Setelah menunggu tiga tahun untuk diselamatkan, ia pulang ke rumah dan mendapati putranya memanggil pria lain \"Ayah\", serta istrinya terus membiarkan dia disakiti. ",
+  "tags": [
+    "Balas Dendam",
+    "Keadilan",
+    "Serangan Balik",
+    "Modern",
+    "Pria Dominan",
+    "Perselingkuhan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 10037,
+      "tagName": "Keadilan",
+      "tagEnName": "Justice Served"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    },
+    {
+      "tagId": 1341,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1783648800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-10 10:00:01",
+  "inLibrary": false
+}

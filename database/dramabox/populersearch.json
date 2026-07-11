@@ -52,73 +52,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "23.1K",
+      "hotCode": "34.2K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783051200000,
     "shelfTime": "2026-07-03 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019332",
-    "bookName": "Menjadi Kekasih Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019332/42000019332.jpg?t=1782891332485",
-    "chapterCount": 35,
-    "introduction": "Aleya terlahir kembali sebelum takdir tragisnya terjadi. Dikhianati saudari dan tunangannya hingga tewas di Lubang Naga pada kehidupan sebelumnya, kini Aleya bertekad mengubah nasibnya. Dia beralih pada Nadan, leluhur naga yang tersegel, dan mengandung sembilan pewaris naga.",
-    "tags": [
-      "Balas Dendam",
-      "Terlahir Kembali",
-      "Intrik Keluarga",
-      "Penebusan",
-      "Kehamilan",
-      "Kekuatan Khusus"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1405,
-        "tagName": "Terlahir Kembali",
-        "tagEnName": "Rebirth"
-      },
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1641,
-        "tagName": "Kehamilan",
-        "tagEnName": "Pregnancy"
-      },
-      {
-        "tagId": 1371,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Nadan,  Aleya",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "16.4K",
-      "sort": 2
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782895539000,
-    "shelfTime": "2026-07-01 16:45:39",
     "inLibrary": false
   },
   {
@@ -174,8 +113,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "15.2K",
-      "sort": 3
+      "hotCode": "18.6K",
+      "sort": 2
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1764052944000,
@@ -183,64 +122,64 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000018961",
-    "bookName": "Aku Merawat Anak Selingkuhan Suamiku (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018961/42000018961.jpg?t=1782700514161",
-    "chapterCount": 60,
-    "introduction": "Delapan tahun lalu, Mirae menyelamatkan Woojin hingga kehilangan kesuburannya. Demi cinta, ia menyembunyikan pengorbanan itu dan statusnya sebagai pewaris Grup Giwon. Selama tujuh tahun, ia merawat Jian dengan kasih sayang. Namun kebenaran terbongkar: pernikahannya palsu, Jian adalah anak Woojin dan selingkuhannya, Chaewon, yang masih dilindungi Woojin karena dikira penyelamatnya.",
+    "bookId": "42000019332",
+    "bookName": "Menjadi Kekasih Naga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019332/42000019332.jpg?t=1782891332485",
+    "chapterCount": 35,
+    "introduction": "Aleya terlahir kembali sebelum takdir tragisnya terjadi. Dikhianati saudari dan tunangannya hingga tewas di Lubang Naga pada kehidupan sebelumnya, kini Aleya bertekad mengubah nasibnya. Dia beralih pada Nadan, leluhur naga yang tersegel, dan mengandung sembilan pewaris naga.",
     "tags": [
-      "Perselingkuhan",
-      "Putri Kaya",
-      "Modern",
-      "Wanita Kuat",
-      "Penyesalan",
-      "Balas Dendam"
+      "Balas Dendam",
+      "Terlahir Kembali",
+      "Intrik Keluarga",
+      "Penebusan",
+      "Kehamilan",
+      "Kekuatan Khusus"
     ],
     "tagV3s": [
-      {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1654,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
-      },
       {
         "tagId": 1394,
         "tagName": "Balas Dendam",
         "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1405,
+        "tagName": "Terlahir Kembali",
+        "tagEnName": "Rebirth"
+      },
+      {
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
+      },
+      {
+        "tagId": 1459,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      },
+      {
+        "tagId": 1641,
+        "tagName": "Kehamilan",
+        "tagEnName": "Pregnancy"
+      },
+      {
+        "tagId": 1371,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Kwon Woo-jin,  Song Mi-rae",
+    "protagonist": "Nadan,  Aleya",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "14.9K",
-      "sort": 4
+      "hotCode": "17.3K",
+      "sort": 3
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782957600000,
-    "shelfTime": "2026-07-02 10:00:00",
+    "bookShelfTime": 1782895539000,
+    "shelfTime": "2026-07-01 16:45:39",
     "inLibrary": false
   },
   {
@@ -296,8 +235,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "14.8K",
-      "sort": 5
+      "hotCode": "15.7K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782502499000,
@@ -305,49 +244,104 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000012810",
-    "bookName": "Diantar oleh Takdir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012810/42000012810.jpg?t=1779263881245",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "bookId": "42000018961",
+    "bookName": "Aku Merawat Anak Selingkuhan Suamiku (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018961/42000018961.jpg?t=1782700514161",
+    "chapterCount": 60,
+    "introduction": "Delapan tahun lalu, Mirae menyelamatkan Woojin hingga kehilangan kesuburannya. Demi cinta, ia menyembunyikan pengorbanan itu dan statusnya sebagai pewaris Grup Giwon. Selama tujuh tahun, ia merawat Jian dengan kasih sayang. Namun kebenaran terbongkar: pernikahannya palsu, Jian adalah anak Woojin dan selingkuhannya, Chaewon, yang masih dilindungi Woojin karena dikira penyelamatnya.",
     "tags": [
-      "Pembalikan Identitas",
-      "Cinta Setelah Menikah",
-      "Romansa",
-      "Balas Dendam",
-      "Serangan Balik",
-      "Perselingkuhan"
+      "Perselingkuhan",
+      "Putri Kaya",
+      "Modern",
+      "Wanita Kuat",
+      "Penyesalan",
+      "Balas Dendam"
     ],
     "tagV3s": [
       {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
       },
       {
-        "tagId": 1393,
-        "tagName": "Cinta Setelah Menikah",
-        "tagEnName": "Love After Marriage"
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
       },
       {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1654,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Kwon Woo-jin,  Song Mi-rae",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "15.1K",
+      "sort": 5
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782957600000,
+    "shelfTime": "2026-07-02 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017520",
+    "bookName": "Diantar oleh Takdir (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
+    "chapterCount": 66,
+    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Ilmuwan",
+      "Modern",
+      "Wanita Kuat"
+    ],
+    "tagV3s": [
       {
         "tagId": 1394,
         "tagName": "Balas Dendam",
         "tagEnName": "Revenge"
       },
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
+        "tagId": 10033,
+        "tagName": "Ilmuwan",
+        "tagEnName": "Researcher"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
       }
     ],
     "isEntry": 0,
@@ -357,73 +351,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "12.6K",
+      "hotCode": "14.2K",
       "sort": 6
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1779523200000,
-    "shelfTime": "2026-05-23 16:00:00",
+    "bookShelfTime": 1781798400000,
+    "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
   },
   {
-    "bookId": "42000019623",
-    "bookName": "Koki Legendaris",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019623/42000019623.jpg?t=1782983726059",
-    "chapterCount": 57,
-    "introduction": "Helen, juru masak istana legendaris yang dijuluki Raja sebagai Dewi Kuliner, meninggal tepat sebelum menerima penghargaan tertinggi. Terlahir kembali 100 tahun kemudian, dia menjadi asisten dapur di restoran ternama dan berjuang menyelamatkan restoran itu dari pengkhianatan serta kehancuran.",
+    "bookId": "42000019700",
+    "bookName": "Raja Mecha Terakhir",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019700/42000019700.jpg?t=1783043760736",
+    "chapterCount": 58,
+    "introduction": "Hancur karena kematian orang tuanya, Coki Tanu, sang Raja Mech, menyamar sebagai petugas kebersihan setelah diselamatkan oleh Freya. Namun saat Freya, wanita yang diam-diam dicintainya, dikhianati dan dipaksa mengikuti duel mech mematikan, Colt harus mengungkap identitas aslinya. Dengan membuka Neural Sync legendaris 100%, dia mengendalikan Tempest untuk menghancurkan musuh-musuhnya dan menyelamatkan dunia dari kawanan alien yang mengancam kepunahan.",
     "tags": [
-      "Serangan Balik",
-      "Terlahir Kembali",
-      "Wanita Karier",
-      "Wanita Kuat",
       "Pembalikan Identitas",
-      "Bangkitnya Orang Biasa"
+      "Balas Dendam",
+      "Penebusan",
+      "Kekuatan Khusus",
+      "Sci-Fi",
+      "Pria Dominan"
     ],
     "tagV3s": [
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1405,
-        "tagName": "Terlahir Kembali",
-        "tagEnName": "Rebirth"
-      },
-      {
-        "tagId": 1375,
-        "tagName": "Wanita Karier",
-        "tagEnName": "Career Woman"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1395,
+        "tagId": 1338,
         "tagName": "Pembalikan Identitas",
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1398,
-        "tagName": "Bangkitnya Orang Biasa",
-        "tagEnName": "Underdog Story"
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1478,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      },
+      {
+        "tagId": 1320,
+        "tagName": "Sci-Fi",
+        "tagEnName": "Sci-Fi"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Theo Gunawan,  Helen Candra",
+    "protagonist": "Coki Tanu,  Freya Rusli",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "7.6K",
+      "hotCode": "11.9K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783045344000,
-    "shelfTime": "2026-07-03 10:22:24",
+    "bookShelfTime": 1783047144000,
+    "shelfTime": "2026-07-03 10:52:24",
     "inLibrary": false
   },
   {
@@ -479,7 +473,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "6.6K",
+      "hotCode": "9K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -540,7 +534,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "6K",
+      "hotCode": "7.9K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",
@@ -549,64 +543,64 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000017376",
-    "bookName": "Musim Panas Terakhir",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017376/42000017376.jpg?t=1781684491601",
-    "chapterCount": 73,
-    "introduction": "Evan meninggalkan Sella demi membalas budi kepada keluarga Joana. Tidak lama kemudian, Sella kehilangan kedua orang tuanya dan divonis mengidap kanker stadium akhir. Setelah memutuskan untuk mengakhiri hidupnya melalui eutanasia, dia kembali dipertemukan dengan Evan dan Joana. Bahkan, Joana meminta Sella menjadi pendamping di pernikahannya. Tidak ada yang tahu bahwa pada hari mereka mengucap janji suci, Sella justru akan mengucapkan selamat tinggal pada dunia.",
+    "bookId": "42000012097",
+    "bookName": "Bayi Ajaib Pembawa Harta (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012097/42000012097.jpg?t=1778743523068",
+    "chapterCount": 71,
+    "introduction": "Dewa Kekayaan bereinkarnasi sebagai Angel, bayi dalam kandungan Gisel yang dipaksa cerai oleh Evan. Dari rahim, Angel membimbing ibunya berinvestasi hingga meraih kekayaan. Di lelang, mereka menghadapi Evan dan membuka rahasia di depan publik. Ibu dan anak bersatu, membalas hinaan, dan bertekad menjadi orang terkaya.",
     "tags": [
-      "Mengejar Istri",
-      "Penebusan",
-      "Gadis Naif",
-      "Kesempatan Kedua",
-      "Modern",
-      "Romansa"
+      "Bayi Lucu",
+      "Wanita Kuat",
+      "Serangan Balik",
+      "Pembalikan Identitas",
+      "Bangkitnya Orang Biasa",
+      "Penebusan"
     ],
     "tagV3s": [
       {
-        "tagId": 1401,
-        "tagName": "Mengejar Istri",
-        "tagEnName": "Winning Her Back"
+        "tagId": 1460,
+        "tagName": "Bayi Lucu",
+        "tagEnName": "Genius Babies"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1398,
+        "tagName": "Bangkitnya Orang Biasa",
+        "tagEnName": "Underdog Story"
       },
       {
         "tagId": 1459,
         "tagName": "Penebusan",
         "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1374,
-        "tagName": "Gadis Naif",
-        "tagEnName": "Innocent Damsel"
-      },
-      {
-        "tagId": 1392,
-        "tagName": "Kesempatan Kedua",
-        "tagEnName": "Second Chance"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": " Sella Fadea,  Evan Yanda,  Joana Karsa ",
+    "protagonist": "Gisel Ongko,  Evan Wijaya",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "5.7K",
+      "hotCode": "7.2K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782705600000,
-    "shelfTime": "2026-06-29 12:00:00",
+    "bookShelfTime": 1778750374000,
+    "shelfTime": "2026-05-14 17:19:34",
     "inLibrary": false
   }
 ]

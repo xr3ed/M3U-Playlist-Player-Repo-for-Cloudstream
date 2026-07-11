@@ -1,0 +1,36 @@
+{
+  "bookId": "42000020118",
+  "bookName": "Putri Laut Kembali Tanpamu",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020118/42000020118.jpg?t=1783318216749",
+  "chapterCount": 46,
+  "introduction": "Demi menikahi pria yang dicintainya, Mina, putri Dewa Laut, rela melepaskan keilahiannya. Namun setelah dikhianati, Mina memutuskan ikatan mereka dan kembali merebut takhtanya. Kini, saat kekuatannya bangkit kembali, penyesalan sang suami tidak lagi mampu meluluhkan hatinya.",
+  "tags": [
+    "Balas Dendam",
+    "Melawan Balik",
+    "Kebangkitan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 818,
+      "tagName": "Balas Dendam"
+    },
+    {
+      "tagId": 822,
+      "tagName": "Melawan Balik"
+    },
+    {
+      "tagId": 825,
+      "tagName": "Kebangkitan"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1783735200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-11 10:00:00",
+  "inLibrary": false
+}

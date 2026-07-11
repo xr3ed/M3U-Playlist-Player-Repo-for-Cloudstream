@@ -1,0 +1,57 @@
+{
+  "bookId": "42000017404",
+  "bookName": "Menjadi Juara Ujian Nasional",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017404/42000017404.jpg?t=1781689252571",
+  "chapterCount": 60,
+  "introduction": "Calya Firdaus dijebak dan diracuni oleh putri angkat keluarga, Yenny Firdaus. Saat keluarganya memihak Yenny dan memutuskan hubungan dengannya, Calya bangkit dengan meraih nilai tertinggi ujian nasional se-Indonesia. Hendra Gunawan kemudian hadir melindunginya. Di jamuan peraih nilai tertinggi, kejahatan Yenny terbongkar dan identitas Hendra terungkap. Keluarga Firdaus memohon maaf, tetapi Calya memilih pergi, menjadi Calya Gunawan, dan memulai hidup baru.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "Bangkitnya Orang Biasa",
+    "Balas Dendam",
+    "Modern",
+    "Wanita Kuat"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1398,
+      "tagName": "Bangkitnya Orang Biasa",
+      "tagEnName": "Underdog Story"
+    },
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782100800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-22 12:00:00",
+  "inLibrary": false
+}

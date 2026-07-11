@@ -50,7 +50,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -63,12 +63,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "15.2K",
-      "recCopy": "Pencarian TOP 3",
-      "sort": 3
+      "hotCode": "18.6K",
+      "recCopy": "Pencarian TOP 2",
+      "sort": 2
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066902\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "145M",
     "bookShelfTime": 1764052944000,
     "shelfTime": "2025-11-25 14:42:24",
@@ -125,7 +125,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -138,13 +138,13 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "429K",
+      "hotCode": "443K",
       "recCopy": "Sedang Tren TOP 1",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066902\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "714K",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "831K",
     "bookShelfTime": 1782895539000,
     "shelfTime": "2026-07-01 16:45:39",
     "inLibrary": false
@@ -200,14 +200,14 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066902\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "7.2M",
     "bookShelfTime": 1779501600000,
     "shelfTime": "2026-05-23 10:00:00",
@@ -264,7 +264,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -276,7 +276,7 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066903\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "10.3M",
     "bookShelfTime": 1776225600000,
     "shelfTime": "2026-04-15 12:00:00",
@@ -333,7 +333,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -346,13 +346,13 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "158K",
-      "recCopy": "Sedang Tren TOP 4",
-      "sort": 4
+      "hotCode": "180K",
+      "recCopy": "Sedang Tren TOP 2",
+      "sort": 2
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066903\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "2.6M",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "2.7M",
     "bookShelfTime": 1782502499000,
     "shelfTime": "2026-06-27 03:34:59",
     "inLibrary": false
@@ -408,7 +408,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -421,61 +421,61 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "117K",
-      "recCopy": "Sedang Tren TOP 8",
-      "sort": 8
+      "hotCode": "145K",
+      "recCopy": "Sedang Tren TOP 6",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066903\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.5M",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.6M",
     "bookShelfTime": 1782280257000,
     "shelfTime": "2026-06-24 13:50:57",
     "inLibrary": false
   },
   {
-    "bookId": "42000018260",
-    "bookName": "Bos Besar Menyamar",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018260/42000018260.jpg?t=1782210586649",
-    "chapterCount": 81,
-    "introduction": "Diremehkan sebagai sopir miskin, Etan terus menerima hinaan tanpa membalas. Namun saat Risa berada dalam bahaya akibat perebutan formula obat kanker revolusioner, identitas aslinya akhirnya terungkap. Ternyata pria yang selama ini dianggap remeh adalah penguasa organisasi paling ditakuti di dunia. Sejak hari itu, para konglomerat, mafia, dan master bela diri hanya punya dua pilihan, tunduk atau hancur.",
+    "bookId": "42000018258",
+    "bookName": "Tak Bisa Kabur dari Raja Naga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
+    "chapterCount": 52,
+    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
     "tags": [
       "Pembalikan Identitas",
-      "Serangan Balik",
-      "Keadilan",
-      "Kekuatan Khusus",
-      "Modern",
-      "Pria Dominan"
+      "Cinta Paksaan",
+      "Takdir Cinta",
+      "Romansa",
+      "BG",
+      "Gairah"
     ],
     "tagV3s": [
       {
-        "tagId": 1338,
+        "tagId": 1395,
         "tagName": "Pembalikan Identitas",
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1340,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
+        "tagId": 1378,
+        "tagName": "Cinta Paksaan",
+        "tagEnName": "Forced Love"
       },
       {
-        "tagId": 10037,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
+        "tagId": 1382,
+        "tagName": "Takdir Cinta",
+        "tagEnName": "Destined Love"
       },
       {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
       },
       {
-        "tagId": 1318,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
+        "tagId": 1358,
+        "tagName": "BG",
+        "tagEnName": "BG"
       },
       {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
+        "tagId": 10047,
+        "tagName": "Gairah",
+        "tagEnName": "Steamy"
       }
     ],
     "bookSource": {
@@ -483,7 +483,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -496,61 +496,61 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.8K",
-      "recCopy": "Terbaru TOP 5",
-      "sort": 5
+      "hotCode": "8K",
+      "recCopy": "Terbaru TOP 2",
+      "sort": 2
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066903\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "188K",
-    "bookShelfTime": 1783396800000,
-    "shelfTime": "2026-07-07 12:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "407K",
+    "bookShelfTime": 1783303200000,
+    "shelfTime": "2026-07-06 10:00:00",
     "inLibrary": false
   },
   {
-    "bookId": "42000018935",
-    "bookName": "Bukan Aku yang Kamu Pilih (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018935/42000018935.jpg?t=1782698035729",
-    "chapterCount": 61,
-    "introduction": "Leo, Saskia, dan Nova adalah sahabat masa kecil. Awalnya, demi kedua sahabatnya itu, Leo melepaskan kesempatan untuk melanjutkan studi ke luar negeri dan memilih kuliah di universitas yang sama. Namun, setelah Gavin muncul, kedua sahabatnya itu sering mengabaikan Leo. Lambat laun, Leo menjadi patah hati dan memutuskan untuk melanjutkan studi ke luar negeri demi mengejar mimpinya. Setelah Leo pergi, kedua sahabatnya itu menyesal dan berusaha keras mengejarnya kembali.",
+    "bookId": "42000019702",
+    "bookName": "Aku Raja Tersembunyi",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019702/42000019702.jpg?t=1783044085787",
+    "chapterCount": 63,
+    "introduction": "Di penerbangan menuju Kota Akios, Kris bertemu Hannah, pewaris Andian Tekno. Kris awalnya menolak pernikahan palsu yang ditawarkan Hannah. Setelah ditinggalkan tunangannya, Kris pun mengungkapkan identitas aslinya sebagai CEO Grup Titanio. Dia memutuskan memulai lembaran baru bersama Hannah.",
     "tags": [
+      "Pembalikan Identitas",
+      "Serangan Balik",
       "Penyesalan",
-      "Mengejar Suami",
-      "Pelajar",
-      "Cinta Segitiga",
-      "Modern",
-      "Balas Dendam"
+      "Putri Kaya",
+      "Cinta Setelah Menikah",
+      "Modern"
     ],
     "tagV3s": [
       {
-        "tagId": 1658,
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1654,
         "tagName": "Penyesalan",
         "tagEnName": "All-Too-Late"
       },
       {
-        "tagId": 1681,
-        "tagName": "Mengejar Suami",
-        "tagEnName": "Winning Him Back"
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
       },
       {
-        "tagId": 1467,
-        "tagName": "Pelajar",
-        "tagEnName": "Student"
+        "tagId": 1393,
+        "tagName": "Cinta Setelah Menikah",
+        "tagEnName": "Love After Marriage"
       },
       {
-        "tagId": 1413,
-        "tagName": "Cinta Segitiga",
-        "tagEnName": "Love Triangle"
-      },
-      {
-        "tagId": 1318,
+        "tagId": 1352,
         "tagName": "Modern",
         "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
       }
     ],
     "bookSource": {
@@ -558,28 +558,17 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "23.1K",
-      "recCopy": "Pencarian TOP 1",
-      "sort": 1
-    },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066903\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "288K",
-    "bookShelfTime": 1783051200000,
-    "shelfTime": "2026-07-03 12:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850907\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "404K",
+    "bookShelfTime": 1783047239000,
+    "shelfTime": "2026-07-03 10:53:59",
     "inLibrary": false
   },
   {
@@ -627,7 +616,7 @@
       "expId": "bigdata_rec",
       "strategyId": "gowl8eq1",
       "strategyName": "",
-      "log_id": "a3afac0e1489e1c67a51b625f73166cb"
+      "log_id": "6fdb0195fc8a0dda274b584917a55ddb"
     },
     "isEntry": 0,
     "index": 0,
@@ -639,13 +628,13 @@
     "dataFrom": "算法_推荐剧",
     "cardType": 1,
     "rankVo": {
-      "rankType": 1,
-      "hotCode": "119K",
-      "recCopy": "Sedang Tren TOP 7",
-      "sort": 7
+      "rankType": 2,
+      "hotCode": "14.2K",
+      "recCopy": "Pencarian TOP 6",
+      "sort": 6
     },
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"a3afac0e1489e1c67a51b625f73166cb\",\"ret_time\":\"1783735066903\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"6fdb0195fc8a0dda274b584917a55ddb\",\"ret_time\":\"1783755850908\",\"scene_id\":\"ovs_vd_cnxh_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "3.8M",
     "bookShelfTime": 1781798400000,
     "shelfTime": "2026-06-19 00:00:00",
