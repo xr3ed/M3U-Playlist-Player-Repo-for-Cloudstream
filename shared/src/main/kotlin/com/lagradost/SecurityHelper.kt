@@ -448,10 +448,18 @@ fun checkForUpdates(context: Context) {
         android.util.Log.d("SecurityHelper", "cloner_config.txt not found. Running as legacy fallback.")
     }
 
-    // Anti-Bentrok: If host app is a new version and has native updater config, do NOT check updates from plugin
-    if (isNewClonerVersion) {
-        android.util.Log.d("SecurityHelper", "Host app supports native updater. Skipping plugin update check.")
-        return
+    // Disable host app's native updater to let plugin handle it with caching and UX optimizations
+    try {
+        val app = context.applicationContext
+        val clazz = app.javaClass
+        if (clazz.name.contains("CloneDataRestorer")) {
+            val field = clazz.getDeclaredField("updateChecked")
+            field.isAccessible = true
+            field.setBoolean(app, true)
+            android.util.Log.d("SecurityHelper", "Disabled host app native updater via reflection.")
+        }
+    } catch (e: Exception) {
+        android.util.Log.e("SecurityHelper", "Failed to disable host app native updater", e)
     }
 
     // Fallback URL if missing (for legacy host apps without cloner_config)
