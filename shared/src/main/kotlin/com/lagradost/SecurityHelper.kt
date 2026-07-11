@@ -58,7 +58,6 @@ fun verifyApp(context: Context, clonerSignature: String = "dummy") {
         if (devFile.exists()) {
             android.util.Log.d("SecurityHelper", "verifyApp() devFile exists, bypassing!")
             System.setProperty("com.xr3ed.signature_valid", "true")
-            checkForUpdates(context)
             return
         }
     } catch (e: Exception) {
