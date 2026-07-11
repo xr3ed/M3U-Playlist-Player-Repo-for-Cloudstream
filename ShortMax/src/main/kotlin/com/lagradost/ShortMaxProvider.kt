@@ -190,67 +190,12 @@ class ShortMaxProvider : MainAPI() {
         }
     }
 
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
-        if (request.data == "dubindo") {
-            val rawSearch = try {
-                requestWithCf("$mainUrl/api/shortmax/search", mapOf("query" to "dub"))
-            } catch (e: Exception) {
-                showToast("Gagal memuat kategori Dub Indo. Server sedang gangguan.")
-                return null
-            }
-
-            val decrypted = try {
-                val json = JSONObject(rawSearch)
-                decryptCryptoJS(json.getString("data"))
-            } catch (e: Exception) {
-                showToast("Gagal memuat kategori Dub Indo. Server sedang gangguan.")
-                return null
-            }
-
-            val json = JSONObject(decrypted)
-            val results = json.optJSONArray("results") ?: JSONArray()
-
-            val list = mutableListOf<SearchResponse>()
-            for (i in 0 until results.length()) {
-                val item = results.optJSONObject(i) ?: continue
-                val id = item.optString("shortPlayId").takeIf { it.isNotEmpty() }
-                    ?: item.optString("id").takeIf { it.isNotEmpty() }
-                    ?: continue
-                val title = item.optString("title").takeIf { it.isNotEmpty() }
-                    ?: item.optString("name").takeIf { it.isNotEmpty() }
-                    ?: "Drama $id"
-                val cover = item.optString("cover").takeIf { it.isNotEmpty() }
-                    ?: item.optString("image").takeIf { it.isNotEmpty() }
-                    ?: ""
-
-                val titleLower = title.lowercase()
-                if (titleLower.contains("dub") || titleLower.contains("indo") || titleLower.contains("sulih")) {
-                    list.add(
-                        newTvSeriesSearchResponse(
-                            name = title,
-                            url = id,
-                            type = TvType.TvSeries
-                        ) {
-                            this.posterUrl = cover
-                        }
-                    )
-                }
-            }
-
-            return newHomePageResponse(request.name, list, hasNext = false)
-        }
-
-        val path = if (request.data == "foryou") {
-            "/api/shortmax/foryou?page=$page"
-        } else {
-            "/api/shortmax/rekomendasi"
-        }
-
+    private suspend fun fetchForyou(page: Int): List<SearchResponse> {
+        val path = "/api/shortmax/foryou?page=$page"
         val rawHome = try {
             requestWithCf("$mainUrl$path")
         } catch (e: Exception) {
-            showToast("Server sedang gangguan. Silakan coba lagi nanti.")
-            return null
+            return emptyList()
         }
 
         val decrypted = try {
@@ -261,26 +206,68 @@ class ShortMaxProvider : MainAPI() {
                 throw Exception("Respon server tidak valid.")
             }
         } catch (e: Exception) {
-            showToast("Server sedang gangguan. Silakan coba lagi nanti.")
-            return null
+            return emptyList()
         }
 
-        val results = if (request.data == "foryou") {
+        val jsonObj = JSONObject(decrypted)
+        val results = jsonObj.optJSONArray("data")
+            ?: jsonObj.optJSONArray("results")
+            ?: jsonObj.optJSONArray("list")
+            ?: JSONArray()
+
+        val list = mutableListOf<SearchResponse>()
+        for (i in 0 until results.length()) {
+            val item = results.optJSONObject(i) ?: continue
+            val id = item.optString("shortPlayId").takeIf { it.isNotEmpty() }
+                ?: item.optString("id").takeIf { it.isNotEmpty() }
+                ?: continue
+            val title = item.optString("title").takeIf { it.isNotEmpty() }
+                ?: item.optString("name").takeIf { it.isNotEmpty() }
+                ?: "Drama $id"
+            val cover = item.optString("cover").takeIf { it.isNotEmpty() }
+                ?: item.optString("image").takeIf { it.isNotEmpty() }
+                ?: ""
+
+            list.add(
+                newTvSeriesSearchResponse(
+                    name = title,
+                    url = id,
+                    type = TvType.TvSeries
+                ) {
+                    this.posterUrl = cover
+                }
+            )
+        }
+        return list
+    }
+
+    private suspend fun fetchRekomendasi(): List<SearchResponse> {
+        val path = "/api/shortmax/rekomendasi"
+        val rawHome = try {
+            requestWithCf("$mainUrl$path")
+        } catch (e: Exception) {
+            return emptyList()
+        }
+
+        val decrypted = try {
+            val json = JSONObject(rawHome)
+            if (json.has("data")) {
+                decryptCryptoJS(json.getString("data"))
+            } else {
+                throw Exception("Respon server tidak valid.")
+            }
+        } catch (e: Exception) {
+            return emptyList()
+        }
+
+        val results = if (decrypted.trim().startsWith("[")) {
+            JSONArray(decrypted)
+        } else {
             val jsonObj = JSONObject(decrypted)
-            jsonObj.optJSONArray("data")
-                ?: jsonObj.optJSONArray("results")
+            jsonObj.optJSONArray("results")
+                ?: jsonObj.optJSONArray("data")
                 ?: jsonObj.optJSONArray("list")
                 ?: JSONArray()
-        } else {
-            if (decrypted.trim().startsWith("[")) {
-                JSONArray(decrypted)
-            } else {
-                val jsonObj = JSONObject(decrypted)
-                jsonObj.optJSONArray("results")
-                    ?: jsonObj.optJSONArray("data")
-                    ?: jsonObj.optJSONArray("list")
-                    ?: JSONArray()
-            }
         }
 
         val list = mutableListOf<SearchResponse>()
@@ -306,8 +293,35 @@ class ShortMaxProvider : MainAPI() {
                 }
             )
         }
+        return list
+    }
 
-        return newHomePageResponse(request.name, list, hasNext = request.data == "foryou" && results.length() > 0)
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        fun isDubOrIndo(title: String): Boolean {
+            val titleLower = title.lowercase()
+            return titleLower.contains("dub") || titleLower.contains("indo") || titleLower.contains("sulih")
+        }
+
+        if (request.data == "dubindo") {
+            val foryouItems = fetchForyou(1)
+            val rekomendasiItems = fetchRekomendasi()
+            
+            val dubList = (foryouItems + rekomendasiItems)
+                .filter { isDubOrIndo(it.name) }
+                .distinctBy { it.url }
+
+            return newHomePageResponse(request.name, dubList, hasNext = false)
+        }
+
+        val items = if (request.data == "foryou") {
+            fetchForyou(page)
+        } else {
+            fetchRekomendasi()
+        }
+
+        val filteredList = items.filter { !isDubOrIndo(it.name) }
+
+        return newHomePageResponse(request.name, filteredList, hasNext = request.data == "foryou" && items.isNotEmpty())
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
