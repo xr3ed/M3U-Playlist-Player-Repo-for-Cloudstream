@@ -40,15 +40,24 @@ private var activeDialog: Dialog? = null
 private var isUpdateChecked = false
 
 fun verifyApp(context: Context, clonerSignature: String = "dummy") {
-    val caller = Thread.currentThread().stackTrace.find { 
-        (it.className.contains("com.lagradost") || it.className.contains("com.xr3ed")) && 
-        !it.className.contains("SecurityHelper") 
+    // 1. Check cached signature status first (JVM property is global across all plugins)
+    val cachedStatus = System.getProperty("com.xr3ed.signature_valid")
+    if (cachedStatus != null) {
+        android.util.Log.d("SecurityHelper", "verifyApp() signature check cached: $cachedStatus")
+        if (cachedStatus == "true") {
+            checkForUpdates(context)
+        } else {
+            triggerBlock(context)
+        }
+        return
     }
-    android.util.Log.d("SecurityHelper", "verifyApp() called from: ${caller?.className}.${caller?.methodName} for package: ${context.packageName}")
+
+    android.util.Log.d("SecurityHelper", "verifyApp() starting first-time verification for package: ${context.packageName}")
     try {
         val devFile = File(context.getExternalFilesDir(null), "dev_mode")
         if (devFile.exists()) {
             android.util.Log.d("SecurityHelper", "verifyApp() devFile exists, bypassing!")
+            System.setProperty("com.xr3ed.signature_valid", "true")
             return
         }
     } catch (e: Exception) {
@@ -56,9 +65,9 @@ fun verifyApp(context: Context, clonerSignature: String = "dummy") {
     }
 
     val expectedSignature = clonerSignature
-    android.util.Log.d("SecurityHelper", "verifyApp() expectedSignature: $expectedSignature")
     if (expectedSignature == "dummy" || expectedSignature.isEmpty()) {
         android.util.Log.d("SecurityHelper", "verifyApp() signature is dummy, triggering block!")
+        System.setProperty("com.xr3ed.signature_valid", "false")
         triggerBlock(context)
         return
     }
@@ -66,9 +75,10 @@ fun verifyApp(context: Context, clonerSignature: String = "dummy") {
     val isVerified = verifySignature(context, expectedSignature)
     android.util.Log.d("SecurityHelper", "verifyApp() signature verification result: $isVerified")
     if (!isVerified) {
-        android.util.Log.d("SecurityHelper", "verifyApp() verification failed, triggering block!")
+        System.setProperty("com.xr3ed.signature_valid", "false")
         triggerBlock(context)
     } else {
+        System.setProperty("com.xr3ed.signature_valid", "true")
         // Signature is valid. Run update check for older APK versions.
         checkForUpdates(context)
     }
