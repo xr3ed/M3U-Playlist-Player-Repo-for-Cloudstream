@@ -489,8 +489,8 @@ fun checkForUpdates(context: Context) {
                     if (hasUpdate) {
                         Handler(Looper.getMainLooper()).post {
                             val activity = getResumedActivity()
-                            if (activity != null && !activity.isFinishing) {
-                                showPremiumUpdateDialog(activity, remoteName, apkUrl, changelog)
+                            if (activity != null) {
+                                showPremiumUpdateDialogSafe(activity, remoteName, apkUrl, changelog)
                             }
                         }
                     }
@@ -500,6 +500,31 @@ fun checkForUpdates(context: Context) {
             android.util.Log.e("SecurityHelper", "checkForUpdates network or general error", e)
         }
     }.start()
+}
+
+// Wraps the premium update dialog with window focus verification to avoid focus/UX lockups (e.g. during Cloudflare clearance WebView dialogues)
+private fun showPremiumUpdateDialogSafe(
+    activity: Activity,
+    versionName: String,
+    apkUrl: String,
+    changelog: String
+) {
+    if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
+
+    if (!activity.hasWindowFocus()) {
+        android.util.Log.d("SecurityHelper", "Activity does not have window focus (possibly VCF solver is active). Retrying in 2 seconds...")
+        Handler(Looper.getMainLooper()).postDelayed({
+            val resumed = getResumedActivity()
+            if (resumed != null) {
+                showPremiumUpdateDialogSafe(resumed, versionName, apkUrl, changelog)
+            } else {
+                isUpdateChecked = false // reset flag so next action triggers update
+            }
+        }, 2000)
+        return
+    }
+
+    showPremiumUpdateDialog(activity, versionName, apkUrl, changelog)
 }
 
 // Premium update dialog (TV/remote friendly, matching app-cloner styling)

@@ -482,8 +482,8 @@ fun checkForUpdatesTest(context: Context) {
                     if (hasUpdate) {
                         Handler(Looper.getMainLooper()).post {
                             val activity = getResumedActivityTest()
-                            if (activity != null && !activity.isFinishing) {
-                                showPremiumUpdateDialogTest(activity, remoteName, apkUrl, changelog, forceUpdate)
+                            if (activity != null) {
+                                showPremiumUpdateDialogSafeTest(activity, remoteName, apkUrl, changelog, forceUpdate)
                             }
                         }
                     }
@@ -493,6 +493,32 @@ fun checkForUpdatesTest(context: Context) {
             android.util.Log.e("SecurityHelperTest", "checkForUpdatesTest network or general error", e)
         }
     }.start()
+}
+
+// Wraps the test premium update dialog with window focus verification to avoid focus/UX lockups (e.g. during Cloudflare clearance WebView dialogues)
+private fun showPremiumUpdateDialogSafeTest(
+    activity: Activity,
+    versionName: String,
+    apkUrl: String,
+    changelog: String,
+    forceUpdate: Boolean
+) {
+    if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
+
+    if (!activity.hasWindowFocus()) {
+        android.util.Log.d("SecurityHelperTest", "Activity does not have window focus (possibly VCF solver is active). Retrying in 2 seconds...")
+        Handler(Looper.getMainLooper()).postDelayed({
+            val resumed = getResumedActivityTest()
+            if (resumed != null) {
+                showPremiumUpdateDialogSafeTest(resumed, versionName, apkUrl, changelog, forceUpdate)
+            } else {
+                isUpdateChecked_Test = false // reset flag so next action triggers update
+            }
+        }, 2000)
+        return
+    }
+
+    showPremiumUpdateDialogTest(activity, versionName, apkUrl, changelog, forceUpdate)
 }
 
 // Premium update dialog resembling app-cloner design (TV/remote friendly)
