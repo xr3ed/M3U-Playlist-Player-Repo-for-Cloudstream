@@ -940,8 +940,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             for (gId in targetGroups) {
                 val groupArr = groupsObj.optJSONArray(gId) ?: continue
                 for (k in 0 until groupArr.length()) {
-                    val chId = groupArr.optString(k)
+                    var chId = groupArr.optString(k)
                     if (chId.equals("wc-jadwal", ignoreCase = true) || chId.equals("vvip", ignoreCase = true) || chId.equals("chat", ignoreCase = true) || chId.equals("replay", ignoreCase = true)) continue
+                    if (chId == "fox") chId = "fox1mx"
+                    if (chId == "fox2") chId = "fox2mx"
                     if (addedChannels.contains(chId)) continue
                     addedChannels.add(chId)
 
@@ -1103,9 +1105,12 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
             }
 
             for (chId in targetChannelIds) {
-                if (chId.equals("wc-jadwal", ignoreCase = true) || chId.equals("vvip", ignoreCase = true) || chId.equals("chat", ignoreCase = true) || chId.equals("replay", ignoreCase = true)) continue
-                val ch = channelsObj.optJSONObject(chId) ?: continue
-                val chName = ch.optString("name", chId)
+                var actualChId = chId
+                if (actualChId == "fox") actualChId = "fox1mx"
+                if (actualChId == "fox2") actualChId = "fox2mx"
+                if (actualChId.equals("wc-jadwal", ignoreCase = true) || actualChId.equals("vvip", ignoreCase = true) || actualChId.equals("chat", ignoreCase = true) || actualChId.equals("replay", ignoreCase = true)) continue
+                val ch = channelsObj.optJSONObject(actualChId) ?: continue
+                val chName = ch.optString("name", actualChId)
                 val chImg = ch.optString("img", defaultLogo)
                 val chHref = ch.optString("href")
 
@@ -1115,7 +1120,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 val streamUrl = if (chHref.startsWith("go:")) {
                     "${Xr3edEventProvider.PLAYER_BASE}/?id=jadwal#$chHref"
                 } else {
-                    "${Xr3edEventProvider.PLAYER_BASE}/?id=jadwal#go:$chId"
+                    "${Xr3edEventProvider.PLAYER_BASE}/?id=jadwal#go:$actualChId"
                 }
 
                 list.add(
@@ -1156,6 +1161,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 if (code.contains("&")) {
                     code = code.substringBefore("&")
                 }
+                if (code == "fox") code = "fox1mx"
+                if (code == "fox2") code = "fox2mx"
                 
                 var chName = code
                 try {
@@ -1240,8 +1247,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 for (gId in targetGroups) {
                     val arr = groupsObj.optJSONArray(gId) ?: continue
                     for (i in 0 until arr.length()) {
-                        val chId = arr.optString(i)
+                        var chId = arr.optString(i)
                         if (chId.equals("vvip", ignoreCase = true) || chId.equals("replay", ignoreCase = true) || chId.equals("wc-jadwal", ignoreCase = true)) continue
+                        if (chId == "fox") chId = "fox1mx"
+                        if (chId == "fox2") chId = "fox2mx"
                         if (addedChannels.contains(chId)) continue
                         addedChannels.add(chId)
                         
@@ -1333,6 +1342,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     if (code.contains("?")) {
                         code = code.substringBefore("?")
                     }
+                    if (code == "fox") code = "fox1mx"
+                    if (code == "fox2") code = "fox2mx"
                     val jsUrl = "${Xr3edEventProvider.API_BASE}/netxtv/channel.js?t=${System.currentTimeMillis()}"
                     val response = app.get(jsUrl, timeout = 15).text
                     val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
@@ -1377,8 +1388,10 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         val addedChannels = mutableSetOf<String>()
                         val collectedChannels = mutableListOf<Triple<String, String, String>>()
                         for (i in 0 until groupArr.length()) {
-                            val chId = groupArr.optString(i)
+                            var chId = groupArr.optString(i)
                             if (chId.equals("vvip", ignoreCase = true) || chId.equals("replay", ignoreCase = true) || chId.equals("wc-jadwal", ignoreCase = true)) continue
+                            if (chId == "fox") chId = "fox1mx"
+                            if (chId == "fox2") chId = "fox2mx"
                             if (addedChannels.contains(chId)) continue
                             addedChannels.add(chId)
                             
