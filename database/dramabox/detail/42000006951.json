@@ -1,0 +1,57 @@
+{
+  "bookId": "42000006951",
+  "bookName": "Tujuh Janji yang Patah (Sulih Suara) ",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000006951/42000006951.jpg?t=1772530605526",
+  "chapterCount": 73,
+  "introduction": "Maya merupakan putri konglomerat yang dibesarkan bersama tujuh anak asuh yang dibiayai oleh keluarganya. Akan tetapi, sejak kemunculan Jessy, mereka berbalik membenci Maya karena fitnah. Setelah menyaksikan ketujuh pria itu menyatakan cinta pada Jessy, Maya kecewa dan segera memutuskan hubungan. Tak lama kemudian, Maya mengumumkan pernikahannya dengan seorang pewaris elit yang menderita kelumpuhan bernama Vito...",
+  "tags": [
+    "Perselingkuhan",
+    "Intrik Keluarga",
+    "Putri Kaya",
+    "Cinta Segitiga",
+    "Cinta Setelah Menikah",
+    "Modern"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1400,
+      "tagName": "Perselingkuhan",
+      "tagEnName": "Betrayal"
+    },
+    {
+      "tagId": 1411,
+      "tagName": "Intrik Keluarga",
+      "tagEnName": "Family Intrigue"
+    },
+    {
+      "tagId": 1450,
+      "tagName": "Putri Kaya",
+      "tagEnName": "Heiress"
+    },
+    {
+      "tagId": 1380,
+      "tagName": "Cinta Segitiga",
+      "tagEnName": "Love Triangle"
+    },
+    {
+      "tagId": 1393,
+      "tagName": "Cinta Setelah Menikah",
+      "tagEnName": "Love After Marriage"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1773547200000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-15 12:00:00",
+  "inLibrary": false
+}
