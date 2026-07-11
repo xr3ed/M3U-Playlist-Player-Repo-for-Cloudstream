@@ -485,25 +485,43 @@ fun checkForUpdates(context: Context) {
 
     // Auto Clean Cache APK if update successful
     try {
-        val currentCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
-        val prefs = context.getSharedPreferences("plugin_updater_prefs", Context.MODE_PRIVATE)
-        val cachedCode = prefs.getInt("downloaded_version_code", -1)
-        val cachedBuildTime = prefs.getLong("downloaded_build_time", -1L)
-        
-        var isUpdated = false
-        if (cachedBuildTime > 0 && cloneBuildTime >= cachedBuildTime) {
-            isUpdated = true
-        } else if (cachedCode > 0 && currentCode > cachedCode) {
-            isUpdated = true
-        }
-        
-        if (isUpdated) {
-            val apkFile = File(context.externalCacheDir, "update.apk")
-            if (apkFile.exists()) {
+        val apkFile = File(context.externalCacheDir, "update.apk")
+        if (apkFile.exists()) {
+            val pm = context.packageManager
+            val archiveInfo = pm.getPackageArchiveInfo(apkFile.absolutePath, 0)
+            if (archiveInfo != null) {
+                val currentInfo = pm.getPackageInfo(context.packageName, 0)
+                val currentCode = currentInfo.versionCode
+                val currentName = currentInfo.versionName ?: ""
+                val archiveCode = archiveInfo.versionCode
+                val archiveName = archiveInfo.versionName ?: ""
+                
+                var shouldDelete = false
+                if (currentCode > archiveCode) {
+                    shouldDelete = true
+                } else if (currentCode == archiveCode) {
+                    if (currentName == archiveName) {
+                        shouldDelete = true
+                    } else {
+                        val currentSuffix = currentName.substringAfterLast("-").toLongOrNull()
+                        val archiveSuffix = archiveName.substringAfterLast("-").toLongOrNull()
+                        if (currentSuffix != null && archiveSuffix != null && currentSuffix >= archiveSuffix) {
+                            shouldDelete = true
+                        }
+                    }
+                }
+                
+                if (shouldDelete) {
+                    apkFile.delete()
+                    android.util.Log.d("SecurityHelper", "Cleaned up cached update.apk via direct archive info comparison.")
+                    val prefs = context.getSharedPreferences("plugin_updater_prefs", Context.MODE_PRIVATE)
+                    prefs.edit().remove("downloaded_version_code").remove("downloaded_build_time").apply()
+                }
+            } else {
+                // Invalid or incomplete APK file, delete it
                 apkFile.delete()
-                android.util.Log.d("SecurityHelper", "Cleaned up cached update.apk since app is updated.")
+                android.util.Log.d("SecurityHelper", "Cleaned up invalid/corrupt cached update.apk.")
             }
-            prefs.edit().remove("downloaded_version_code").remove("downloaded_build_time").apply()
         }
     } catch (e: Exception) {
         e.printStackTrace()
