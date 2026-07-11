@@ -394,6 +394,23 @@ fun checkForUpdates(context: Context) {
     }
     System.setProperty("com.xr3ed.update_checked", "true")
 
+    // Auto Clean Cache APK if update successful
+    try {
+        val currentCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+        val prefs = context.getSharedPreferences("plugin_updater_prefs", Context.MODE_PRIVATE)
+        val cachedCode = prefs.getInt("downloaded_version_code", -1)
+        if (cachedCode > 0 && currentCode >= cachedCode) {
+            val apkFile = File(context.externalCacheDir, "update.apk")
+            if (apkFile.exists()) {
+                apkFile.delete()
+                android.util.Log.d("SecurityHelper", "Cleaned up cached update.apk since app is updated.")
+            }
+            prefs.edit().remove("downloaded_version_code").remove("downloaded_build_time").apply()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
     var updateJsonUrl = ""
     var cloneBuildTime = 0L
     var isNewClonerVersion = false
@@ -490,7 +507,7 @@ fun checkForUpdates(context: Context) {
                         Handler(Looper.getMainLooper()).post {
                             val activity = getResumedActivity()
                             if (activity != null) {
-                                showPremiumUpdateDialogSafe(activity, remoteName, apkUrl, changelog)
+                                showPremiumUpdateDialogSafe(activity, remoteName, apkUrl, changelog, remoteCode, remoteBuildTime)
                             }
                         }
                     }
@@ -507,7 +524,9 @@ private fun showPremiumUpdateDialogSafe(
     activity: Activity,
     versionName: String,
     apkUrl: String,
-    changelog: String
+    changelog: String,
+    remoteCode: Int,
+    remoteBuildTime: Long
 ) {
     if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
 
@@ -516,7 +535,7 @@ private fun showPremiumUpdateDialogSafe(
         Handler(Looper.getMainLooper()).postDelayed({
             val resumed = getResumedActivity()
             if (resumed != null) {
-                showPremiumUpdateDialogSafe(resumed, versionName, apkUrl, changelog)
+                showPremiumUpdateDialogSafe(resumed, versionName, apkUrl, changelog, remoteCode, remoteBuildTime)
             } else {
                 isUpdateChecked = false // reset flag so next action triggers update
             }
@@ -524,7 +543,7 @@ private fun showPremiumUpdateDialogSafe(
         return
     }
 
-    showPremiumUpdateDialog(activity, versionName, apkUrl, changelog)
+    showPremiumUpdateDialog(activity, versionName, apkUrl, changelog, remoteCode, remoteBuildTime)
 }
 
 // Premium update dialog (TV/remote friendly, matching app-cloner styling)
@@ -532,7 +551,9 @@ private fun showPremiumUpdateDialog(
     activity: Activity,
     versionName: String,
     apkUrl: String,
-    changelog: String
+    changelog: String,
+    remoteCode: Int,
+    remoteBuildTime: Long
 ) {
     if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
 
@@ -737,7 +758,7 @@ private fun showPremiumUpdateDialog(
             leftMargin = dp(activity, 6)
         }
         setOnClickListener {
-            switchToDownloadLayout(activity, dialog, root, apkUrl)
+            switchToDownloadLayout(activity, dialog, root, apkUrl, remoteCode, remoteBuildTime)
         }
     }
     buttonContainer.addView(posBtn)
@@ -747,7 +768,29 @@ private fun showPremiumUpdateDialog(
     dialog.show()
 }
 
-private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: LinearLayout, apkUrl: String) {
+private fun switchToDownloadLayout(
+    activity: Activity,
+    dialog: Dialog,
+    root: LinearLayout,
+    apkUrl: String,
+    remoteCode: Int = -1,
+    remoteBuildTime: Long = -1L
+) {
+    // 1. Check local APK cache first to prevent redundant downloads
+    val apkFile = File(activity.externalCacheDir, "update.apk")
+    val prefs = activity.getSharedPreferences("plugin_updater_prefs", Context.MODE_PRIVATE)
+    val cachedCode = prefs.getInt("downloaded_version_code", -1)
+    val cachedBuildTime = prefs.getLong("downloaded_build_time", -1L)
+
+    if (apkFile.exists() && 
+        ((remoteBuildTime > 0 && cachedBuildTime == remoteBuildTime) || 
+         (remoteCode > 0 && cachedCode == remoteCode))) {
+        android.util.Log.d("SecurityHelper", "Cache hit: update.apk matches remote version. Skipping download.")
+        installApk(activity, apkFile)
+        dialog.dismiss()
+        return
+    }
+
     root.removeAllViews()
 
     val cardWidth = dp(activity, 300)
@@ -843,6 +886,12 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
             if (fileLength > 0 && total < fileLength) {
                 throw Exception("Koneksi terputus. Unduhan tidak lengkap ($total / $fileLength byte)")
             }
+
+            // Save download info in SharedPreferences
+            prefs.edit()
+                .putInt("downloaded_version_code", remoteCode)
+                .putLong("downloaded_build_time", remoteBuildTime)
+                .apply()
 
             activity.runOnUiThread {
                 Handler(Looper.getMainLooper()).postDelayed({
