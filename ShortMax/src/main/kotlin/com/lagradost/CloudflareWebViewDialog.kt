@@ -261,6 +261,14 @@ class CloudflareWebViewDialog(
                 view: WebView?, request: WebResourceRequest?
             ): Boolean = false
 
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                val currentHostCookies = CookieManager.getInstance().getCookie(targetHost) ?: ""
+                if (currentHostCookies.contains("cf_clearance")) {
+                    webView?.visibility = View.GONE
+                }
+            }
+
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 
@@ -287,14 +295,15 @@ class CloudflareWebViewDialog(
                     return
                 }
 
+                // If not solved yet, ALWAYS make webview visible for CAPTCHA interaction!
+                webView?.visibility = View.VISIBLE
+
                 val title = view?.title ?: ""
                 Log.d(TAG, "onPageFinished  title='$title'  url=$url")
 
                 if (isChallengeTitle(title)) {
-                    webView?.visibility = View.VISIBLE
                     updateStatus("👉 Silakan ketuk kotak \"Verifikasi bahwa Anda adalah manusia\" di bawah.")
                 } else {
-                    webView?.visibility = View.GONE
                     updateStatus("⏳ Menunggu konfirmasi keamanan dari server...")
                     CookieManager.getInstance().flush()
 
