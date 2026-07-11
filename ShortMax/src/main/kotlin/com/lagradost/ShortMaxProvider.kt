@@ -84,7 +84,8 @@ class ShortMaxProvider : MainAPI() {
 
     override val mainPage = listOf(
         MainPageData("ShortMax - For You", "foryou"),
-        MainPageData("ShortMax - Rekomendasi", "rekomendasi")
+        MainPageData("ShortMax - Rekomendasi", "rekomendasi"),
+        MainPageData("ShortMax - Dub Indo", "dubindo")
     )
 
     private fun showToast(msg: String) {
@@ -190,6 +191,55 @@ class ShortMaxProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        if (request.data == "dubindo") {
+            val rawSearch = try {
+                requestWithCf("$mainUrl/api/shortmax/search", mapOf("query" to "dub"))
+            } catch (e: Exception) {
+                showToast("Gagal memuat kategori Dub Indo. Server sedang gangguan.")
+                return null
+            }
+
+            val decrypted = try {
+                val json = JSONObject(rawSearch)
+                decryptCryptoJS(json.getString("data"))
+            } catch (e: Exception) {
+                showToast("Gagal memuat kategori Dub Indo. Server sedang gangguan.")
+                return null
+            }
+
+            val json = JSONObject(decrypted)
+            val results = json.optJSONArray("results") ?: JSONArray()
+
+            val list = mutableListOf<SearchResponse>()
+            for (i in 0 until results.length()) {
+                val item = results.optJSONObject(i) ?: continue
+                val id = item.optString("shortPlayId").takeIf { it.isNotEmpty() }
+                    ?: item.optString("id").takeIf { it.isNotEmpty() }
+                    ?: continue
+                val title = item.optString("title").takeIf { it.isNotEmpty() }
+                    ?: item.optString("name").takeIf { it.isNotEmpty() }
+                    ?: "Drama $id"
+                val cover = item.optString("cover").takeIf { it.isNotEmpty() }
+                    ?: item.optString("image").takeIf { it.isNotEmpty() }
+                    ?: ""
+
+                val titleLower = title.lowercase()
+                if (titleLower.contains("dub") || titleLower.contains("indo") || titleLower.contains("sulih")) {
+                    list.add(
+                        newTvSeriesSearchResponse(
+                            name = title,
+                            url = id,
+                            type = TvType.TvSeries
+                        ) {
+                            this.posterUrl = cover
+                        }
+                    )
+                }
+            }
+
+            return newHomePageResponse(request.name, list, hasNext = false)
+        }
+
         val path = if (request.data == "foryou") {
             "/api/shortmax/foryou?page=$page"
         } else {
