@@ -21,6 +21,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class ShortMaxProvider : MainAPI() {
     companion object {
@@ -28,6 +29,13 @@ class ShortMaxProvider : MainAPI() {
         private val PASSWORD = com.lagradost.ShortMax.BuildConfig.SHORTMAX_KEY
 
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+
+        private val cleanClient: okhttp3.OkHttpClient by lazy {
+            okhttp3.OkHttpClient.Builder()
+                .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+        }
 
         fun getCfCookies(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_COOKIES")
         fun setCfCookies(context: Context?, value: String?) {
@@ -148,17 +156,37 @@ class ShortMaxProvider : MainAPI() {
         val currentCookies = getCfCookies(ctx)
         val currentUA = getCfUserAgent(ctx)
         System.out.println("ShortMax request: $url | cfCookies: $currentCookies | cfUA: $currentUA")
-        val headersMap = mutableMapOf(
-            "Referer" to "$mainUrl/",
-            "User-Agent" to (currentUA ?: USER_AGENT)
-        )
-        currentCookies?.let { headersMap["Cookie"] = it }
 
-        val response = if (params != null) {
-            app.get(url, params = params, headers = headersMap).text
-        } else {
-            app.get(url, headers = headersMap).text
+        val headersBuilder = okhttp3.Headers.Builder()
+        headersBuilder.add("Referer", "$mainUrl/")
+        headersBuilder.add("User-Agent", currentUA ?: USER_AGENT)
+        currentCookies?.let { headersBuilder.add("Cookie", it) }
+
+        var finalUrl = url
+        if (params != null && params.isNotEmpty()) {
+            val parsedUrl = url.toHttpUrlOrNull()
+            if (parsedUrl != null) {
+                val urlBuilder = parsedUrl.newBuilder()
+                for ((k, v) in params) {
+                    urlBuilder.addQueryParameter(k, v)
+                }
+                finalUrl = urlBuilder.build().toString()
+            }
         }
+
+        val request = okhttp3.Request.Builder()
+            .url(finalUrl)
+            .headers(headersBuilder.build())
+            .build()
+
+        val response = try {
+            cleanClient.newCall(request).execute().use { resp ->
+                resp.body?.string() ?: ""
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+
         System.out.println("ShortMax response: ${response.take(300)}")
 
         try {
@@ -172,15 +200,18 @@ class ShortMaxProvider : MainAPI() {
             if (solved) {
                 val newCookies = getCfCookies(ctx)
                 val newUA = getCfUserAgent(ctx)
-                val newHeadersMap = mutableMapOf(
-                    "Referer" to "$mainUrl/",
-                    "User-Agent" to (newUA ?: USER_AGENT)
-                )
-                newCookies?.let { newHeadersMap["Cookie"] = it }
-                val retryResponse = if (params != null) {
-                    app.get(url, params = params, headers = newHeadersMap).text
-                } else {
-                    app.get(url, headers = newHeadersMap).text
+                val newHeadersBuilder = okhttp3.Headers.Builder()
+                newHeadersBuilder.add("Referer", "$mainUrl/")
+                newHeadersBuilder.add("User-Agent", newUA ?: USER_AGENT)
+                newCookies?.let { newHeadersBuilder.add("Cookie", it) }
+
+                val retryRequest = okhttp3.Request.Builder()
+                    .url(finalUrl)
+                    .headers(newHeadersBuilder.build())
+                    .build()
+
+                val retryResponse = cleanClient.newCall(retryRequest).execute().use { resp ->
+                    resp.body?.string() ?: ""
                 }
                 checkResponse(retryResponse)
                 return retryResponse
