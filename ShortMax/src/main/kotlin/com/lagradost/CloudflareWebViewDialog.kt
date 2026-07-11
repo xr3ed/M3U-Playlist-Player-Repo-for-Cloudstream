@@ -111,6 +111,13 @@ class CloudflareWebViewDialog(
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        try {
+            CookieManager.getInstance().removeAllCookies(null)
+            CookieManager.getInstance().flush()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         val dialog = super.onCreateDialog(savedInstanceState)
         (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.apply {
             state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
