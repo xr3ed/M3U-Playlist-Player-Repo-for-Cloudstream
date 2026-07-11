@@ -450,6 +450,16 @@ private fun fetchUrl(targetUrl: String): String {
 
 // Dynamically check for updates (only for older host APK versions without native cloner updater)
 fun checkForUpdates(context: Context) {
+    try {
+        val devFile = File(context.getExternalFilesDir(null), "dev_mode")
+        if (devFile.exists()) {
+            android.util.Log.d("SecurityHelper", "checkForUpdates: dev_mode exists, skipping update check!")
+            return
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
     if (System.getProperty("com.xr3ed.update_checked") == "true") {
         android.util.Log.d("SecurityHelper", "Update check already handled by another plugin.")
         return
