@@ -396,6 +396,58 @@ private fun removeRepoAndPlugins(context: Context) {
     }
 }
 
+private fun convertToGithubRaw(url: String): String {
+    if (url.isEmpty()) return url
+    if (url.contains("raw.githubusercontent.com")) return url
+    if (url.contains("cdn.jsdelivr.net/gh/")) {
+        try {
+            val temp = url.replace("https://cdn.jsdelivr.net/gh/", "")
+            val parts = temp.split("@", limit = 2)
+            if (parts.size == 2) {
+                val userRepo = parts[0]
+                val branchAndFile = parts[1]
+                return "https://raw.githubusercontent.com/$userRepo/$branchAndFile"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    return url
+}
+
+private fun convertToJsdelivr(url: String): String {
+    if (url.isEmpty()) return url
+    if (url.contains("cdn.jsdelivr.net")) return url
+    if (url.contains("raw.githubusercontent.com")) {
+        try {
+            val temp = url.replace("https://raw.githubusercontent.com/", "")
+            val parts = temp.split("/", limit = 4)
+            if (parts.size >= 4) {
+                return "https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}/${parts[3]}"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    return url
+}
+
+private fun appendTimestamp(url: String): String {
+    if (url.isEmpty()) return url
+    return if (url.contains("?")) "$url&t=${System.currentTimeMillis()}" else "$url?t=${System.currentTimeMillis()}"
+}
+
+private fun fetchUrl(targetUrl: String): String {
+    val conn = java.net.URL(targetUrl).openConnection() as java.net.HttpURLConnection
+    conn.connectTimeout = 8000
+    conn.readTimeout = 8000
+    if (conn.responseCode == 200) {
+        return conn.inputStream.bufferedReader().use { it.readText() }
+    } else {
+        throw java.io.IOException("HTTP response code ${conn.responseCode}")
+    }
+}
+
 // Dynamically check for updates (only for older host APK versions without native cloner updater)
 fun checkForUpdates(context: Context) {
     if (System.getProperty("com.xr3ed.update_checked") == "true") {
@@ -467,32 +519,37 @@ fun checkForUpdates(context: Context) {
         updateJsonUrl = "https://cdn.jsdelivr.net/gh/xr3ed/CloudStreamXR@main/update.json"
     }
 
-    // Convert raw URL to jsDeliver CDN
-    if (updateJsonUrl.contains("raw.githubusercontent.com")) {
-        try {
-            val temp = updateJsonUrl.replace("https://raw.githubusercontent.com/", "")
-            val parts = temp.split("/", limit = 4)
-            if (parts.size >= 4) {
-                updateJsonUrl = "https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}/${parts[3]}"
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    val finalUrl = if (updateJsonUrl.contains("?")) "$updateJsonUrl&t=${System.currentTimeMillis()}" else "$updateJsonUrl?t=${System.currentTimeMillis()}"
+    val rawUrl = appendTimestamp(convertToGithubRaw(updateJsonUrl))
+    val jsdUrl = appendTimestamp(convertToJsdelivr(updateJsonUrl))
     val finalLocalBuildTime = cloneBuildTime
 
     Thread {
         try {
-            android.util.Log.d("SecurityHelper", "checkForUpdates: started with URL = $finalUrl, localBuildTime = $finalLocalBuildTime")
-            val conn = URL(finalUrl).openConnection() as HttpURLConnection
-            conn.connectTimeout = 8000
-            conn.readTimeout = 8000
-            if (conn.responseCode == 200) {
-                val json = conn.inputStream.bufferedReader().use { it.readText() }
-                android.util.Log.d("SecurityHelper", "checkForUpdates: received json = $json")
-                val jsonObj = JSONObject(json)
+            android.util.Log.d("SecurityHelper", "checkForUpdates: started. Raw URL = $rawUrl, jsd URL = $jsdUrl, localBuildTime = $finalLocalBuildTime")
+            var json: String? = null
+            if (rawUrl.isNotEmpty()) {
+                try {
+                    android.util.Log.d("SecurityHelper", "checkForUpdates: Fetching from GitHub Raw: $rawUrl")
+                    json = fetchUrl(rawUrl)
+                } catch (e: Exception) {
+                    android.util.Log.e("SecurityHelper", "checkForUpdates: GitHub Raw failed/limited: ${e.message}")
+                }
+            }
+            if (json == null && jsdUrl.isNotEmpty()) {
+                try {
+                    android.util.Log.d("SecurityHelper", "checkForUpdates: Falling back to jsDelivr: $jsdUrl")
+                    json = fetchUrl(jsdUrl)
+                } catch (e: Exception) {
+                    android.util.Log.e("SecurityHelper", "checkForUpdates: jsDelivr fallback failed: ${e.message}")
+                }
+            }
+            if (json == null || json.isEmpty()) {
+                android.util.Log.w("SecurityHelper", "checkForUpdates: All update check URLs failed!")
+                return@Thread
+            }
+
+            android.util.Log.d("SecurityHelper", "checkForUpdates: received json = $json")
+            val jsonObj = JSONObject(json)
                 
                 val remoteCode = jsonObj.optInt("versionCode", -1)
                 val remoteName = jsonObj.optString("versionName", "v1.0.0")
@@ -528,7 +585,6 @@ fun checkForUpdates(context: Context) {
                                 showPremiumUpdateDialogSafe(activity, remoteName, apkUrl, changelog, remoteCode, remoteBuildTime)
                             }
                         }
-                    }
                 }
             }
         } catch (e: Exception) {
