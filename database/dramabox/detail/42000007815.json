@@ -1,0 +1,57 @@
+{
+  "bookId": "42000007815",
+  "bookName": "Si Cantik Melamarku (Sulih Suara)",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000007815/42000007815.jpg?t=1773652328427",
+  "chapterCount": 80,
+  "introduction": "Simon, pelayan KTV, menolong Nina, putri orang kaya yang ditindas. Nina mengira Simon sebagai obat penawarnya dan mengambil salah satu kalung miliknya sebagai tanda. Enam tahun kemudian, Simon bekerja kasar di proyek Grup Jawari demi mengobati ibu angkatnya. Saat semua menertawakannya, Nina tiba-tiba datang membawa anak. Melihat kalung yang sama, sang anak langsung memanggil Simon ayah.",
+  "tags": [
+    "Keluarga",
+    "Anak Hilang",
+    "Orang Biasa",
+    "Takdir Cinta",
+    "Modern",
+    "Serangan Balik"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1348,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1476,
+      "tagName": "Anak Hilang",
+      "tagEnName": "Lost Child"
+    },
+    {
+      "tagId": 1331,
+      "tagName": "Orang Biasa",
+      "tagEnName": "A Nobody"
+    },
+    {
+      "tagId": 1663,
+      "tagName": "Takdir Cinta",
+      "tagEnName": "Destined Love"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1773849600000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-03-19 00:00:00",
+  "inLibrary": false
+}

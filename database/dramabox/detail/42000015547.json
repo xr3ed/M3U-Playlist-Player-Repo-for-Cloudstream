@@ -1,0 +1,57 @@
+{
+  "bookId": "42000015547",
+  "bookName": "Senja Terakhir Kita",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000015547/42000015547.jpg?t=1780898830231",
+  "chapterCount": 71,
+  "introduction": "Setelah bertahun-tahun mencintai Cesar dan terus tersakiti dalam pernikahan mereka, Sonia akhirnya memilih bercerai dan memulai hidup baru di Paris. Saat Cesar menyesal dan berusaha mendapatkannya kembali, Sonia justru menemukan kebahagiaan bersama Zaki, pria yang selalu setia mendukungnya.",
+  "tags": [
+    "Serangan Balik",
+    "Penyesalan",
+    "Romansa Tragis",
+    "Wanita Mandiri",
+    "Modern",
+    "Romansa"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1399,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1654,
+      "tagName": "Penyesalan",
+      "tagEnName": "All-Too-Late"
+    },
+    {
+      "tagId": 1635,
+      "tagName": "Romansa Tragis",
+      "tagEnName": "Toxic Love"
+    },
+    {
+      "tagId": 1452,
+      "tagName": "Wanita Mandiri",
+      "tagEnName": "Independent Woman"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1357,
+      "tagName": "Romansa",
+      "tagEnName": "Romance"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1781496000000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-15 12:00:00",
+  "inLibrary": false
+}
