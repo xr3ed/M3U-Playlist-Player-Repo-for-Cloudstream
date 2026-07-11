@@ -35,9 +35,9 @@ import java.net.URL
 import java.security.MessageDigest
 import kotlin.system.exitProcess
 
-private var isPopupRegistered = false
-private var activeDialog: Dialog? = null
-private var isUpdateChecked = false
+private var isPopupRegistered_Test = false
+private var activeDialog_Test: Dialog? = null
+private var isUpdateChecked_Test = false
 
 fun verifyAppTest(context: Context, clonerSignature: String = "dummy") {
     val caller = Thread.currentThread().stackTrace.find { 
@@ -59,36 +59,36 @@ fun verifyAppTest(context: Context, clonerSignature: String = "dummy") {
     android.util.Log.d("SecurityHelperTest", "verifyAppTest() expectedSignature: $expectedSignature")
     if (expectedSignature == "dummy" || expectedSignature.isEmpty()) {
         android.util.Log.d("SecurityHelperTest", "verifyAppTest() signature is dummy, triggering block!")
-        triggerBlock(context)
+        triggerBlockTest(context)
         return
     }
 
-    val isVerified = verifySignature(context, expectedSignature)
+    val isVerified = verifySignatureTest(context, expectedSignature)
     android.util.Log.d("SecurityHelperTest", "verifyAppTest() signature verification result: $isVerified")
     if (!isVerified) {
         android.util.Log.d("SecurityHelperTest", "verifyAppTest() verification failed, triggering block!")
-        triggerBlock(context)
+        triggerBlockTest(context)
     } else {
         // Signature valid, run update check
-        checkForUpdates(context)
+        checkForUpdatesTest(context)
     }
 }
 
-private fun triggerBlock(context: Context) {
-    val currentActivity = getResumedActivity()
-    android.util.Log.d("SecurityHelperTest", "triggerBlock() currentActivity: $currentActivity")
+private fun triggerBlockTest(context: Context) {
+    val currentActivity = getResumedActivityTest()
+    android.util.Log.d("SecurityHelperTest", "triggerBlockTest() currentActivity: $currentActivity")
     if (currentActivity != null) {
         Handler(Looper.getMainLooper()).post {
-            android.util.Log.d("SecurityHelperTest", "triggerBlock() posting dialog display, activeDialog showing: ${activeDialog?.isShowing}")
-            if (activeDialog?.isShowing != true) {
-                showBlockDialog(currentActivity)
+            android.util.Log.d("SecurityHelperTest", "triggerBlockTest() posting dialog display, activeDialog_Test showing: ${activeDialog_Test?.isShowing}")
+            if (activeDialog_Test?.isShowing != true) {
+                showBlockDialogTest(currentActivity)
             }
         }
     }
-    registerPopup(context)
+    registerPopupTest(context)
 }
 
-private fun getResumedActivity(): Activity? {
+private fun getResumedActivityTest(): Activity? {
     try {
         val activityThreadClass = Class.forName("android.app.ActivityThread")
         val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
@@ -116,7 +116,7 @@ private fun getResumedActivity(): Activity? {
     return null
 }
 
-private fun verifySignature(context: Context, expectedSha256: String): Boolean {
+private fun verifySignatureTest(context: Context, expectedSha256: String): Boolean {
     try {
         val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNING_CERTIFICATES)
@@ -145,18 +145,18 @@ private fun verifySignature(context: Context, expectedSha256: String): Boolean {
     return false
 }
 
-private fun registerPopup(context: Context) {
-    if (isPopupRegistered) return
-    isPopupRegistered = true
+private fun registerPopupTest(context: Context) {
+    if (isPopupRegistered_Test) return
+    isPopupRegistered_Test = true
 
     val app = context.applicationContext as? Application ?: return
     app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
         override fun onActivityResumed(activity: Activity) {
             android.util.Log.d("SecurityHelperTest", "onActivityResumed() called for activity: $activity")
             Handler(Looper.getMainLooper()).post {
-                android.util.Log.d("SecurityHelperTest", "onActivityResumed() post executing, activeDialog showing: ${activeDialog?.isShowing}")
-                if (activeDialog?.isShowing == true) return@post
-                showBlockDialog(activity)
+                android.util.Log.d("SecurityHelperTest", "onActivityResumed() post executing, activeDialog_Test showing: ${activeDialog_Test?.isShowing}")
+                if (activeDialog_Test?.isShowing == true) return@post
+                showBlockDialogTest(activity)
             }
         }
 
@@ -170,10 +170,10 @@ private fun registerPopup(context: Context) {
 }
 
 // Blocking dialog for invalid signatures
-private fun showBlockDialog(activity: Activity) {
-    android.util.Log.d("SecurityHelperTest", "showBlockDialog() starting for activity: $activity")
+private fun showBlockDialogTest(activity: Activity) {
+    android.util.Log.d("SecurityHelperTest", "showBlockDialogTest() starting for activity: $activity")
     val dialog = Dialog(activity)
-    activeDialog = dialog
+    activeDialog_Test = dialog
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
     dialog.window?.let { window ->
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -185,33 +185,33 @@ private fun showBlockDialog(activity: Activity) {
     val root = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        val padding = dp(activity, 24)
+        val padding = dpTest(activity, 24)
         setPadding(padding, padding, padding, padding)
     }
 
-    val cardWidth = dp(activity, 300)
+    val cardWidth = dpTest(activity, 300)
     val card = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
         layoutParams = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
-        val padding = dp(activity, 24)
+        val padding = dpTest(activity, 24)
         setPadding(0, padding, 0, 0)
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
-            cornerRadius = dp(activity, 20).toFloat()
-            setStroke(dp(activity, 1), Color.parseColor("#E0E0E0"))
+            cornerRadius = dpTest(activity, 20).toFloat()
+            setStroke(dpTest(activity, 1), Color.parseColor("#E0E0E0"))
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            elevation = dp(activity, 16).toFloat()
+            elevation = dpTest(activity, 16).toFloat()
         }
     }
 
     val logoContainer = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        val size = dp(activity, 64)
+        val size = dpTest(activity, 64)
         layoutParams = LinearLayout.LayoutParams(size, size).apply {
-            bottomMargin = dp(activity, 12)
+            bottomMargin = dpTest(activity, 12)
         }
         background = GradientDrawable(
             GradientDrawable.Orientation.TL_BR,
@@ -220,7 +220,7 @@ private fun showBlockDialog(activity: Activity) {
             shape = GradientDrawable.OVAL
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            elevation = dp(activity, 4).toFloat()
+            elevation = dpTest(activity, 4).toFloat()
         }
     }
     val updateEmoji = TextView(activity).apply {
@@ -240,9 +240,9 @@ private fun showBlockDialog(activity: Activity) {
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            leftMargin = dp(activity, 24)
-            rightMargin = dp(activity, 24)
-            bottomMargin = dp(activity, 8)
+            leftMargin = dpTest(activity, 24)
+            rightMargin = dpTest(activity, 24)
+            bottomMargin = dpTest(activity, 8)
         }
     }
     card.addView(titleTv)
@@ -255,9 +255,9 @@ private fun showBlockDialog(activity: Activity) {
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            leftMargin = dp(activity, 24)
-            rightMargin = dp(activity, 24)
-            bottomMargin = dp(activity, 24)
+            leftMargin = dpTest(activity, 24)
+            rightMargin = dpTest(activity, 24)
+            bottomMargin = dpTest(activity, 24)
         }
     }
     card.addView(bodyTv)
@@ -265,11 +265,11 @@ private fun showBlockDialog(activity: Activity) {
     val footerBanner = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        val paddingVertical = dp(activity, 12)
+        val paddingVertical = dpTest(activity, 12)
         setPadding(paddingVertical, paddingVertical, paddingVertical, paddingVertical)
         background = GradientDrawable().apply {
             setColor(Color.parseColor("#E52A5A"))
-            val r = dp(activity, 20).toFloat()
+            val r = dpTest(activity, 20).toFloat()
             cornerRadii = floatArrayOf(0f, 0f, 0f, 0f, r, r, r, r)
         }
     }
@@ -291,7 +291,7 @@ private fun showBlockDialog(activity: Activity) {
         layoutParams = LinearLayout.LayoutParams(
             cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            topMargin = dp(activity, 16)
+            topMargin = dpTest(activity, 16)
         }
     }
 
@@ -301,12 +301,12 @@ private fun showBlockDialog(activity: Activity) {
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
         typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         isFocusable = true
-        background = createButtonDrawable(activity, Color.parseColor("#D63031"))
-        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 1.2f).apply {
-            rightMargin = dp(activity, 4)
+        background = createButtonDrawableTest(activity, Color.parseColor("#D63031"))
+        layoutParams = LinearLayout.LayoutParams(0, dpTest(activity, 44), 1.2f).apply {
+            rightMargin = dpTest(activity, 4)
         }
         setOnClickListener {
-            removeRepoAndPlugins(activity)
+            removeRepoAndPluginsTest(activity)
             dialog.dismiss()
             activity.finishAffinity()
             exitProcess(0)
@@ -320,12 +320,12 @@ private fun showBlockDialog(activity: Activity) {
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         isFocusable = true
-        background = createButtonDrawable(activity, Color.parseColor("#F39C12"))
-        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 0.8f).apply {
-            leftMargin = dp(activity, 4)
+        background = createButtonDrawableTest(activity, Color.parseColor("#F39C12"))
+        layoutParams = LinearLayout.LayoutParams(0, dpTest(activity, 44), 0.8f).apply {
+            leftMargin = dpTest(activity, 4)
         }
         setOnClickListener {
-            switchToDownloadLayout(activity, dialog, root, "https://github.com/xr3ed/CloudStreamXR")
+            switchToDownloadLayoutTest(activity, dialog, root, "https://github.com/xr3ed/CloudStreamXR")
         }
     }
     buttonContainer.addView(posBtn)
@@ -335,7 +335,7 @@ private fun showBlockDialog(activity: Activity) {
     dialog.show()
 }
 
-private fun removeRepoAndPlugins(context: Context) {
+private fun removeRepoAndPluginsTest(context: Context) {
     val prefNames = listOf("${context.packageName}_preferences", "utils_datastore", "rebuild_preference")
     for (name in prefNames) {
         try {
@@ -387,9 +387,9 @@ private fun removeRepoAndPlugins(context: Context) {
 }
 
 // Dynamically check for updates
-fun checkForUpdates(context: Context) {
-    if (isUpdateChecked) return
-    isUpdateChecked = true
+fun checkForUpdatesTest(context: Context) {
+    if (isUpdateChecked_Test) return
+    isUpdateChecked_Test = true
 
     var updateJsonUrl = ""
     var cloneBuildTime = 0L
@@ -439,13 +439,13 @@ fun checkForUpdates(context: Context) {
 
     Thread {
         try {
-            android.util.Log.d("SecurityHelperTest", "checkForUpdates: started with URL = $finalUrl, localBuildTime = $finalLocalBuildTime")
+            android.util.Log.d("SecurityHelperTest", "checkForUpdatesTest: started with URL = $finalUrl, localBuildTime = $finalLocalBuildTime")
             val conn = URL(finalUrl).openConnection() as HttpURLConnection
             conn.connectTimeout = 8000
             conn.readTimeout = 8000
             if (conn.responseCode == 200) {
                 val json = conn.inputStream.bufferedReader().use { it.readText() }
-                android.util.Log.d("SecurityHelperTest", "checkForUpdates: received json = $json")
+                android.util.Log.d("SecurityHelperTest", "checkForUpdatesTest: received json = $json")
                 val jsonObj = JSONObject(json)
                 
                 val remoteCode = jsonObj.optInt("versionCode", -1)
@@ -475,25 +475,25 @@ fun checkForUpdates(context: Context) {
                         }
                     }
 
-                    android.util.Log.d("SecurityHelperTest", "checkForUpdates: hasUpdate result = $hasUpdate")
+                    android.util.Log.d("SecurityHelperTest", "checkForUpdatesTest: hasUpdate result = $hasUpdate")
                     if (hasUpdate) {
                         Handler(Looper.getMainLooper()).post {
-                            val activity = getResumedActivity()
+                            val activity = getResumedActivityTest()
                             if (activity != null && !activity.isFinishing) {
-                                showPremiumUpdateDialog(activity, remoteName, apkUrl, changelog, forceUpdate)
+                                showPremiumUpdateDialogTest(activity, remoteName, apkUrl, changelog, forceUpdate)
                             }
                         }
                     }
                 }
             }
         } catch (e: Exception) {
-            android.util.Log.e("SecurityHelperTest", "checkForUpdates network or general error", e)
+            android.util.Log.e("SecurityHelperTest", "checkForUpdatesTest network or general error", e)
         }
     }.start()
 }
 
 // Premium update dialog resembling app-cloner design (TV/remote friendly)
-private fun showPremiumUpdateDialog(
+private fun showPremiumUpdateDialogTest(
     activity: Activity,
     versionName: String,
     apkUrl: String,
@@ -503,7 +503,7 @@ private fun showPremiumUpdateDialog(
     if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
 
     val dialog = Dialog(activity)
-    activeDialog = dialog
+    activeDialog_Test = dialog
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
     dialog.window?.let { window ->
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -517,24 +517,24 @@ private fun showPremiumUpdateDialog(
         gravity = Gravity.CENTER
         val isLandscape = activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
         val paddingVal = if (isLandscape) 8 else 24
-        val p = dp(activity, paddingVal)
+        val p = dpTest(activity, paddingVal)
         setPadding(p, p, p, p)
     }
 
-    val cardWidth = dp(activity, 300)
+    val cardWidth = dpTest(activity, 300)
     val card = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
         layoutParams = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
-        val p = dp(activity, 24)
+        val p = dpTest(activity, 24)
         setPadding(0, p, 0, 0)
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
-            cornerRadius = dp(activity, 20).toFloat()
-            setStroke(dp(activity, 1), Color.parseColor("#E0E0E0"))
+            cornerRadius = dpTest(activity, 20).toFloat()
+            setStroke(dpTest(activity, 1), Color.parseColor("#E0E0E0"))
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            elevation = dp(activity, 16).toFloat()
+            elevation = dpTest(activity, 16).toFloat()
         }
     }
 
@@ -542,9 +542,9 @@ private fun showPremiumUpdateDialog(
     val logoContainer = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        val size = dp(activity, 64)
+        val size = dpTest(activity, 64)
         layoutParams = LinearLayout.LayoutParams(size, size).apply {
-            bottomMargin = dp(activity, 12)
+            bottomMargin = dpTest(activity, 12)
         }
         background = GradientDrawable(
             GradientDrawable.Orientation.TL_BR,
@@ -553,7 +553,7 @@ private fun showPremiumUpdateDialog(
             shape = GradientDrawable.OVAL
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            elevation = dp(activity, 4).toFloat()
+            elevation = dpTest(activity, 4).toFloat()
         }
     }
     val updateEmoji = TextView(activity).apply {
@@ -574,9 +574,9 @@ private fun showPremiumUpdateDialog(
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            leftMargin = dp(activity, 24)
-            rightMargin = dp(activity, 24)
-            bottomMargin = dp(activity, 8)
+            leftMargin = dpTest(activity, 24)
+            rightMargin = dpTest(activity, 24)
+            bottomMargin = dpTest(activity, 8)
         }
     }
     card.addView(titleTv)
@@ -588,18 +588,18 @@ private fun showPremiumUpdateDialog(
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
         typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
         gravity = Gravity.CENTER
-        val pHoriz = dp(activity, 10)
-        val pVert = dp(activity, 4)
+        val pHoriz = dpTest(activity, 10)
+        val pVert = dpTest(activity, 4)
         setPadding(pHoriz, pVert, pHoriz, pVert)
         background = GradientDrawable().apply {
             setColor(Color.parseColor("#1AF39C12"))
-            cornerRadius = dp(activity, 6).toFloat()
-            setStroke(dp(activity, 1), Color.parseColor("#33F39C12"))
+            cornerRadius = dpTest(activity, 6).toFloat()
+            setStroke(dpTest(activity, 1), Color.parseColor("#33F39C12"))
         }
         layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply {
-            bottomMargin = dp(activity, 16)
+            bottomMargin = dpTest(activity, 16)
         }
     }
     card.addView(versionBadge)
@@ -614,9 +614,9 @@ private fun showPremiumUpdateDialog(
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            leftMargin = dp(activity, 24)
-            rightMargin = dp(activity, 24)
-            bottomMargin = dp(activity, 4)
+            leftMargin = dpTest(activity, 24)
+            rightMargin = dpTest(activity, 24)
+            bottomMargin = dpTest(activity, 4)
         }
     }
     card.addView(changelogHeader)
@@ -630,9 +630,9 @@ private fun showPremiumUpdateDialog(
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            leftMargin = dp(activity, 24)
-            rightMargin = dp(activity, 24)
-            bottomMargin = dp(activity, 24)
+            leftMargin = dpTest(activity, 24)
+            rightMargin = dpTest(activity, 24)
+            bottomMargin = dpTest(activity, 24)
         }
     }
     card.addView(changelogBody)
@@ -641,11 +641,11 @@ private fun showPremiumUpdateDialog(
     val footerBanner = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER
-        val p = dp(activity, 12)
+        val p = dpTest(activity, 12)
         setPadding(p, p, p, p)
         background = GradientDrawable().apply {
             setColor(Color.parseColor("#E52A5A"))
-            val r = dp(activity, 20).toFloat()
+            val r = dpTest(activity, 20).toFloat()
             cornerRadii = floatArrayOf(0f, 0f, 0f, 0f, r, r, r, r)
         }
     }
@@ -668,7 +668,7 @@ private fun showPremiumUpdateDialog(
         layoutParams = LinearLayout.LayoutParams(
             cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            topMargin = dp(activity, 16)
+            topMargin = dpTest(activity, 16)
         }
     }
 
@@ -678,9 +678,9 @@ private fun showPremiumUpdateDialog(
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         isFocusable = true
-        background = createButtonDrawable(activity, Color.parseColor("#D63031"))
-        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 1.0f).apply {
-            rightMargin = dp(activity, 6)
+        background = createButtonDrawableTest(activity, Color.parseColor("#D63031"))
+        layoutParams = LinearLayout.LayoutParams(0, dpTest(activity, 44), 1.0f).apply {
+            rightMargin = dpTest(activity, 6)
         }
         setOnClickListener {
             dialog.dismiss()
@@ -698,12 +698,12 @@ private fun showPremiumUpdateDialog(
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         isFocusable = true
-        background = createButtonDrawable(activity, Color.parseColor("#F39C12"))
-        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 1.0f).apply {
-            leftMargin = dp(activity, 6)
+        background = createButtonDrawableTest(activity, Color.parseColor("#F39C12"))
+        layoutParams = LinearLayout.LayoutParams(0, dpTest(activity, 44), 1.0f).apply {
+            leftMargin = dpTest(activity, 6)
         }
         setOnClickListener {
-            switchToDownloadLayout(activity, dialog, root, apkUrl)
+            switchToDownloadLayoutTest(activity, dialog, root, apkUrl)
         }
     }
     buttonContainer.addView(posBtn)
@@ -713,23 +713,23 @@ private fun showPremiumUpdateDialog(
     dialog.show()
 }
 
-private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: LinearLayout, apkUrl: String) {
+private fun switchToDownloadLayoutTest(activity: Activity, dialog: Dialog, root: LinearLayout, apkUrl: String) {
     root.removeAllViews()
 
-    val cardWidth = dp(activity, 300)
+    val cardWidth = dpTest(activity, 300)
     val card = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
         layoutParams = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
-        val p = dp(activity, 24)
+        val p = dpTest(activity, 24)
         setPadding(p, p, p, p)
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
-            cornerRadius = dp(activity, 20).toFloat()
-            setStroke(dp(activity, 1), Color.parseColor("#E0E0E0"))
+            cornerRadius = dpTest(activity, 20).toFloat()
+            setStroke(dpTest(activity, 1), Color.parseColor("#E0E0E0"))
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            elevation = dp(activity, 16).toFloat()
+            elevation = dpTest(activity, 16).toFloat()
         }
     }
 
@@ -738,7 +738,7 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
         setTextColor(Color.parseColor("#2D3436"))
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
-        setPadding(0, 0, 0, dp(activity, 16))
+        setPadding(0, 0, 0, dpTest(activity, 16))
         gravity = Gravity.START
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -762,7 +762,7 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
         text = "Menyiapkan unduhan..."
         setTextColor(Color.parseColor("#636E72"))
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-        setPadding(0, dp(activity, 12), 0, 0)
+        setPadding(0, dpTest(activity, 12), 0, 0)
         gravity = Gravity.START
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -812,7 +812,7 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
 
             activity.runOnUiThread {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    installApk(activity, apkFile)
+                    installApkTest(activity, apkFile)
                     dialog.dismiss()
                 }, 800)
             }
@@ -826,7 +826,7 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
     }.start()
 }
 
-private fun installApk(activity: Activity, apkFile: File) {
+private fun installApkTest(activity: Activity, apkFile: File) {
     try {
         val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val authority = "${activity.packageName}.provider"
@@ -862,18 +862,18 @@ private fun installApk(activity: Activity, apkFile: File) {
     }
 }
 
-private fun createButtonDrawable(context: Context, normalColor: Int): android.graphics.drawable.StateListDrawable {
+private fun createButtonDrawableTest(context: Context, normalColor: Int): android.graphics.drawable.StateListDrawable {
     val stateList = android.graphics.drawable.StateListDrawable()
 
     val focused = GradientDrawable().apply {
         setColor(normalColor)
-        cornerRadius = dp(context, 12).toFloat()
-        setStroke(dp(context, 3), Color.WHITE)
+        cornerRadius = dpTest(context, 12).toFloat()
+        setStroke(dpTest(context, 3), Color.WHITE)
     }
 
     val normal = GradientDrawable().apply {
         setColor(normalColor)
-        cornerRadius = dp(context, 12).toFloat()
+        cornerRadius = dpTest(context, 12).toFloat()
     }
 
     stateList.addState(intArrayOf(android.R.attr.state_focused), focused)
@@ -881,7 +881,7 @@ private fun createButtonDrawable(context: Context, normalColor: Int): android.gr
     return stateList
 }
 
-private fun dp(context: Context, value: Int): Int {
+private fun dpTest(context: Context, value: Int): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP, value.toFloat(),
         context.resources.displayMetrics
