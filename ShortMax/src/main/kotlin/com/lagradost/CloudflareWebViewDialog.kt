@@ -27,6 +27,7 @@ import com.lagradost.api.Log
  */
 class CloudflareWebViewDialog(
     private val targetUrl: String,
+    private val userAgent: String? = null,
     /** Called with true when cf_clearance was saved, false if the user dismissed without solving. */
     private val onFinished: ((Boolean) -> Unit)? = null
 ) : BottomSheetDialogFragment() {
@@ -245,6 +246,7 @@ class CloudflareWebViewDialog(
             allowContentAccess = true
             allowFileAccess = true
             loadsImagesAutomatically = true
+            userAgent?.let { userAgentString = it }
         }
 
         wv.webChromeClient = object : WebChromeClient() {

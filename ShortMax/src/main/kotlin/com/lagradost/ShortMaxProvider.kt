@@ -129,6 +129,7 @@ class ShortMaxProvider : MainAPI() {
                 }
                 val dialog = CloudflareWebViewDialog(
                     targetUrl = url,
+                    userAgent = USER_AGENT,
                     onFinished = { success -> safeResume(success) }
                 )
                 newDeferred.invokeOnCompletion {
