@@ -1,0 +1,57 @@
+{
+  "bookId": "42000020824",
+  "bookName": "Dewi Perang yang Menyamar",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020824/42000020824.jpg?t=1783673177012",
+  "chapterCount": 51,
+  "introduction": "Eva Morgana dikenal sebagai Dewi Perang dengan kode nama Eva. Dirinya memutuskan untuk pensiun dari militer untuk merawat adik perempuannya yang mengidap penyakit jantung. Untuk menghidupinya, Eva pun membuka took hasil laut. Di sisi lain, adik selama ini mengalami perundungan di sekolah. Di hari ulang tahunnya pun, teman-teman sekolahnya menyerbu ke rumah dan menganiayanya. Demi membalas semua yang telah terjadi, Eva pun memutuskan untuk menunjukkan identitas aslinya.",
+  "tags": [
+    "Balas Dendam",
+    "Pembalikan Identitas",
+    "Kasih Orang Tua",
+    "Tentara",
+    "Modern",
+    "Wanita Kuat"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1395,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1455,
+      "tagName": "Kasih Orang Tua",
+      "tagEnName": "Selfless Parent"
+    },
+    {
+      "tagId": 1616,
+      "tagName": "Tentara",
+      "tagEnName": "Military"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1783742400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-07-11 12:00:00",
+  "inLibrary": false
+}

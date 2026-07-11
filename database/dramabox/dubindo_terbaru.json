@@ -50,7 +50,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -62,10 +62,58 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901593\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "103K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830018\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "116K",
     "bookShelfTime": 1783562400000,
     "shelfTime": "2026-07-09 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020101",
+    "bookName": "Terjebak Dalam Penyesalan (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020101/42000020101.jpg?t=1783316171902",
+    "chapterCount": 60,
+    "introduction": "Jelita menggunakan segala cara, akhirnya berhasil jadi istri Fiero. Namun suatu hari tanpa sengaja, Jelita menemukan bahwa suaminya menyimpan obsesi yang menyimpang terhadap Talia, adik dari suaminya yang nggak ada hubungan darah. Fiero membela Talia yang membuat Jelita benaran mati rasa. Jelita tanda tangan perjanjian cerai. Dia memulai hidup barunya dengan Malin yang sudah suka padanya. Setelah itu, Fiero baru mendadak merasa bahwa Jelita adalah orang yang dia cintai.",
+    "tags": [
+      "Cinta Pahit",
+      "Cinta Segitiga",
+      "Realitas"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 809,
+        "tagName": "Cinta Pahit"
+      },
+      {
+        "tagId": 821,
+        "tagName": "Cinta Segitiga"
+      },
+      {
+        "tagId": 827,
+        "tagName": "Realitas"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 2,
+      "name": "Terbaru",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "45.7K",
+    "bookShelfTime": 1783483200000,
+    "shelfTime": "2026-07-08 12:00:00",
     "inLibrary": false
   },
   {
@@ -113,7 +161,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -125,58 +173,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "148K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "159K",
     "bookShelfTime": 1783476000000,
     "shelfTime": "2026-07-08 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020101",
-    "bookName": "Terjebak Dalam Penyesalan (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020101/42000020101.jpg?t=1783316171902",
-    "chapterCount": 60,
-    "introduction": "Jelita menggunakan segala cara, akhirnya berhasil jadi istri Fiero. Namun suatu hari tanpa sengaja, Jelita menemukan bahwa suaminya menyimpan obsesi yang menyimpang terhadap Talia, adik dari suaminya yang nggak ada hubungan darah. Fiero membela Talia yang membuat Jelita benaran mati rasa. Jelita tanda tangan perjanjian cerai. Dia memulai hidup barunya dengan Malin yang sudah suka padanya. Setelah itu, Fiero baru mendadak merasa bahwa Jelita adalah orang yang dia cintai.",
-    "tags": [
-      "Cinta Pahit",
-      "Cinta Segitiga",
-      "Realitas"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 809,
-        "tagName": "Cinta Pahit"
-      },
-      {
-        "tagId": 821,
-        "tagName": "Cinta Segitiga"
-      },
-      {
-        "tagId": 827,
-        "tagName": "Realitas"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 2,
-      "name": "Terbaru",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "42.7K",
-    "bookShelfTime": 1783483200000,
-    "shelfTime": "2026-07-08 12:00:00",
     "inLibrary": false
   },
   {
@@ -230,7 +230,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -242,8 +242,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "356K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "388K",
     "bookShelfTime": 1783051200000,
     "shelfTime": "2026-07-03 12:00:00",
     "inLibrary": false
@@ -299,7 +299,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -311,8 +311,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "307K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "322K",
     "bookShelfTime": 1782957600000,
     "shelfTime": "2026-07-02 10:00:00",
     "inLibrary": false
@@ -368,7 +368,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -380,8 +380,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "299K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "303K",
     "bookShelfTime": 1782871200000,
     "shelfTime": "2026-07-01 10:00:00",
     "inLibrary": false
@@ -436,7 +436,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -448,8 +448,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "361K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "363K",
     "bookShelfTime": 1782439200000,
     "shelfTime": "2026-06-26 10:00:00",
     "inLibrary": false
@@ -505,7 +505,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -517,7 +517,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "1.5M",
     "bookShelfTime": 1782360000000,
     "shelfTime": "2026-06-25 12:00:00",
@@ -574,7 +574,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -586,8 +586,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "285K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830019\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "286K",
     "bookShelfTime": 1782273600000,
     "shelfTime": "2026-06-24 12:00:00",
     "inLibrary": false
@@ -637,7 +637,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -649,7 +649,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830020\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "3.9M",
     "bookShelfTime": 1781798400000,
     "shelfTime": "2026-06-19 00:00:00",
@@ -706,7 +706,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -718,7 +718,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830020\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "1.4M",
     "bookShelfTime": 1781755200000,
     "shelfTime": "2026-06-18 12:00:00",
@@ -775,7 +775,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -787,8 +787,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "217K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830020\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "218K",
     "bookShelfTime": 1781668800000,
     "shelfTime": "2026-06-17 12:00:00",
     "inLibrary": false
@@ -838,7 +838,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -850,8 +850,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "351K",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830020\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "353K",
     "bookShelfTime": 1781575200000,
     "shelfTime": "2026-06-16 10:00:00",
     "inLibrary": false
@@ -907,7 +907,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -919,8 +919,8 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901594\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.3M",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830020\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.4M",
     "bookShelfTime": 1781247015000,
     "shelfTime": "2026-06-12 14:50:15",
     "inLibrary": false
@@ -976,7 +976,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "b75c501cf3aee5c8d457ddeb04bb5096"
+      "log_id": "41fc2b6d48a5325a486bbec7189b906c"
     },
     "isEntry": 0,
     "index": 0,
@@ -988,7 +988,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"b75c501cf3aee5c8d457ddeb04bb5096\",\"ret_time\":\"1783774901595\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"41fc2b6d48a5325a486bbec7189b906c\",\"ret_time\":\"1783795830020\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "5.5M",
     "bookShelfTime": 1781164800000,
     "shelfTime": "2026-06-11 16:00:00",

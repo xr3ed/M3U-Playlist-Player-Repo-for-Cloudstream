@@ -1,0 +1,57 @@
+{
+  "bookId": "42000016106",
+  "bookName": "Putusnya Jodoh, Datangnya Cinta",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016106/42000016106.jpg?t=1781080071527",
+  "chapterCount": 76,
+  "introduction": "Arman Pradana turun gunung untuk membatalkan pertunangannya, tetapi justru menikah dengan Kirana Maheswari. Saat membantu istrinya meraih puncak kesuksesan, dia mengungkap konspirasi di balik kehancuran keluarganya dan membalas dendam sebelum akhirnya hidup bahagia bersama sang istri.",
+  "tags": [
+    "Balas Dendam",
+    "Serangan Balik",
+    "Tokoh Legendaris",
+    "Cinta Setelah Menikah",
+    "Modern",
+    "Kembali Bangkit"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1337,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1332,
+      "tagName": "Tokoh Legendaris",
+      "tagEnName": "Divine Tycoon"
+    },
+    {
+      "tagId": 1423,
+      "tagName": "Cinta Setelah Menikah",
+      "tagEnName": "Love After Marriage"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 10001,
+      "tagName": "Kembali Bangkit",
+      "tagEnName": "Comeback Story"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782100800000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-22 12:00:00",
+  "inLibrary": false
+}

@@ -1,0 +1,57 @@
+{
+  "bookId": "42000017437",
+  "bookName": "Malam Tahun Baru",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017437/42000017437.jpg?t=1781692096982",
+  "chapterCount": 55,
+  "introduction": "Pada malam Tahun Baru, Jason Liso, menantu matrilokal, sibuk menyiapkan makan malam tetapi malah dihina keluarga mertuanya. Adik ipar mengejeknya, mertua memperlakukannya tidak adil, bahkan melarangnya makan bersama. Tak tahan lagi, Jason membalikkan meja dan pergi. Keluarga itu memandang rendah dirinya tanpa tahu bahwa Jason sebenarnya adalah putra seorang miliarder. Saat kebenaran terungkap, mereka pun menyesal.",
+  "tags": [
+    "Pembalikan Identitas",
+    "Serangan Balik",
+    "CEO",
+    "Menantu Pria",
+    "Modern",
+    "Pria Dominan"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1338,
+      "tagName": "Pembalikan Identitas",
+      "tagEnName": "Hidden Identity"
+    },
+    {
+      "tagId": 1340,
+      "tagName": "Serangan Balik",
+      "tagEnName": "Counterattack"
+    },
+    {
+      "tagId": 1324,
+      "tagName": "CEO",
+      "tagEnName": "Billionaire"
+    },
+    {
+      "tagId": 1329,
+      "tagName": "Menantu Pria",
+      "tagEnName": "Son-in-Law"
+    },
+    {
+      "tagId": 1318,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1323,
+      "tagName": "Pria Dominan",
+      "tagEnName": "Powerful Male Lead"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfTime": 1782014400000,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-06-21 12:00:00",
+  "inLibrary": false
+}

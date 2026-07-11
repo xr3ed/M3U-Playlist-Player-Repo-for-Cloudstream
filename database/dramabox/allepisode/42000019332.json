@@ -11,21 +11,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=YpJ79BGrQ2xqKe8S88rIoyYesy-V1l-xd3zh9hI2Msh9ImiTKDy9aFH-5-h1Z0i2BfNQKc1c4e3y6dE5~17vfXto3y6H4OeHxGAeTCCBFp7rF5AHDRSLWpD2gqCYtNjiWcpGhQajQlgyiaWGvSz4R2VJ3iZJyIBDDt304ZWqQVP4stcQAzU5g9-TFb8VFylw0sqfObEkydEkoONaaYuxMePOm9snnspCANChU1nIBo6anvy1aZpJ-mkOVJ9F69RKR3cqOPzdMOQH8gTI1ZUnNFvG~dpRjS23IXyVcvju7CzUOK3YpqIm6~Q~oWLTSpWZTbEl6bOyIGq1ZKT379T0MQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=RvDRVbAaOssQx0h0bc5ykizDf0zkAyf7V-KUTfLnZcjEbK6JTXmfXoHKdb02HfjQmq8xAzMdqvsdSZJi5MXnC2pZN8fXTW8BE~L4Un1UEKy4Bw4Z26mOSo4Y7ioN-4umM8XYrUrIFLONFD1-XBxTFyvNPOyfeLyTqRnDKXFwAFq7XUfZY3RZSQPGh89n~2Qs3TnEJP6Dd~Ugix6uVjP31uS~Om0pltl7uk0TPkd23gsYatGztbYzU657Y1~t2GFOVl72lhLttuRXMl7J7J~vmtRYfUTpSPhQVs2HiqqUWs~wf~TZ4ZjyYpYd35~WSBYGK1i5D7J~sk~d7bMy-wVu~Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=b6R9ANp~mXWrFfvPF7XUsj8op~URu5mKZchSD6WrrPKk8xqig5foWruWGQwq-dYduY6rsX1mbPAzBMf1p6uFeIQB~o0st7-XrEnLwbdwFtqcxNaxTiyb61PsaxDkx077a73z~XXYvPvmXIR247X-WqP3lln6PXtJJuMnLxWa7KATyhc3c3AeOtFJhs60azAj2Krx9c0rvPkvChutf6ts-qyEC6eJEzf2qACji9W0vXlyHUbx5k2WdpFtdtMksbPSGoCvMamKEBsjfcUoN3xDhI9sNU-QEwkVjK-fKLi7IfgANTybOx9ooNZcI25GkjR~U6Or4t9cgW8chPomqBO5nA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=Xb1Wrwr01niDVQSblwvPaickHCPt9C5JUbfSHDoEKSapV2HLyKB6mriiHIjeQfLZptOy0biA5QmJvN8BBNxQpujW5s62~njIapDRv2ZFBugJHp9ugIcI6MtheZuyfkzRqVSoMNrIAIsE4hqxRE6RXljUs7ZS9ESEONyvyRhBiTLfnE6M4~LL-rbKfD-tc2Iy5xCQTLsSILEDz9pKaI2mOm2IQ5B1z44qCSux0vn4Ae2-j6lN59VgGpw4K2Ah0w62KsOnxqP1l-8YH-Y2dbYi7TjQBMlPDyIGSo-ZepG5ZhShVTX10PTbfd89zZ3vtOrNm4fX3au2U~QYc3tcA4D8~g__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=C3F7y8IHSnENodj-OAI8dKFPtbb2VOJzad2rcLD1XZNKgngmSsSVs4BdEkUy-X8ReDyyt3ief6gRdF0mt7kPWKRpDn1vd5ntkbfvL~yYxyZLUQJny3z8BLUwXjHUyq4-yzbxuaLaPF3HVTeIu6qK-n1WZLFJpiwnsEJ2ZyiqiIIWjQweil6fOWDgA8EYSFSzUoKjF117nxAlCL42bi5~ImzhmIX1vcxrIy~BtvEF3geLVheMYjr1rdOLsu3F0r1KfaDilURXxFT4E1OSRw1LyjRSOpUkHw~pFCSn8ngusQTJvD0R3R3TEYeG6mJYWHrLVvdkrbZBrjHK4kTvpYInkw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=zDbeurUQw1Nc8Qr5H59VJ-Ta9Ghme-TgL-hdoKwPslm9kXY3JQ~kdPmcdcIZ6buPiv3xWNbG9bsu7PZlO~f7mCPbe5Jfttvz6280YBAriA9iVUam4r5ggpGNANAj-j6FS20fPhqLRnmbDqS7tx6Vu4n6E757Gy3gRHgPgXXw1rj4vDVrA0xm5qmPcGe9y3egHT5HaWCMnxV2Vp8bnGLuaHY7oOPnB20EHHj7VgSFkIctTqn6uJAZjV-CAK0VP5kB9DhZkhH02Y5rAv0NdHpOraCQ0D5PbEH6aAQHz-UlzqAyFQr~z~fLOhurLYFN8aWJdpfWy6vv2aEQOXXY2-VXBw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -38,21 +38,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/4b1a983045327affe54eb7225dcbf7bf/6a538fd0/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ca7ed397a018e65c7e5519d2906c15b3/6a53e430/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/8434bd998cacd57c92de45d166e35b98/6a538fd0/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ca6d300dae053110f9984c206aef351c/6a53e430/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/8123793b82092f665412b349712c14be/6a538fd0/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/2970f48393f9b40b7bb2053168efe213/6a53e430/51/4x3/43x0/430x6/43061000024/700996915_1_ns/700996915.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -174,21 +174,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=ofF6trUTQoeDPf1I~mq8jRm5ph~tSGT8pr4yMMzUmrlypk-yvGiMaH-zpCfaoicuKAiN2wR~qaSMeYwsjShxltyHmglsW7V5pso56HH9hYj1vuHgEpxYf7tPAuMc6UQSBoqZrFvPOUjq6G-RdhUg7yj3hW7AhV3ajfDZsDi8l23n3EhemRlTgPS-9PTq7DANhc6alDS2lUjksfz2z2b0NutH1C1EZmgtHDwkiTKXXaDW44DE0gHYw2B-5bEM2TLixF9ogrUfUfeXGndcUYA5xl3sjolga4GD9HEmlm60bp4-NuvUYIuezowjpDntLPqH94CYAto75JKTjxRjc3ltUQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=ms7v3fSrUM5Ei0ByolDQZXwP4-JtSrYbtbhYAFlLn6Z9sqSNC2O-Ir~qcIEIMRohTHcDI3pR9gtY4dx2aeRiw2pRwY~wf6hBUnkoKzNGVRPCDo9IUYJQjFNEHWvpUWvXajG29GVf-psFAzw6hlEyACH-Tb2OzbQiTJq5Ay6-GoChDnzJ4tpt4xfQFqPmvD2IYTM9h~f-z6ojDo1UKVWR8kQfwSZCDkmGsUrtsVcjf0UgARD1vHDxErtTwPC5X8yAUfeT3o9FfD~tfQ7lU8wlfOIpwrQ0Z6XZS-R9Cm~FKhHW95KO~JNK~-DmbsB8uyZa0jJRCxrsUPkDcCLd1Kw4KQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=Qt7GhGUibiyO9omAurCCxc~bVvP2QNpI2tpx8nP4svE-QVeIZZsr5a1TPw3Sy4qce5jyTgL9pGjYIfyvhEdj7mN8Po42ggKe-VPWsGdh7~yGsJEf4u2aSKZxelh~tLdGka~Bs5haDrlhn-W7Hr7skZXwbp1tP4HI3Y~HeIozbd5JMEq~jx5~piOY4OxH8xgXpwl5OKIUcIULLFIcPH03fYZpSSvjLY7Kqb2zB-e2o0cuclfaV6LS-sudQxPzYAD00eTb0TaP69nZQT~MrOhqzdWpF9Ocvsmk8tv~5jAs4xzUOGmPrGsStNtiBrpDncgk33MFHAzn2zvpPXRhsLUvVA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=uPETVFaxgpFTed-fUu8naQZbMKjbs63UUGLJjVI1ueZknDZY5l7U6mq7DomCiBDBaapDoebighe5mLR42Wc~hf4lBa0FK5gSdNpWwLBgcNfjYQFgPbiLU72s-aiO-euRWzpz459J-nnahC1leLdqoOHVfgm~0l-9c6ZLVuETpkc27xxDHKpGfb1JuISxHoIHXUreQG5OG3B84Ht20s4M7cG8IlSxQgaE15QxyLGhN2OHCF80bjmEkwXqgd68zFSVvgizdrAPZGBsUaMJvVWn7dhuvqt4i02i5upIO~OcQcsR8EyhhdaXEdfa-055j~DzT1NtxVfeHqS2VDCQ4FkCaA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=yzdJtm~7vpfhDjTn~cQ9K8K9UvyUOQwjsJcwMwQbjYgwD2L8XPsB1ShRtRdoYdK4XtrCSqdLWLuKXoL-Xl1z9MH0iwD7qtPaQvHOQzOtKfEmu2lkr-hZTPCr4Iu5EpDbOmM3yc3vzwhbLC2AbSuGCp0AkgFuDM9Yi7g3lznRn~dDdMmIvbtB-mfG~vdgEcSzVCj3MGi4zQsosLvxUPQ8GLx13e8gwOMYMt1wRuwTNwzRHl6L1~r03MF22Z93YeGKctSb3uQkeuoHHNL9SccmX06dBJnQ9VKVF-65HtuABJ5YQ1Kt4-6VkSq1MHP4GeThqqvcpGveRDCXfqHIwPrOrA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=QsIuckjTlJR8OkpmJItOp1XzvxU3nAYREsuTLQWteH5WL2FUrzfn4PZpqnxT8LOW8vH-PhVR0lOjgywOhlW99qXNGW0-tCPzDDzxtsZopUc9jVfZpamI7LRGD1HkzJJVe9SSsAtI8Ufn1-ayR0JL8X2p~KJ2E7APyMvfH1grL8PFJEFdNu0gWoaB3EDFm4hA75Vl8wvyPLs28XP7zY1pn~KpuLFtlsIMpLCtrztlLsWNhkP-X2P51VACGJmCA5DTAguBFsoCUs9A4VLRg4nWrH5gXlUfcTBMJV3UyDjxBqTK3XnEOm2Kz8oO~EuXK~Mw~w7oyNHUPLsMjeHb8bM1nA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -201,21 +201,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/69d81f1ef9402d0e4e094af565a91ce2/6a538fd0/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/192b5e7eb1e4e53710d52e2140569f6d/6a53e430/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/a80cd7eac9b4557280a2ed301b3225d1/6a538fd0/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/42e227d90d066aecbefecf7f6a2382b5/6a53e430/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/844fd83df30e8671b13a769049cfb15b/6a538fd0/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a976a97ca8d63bcfce5b5f59ee91f582/6a53e430/61/4x3/43x0/430x6/43061000024/700996916_1_ns/700996916.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -337,21 +337,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=BOF8LbEwbHPz5Zunj2KgY0xnCxglgq6Dz0mE7ROpqU0EbtFBDHwMIJByyQq1E-pUmsjeqyrlP5TxYqQA1PSEL4N3sFEacNuVzSyE6NbImZWEvUmjS5NmIlKUDE2cQ6fH6y~4zdTwLYvYtJQqZmXMOUyWmmb7cMUIL1nHbHevf12~GGpwrNYoj9b1scM04hHE0jthZqOG1~Jr59NAnQQAErOgTCADippRAi4tRxhtsXC6Hz0JSc-R4uRh3fwR-DF3fsNWbTuc9QqURZ-MLmHeTnACWhM0zBvFFbCbktyuiZvfxx~GtQQDiexpwLOk0Ltx~A2qfrAl8NGlbxdE5Lyj9g__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=jkAh3Yi7HlQGEP33RzWxjdfNohEWFh1m4T8ueMv6HjpF7fZkg1CKFs~WkX6CIDccxSXGgFdw3j0H2fKoEcT4VhB1NvVEUM8QVOhxhP9ldaTw-QfYTPpbxI8v9vANA0PTGKh0KKa2oYRsVjcB4TBkYnvf0S-m9katJPqZrkAujQABwt5Tk~q26FNrrb3PCHQ~zrCrOhKPO0XDA0OaQeIlktlUpx~Z9wU4ogfn2Xbr2rf9pUNxCedF~nAYq9LQ2z9NbMgulMc3ttmJeTWWDu6w-bPFENuxO1GGU~5htwU4FneK-aCMeoPgoVAU5d~A2s6kDt1farox0PR~ijyoLK5-Dg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=fa84sMpUUENwGQalL8~Nuxh8uS2Nk7Gg0UTYk5nhfeHjYh7JTGl-EFloa94EPp32Bl35V1JVAwch7Zobi0T3m1gPd~je3rdU7IhU6GnsxhpuM9v2TiGqbGupXyH5OPgbg9Fm4PVayJQQ8OreG1WKVgCQRVpNA75oCVVK-zChPrqsjcSzQ2digQBKuza82JquZfDbHupEYAf-nBjohD28l1QSCi-~a5I4U30jRDfVcQsPyiEI~JOy~JP0HJ~fO0rKpX0z4SuWUFXHSnYz9jUcaF5tCWclv1cc1mRazONCsIa8n80YjvHHWhxhUShHJgXY7Tiw5onEq9eTOVw6uH5Vig__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=B~Bp25QipUsaYNNz1JCyXjTQzIor7iHTQZbzlxT9iw5w6IiAW84aaSfpgA7FoqeGwzEgfKQO0xZ2YoNtL0Xf7eZYoaZ4M50I-TmfBkcYwYav3cYIgVl3rB93-mvUr-VD-RyZ6CU9~JwH9SjrxU6RK3kUK3xMfKef16eOSSKY26fGh2xLDfnTNGJnM89fzkL~L-nyuG72mGI~FaOTzOJxSdnt58AUCVEYdX5UpCeC0jWa1NLVropMRRBb6lxNf6Y3tLzNgBn5x0CHQuRljLp7fLXaR7b9JhzPZiH21SvJpup2iWCIk9KCP-IGjLLoHUi682gQN1yyXKOczk~h5-SxUQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=CZK3D7w0I~PQ98jB3f8WoRAoxojn5NaDC7vzPxX-NRK2FSzLjnvURRv3Y-P~2UvzQeWdE4He9MGeWO4X5MfqYUDXzHHd2odw8PZWJVovt823ngGhHxCrxaYNW4FVeMnBQB4UEvcyRMt1yPcFHnSkLO3~sB2gyZ1g2OW2F84dFGvSqY85eGx~bflRRN0JLLRRyHLHICVALq1LRyO0a-5xYc-Ie22o3g-BI6Ri6qdQEdDYULAEQ9gKW9OfU3Y6Fumsut5~mMTVKjxogAWW3H8Mqge5EE05wRKlf~ZFNbIHyBYt7QoPXU~OgpTk-nmTjxYoixSWEE59igIR4wmWFwVI8g__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=qDM4-EbGHqkFdygefK-uyOVAuYUEDWTT5Td-N4kHnw1huFgTEXT9PgL0kN1IipW9ItkRc4ssXrImyjGaGKWkCbVctWl8~6uRGN6Q0H2w7phC-LhXVsZO0isXsfgO2qJlpcpWjpfjJ5Br7aQNHuJMTJEpl97o6lypxpyp1wVnaXuEJqiZAuXOky1wm45aFJp42WeDAUp2yZJ-F-RVkaYQGo1868QIv--BIHpxJtTtnPTrcL8s1O3D6EpHJzW2sXnxB1HKFNld6wuSjPSCGOusRqf5Q4OQDI5B-WXP0QTh8rjpU2RjKLdbS9dIuv7RaZjGlmvtv5kn~VllVP8zl~EA0A__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -364,21 +364,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/c59e14be2d4bcd5d44c9d9602a395b8a/6a538fd0/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/e3897b2cffa626b1b202af3068ae2afb/6a53e430/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/41de9a67eb4263d76930f4e6a38079b8/6a538fd0/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/30bb7b262c1fd2909b98981c2946cc3e/6a53e430/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/e177ab4a564a5b55e6c85390e12f51f5/6a538fd0/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/83433e2fd4aa562cee0fe4f727af8781/6a53e430/71/4x3/43x0/430x6/43061000024/700996917_1_ns/700996917.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -500,21 +500,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=Eq7JXR7DXvqpKuxsx0sB4eUxl7UAOH2l6otvrQW05uhlnJfewo0VF~Q96efJpS-qQnPy3~XITh2YwjfVY8Vok~9uqTs9gvnQESkMnNxdJnDSaUn4B2l7VdYEdPUPJzwGm5JvEDWt3w8LRM-ycQ0YMJ7zqDBwe60Unad1wvhrpabjvoq5mwojKvNral53cPAoDne7xfAUDa759JbD2C8iiNEAJhrPTF9NZunVaGf8EMQbl-iHDmIftUACl-9T326EQ7aYr3BXfgn8iEHWzk0jycA7JV3VCb4y2a6zrP9lh3LztCE~7dBkO7zP4FZj3UHD-MTBP73AtapEc7XyVq90gw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=e~HSnkzCvW9UFlKtaxwvdU34AdGyU5NUFOucI3leDAAJmfGvhh0fHHvGrp6MsX-dF82Lmzw15xC4aCG2Ds4tZkvmeeZo8BoRZU4NyUss7XN6eVAfbptFPIySCn8~AU9WJKbwHRSjRTyFCPzS1fdTg8vPcD-XBkPhUC89Qfge5WzswhEyVX5dtgV4ippoBE3ZBdFwhgPO0m6eRtqoLnSpuy64ifXwmHNsKU~JnH3S5TnFzDU6Tlw46T-a1zUUB-mijPrN4lLVflxIh5-1wRv7HdGN0f2vS2nUyow~O86h5hIr4D1N4rnVPTHU6AZdw3m9PlwHupxLBj1gMSzp-~4c0Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=HbItnUPht8Yhd72dLyxmsHmfwgb45m-hyXBWiKDL8iw~ahjYgh2QUYjS6zY9s-rcMHo-MEqkw8YrHNGLrxefNatRgPABilYWNbmtP7f~RKh33FCSNO5-aFGkIs1V0puad6jv8raN-0YSuv6Jrq62aGAhKh3c4BDZDrZQcqbNCPjfmoTA-NyZktWFSyI51bbLvTw-Zlptfbjlq91BYdo-m1RDr2VJkwtKYFq2t7XGOBmlBqKrl-C4RBEMBroMlKFatootssuudfMft3jby9WFiFGo2Mwmye4-2FcQ8AzDxWqxs9lySNVL8lSktV93bAwIzEbCmCFZPUNFyhhvFgH3Iw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=InP2MOGpY-Jzl2QffipZOr6jzt~IwlUV4~vQ3k1iU4mRSqYf8DH1RPRBkS7UgkEfdrGxB3PB0OxxLyvhtW3KYoPKLpltK9Oog2b0JBxM8dgivcrtoMbmlsfy1seyO3eR2M~4qYIwluBVJh~LhW3tjQez12CvP0NsI-ZdoiCJyFW-Ghhem16sOje4xs6NRHPjWwiEQORhfPjVzYylF7erXp2oNPq8yvr76GVcGuGzceKsCBajJQh3L91RaH1X63byH0dXPLpvwBq1TicqkjLGyx5uzNAjNOi5hXtoS2KjJcSqJjKlMWbq5lrO7ClAngPr1wZ6K7WPpdF3UHChXbP5Rw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=Mny2nrhwVrteL74E~Z25krdEOvEG11tvoPuyf-v9f6oxZPNR-DfdLdRodYmd1Nra7L0zecsvx5TwvUVzpt2-VU4hzXMv~tmBpkNn-tiyz4VXcqtLoHDQXDp7kexLQp2eoKyMU0H1zxPKpbj2lEZ7tmv3c4hKySgzaDnGxPb12CMCaepTEpJvj~~Nir9nIA47gB5yHTF-z1YwGOV0zY3s3xFn5SE4BZNnl5PdtpeDXbXbotJHeNFhLHEMA8bdv1hejwpiYviPID-5k8aUKEdZqGvd0Jrp7mSpi4-3XltXr2uChNo8W6dMNa9g7LaOUmmY7-lxXjQb74ycOozj7mjVGQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=wnj7FTMybghWF2YkEvMmOREzqQbEhp9z2uIywFtzUXiI47C1TAIBk5068QqXQ~taY1LhGcJWmek5oFYLXaiqipz5dhQ8v7TBi70eqRVJcZ-rrGiwwjDKiTFkZurwt5~-HHGVI4YdNMHFzxoyuZqX20RUd~tZOGdjDeYMsooW0V6veblrlxDg-g7ySxSnqI0rrShBN6-iq~AAKLa1f1Hm1ik~s7lcdSRRydHl6SYmPz5P-EVQznQW5KdpEokX-k5S8ohzvgNSrs54nxgPOUPzlKXGh0flBoK8kyPXTF36RuyX0xtwcmHIUM-KpHbEzOx7eb72qtWWmhvVSYcj9fRsww__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -527,21 +527,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/bb1bb2b536ce780fe4a311d024cf8a15/6a538fd0/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/d0bd94e19945afb245228f4c82f54792/6a53e430/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/afa9b539c2d009181c9913558d2574e4/6a538fd0/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/47bf3e4d2e6dedcb7d9e7a516ece87b7/6a53e430/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/bb3c8539b8e6ded17f051cb02a3f772f/6a538fd0/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/391adaafd3e9b7a7e70cc1c5a979ab06/6a53e430/81/4x3/43x0/430x6/43061000024/700996918_1_ns/700996918.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -663,21 +663,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=xIJ2ZGSaj5o0IZ5vBUOe-QvfwRq5hbrbl3C3gl~Fr-hfCwjzTxOspX~gecfFMvVHskb05io4HdAtJe4JMEHrOdMGYUFBGqd4UwF6CGhGhGykCwUBby2fdV8Fii8SxuzRORMp7GDJUZ1IjfmiiKGmlnPfBP0Kx~OUNs~2pbBU2sxboXeM6GeAEWU5oe80l0lc6BaUL4tt5BpbIAqePxGU4H0ii4UzSuV2h~GJ0ZIkJk8VDWgHk7N0~vkwilzJcyCQTPe~pAk2IACN3pIon-WPRBgbWKbQGgKYqmu~CU3ytVd99oiDAdZYyaRT2ZO1uy3Ku1A-DTWk7cLTFtrZ3sNT-A__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=wewlVQgBzqiWPuLGIi6ddwMQ-zn7zcOVTV7C6PtNh~22KjdQQn7-yuwKZdaIJIwBzsi800n3Kw0f1SYGRu9vas00EDREhTPww-~FCnLDh1-Z7W4qKyZnkGIAtldDqRP~DUrHvwmFCFHgtEqakNqps~Gb4HXb2EBnUCnv-8ya-sEa-twj3vy2OCBu1ihOAWMR722FhQmilIANnCdKgOHlHoNTWcJSsgls3o8U5vU0ao3lIiyhO-m3WYNjzuM49v~x38Hhwu9G4WDSD5dLWBJJwLKfmqV5JLCssWJbspVWLZEL5iQ-PaoMAAJrX7xPFP6c7TLGMMwll2YUrSbwhgWzUA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=dyoMj8XG~AkKSi82BOtL87Mq8gezRyF~CdbojNWFpylvmt3bCbzJhc~~rUYNm0x9Q3NdBdxjp2FZT4vvY1f-stjZAZZ7ImS2H~d~QZbeD-rUHqYvE4qOkqiNv-83lc3j1F1h1lAHZwcuxxeSIX4tdZNR3uyuU8cAIjXdjkz4-PcKf1z4Qssp~lDbjcSFUsK4TOfmLIU4uCuSPmBjfeTMxfBrLuSlm~a3JdMAspMgOsqaNLZMUX5JydI30L6Hv51qHhhuGTEZAgJ7NJCswTSgqTLzCJhzHsaQhq8Di26gWVbf1W4KFz7eVX6Z7iW7buHvJHPf-wTB7VRUQWzUiXHz1w__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=JW64c0ChycdDn5h2jqFG4AdDsbKo3PwVkZIX0DueexQbsceRmzgDrKmBt-647~XoZR2XMglzt7P3GjYdgS2-48ufCqbRt7fZPPrUKmsqTtKeqn1CGiVTkeTBOMUx9ySYcjcqjT5C3wjs~dJ2rlPaWtF5u4QWYz8GGWI8VfVz6lTLe9FMckymKMsPxSRD91lwd9nmAMUcdPhwne~5nEcsxuwzyDHzMj3-~0c2KFwdIr0yv2piKGTQ2j-rF1GoCPos9pS2sCgqdsFUrj1LKTP83ILHaU3KWS~sGbNEyLsBtkTefwgJjWmIn0WN0rjgIogs3VafgdH2YyYvq7t8-z-w9Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=VhRNA0bS46y7ZiQKEl2pJjQgyxMj6OfVwWEmJMfSYRsDEBtutrRwtv12CpCwjz2zN6KmniAHXL2Ag9P0xJRurbhmlzHhzT1bbxww7E4JdKmXgkl0GSCY7w75K5gt8QhAa4K9db1e8lTMtzAd~CQxuUTyuLr00p9eACzLs3GtnXlT~C1IaQ8brj9sghRmaiZZ4FuHFpOVqV~NUSE4qiB-ZWH3xcY~guCIIpYJ~qo5LXiY-b6tYGgKySdIIAPJ2UoNoSuCwTwV5t43FrfTFXsO-3IVwia4HrXejWAbYZUdBHjy0mcBHtNg4KsRyjR698g3pZ8W5Ubg14DJFuMRqs4Pcw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=zu1uZE2CqwExgsuXKu~8k59rMnVfCGLXBq7qdbmjleg6yn5k90dznp5TsLwRxpdC7WAHYusGlbFFSHfvoWz1W1B2A~Lt76o8obEEt~WEUBRn~v6Q1X3z~HAoUpNGw3XRsrxR8VxikhiTvaYhkfktSGkB2BUXsA84tbdUJRiGDdii3rf7IkuLwy6hydsQtHeoiDV0WatdS0scprBpHMevoejqO3Uj4hCndlSYa0qVpEfbhpJscymvjb2cxyVGYt2srYsFCA87x3UZSlGBDeIhJGj5aY5ucuieUcElEKRWTFI94jTbwdTjLzEoNrIl~xzBRuEjUYlIM9FD46t0tnJ0~Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -690,21 +690,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/131fc9c5b6183b98eb837269d05a5801/6a538fd0/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/6ec1e57239fb0e5c417affe93c1b2da0/6a53e430/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/946643af50bb9be9a6ee458a5af89b12/6a538fd0/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/dc68fbc87ef891bfbb9bc63299e61a50/6a53e430/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/86698d1f74f2c2b92a39284b2a8f6011/6a538fd0/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/c558e4e8e3dc47f319249009e61e4099/6a53e430/91/4x3/43x0/430x6/43061000024/700996919_1_ns/700996919.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -826,21 +826,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=dhleW4K0dO592XR2XA2X9FCodIw7xobyA4DXuO1SyUPGTXwXWrGyvSsjPu~~X9HIcjrQ4L6lFd~qJruV6Qx~MBWDN02-JWyAndMFFue8mIY6rr-SkJ~3PXEHLbbOSSs~X8A2uMRs7xI2ZuLEBA8raBJ7vZlaIcfqudyKSicg~akFwDyTjXuc~CkHoHSPg5iaXhNHMjCPn5zGA08NIREwVmwO7WApy1bGqFejiJaITWTT5Zx~6n72R-tBUrv81g1wl1Akasex7MYP2FooSb~9D3A5N9n5Lxxd-cTlVHSM2FlItDe3nBodpzH-BYnxw42fZACencIi65M6dZKkNGYJkg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=z4Iv5uGYCCfTiluJhSVMHi52-77UQZdrWmQ5eOZGoc13jW7WAz5eXRjMXYuFIEDPtEP34KgbwRmWzKctOS3mnlKb7tL3aNhOV172usi0O~XC43LLtor5Xw-KDB1OWQRtts42mg05vlqrfAnSTifmY3ne44mwv~FUpe~ScfhUCMx47b1w0zme33ftMKeHvh9CoaY-tIig1CGN0G~mRLrmdCLGSwW6FLlWgtWlEo9Bw93SEEWWOT1QRr1L~3XZ7fFvXaKRYcVk0PILXyyKA9EVuEwC5IZVKlbcOQwHGbaxktKTIIZyn~NmeNVLRspM7ZeDMcX9r8cTGesgbp3IGquxxQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=ifwi~Uh1Znm~cPlszBl9EKbvOsV88vmrwYmVtiI0ooWJi6B~xq8yDA7-atQ8Q7HE2nO-r43KGE~qhXkmIDFT1rvTaYgiudZpqoAtlNdbshLrGsN6rGlKKYDUkxnLoyAxO24a3rH1V40vyqJ5YVKYMIf36N2apIDpMYHLgEOZDcSVZRbuULlkIvv1jlJTpRm54KYlG5HWCGQI-EX4gyWZpt3Vq1Jcb9U2gShZFmTAeWjcFtBD3iz3KYen-B0HT9GEbPs~-03tvgFrX3nys~i5hWWHzKGBH9O9BgPuohB3nxekVPrY3~auUvj6bx4XLyx7BMFJVkeatLVimRN7yI8jTA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=hvnk2WjtXackDr7Ake4VVErNMRSac~QCE2WsVsA5Lq0JdUbmTE6FPozSwwZ~iSPmm6iLx5tV3ra0V21J6RKgS0zJIxE0fWfA3~-sH32J~BCSe5JmTAzLKcT0liNqkzBK7UYxcO1S0oQyq7xtpe35auMWH6br69T0u0HiNNgjU54eLg~jFQxLeGy3IFvDLj8a4o2AjXrVkFooM8W5KAiaxyTDCO7k9CcaUhuuyQEke317h5-s8r4RTjY~qhh8pJMrco9QJGPetIBeoCAlEUxGORIBGdELDrVKAiHZntjVAKMCCYoWNYlPK7emfAUKVYKOIFgE4Vj0dwFIqdv9PKrADQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=SLHYluyx4KcW7~xXx2xBMPvHvWLRrUgKRDYvQAnNmcM25pjPt~aU4bq2i7N9jAhH5RhkRvjVB2GjhBEdbwZJtWlKZzNvFTFucfhpu98X7Perc2AjG8gLtDRfqPlw720HtNBc9QnV~CnTdnY9nv034vRmRYSydHuqwbhg1fXObdpRC~eiGyYhWBan6Pzsa8Dj6SxbiPbsoXCdzuc6j-X8d9XR6nR8wwdpMUeCI9lElh-aT-H97YreJehkpe9s3fae2rvnOAGBLpAuoqg5LLKEfJ3XljInraboiEt5AuWmzwURJYQjw1sTCJUcBqee8Ql41RKbdOKpyUhHPS6EC1EV7g__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=xTKgA1uBMqmVlzWVx08hnfb1bk0E0I0usjefgoEFiaeD-S0R3VmqQcan9IrrTi7JWAoZDtjRp-ZlZuNby3fA0ACpfZMhceB0VkZ0WD3a5LD1uH9KlpoicpGP53bquw2iDNw0PIPPEb0A11jf6KI89ZMvrDrtNqQuYofB7P4sfnsfXz~puXALr2qBb~5bd-uuGFbL6p8WlzTet6FqsCzq6XPhH7~HlmxFF94bn2fouXroeZIDraaT9Tg-0MaF1mvVfZeyo0FcSs~4To7fMRBfuWCzn8GfFmfYBev-Gs3His1A-u9iwn3iDGI359ah2qW~OirPp8tMMXlrut4f4FV~pQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -853,21 +853,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/699edd1ba40d13ea10c70e8fd493397f/6a538fd0/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/e552e0fef344f6be661ae3d9ea7a0789/6a53e430/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/40b397115aa4087a480f98ef13951659/6a538fd0/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ef8441810ef72d8bc8ef3c548b0d4dbb/6a53e430/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/5f26ace8cea2848c21e3daf78bc93a09/6a538fd0/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a3f8838968c3317c0a82b335fc89ff6f/6a53e430/02/4x3/43x0/430x6/43061000024/700996920_1_ns/700996920.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -989,21 +989,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=eNxWQbGOwu6PTzvw~nRUE96r4uoQ0tvn8SQVOWxr7XdTHmcf2mGn7CAOmgA2dLKXAK5fGoKIJxCjN1o86iQPAT12mX6qYCkSbIcj7w3VmbYCvySftSTJ1bUnqF0qEyzUM5ffCmGhz1T9JdM1uu4l4jSjSU43ZzpYk0rqlbNaAZw1BOXQGK420CkDgEDk8jkawIba3kLKIVpmkzeuiOG0jESrD3FTtVdCDAJd9bIJWDgFHOs35zhRPHNGXvvJ2mW4D2d2ixYUHOZWbTtRvS5NqLju~55OsoPrifcE4zgVnReObCrGVZjhSKv6Az70ubihB9KsA33XzyfXnOrzSxyJjA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=WinesHGo5YwS4Tcd5ke7BlunjrMmUuVhp2guuHdCQYcYACFv2Kob~zAzVmHX3USn4MHFIojqjUbp7HS14Kx-ehGoKLHUEBKKcGf9Dt7tPIvUI55NAMOiSdT-KX9zlYFTo9YSJtN2roeOctGijR8jqs89WdkiDaC-7xULAgYEIUa5NGcbTx4He3Dz2aZnLj8QQeXfaKQZqApyfn4CTr2hnJ1MzRpWPaqfNaQLSFWIzuDlniBhy~sed8-R7nhY8QXuXDf3k9pb3d4RO8Kl8ok8f2YYLN31BaYcBNncDWdGmWgT4JlsGAHPb9Jt2Ra7fTWBYnQ7Qq0KfmkNmRtGacJ7AQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=nQYAYv~wx9ucRr2hHbeyVPbT7jsEYjqA6FnkkDUo~BIptrKybBBKmlL0MyOVYapyhm6USnO6OwwUwIB1n1suEFMoTnKYAZWHiRmLxujReP-~0Bd1TzSfvUtM4cYqM5oplviC25iwkrkMT5CduN7ZQskHEB214p7OuCaW0-hJt7FlNsSNUPNaSDWbCNZQ5YpPtacEYhBFjMrR-Dvb9w2iEC3eL39ITSjHBLUYN9ifyTJJbsXiLKDyQ54~-7APoLatt2nN~wGEi7usT9sX8rd37tAkFKNrXcsDNRq7SwKmq6eIH~N8cvswNpTFfWsEe0qbAXuOUDOF5kYhmGVpxlAOwQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=BepRBti1vaRItFk2mfjzr8jnN32r4PFEnkwgeCe5nOvmp5gEM1qMIWKbdWk9k-17FoQYuPvgf7CNL21fLFOEZWYr0LA~sVVzX3JpIM79FHIfvG5k~ga4vSfMJ3K4SqmVFchokrbq3WopFwacQbpigTmVzcLj4CUVkFUbqVD1VQEihKeZ7AzNzEOeVsgppIvGoze-oRLNp6E2o13v2hfWccVxnpVUUkSeTtJ~aEmVXi8zxZ4WeMfAUVabzSbxqAw9TunWSWyXjj-SQqkm0DsCDaS7zjuPZWIlXEZNqqTlJn4MHymD-hKOFltcIi~sivJdb9~Lk5w-TshyKXMpSZggxg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=r6e9OZHRiRX03pmNQ29MesMX4xhz8-zvOD0folCtOR9-VCo8vVgPbpa0wW3msKHkZKzoyslb~kMRpbFYyrrbASR3EgOUCwKNtP-MoFar-GB6h6RktmkPyj3N8QXJ8lFa77ZBeLVh2gG2yFb0oiJpeHMKZ632WxQX77ONfrkUzHqmA~O~FgVESDXSaijPdxRpP~XwcHl766XSvWMh6Re6xS6z-uVuMKHVj81znuitpSy-tLyHP~byk5cwL7PQwhK1TZEorErt5hzh7yTncgbM3hO-eyBgqtfB10H24FUdKd9cgVPcFXSfv9lpqOhOaa8ewaZJL5hS4TTr~Mvb0LSfhg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=FsBSRdjQ1g1sOeqq2u5IikYVRge0STo67svROQam-HafX1B26XyJZXc5RjshYiz1mAgW88SckJTH9~LVe4gX3HpTI87oz8BM4dlRO1TBiXRYIcA~8Dr1g1ThDAEE-HmsaiZAZvQ2~VNN82yGAQpDd6Q7Ud9ZsfJ3m5WBtFrjK0zuEp~jCW01cFiF0ZX-79wMocxUR-5PvtiqnPHVpVj0c2~lRxZvujL7O3kRpSBiesDq3Y9aiiGs9tTjW-JAURzCAD3pRKXiPBxhIrlkSD5AiR5Tu-Vg7RNnAghgu-3tNSw60taUYsRFjWOr1-x7cM~bDUKAcl9cqbJzhzzA-WfbfQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1016,21 +1016,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9fa601ea8a97fd0522001cd91119ce24/6a538fd0/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/33b74035b3f01db49c5e68ce607bb81c/6a53e430/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/8af63e3bc0eab506504c2b9de804c14a/6a538fd0/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/7b0f43a29847b4a9b658e33caaab6ca1/6a53e430/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/c95497b72fa40766f6c8a465996468a6/6a538fd0/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/d0a7b0fac852fe4d2d0a2b8b9e062b40/6a53e430/12/4x3/43x0/430x6/43061000024/700996921_1_ns/700996921.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1152,21 +1152,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=UD9T6nmHowNaHj7QqLTSDLYjH5peFIW35dJu6NEvhdWoa2OOWC1jWWQ213x4jNC1J9KpOUjVcU2LRWoScxH~2OfonYTuMlZJgVWRxWNpn2HuY7NPEoT4a5Y5DQiijpGJsu687ci9Nwc8lQXfAW0iwW2Amh9FqVHZUdEtNhrC0G3FeNBeqFQolKv~G3Iq-MIvIfABlBLkph~Iny4chwr0dbZpsDkY5EL~gF4V-gw31OhhSCI6YJJKWeSl~stB8p~lX-DOXZWFKStZ3tdGjsJdviXpQz5K3xYxMqKDmeYQh0lAVEho~TtH0FhS1rbkkzbd1wNqkhLBuDF1RpxdLE8wNg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=I7T-1xBzv6z5GZ2TBsngTPbIoIbqx84LVxh2CF1S72~0pWsHEUotB2HS8gya2ZYDsAw7GEtiowsLL6eWfkSxkxhIqG1ukQrs~L3dOZso5QG-RJpNTrihfkrD1WoKPFChPbqH04iisiBebkcUF06TIRAkma0M0C~hQ5W3LEAAWXe0LSZVvQ6O9Delj7XrbCkDZDi3TXzOB2IEtlZErr5fwfWUnsrJh50crvP-CFY9wn6FE~nqSlvC92fJQ2oQt8y5l~eunydIjFGwY7oEPMG49OFLYsL6LOM3ewXvCxQJrpfVyAVrltgZxODyfGd-dswjkWDbbSXmD82bZENNYYOcpg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=BBWm2W4CJz4guDLYAWuE4eFJlQ64TqF8LOJmvXTrcw6b~3qHhQJ7csxW0Jth59Aheg5~LdEW6jQI3zWi~GuzTYzsBDbqwgoutBETZrbrC9UO1Jb8tNgTW82W5kkHjWgG-hF5WK~C0Vu17MFEgEm6bYMTkuLWY~ii6-tRLVpCfJn0Yy~sSEiGsegziCvMAay4-PvTbLU6~QiUCR1pyjO5BYhBlpPpj4Jca1mQtT7fs5xw0xBdtpowbKGvI~LPD-dP7WVvmZbL-KlD0I~Syug0Qd5w0wZgJix3zuyZtpbqj2ah56rn6DdXHl~RkMPB0fX8qeB5bGSkFANDcjk2AX97kA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=kzZEQgWUwKI3o45dQ54bYY99p6D0sZfPob4FhPu6ZBo2aRXj2-yxGdgQ8h8PROoKmyH5j6v8Nu3hQofUDaG63IMpo4TBhm5T3nG4uXzJDdlm95MZYa6GYQ4HDZqO4HbiKT4AgtfLx~hFTSG6fzKmT1~a9IX1Y-vl3tfouBWz01F3BHt46~PG5pxVvwXoxw9XSK4BiKrlRljF7~-gz~dCp0GcPRJh68kTMgY1pmBcMop8vz911wu4niVNcS4JTBG2W8MUTqmdhkAKBvF-I6a6~DBWsQ750lTIqlOfKpWz1lC29j2fSo3nxLHi28pUXLTed5g4KSIf4QDIYJcWjJO9Vw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=b7SUct4nPJU7cisAoUry9d-rFUFrLtzguJuJQ89iq9KbVx2zDKouQdC2Fp~MS1-vrduTH-J4KyjHcyh-keraEqFvOD6ur1ndgY2HAr34zWKz-gnm9aVvKDyfNAnpJLbBxqd6T-7-i55ZzTM28s4JzhiuIOMEGECH7bWVbtn2VAIz5V7hGoNgBQXY1uBTpFgF56i1O96lD9RJdTqp4OGffUkrQFykHXlFYj-UhkVSGAsNazbZV~BZaghiLheF9RQLHK2z7EX1lVwJlQQv23Q-GZUHetDwwUaBjy99kZtwuh3MsCt3zRZWuqYD7uRVqvs3LuObgzv0XKN~k3hl3TGxIw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=Ydm4BHNRMak7tXSNCd8Zga40lwCUa5LNcBAW9QnEosG3As~NX7QQ3a8xcv6fAmTkq0o6c260OwPK3miCJc0PVXqbgyjmW9Fx1hl5Lc5x5zikPJihGr5JF4yqGnOHUCsbyhsqVVY~ajrFrg9WxGvGh-y3fmeG-cN2-pCq3HTVAHTHev52pdgtu~Wde-o7EDyAivoiZu6om7YVt2Z0DuesNoy49E7bQqZqlwfld1tNNGAGoYXnz~qcM53fB1CjftTdmswbApZxfpWYfV3IbaqG5ybJUrpV49AlKd~0JjBXg~Wu7TzVaC2xoK-3Ktp72JhcDKrXlXCIeJGmA62tPEbu8Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1179,21 +1179,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/e7a1949c51cc84beec748beb39d100a9/6a538fd0/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/809df845a8c5a37eb6de749b23c49725/6a53e430/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/bb676c10133d15e25ef877a5c5f973f1/6a538fd0/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/3ec0ca9aea2017f70b3f80be683fa683/6a53e430/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/aaed9ba4cdb2e1678288b0a9e10477ed/6a538fd0/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/84d0f8ff74610b1ee2b9f4e53f289ec2/6a53e430/22/4x3/43x0/430x6/43061000024/700996922_1_ns/700996922.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1315,21 +1315,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=jAdboNxyeUTuneTXi~yO4EbU5vNaRZ3yWtLM4evvhY7FZjeeygo2TYYTPI0fZ9w9IVlu3vW7mmkm~7YPZPpCwln5Y6gANLSJjK36ejp-NyxGRRKFc2cR2eZeBViC27eZD-3Tmmz03xLtJfufkqiuOow0-AECcPfMZsgcQMHI65O1-1z5mjP1IYX9rK92aPP8k6QJpd3c8~G-XMj8k4YMwuPGbMhuujdkBiug5Cv~4PRGhzPOPbhj-Ij9h1~Wweks6aUtSjw7qio6o7cPfBuJ1OqfzTtfMiGR4sHsMhYoWXa7nprENsZTMMThnTZhbG2wpkPR4Ys9~ExF27nDKWDxcw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=k4Ka2qtn1F4TYaSCefgzlRCwix-jP9Fnpbji8DY6pqdN8Z5dVMRM6LwIidNZquyMJ9hQScxmL2ulWQg65WJFUd0FWbGPIlbrwwZlgwF9VbXPdk614xY~gzFLu4pdbh3vsw5KcHS5fQwcNNikoYbIXGKXsLdRZDpLv3M~DCAggJBQegYt~bN19b88vEefA2PGZxzbqeAoYBuFCz~L~I6l3kSh4p2dqBbqQRX4afBrXNyPoAXgEHXXaON-awZ9fYtdg4DoKt9dOuOvuRy-N02GJcSKEav8bXTFFd89gqwjz2nsjDjv5lMSW0EUR5UsFlPulRajkBHgG0VWKlg70mWItw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=JxoViztf2nDqbxkakAnLgSWXBo~Ygav~CHHWguMhlEV9mVRDN49YxdvR7si6kRhnz-IpcD0Dgmf~OXhmtIWBpVOi8q-nuXTyUEswZpsgLshs~2JXAVZHp-IP3MNv-P96JmGNzepcvm23~4b8wieB5UZipZ8S1IBCyYMzpLvSq-7vD04N9HUKVR2vg7zdkDkqAEiUmvooMCSpU98FPywYN3thdcG7EqC9qp2jwovic~Q8UyaKD6wEp28WNOAO-gmUnmVhkocgseewkw2xzoOvf3QAlMGJRXHSkzvF3OiYme~d41rCUrPW6~FXsFp0o~43EL6ARMiYmqawGT~Nex4SxA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=zXIxrcfIKX3m1GlI-MTRFksDIJ6icqzplc7nwGWY37q1V5pGiZLD4~U8jSkJYqkvVW857cbVCsuYqAScwI7kM31RofOj-estvOsVIQInScskmU4fsbyWrbpi9NUBodLvgAmbxew1-NDYRIbHkwnb59OYqEm0ot6Wb9sGDDEtnAY7GMBltgd78qjpboN7xZ5R5~4SJGS~kGG11lHT0QrZQfkucUSMqKEFnTguHBHh5xsKO~mRIOxcIsV6COi39iErl0YEB3nzRX6nwVl52HRAVNfbCSqWlfeOiEvcSr8rq0-5kKXiXBLxlhaQPEag1E~jhjVTV3e4J6ESHx05J5Lc6Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=rZ1~EoV~TTZXt8HnKiIK1U5UAXuZV15bVaNRflf72mfBv24hMdZYIgjcU-SktZvnNBmMRMZID2s1NYdAXF3ftKgPXvybBSYaUXv6jmwdltLhYgHpEO3vbY9mmnw-9BBjCorc8ZSSi2AJPvvSyRSG6ax8N2irwzV~DGZBzbmYQLy2vtJqA5xNincgThc2-urgO8SuC9QwCTkFhr0W2svdKV0fgQjXWaHynZ8~ATSK2D-CEwNB1Aur-J68w-cAFZc92b-Q07SKWv3DcxPN~J7WRbK0WOvs9pp~RROSFGnDss9wi5vD-V1zJST3D15BG2TFpkIFwnl3PM9SrBBp1WJ7Vw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=nw8QxMLWaqqAYayJzpzWkVqWZuwgaO1q~W3FO-8s7YLXkJtJO-EqdZM5qiO8i0hY1Dq9M7Yx0voxCyyP5TtS94UsedVdObqkTKNY~vj8SARAi4jqUsbZcZfbhrztpEK12kxSDiwy5pz~w8m3C7RmYItqjO~h2nou64OzkB5CAKT8g6i3G6g26-XFA6DDEbkXQiTAP~U7g3sddhhJZRXuxVzvFGIXVI7XoNpf05y3W7ayeUqs3Z~zP~LYtAFLfXhjpIrZ3y9zfImSU93nhmHx7SgzC28f4VfLdRBaLma3VSgVLh5i5oTyAyJvrMpewK8W9uSqLgkyR8UtnFev2Sr-Mg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1342,21 +1342,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/7b84345e88742e9952714c67627b32ca/6a538fd0/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/83e4a7390f1823ed7401694aab92ed67/6a53e430/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/57d1877371362c0f820e9002ba0600af/6a538fd0/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/10e50e00b971d3e0988cd0eaec9b036f/6a53e430/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/5e80cc6bd0dd4c679dc913dbd486acd4/6a538fd0/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/22b1719184e91319754065c06b098052/6a53e430/32/4x3/43x0/430x6/43061000024/700996923_1_ns/700996923.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1478,21 +1478,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=MLWtVh0p45-Q7-F7FpcE4otjDTvRH5UcyCPfjUQUQtVHWTpBtxr7NU9l~Xkbsz1DQMH2v1TK-s6Zgfp~Rf8i8PohDqI781tuiD~zFNL~gGfQnpzmZVW8n67ra9752zmFn8Xv2YC6SCJAQv2OnzYCeCItD-Frn0rhRaL8YhkqjWowfitNYi-6xZbWwnHbxZbh99JxQHG3ZP78zUMvVAZqV50BZ6FeU1-lCefNIsX4zgCQUfklri4Bp29VrMtunxQbN2FKGZYmttQh9aAimQXupFQDQVJ~I1LOVsh59FIPixp1k8znnTDzrO85YSkYCySgAnHIse1qGmWNrtii8DaCYA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=q0aekmUE6aClURqw959mxQ76-I1I4N6~RZvmZJ-xeqnv8~bsL4fM2gV8ujxPBfABlnm4H2-UdD8HN5n65HqFxmlBRUOn7osVazpvaLsKCamuHGuj-po9iQJ0thgWxpzlkSgJXZRryxNW8UBwCcVkOR2lSFe6~mhbYYzDtuLmQVZuCQJ3R-mIvNjZQoopTDG1aO65m0ZHXbVakegdyG4oCcDmDMDxDFTcJOTbUuJ7H1cW0DMbBCHdrAcutdvKxJDs3qF9OPNtEoQ40dOlNl0QbK1TiQXaYU0u4Y3hOy47764700NcdXkfeeJxeXBKDZt07-97FH3iA0kqnUiMLGQwMQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=RtkMNT8l6IlgHaCsGzBJsYCOtk1-HaO29PzVqZEaPxR80GqYoj6BUUBmh3ek1Q3cTKZ8xz4Zs09HVAjPcBipZmpuECXMLuG0PGNMY8dWFaPzYOD9lorfYK1GdFFygKeCcs~4A8kpEBWtF706u3hoXy~3HTcjAgjRGEETRPB4dsmj1oT9tPBLPcvDCGMgcTD-Ri8gSkStnHT4RQyTMAxvYUtc-VN5EcBIs-dGdSL3PuphoS~wZ1Qoqx4jbcKEdbNTFCIRixcxzA4SdhjyfbG9Ab5Qqyu~7zuwiinsKfirQaDKMRBCM~2QihutP2ou-RY9Q6Y4MZZL80qMxSeIcxzUWA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=CLt3D77~hiFTACJCs50EvbPFIqKInQMgwg3agXoS7NXY22i~iGMXwSb0mrUbl7Tu6QUpsEa5Ggf9Jq~v7QBwlOkHQMfM7A8PRRUWA7Ckil-7CH4XMqamBHBJ5y0lrbdASBQsahUdjMYG0IwZH7DogCklbQ0sxpQnXAfQ~LE1VcOBDXHf89pGWsi7lY78e--mKmkuv2SHs98WYg6k7x2g9DLY7eq5sjGCW7fnvCaEHCPlVfYRBcfar91pN3nA23C3ErGydlTq~GljfooAClM8Nr9KlnUxUnmYoDH9g82z75gnH0IiF7T4IMaaeqya~7618k75kmEIuFtn6WMUqArs6g__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=GX1gYU9vFUszKE~ELdJZ7PRTH2sP3~IXnOSvjh7z20MLVcSLKBDXnLbSPkk1ffU162cNAKCWPdf0a4L86oaaNXjmpmVN3UiTEC50dQdJiIV9F5JkBJ6OtBlJiiIUg9qJSr1FpY4o6SqmNQXUCO9n~oRJMcwOfDbCY~rzucWMZBD0J9bp9Qs~VK3egiP-NZVC1Oe7pkVD6c3BeXIz8ZiAeMDG1Pblcnpjkm3iQxTLYokotC~A8SHYyojrqFgsxzUMBuUS6exaxjqNFufrrZQUNCy-LHrOMYRxCpyMeFPBToj2Rq32YSKVsnOG2kKSVxALa2dCombl9Cc9aAEvlVrwnQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=B5PcL5IfaHob9J5OuSFAfREOu65Vv0l~xuXLIhNL9ibRVltpQJbyOa0shncc7qcRzGLaQ0KFDPearrfYLfhpsFKhwaEFBVoZwn7tgei8dVBoFRjIjN0eg3FlIaAqTqvCAc5zqjm6GtMrI9r1bf4WvriqUvf8VWa-gciU9M~6TLD9vG2J-B9GRULqWWHVIKE3LPnTE7e4AW-n05VcLOWnz3~YFCEplfKNaH~JR0XdgQGXPwLU5l~TNdFY4lQuTB1AsWoT4NCPQCI~VIwX03bQfxvzz50mU-u6RN6~1OCd3t4i6q79luDmhoSy8ameYx1WbPmZxZtQdhhh2WJSWYIFVg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1505,21 +1505,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/56e57764ccd4200b38430926be29a38b/6a538fd0/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/56fbdbb97891b249e5f22849491f66fc/6a53e430/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/174cbe5edac18048b80a41a7d1a5f4a1/6a538fd0/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/afcbc4997f58b457d4a4b9297a96b624/6a53e430/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/1764b64ddabd3d0baa72097a06acdcc4/6a538fd0/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/b9a941fb72ce15dbf061fbdab32d422e/6a53e430/42/4x3/43x0/430x6/43061000024/700996924_1_ns/700996924.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1641,21 +1641,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=gb~3SnCZl1pmBe5II6vizqa574KPsRLgqidKsD5~qLxBwP6qICTIcl5budYj00q9y41aAxVbhM4hG65rvvXVwZqKMWE4sNnSYroip46eEXhIkFEpKeQpRxZR2cHrwDDjIzlOm5xzFX9uOlhp~n7OQwGbHXJERc1DBzLUd5cq-Z7hDrJoEQrlfkWew3PCK7yJbF8zi2~WSppR1wv6MYx4PhAid8Npna5bWOQgtKJhe-zGrEoB8VmDhG3ixIxPvdBbHqBKw1VEaAl9QMY4BH2a3u22fON9jks7LvNvrnr4vW4wqckSzNV~S7oYIkSYDbga0nWj8rmKhSTwuexBIapQMw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=WbgYps-lXvlQwO2eeLPUSbVFre7m~q78PyFS8dnzYCBC7QbncJsrdmcjTpQRIWnZV8QChV0k9YhUEk~e8RYjC0D-vwvcn93a~QPv0iwVpm8J48ez9MVOMGCyy~fZ4n-Tlv7OK34uJeMHO81ZQqZh2hk41ttImwxypxf2~aHUZgLRRZfIufuE71YtC3n2I-c1EyIZIeE2S27leLnP1uKfhtO3tnKALImckIZZiItRnOzw45Wklooqg2RukDuG6DK~F~PTsngVY0h04CeoxkJPNL2CLsFgRpIG04ZoBiwTMKOlIcNZThKOGlqUate~hXR4dyN0by5bDyEKRK4hw-Evpg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=uah5jMNnMFUVhS9tb7t1F2d6oZuPNEru3ZOI9cKmhBXc-8fCKB8UKjuu8Bn9nmg461-dvqCk9BFqDYCEoVbkanJvL5s2ztFazuqSh8hNVNpu9evC~nK3PxchO2PDZ5317dlMuNXvAWgszg1bWM6dFomqexpPrD-TYR89PnYmgyFKlRVlTpAZ7zA2vDSyaZpjvtapSGHtTOMLJv2huswsLJZXh65Ni2LRc6b1nbpA2LdYH8QMhvL7GZ07GZPo5ieUURq5Ab7Xjfe-bX38WffYsyULXjy-oU-ZlxrJV5v4eyDx-Tiqf3v9~RuUHIZ32JecjY0CZoT2fuJsh-ZX-LLY6w__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=thXs1Zw~Xsj8SxplPlUFf1QtumwKjXiu2cmY0FQtBTRXe2OrOzwSYRKQW77wUNejJCKhvRXpvKpjf9J3tJ1~Lvbr2s4P4zPtscXmA7XqHUOWe5qtuhA3dGFv1f4W3vIx1cMec16iOFN6aYJb3kbkKBw-HCU72fe1CtP2jBINNycP~2ymAvqLe2uunzdSV8lULZoTAgD1Pe-sXsrB4FR5IapParJlJremGelUmQo2BGBd-QkZ-6s4r1DicZdi5iUGQ4BpFy4C3tYaNaqUYI4tIGNFtthW2wRHmVeX-EGnP19UOuuy06xiG44fXq~ITzWpY53l9Zi--Aq6GhxL6RDDmw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=KWdEMsL87LGLeZfPk427c99b3rd9VQ2mGpHB8uhE-114xG5G1e5uOucV6tokm6TzZ7R9-WC3Ibih8WeOiOE2IFDo22f7kDYAFD4Xa5XgqZ0MZ11eCGeKE1~qOurN0tT1abMYUQgaZ4XZWOc2FVhb5zNzYxE908qyWUFLMrxJ1l1p125Fsfrqx4dGCACAY6KeKimyP0yvXBld2k6DL-PTzNQIbk2~0MCrAN2c1mRDzNgkckKIE0DWPjkvFTBtFaR7NX7uHXkeKZMf-c-zyn-IKSjMAZTXrSpomA-9DpvXP1vYoWethFePrnUbiPJA6O0D9XzmUcOMwerN1RFYokskpQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=aCc2bNniW~jgBkYceyxRGEBu7wOpU0bvUI~iNNw4UNwq-nWDWCpJITR7d73t71CRW7INaH6ilFRqAnVI7WCRzyuOmx91nFGXxc7PhlDv67Z7WO95akqQwtfXN5CBOKONFGGz8a3xEv55Gp8R5SzTNgjusscf0yii833wflb7JqRRuGMxb5XtYCX4w6pSe5tRL7wrCJQUPnxHdY5UgRF77SnFU64wkKmI3uRl~c5AFzVyaxF4NKZJgJ~1vHPyar~OkMzjuw3cw9-GSUKdlN4ZiIlIbqIq4XdgMR74lJK3qyDkVche2VOSxB~h1~jlHvj9pEbQ8ndPUrve2CdpIGyN1g__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1668,21 +1668,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/dd7ec47da218510d980bc087aec93b12/6a538fd0/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/31eba2b8f5775ab40cd82333a41e7894/6a53e430/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/20068a73d038feff0d4f6cb90433fe5e/6a538fd0/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/6fc9d1528c5239c9b7ae09ed11ea0e59/6a53e430/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/56a9ceb8fb4d361690705a427e2b8ee0/6a538fd0/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/6030a2c576e02f693f079aa02c64373b/6a53e430/52/4x3/43x0/430x6/43061000024/700996925_1_ns/700996925.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1804,21 +1804,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=lgFk03fbv5IMQV00gW0NN~XhUZD5kBHl1PFyYyirIURfw2cUQ6jd4q3t7WClZwpg375~GAsGl9OcbPs6wz~blQSuOAcDXgsVlbA~ZM0X4lxApGfgMD81Cpi~BIEnSarakC658~xU1ZrmpojGkvQy6qOLiOih9IXMmAOvVRcBj404I4eaVUlX3u2h4ABcHF70XV-62nUzaMbwN7mVPanCRs7A5pjvzNxu5~EqEa7B3moruOy3F-4h1222zevmel-Jak0XkC2r63Frwpoojv4FY-5W9qmOqFti12-u73-lLNGlq-Q1a0kuVwMputW0~3Sa-7kw6UbnQ1oYYeyy6qOVUg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=FF46RII4h~ZjLKxXJTnKQhlWbWjE8NBwCpW~VZ0ujsT5TYCEm67fAomZtFR~aRcFqTKBs9KO1MY6GnrsFBYiRaZOakaaWHi3qVFEWPsarinGkvzAuI3ITJipICoC6FZGipUOvCAoMYW~py~JNVWT~HKWV4aON9WK21uFXzolGHHn9o3wHS-jxBVsUS85Ap~-ZJDFcC~-kHRIHYbNOieW0cspNcEJELC3Cof-GqVfCj5w1dCedUfgGZiYN61SrE~EFdSibLp0DCWLxOXKVgeOCBYwxNYKtg4odEC0c6Ss6r7~y729UnTES8Gmqq7k5Hh-oHg~A7JYvAMDtq0i2ub3zg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=zP27j8t5L4SAmALFMKUoSPnflzKkkPl6eAA8-gcTkApYuF281tjwfMVaOiK4DIqyt6SHjP4He8C93MZ6SmdoZz-hscYDQJgaQ2ffFzFHRmg8jtA3MVFqmH95R2~~hfGuXpToxaw0S77Ve-IzJURDfTDdA~1iLf-R6JWOiCWuaCSXGpyb6lVSoU3CztB4gRUfxeXgAOA3vz1UeSyM1UOFCKH7vVQV9WBm~DwwG2LcuDSpe-~BoI0YFGcLjQykNoY7nZCGnFQQ8-ZWI6uIuve3y-Sen8W3lbrlIlceSZGEPeglaevgv8Pw9stN3OnfeO42~e7OwIF0ut0FLdAwSa16jQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=JVBxE9Rq1rxYMrrQQ0lGTX-YjksZyCQHf6n~5-sIal9lL5kVqTcGwdMi9dssYkaqdAER3hF7Ji2S1iovBC-fMuBgzruPOkeDPI5-bxX8HvWHrqwlR-R5y~Q2-x4BzDgM08Kf1yvq2YnRtknIqSAgY1H-cl8CVom2jgJEzPlU2l3t78uRrCzcZ4t0ERHzSrynmT0Fe4i3lOAOh1eyUUTQVSDz3O4WNy9rOHRCC5i~bzNcj9JaLIxzyGMDWRS~eO6bVYZdGrRTr3v63T1thMXys9~CbE7ayBZMwtd-dRbnULSxKLF03Ix5jlrWWXeyb361LUPrY7x3f9kT2UynJ--DEQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=QJRnyZKcvnTxZ9YmmaBReL4YZqAu25pVYIY1fC27JrTm~dy45lfs2KxZXceH7epxsoKi4Drag9g9TVj~OjaMSW7xwWBtsNGz8n67IzU7r0OAtwfrrNDlpEFniPi48ubynDeqWwpyX5cKIvu9prlHz7QEW6UF8bvHISIPwhsPmbnvcq7qhHJzbbukIiRc5eNUWHSfX2gPGiNwhMVf9CXM2L4l1SBd8uIpwdY0lCbY6Vqdo~WVhJYHrMY4-EkIvz2VPBEyXDhVUWGJmobxLM0BStiyEj7oEuZopWcFnsG8Q4XnnuvjozbtEk3gRva1n0uESkTt9xG9jSsX~wzlgV2lAw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=Zf9QqKUbh7S8-943jS0ciDK1vQWzdOqI8djdezEXUG9vaKpfovku9TKN~fr-C~GDmZCeWHpmPo1qeZddLC0mT4JTt5hqtvWQtpDqLXILqK6fPsKXoFlxbFWvGcEIYByzti8ld69VQDMW2o7TKmFhEyVVkJyCm1peRobdbRlR5mgPWE7R1xcJd7wnE0M62Zf3FNZrNbtHP3bawAlHOscAKvJgf7X-gnPibfmh5dKrXs8DJWz3bgU4zOYnpYXBdC2KkcgITXpzHNxPMs04Ln-Sua1luNOhRVcx4iSDVHGa5jZhQPpzXi7VS4~QJRB1A8Hagp7tx6eBuoeKmpYWZftXXg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1831,21 +1831,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/04bf6fde4ccbc7cbbfef85ca3ba16de6/6a538fd0/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/87a6b60f08c7e406657bf3b0ad269947/6a53e430/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/255bd607292968e832c40472d1550195/6a538fd0/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ea01ab47645a9a1e5176cdc8e8f020dc/6a53e430/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/8c9fd5da25883bbc040d4ea8e14d9414/6a538fd0/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/4c2fc200b634b52aacfdc723e81f7a19/6a53e430/62/4x3/43x0/430x6/43061000024/700996926_1_ns/700996926.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1967,21 +1967,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=YgPMi6~WuKplFfrGlHIkEeiqMg2PWxA8MkNjEOcNtqkIaz7ZC~hiWs6UVHjcUO8EuNXIRH~E9nJptbzEsaFZcS6oHTMSEXVktxoNcrSQedpdczQxktIP9h9hDY0Bo0eJpGeu94MsMZwsfnBGZeKSQRLwZ~Keb0WxXZOdHYDcLnpdU0IsgO2xTH3aESV3ak5BNlrUj53LTvJkYDsYCS388U-4i~JzdeRALySNNto0FrDwSx~tfsHTgPY9WSiG1qp-vb4ELiLzePQyZCogRJ0MbyiPmvSKaXMi~TXEOSznUSJwJuVrAeGjPeAuetktEdkTgLQ1-CFNDPv2NXu5y4yLqQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=AIQV-zaveuwZ89d07SEsTX98Vd1Lvdt60kXea2wcOQQK7YsqohQ~pooTWz8xP6udmFLfa4QR5tUBW9xl2X8NgMpyw9G8svfHLtk7LPhWw8y0iiENw94-rn~hfdp7VvQnSXDjC03vcCMs7irGE6fFxxzddxq0ss4lxjy4zBKt6cfms4prv39dFdG2kyxgxIb-fCcu~hn4SuJAeoeO2Pr59KQainvRhv0VensUvcl8CqUqCYMMj2DZul9ZhZGOb3b1BkckohEKin5xUlm~w0713SZfuCjv~kG-kDzQCNAnbO0wTfwDauG3MZh3POehjyq0c81rNJJXY1xKT7HRDMh3TA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=ISDr5Bo4Nn9gvU2sBA16BtVUy5F2Jz51KRzKwyaNpvWu5Vo0Go6Ik3utsiiJmDBUrjoHwBOaz9dSBLXSK8Qn9s5fjZxTRFb8Sh4eKQ56udFi~D2zG1LAuV-cVbkuwGh9LcEg1kD-G-8FAREb3YmZ4y-FMdeV3aehz5joqChpS7MymMWp34FY8T~mVoKk-pTow6~sbPPanmRkzJHBQxeI07yrPYUih9K1zdCRHaxsfd0mfxIpVkZuSSQ62wJlsmWJ6xRiWHOKtU0sX20hp7nb85oluEYNBcY~je6kI8qNkngI8OFu9DwjvCz0fGgnRyg3mExUXXCxNYafu~fjOX9pZw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=l9Q5FBf7ygIOEXb0c4U2AvHKhYQ3vp450ZSAd2E0IsZRqEwzvRKMAs8YufhXwMXlroJ1RAgDFDoB5pqv6S3Hk46pMOVC8KbhYpkv27Qwy1w~c97OA5Wu3Um-zYDCRZ30eRSF3npifB7xbfWlEAZHrmiU2tzq1b1b9ohwwqnax-ggHE~AS1smnup5wQRFk56tytUBDHh7INF-FRF7VBRtM-dfBMulRhTXCiJR3c0Da8mmcPKAcFdyjO3Y4IrDWav4vJhtwJmSmgvYCzm3OjaWkZ69pYC~V4jH5f-8P8GKM3uK6ttk7TbWbqurnC9vIu~zTPuGzvHWIEf3fs5PLFcyTA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=LTmmubUrYbyx0486Blnv2RAWdvJipH4szzoJ7Wjq3xfQqeEzMox4fruFJLJmuCjYlJ0QeUQ5iTSUYLlisK74FGsmMA3b4wCfJpG~dg0R08kSFQqYH~ZJq9c4AGZQ9B55AzYXIDYlzRXz6vKOXj4NrbdKRcP0a2nOgxuWhCYmMwOHbNcm6FN~PMUzrfblOU2F3BKkFcPSnoo418P9LJ-myg3H1vX2~eD9KXFU-qEOd2KLii3SBm~hG05fJXzwUtRaHCOhrH15dwr35YVCWGLJZqVLANdMQl2uoIMdbxMV3LWESMoiMNcvM0VECeIKetY-n9yy1DlWml4vLR75MFfM4w__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=wUC3z4ivEP~tam2ACioSWth8U7dTb6a9q0x7OJLBuyRt2FEbTpBQWYCCih99i6ARu5Vg~ZiTIbZxVSmHqqIJ0eWLU-e4W~NDT0BAZLbqWR4cNjb88PjSg0xgyhUXESc2l2VGnVEkaIJ4-c~iTYLq-zu1cdzQIruv4-OEIwtpBUZvruk68N85YXpm9hML4s5O1G77vES366nl6Djsj4x6QCFiS3LYnUHLLyDsVGMATS3C4f9Ht8mqV24eVn8GDPQmhKOg3V3BHTcf7alKHMy4I~jTzk3Ph0AQ3YgiQmtPvHuwviEPOD4VMvGETewj3HqXWvDYEWPHvGZXZpalLHD2jg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -1994,21 +1994,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/953185bbd05ebb6aac4bec0cb014a1e6/6a538fd0/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a291bed9bf43bc9aa8aafb4a49564ecb/6a53e430/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/84963861471d45854dad7f998cea5bb0/6a538fd0/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/eb0c866c42e93f03e32ffb2ebf21f792/6a53e430/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/b6bbb8e974a38fb2d66c3c8c93daa5bb/6a538fd0/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/67131de0e954369b7d225fc1dc89b4be/6a53e430/72/4x3/43x0/430x6/43061000024/700996927_1_ns/700996927.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2130,21 +2130,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=BIWoLei97Q4KgJpTz~8gD5KrgaSbgNbRR6ZDgiic5RlNvubwFz6e2Uz2fGYIIRLMRfGw3-djTjQ4ayYJyHao5WOkKEGl-ewohMnRoMqliT3e6DzMohUkcQgZ9wNeUk7nOdDnXrxeP1ZZV6rURShSFHrYR2yDz9uN8j6cX0F8EyBjlg9j2ax32NnE89rIYMqn774OdHLT5dsRI9nWh4cqXDqRjIEA9e8MDNXjj71xK8LDkcCTjmOfCpj0R9iyCDSUGujidJpx1Ft3dozn1KfhtY~jNd1OydRgHrPxWqz-8H0Y0zk2uWBfD1IplPel~O2lSInwTxweGK5Ss2POzFBpMQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=bNNWO4LJDh2U8N5G3QJQHUI4zye63LoLFDkhCZl2CkWMC1PxHcSvFS5CoHdRBOuBGzICOGzvKLIck4kvdt8HbwRV3ipllqYlIV0CyAwMPk7rMhNGIkvr1wd8SdYqm8BctdCSNyW~Lol5pz~r5g2LImcebrVXi~g0VXc~oDz-IaBTXbwsU20W0CTzz-BRYcD-3P2XpmBpEUpFfAsPheXhePGdSWslPEFCV6VcyzWZXuer89PjdtnN7ZeLrofiOFogPcsDzwgcin41sVNdp~YQaZ9X0SEuXtxcLL3oIwgHBOJRtBE1D3EzxkGC8lc06CW6~pypN1IznwaJWpmMZ50Y~w__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=vuSWt1rheNxPJP9f-QhU1iebQQqcjbelB0fJvO8PORsW76MkNLvBKO0DtQupQGxf6JJUva65cQEnQEvHUnS9PinuduqrFlihAgcP8FQ64Y4UgJktsTkq7eCZNKpowuT5~TnfAnBWCk7g8g4MhD~0MxmjWFIZc7H6gN4~Ch-g0~Bjp78VSjTgFAT-dJHun6h-r5B0TzTpDnqy2PQWCV~19p1jtn7IujrbTLuLxqTJKp2E1IkzsNcXb9OSea~XLBCR00rZTDAcqD~wq6s0wnEZ3ODQtaGM6UKx3b4W477iMa1jjbmvXUFFcWqFJcK8FQ9QySbofCbalWcHgAHKxYs0KQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=TZDlVUkjSkZ69htOy1UEg6ZH6hhYDSPMXySpmQBLhqEGwE6SixsYzcoHVc0eN-2fAOr1EgOhKy53LefpYMTOsYiP~5dwNkhxEknCwao1vA~BND6ZCuTbY4sEQ9k36ExgHyvchv2QwB4EBUDCu3Yz3qiol1RQ5m8IGbzGrjO~5ZxqJ-7LoE5l2ZLKguC2YJ-skQ9UgwiG6YP4qOnFfzuBq7wc5Im~M59J5nae38gToSHglU3EGE0Vn2XzAk-6i5LxKd9~-tT~Ouk4V3jkptpT3lWLWWrBJE7oqhEJaqzonCp9yQdN4RbJ0a3FzIqPiws8e7A3yQKCZyjkOkoxR2ahyw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=AzAbYl6ywRyldSBk6NXH3FtH00KYnZ2Xgi~VnLTr8Km10i6ioipGXWnaIX-Qu2P85NgKB6wbl2pP8toaikpW2kRnfPhtsF~QJViPlX2x59RcQtS6kONCOMZwU3SfVOK8ZwntUvWNZh~5uYSoevmhoUmdY8Jj8L3fW9x1Y4T4tmYr7LF~FyT44MJSOqY7RhGzKZzjyHGsXofQM9uYB~vtYQ4WhLR9gQOIKYi4uj8dimvf4UQfwIlGf-7hbo-sK6nwPK4~PyQjppqZhaEA6y2Unk507-OFqB9jWamhKQCUcq14d9bUxQrUJQeLWl9W0KpAqyxYy1I7N-zHElOXjYNlNg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=k7FMen2mElLnEhZtILfQpcYqEcHTfxyFB24ctGsbFClvnGtC5P6z6xvd32GGe9oCzn5IfJtKMEh99u3LeF7euc9~9Pz-slaEZjv7Wy6FUbABHRKe2Ky~g2GOq6uX9s2-bZEa~hgrvmfscZSf7wds-f4LkEc7t1GJjfIM1FCQeuLc~a8kajqRibzU3JoHZDcV-GPL5l~MLETs6rDvo6yFqaY2cNBHuMgcTFHdxAsw0ynw5MAgy2ZQWmb2XGG5isq0urd5kN1R3Jnuzn0qjwy0SIcfASZOpQ12l2t0reBtyTnQsQlyzKcIxNv1lGUneL1uMFf-1z~Q4in9hViUqUxcsQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2157,21 +2157,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/c4b90475bc8be153b0206873cd89d847/6a538fd0/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/c4a5103efe3468f20f1314c9028323ad/6a53e430/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/1a8bcbdf26b515b15045777f580b9fe9/6a538fd0/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/b7c60c887ab4e8ca1e55894d6a40f199/6a53e430/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9af5c5638374c8bd9620d04643b479e0/6a538fd0/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ef5db486030346139492d8acc8730980/6a53e430/82/4x3/43x0/430x6/43061000024/700996928_1_ns/700996928.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2293,21 +2293,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=aGfBUUPMN3D0hVvd8lVI523gBsxLCMIo0bbLFq0pylRHXgg7pn24Xc~iuYrxucMMV0DjBcpBkxPKEurjlhzsSIp6xqWFJwbaNtI7DNt76CoYFuTf4QEvJsxp-RRIL7NeLmcPitAXJjiqwA9wGa3Iq9la321gRigikR2TU9D7lWK3JslGKqAJ6vYJ6-rXPONTJPFPViYkHGGEaS37MgMuMIDjvKT6AGCfOyNxVeRBl7A0~fV9U-biTz1p4M~bzVanpIOjr88lmw2e~fIMF8KLKGTzsXs1OKZaaxXV6xFiJBtxaPdSORTEGA0ej1TF3zTn51bILDa5VvZFDY3SZy1ozw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=dy956q84wsETHKFwUinlX5G93Kt~~~ihMUcH5J1Tc4wz4Dm~kOqZjcRQjVgdxy2KtHpTIfBspBZPJ6eqVDwjnrx9eh-cwz9ptjVGou~vaicS32vX8OKY7lHS9tgRMz9jdZegswY3Q6mOEkVEUlqu2gNhttXHlnbN2bF5VtSSGfsFNVKGzeb9Tp9bihO2HNqyyAggGL1QuDuFmvon-2lOU39GXfsB8ojB~xJlw2XnihpvvDox3HDRSqpnZfcPGRWJY8AMFO9PADLqM8Pbc0edpUQ0zLVE61AWG3~JEOuzmCVo3Aq9x5y67YnPgaZ2lvFm1br3I0y0gQoL~K0UziHpAA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=cfCIFd29YFMHHeVe8J-Ht~~4dpi-1vluKYFAdewNUijSdkSelSw0WThqNHPwMO8iAb53kpkmsdIvEtNjthwydl71RYnzBAIReNKBD05jaX75TrXbYORsJsTe57Y5Y1YWY6oBS4WYBf~DJzMEmZqzOD9Rol8xMiDyp0lUWqmnFlR-Zva6hqtyZp-z2jo~qKImbnHvzfR4hLanoAVYciCd8fx4vO1k0eg5fFHKJIKXFtnu8CGU2ejt8paT85ugO8QBxWnXoFG1YEIOz~3AR-ZeRcYiQiRxLuPEImJ-Eeb6gFbOBjGs6Mf-P-UUp-pxMW03NOTIJsqOwwiEo42h4bfZ8A__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=Wl6VmTkrvpbPNn42FjkIgWeSTrBd0tmak89bmUAQtJ7~pjcjMQ09RM280ZMvOOMtpotmgXKR9Z0~LN~I8qblBXTv3k8sb7vJm~QUFu2Gx2E1asfvRplbfjwajH7LjphbPy7bulAwPt-hicTSUrmcd06ijMqcoaV8lYPX5e4xEKdJ0RDGP65VZtBI07RKRayAY5okZxS6GxUqdPlAg6wpTCy02CmpToxPPyu2n9PxGLVr1O2Daxd-xc8ht0gHqGR8ECppesLHQFZuA~tXZgaaKZ4y0KvakzTlOgZXcyyNC-vaCr1JEvlCsWa6KsBqAWeCZx-FlgCMXVAj5aeO92~aYQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=VoyF5MOhRYkUgMHcGjbLLx-cbw4t4lf9Z3yWj2lxrD~hyybBWf13MUYrvxdCqKPsEl-qE-e0TvIS-78BC6SICHCit1y3XcySzXvvJrvcfx2ZOzmJ5wDPtQgTjRzwbh2AffN-MbAf5ar2F3s5iOxXQU6ZHuQyD-xgFaFVTahuPh2m0g617~0UmJNFQTfDZBUWJ8j1NAILE4mI3MwVmR2au4AjSli3YbYtjMHYvygu6frvoDgEFajtKRbjltm6vRjqrJI77IMt4kcnUVos1pBdyI4QlMuptMEGSVV097RO~7SPw3fyeYV9Ise-Pc080-kRkaAaE32Ui6mFRvEGgOpNdQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=EKKK-Fqr~nUkfeOuJWIvESywU2lpeOCZj~kIFBi2NmbJ4i5qA~fVutVNtg4ROaJlNsUJxMRcCkXt8y66BP0zlxFIUkYn5Xpn6NYdE2tYDKWfJYE3eXpKvsPQiEk6LQCR0oR0SumeudLFiztX0TsNz32LZYaraA-9eMJ~zg7cWxkdVaz10jielpD4aepYc78b8AqSsdp4sgNM~w3ejWCoxIexoqTuwsYxIff6LrvA4GOkmBwgW4mqKhwNvXieMHtoGqTrWmIl3jJLquqCQcXE5n1p~BccYjokUFCUIkFok0tPuhh-8JR1biL6n-zbFoeUlCMbD35sIh8R6Pg83byCRQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2320,21 +2320,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/de1f2512cb1092b3537c1c73fe13a694/6a538fd0/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/5f07f3c6a2affe630f4f368fbf3b7385/6a53e430/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/6aa7c5dcdcacbe7e127bc24f12455070/6a538fd0/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/5d6d582e87d1003f1ea343dec273dad3/6a53e430/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/19d2c9cdb03e1afa85770780227c0822/6a538fd0/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a745f6615a246fe3799a66d2f5a51928/6a53e430/92/4x3/43x0/430x6/43061000024/700996929_1_ns/700996929.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2456,21 +2456,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=qe-jBMIXeLq6y99wAX-zWHZTI0V0Cql7hp55KpYNOqBStg7-rLkhzZxEVTPW0mQrHoeauih6mjNEnZKqBQ6qovWv7qSw~L6bAXUsnhCiKwC9UDfOA1uxDF2fc~mGbp-5mDzdFjYjFOt6HKidFya8SOxFRYQGaPp0zFxOrKk1dhrNg~4iZcVT44XhlDuALKnUaTwb3GPGA~3XCkUCbIyJxV9fTnDAi8HM5TvsQ1HQiwDXMgDEnvBG3HiMsRAT04l6hTwf6bfTXSZi-gNcYPDorb0FCj9GhmQzcbBXGoqVbGLvKAXwfMO~9yF97zVaHg~AvzuVlxB8XMisgDc2I1~Rig__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=QYio0TtWSfPxM9kxUwOmOadFKj1hqGO67fmbkBkqT4kJaFe4cO4i27Tqn6qgk2B9lO0wJtEImnUAaidhVZv47qowd-9DdrnI8IP2uE0E2oUnU8l02WXrmULDp0W2I5jzGKFUQ-BYsQuTaboKE86RN8tFN5FqkcPfH1-3b0-RemWnNg9nuLiWjqJYLssqyxdktoF4O-iOZfsqbY4COVTKqdx-qNyrs48TW2DHpJZROTNrAam50K~ClcTO~rUo8ja3rXIJivh55A-17BpXztmPcU9kLc~kkbHVGZd5FORRuwE2JuWiD1TLNG94nrsb2vxJHlJX-lsI1DygFFQMWioVNA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=Qf46o6IUXG2IQ0SaWhUaU5RPlDokRykQHjX63rNfIOEtm5bcAmdk-KedfS5JgexSzRfrcAozAQZEeHIJwy~IjO54pehoUe3FdfQhi8x-dsJoPoK9~Yxzxy8jxLcKOcdggSNAf5bTkItQp~NuUCCLccsdv3d4bhPDXurECKuoXBaKhkAfE59BQNLZ8MDRZFRBZX1wrRBphaFR8Li~PvXvpNGprOb0mMcb3qtRW3BOjmfeBJ8Zr9Kq2WNVwpntR3zi0AE3mX3GVDrZF08oqXNW1ICRNQnFMQMbOfvOtff8jYdVHhh7rQ7aB7X3mmVQHfZdCdlRfIE4f2WGvKByGeugSg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=N0HmCgHadYT7quIB~avaQYfv7P8HAQ~YC~flfFiOfdst~5-F4QlXzrSERRWN5mvwS8OANFxkAC1gpJ8e9P30WvZXfXspdgbGABuuF07hWcnHRk7QP23yC9MjrRQJbJvPZKKVfhNSrF6XVkS-XVv18FffnNj0CXSpjLDgp84BoyXPDz6imVl17zPqBc~Pew5Hut6S5uVA6a21bo-Nq0daKF68B-Xn8eTzMURj8Kduq-0cR8bECoDJuTkpnLwb-Ryp7sBfFvSTFDW6QyjCF0fxn-miixOp7dGauRJB1zN4UnYQqIEB6p8e5s6yjW-8aaO-IYswFod53dG35cWlm2jcOQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=tgs9MQjpA4tXYw5okU9zKc~gcDARL-14c-6EzNOy7G~ENy~yIRHiR2NNx6zoGwxmk05X4sXr0yJGG6WTNieNXrLGiF~yKrzhhFmmoXXaSiaRvisa4ayeaTBUs-jrFxziEkdPXA4vIuTF7WMs3stOtb-X7GemmTIzGAADLvuU1BIlT6T6NqC1glQc2xUXUZ1ScZJknDLVqSJct8dkGANuI8jucdLcV7CZQ-8PmttU7rn8Eh0DSmOgJ75BAmfEk3EwkHa7Td9c9U0aQxSM8-yjF06FRBT~-z8OuEIgJcvEkDe12oLeOQpmndwQWvHXrnaDoQ5peHyq3qrLoe6PUD-5Xw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=CQXa~Tc6eMfFsMYtALqWdxkV1moNshw4YmsJvr228VpC9vdF4qUVl4XquC6TnkdSZ5z17LyOWjO0iVMeiaVc7hPGXaQLcRajJ2FE~HPPaCvHVomIgosNOw8TRoHJDLtSMocbvEr301qtXCGO2GdCX1ZNfdWC42PVDPMyDWUca7Hd0BcoNDbDjFq~0YoBbbKKRh79PW4TZRBESUiM-xZ-2mPcBPuMwYtbkMUX-qkPKYo4heWSdLX-zorJRqi-MyUj-qUrZuD-WCSbCMVl~YjeD~yojhnl9EmXHow3WJVCRU4P1rDCjLnbcS7dX2-c8-OKbIXAnGT3uBomrQbsMPLTTw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2483,21 +2483,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/88d01085e6373e124cb015c17821e285/6a538fd0/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/409adefe9a7aabda95115e9d39c86e34/6a53e430/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/60b602c359ecad3edac995472da33a05/6a538fd0/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/431336a90e346103ab1fe7bc0d027753/6a53e430/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/7b403e820e472bd6662a6a13bc361283/6a538fd0/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/bb28ede340e32e058abb29aadf92f470/6a53e430/03/4x3/43x0/430x6/43061000024/700996930_1_ns/700996930.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2619,21 +2619,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=DpeVQ~DheZiyhuSqUj5vp8seFt1yEcoDoub-FyGGEyiSsHtHpi5aPfqihvppW49p9URGJ0rwwL~8eRfg8MoHcZxrtCtb9mZdAaexrJqOKZZI9H-vqPwYEVAGUW~bFeqfhjBdLQPyhFwgRYcep3-idUuNUqNotHoTIaBLahQ-C-JSDjMP7pBHCdQMJWKuN6ajes8QyEq82sm5U0uJemOmucO3901VuZ2Wn19OqdR1vfbYk3uKSbhHzx1PslR1qOrkjA8kAVVBna-6VYzpNfSZBlEJdFyed4U8QtbtpqzVOVsc7OBle18Ivi0kZoxI41k2rKc7wXLefYS6s3ZoyDizYw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=FZmqnn-0WVGakdXUD~4MCrhD2nnEPog-fgLPTmZOcKERFT13HlTDirhHSB7Qpv-6D6pET3KD89QG35NRX7Rp3dw0p45K49jrfbh-Q8OHyr-4Za3iI5-UvJhHDcxxiNlk~3pT6gCwt6hWMDkYMexdvOtilA0TMhM39BczEonXbUMsB8x0PWLdyhpLHMrlHRRnvz5ERySZH1Gd-A8Y2Q2lHfMeV-H-6kBPLWROgEjvIvdSowKu-cQw2qI00sw59Xd4uQ7zQ195ELhZFk2UBU8LmpGWGSTG515p1cX7zM4BFyyBRQ8RopC3khA~1SerToeCo~yH~EdWAvkkgyRwv7uz2w__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=xGqJvrNHTZJYoXTnw5tdK6iCSPvf1r~hokRuQkA2OU0Bt6Q8gtNF1gRv8ZUtuBdKegHRc6PHjgd0xWdqLDisFvpfOnZP-XNqamJW1Z6PtiLkRo3506sGQxks159PTBdQdCmFz0dQ3xbuen5KRjJYtHxj27M4-YOLbPOrumqZtn5CwXZgkcwcedeGKC4ry9MDQSS1I1MpgE~k5tsrD27IvfR~dYnqTLujfU5wzsXzSr1PtTS1rPacC5nEQ~V3OLLRd-k0SO9E~Ozc1Y~3lXXqMH3oQovSj8IUz5Ks2CpsehYQfhQN5yf~c~dx3OtKlGzb0adIWteUbtvQH6ffK92WLQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=mhI51aX9qRXSz8SQcmwzmWVr0opMrpUqOfDSIDZfayMGdMHJ72TkheW8tyUOBZD71DYFPF8OLE3Gi3WqDbMMGrDNNP3bfdTYRQTVnJi9rYUVkLcaujMHdr6Ysk54UcWhlfWP80OgVLPpXKpAvaIRzktXZiCXYCkxFtoYisjcqdgdVZsMmAgoyZAuNJS2oxObmm6o-2wuq7e4nUk-jgEJ~k2cWNZBuwc5LExrsP3LsXhIUUx9-IA~uihD~Rc3ZQ2rCRZYpCxBV69UK-jcNLDVipr7UZqK-0FEOUDR-l4eC3CPXzIP3ur9jyawGtx9~TljHXY55vC7VNG9SSsujQ6FyQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=jGQjk0kIZo9FcH14-DDjfCE1ZfFeI7vYHO~YHdzquD4pgBX9PsaBcNofDut499snxre~P~hR~1AB0jLNxZtwR2a9r3fRvIPS9POnp32sKkqwZxdpSryHMBdFqJPEwOPfrd41-wQCnoDHr2C2o9PGMjnRvWw7MXVqTOE9damzwrfguWwC-VTkD0jyPhKjMcyXzwacGt3cB1GPgxpjuAEifKZgvdKpKVkukH5jqOQuUfgz0e0jhYkH-VeoZSWdNG5iYdKdPBxj7tyfaSqKlNNC3lH80MxVinG0lP05vTgE8UezWiW8XWbvbt8sgXtbNFsthwLaQSCxEhPyHSvw9vgD3A__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=Rob~OxKFg37UawsLdpPyVF1QWABxdHJIEI3-Dv79Xj1XmvLEaspFlG8WPUBFlKjU7qW5wnA89bgOQFhLveqrVqVVgVPDTq-102c3wPg6Xpy5Sim2da-aJCXAK~~0hoA4qO9TpXrngE97kEKosEBj61mNWm306y9tTB5mjPcTzyj8tpICggY~Ixly70lKd1AygCvUER2w4mEe2EL1~RNYv6BJP5cxif9Tx2KmSa-2BzqDgFVBqsUbdribEV7-uvLGdkwrufZvex2Mw0pyY9v5smJW4twjjvRZdgqa0ykuStduoHab3Q5MqiLkjdDtjDrPojaP3zd0oTJTRXxb0X6ciw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2646,21 +2646,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/384d08b4ec4412b457bc82510811ece9/6a538fd0/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/6cc623fb4bd93ceef11328e3e1a36b55/6a53e430/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/22a882b4dffedef349693fa55000288c/6a538fd0/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/6caf94cbfcf08984837d5648699b3712/6a53e430/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9a34dff27dee0a176b592cc5f2f2cbf9/6a538fd0/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/4252b999f02419c06f06cd063285e10f/6a53e430/13/4x3/43x0/430x6/43061000024/700996931_1_ns/700996931.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2782,21 +2782,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=RDYsBM6FebWPrbuamPcW3gG26L22SIsR81BpBbVJnW1~heESWse3eJ23LRbg3tw8d~Xwvy3q8OwS33Uedc9v-lzvtfBnCZbXk-zTkhC~gCyITehaTk~M-3O7excO02JugaY~D94UdRzwjqz18b6P1nBSTOpzXVw5itPPPAAJ4lsuUK8GePNwKJxuI2EPNr1wLPCtlKYFvUmLqXshlpCPyY1yoW0SdKGO3jERtEhsuScJjiIp5RzlbYPoea~hvUERfAuRGX2upInQzex6BY-OgF6dQBJEE4esJjAXSQANjz1F5BRY00QRQ~f9xxT~Vy6UQb~P-5HL-khVoa0A2u9kug__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=C-kza3suLZfKQgcClophdekFhAoai0q5X6FL2wrVgTTswL1q7CK8yokS-0dRLkAItJXieqfL3Rwv6aHTQSvd6Tbq7mtGKUOxB0xQ6VpgkHnMc~CvbLeqQLAkbVbZ9EkHqb34nQoCYmK4iLrG-UNx0jutCnhDRR~fUF1AY3VQzkeBOwgfLuUk4ReB~etnOUXRc997TD6XUqv9D5Y56CKh93ruTO5i5qH3puidNZDfyuqTKdy9h9~UHhOTWeOIMuulTuMfKLGY7MAcYlLjC0AnDHkZ3xGhnFHWy~NR8VlvfahXPNS-~72~Vpic~ghgxO3c231tiuM~7rtX9JCFugW9bw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=EC62c0l~HB3ziIZ1Ia5AXy-M~XpwlG07J0P8Fd4OhmwWL2WxGJ~7R9047eEijmsmnmzooZ4aHUN9b11GRXqjd~xeQmzQE3ApSovx4ZtnbaAIKmLQShBTBAKDONXaD95P27yBVlkvU7qxHOTlJOV0e6hzf8HBlNgTx3VPPYISv~waVWJaK6kIYiCWNRDl8w8FCGwS~RHYhkntdK0Mw~wjm7POqmh0Dxjc5bikF4CbI4ALqr7ILaZRcP6mt~-5L4wLz9ejJOTyFKb82BP-3nfYuUe-39c~97281XQPPSPWqXxaI6tkkwEEH8pGchdxI~wNihaUSmlY6x-CUdm7m~phMg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=i~yWsjWp4UDlakEultIBXVrd0fDOLnBfWYDiIDez3l2fBcfY24ElDSC5osX53LohzAjKVBG0Bti509YTDgptMBdSVTuR77PD~PEBXQ9RdAynIB4PcS9L2F6dS3EyQwIt-Llk2kkDhrW2MIFgEus1n9oUSSgzymj3f1ux6NUKF7kmX-cnvn3bIoTMxFo6sc-N6fYT7TkoTk5XcqBzIxj1tefrAwbGt6OcywvIEYoxRXE-OsLbyKc9ENBlTuzr1vXlUoYVZIG-9d5-X0LTZmTopqeOZ4vd63xHDQ6ffN9TvxprCCYwQmFOp3I2qlm~j2gvtLL2UNYxxBNf-kjUsfydqg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=zdg9H12g4SGPRVWO-NeRCgxkBY5MmaztD~frqs5mwoZ1rFGOnq3d8CZgqIM5TbcD4wvoq1hRBWGhPUFS5JKaNFmeESXWqvZiBQob6wje1reNXMAitLed55d9-U4VTmp7BknbWFWFYPWKgzF-Lb~ReDSnnInR1wRqdKC9LtvcNLAziiG88PGKc-7mCAT885Lzyf9sLdedEl3CR47n-0pzun10Gw18bDZt2z8N0ZM2K2rZkgjE6JXskRdjJyZJQ5wPXeqsVgX7y578dHUvIcmedA5TMc3GnixkF-GwfyOQOwoJ8FgNbKNEgJdiD0N1ljJmYyoApAJbfrFBDqlnIOI6Rw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=QUYoYR6zKpuQuWRjCcSdzinaRu6gicUI8iL5VQclI8n6iQ3vJfFpWeqMV4-SluTbJ-Xim4xXsgJkVjn0JIkWybILW8Pqgz4vwjnfPEWOj2sLKsjluFxDb9gtXBXWyFRsPYcvnYQiiDPJzmYymJIta7WQ1FCep9rIplB0j9CEcf5RDdL4IZ2SsLBblhj5IejA7ApV4GhT3FNRy7ljfr9x-wBPC354hj0fdLmxICG9Byq3y7bTkJW1JeljeU6b~htiCuHpQ9fV4yv~UXhOCpI7IX8ULFwNBt8-RKWJhOmufaVsPVJ0BP9mT9tQVyIdMFDEhsPCGTc5wpd4HlSrJErwyw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2809,21 +2809,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9f3db73310dcc6c6761f80ac808da7e1/6a538fd0/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/27183325e16eeff6778be88b04172b5c/6a53e430/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/7af68866c348c9935683a157c9caa67c/6a538fd0/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/934b2a9a44ba91998f442f14cc3516c5/6a53e430/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/27259ab4cc559bbc6e405dda679590ca/6a538fd0/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/b392331a459a388f58235278b091c6d1/6a53e430/23/4x3/43x0/430x6/43061000024/700996932_1_ns/700996932.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2945,21 +2945,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=otZvV86GljstSWf7lOCdAYEq0lHtLieyk~JJfVjr0cxc91xuUVXazzco0Qqnog12~-H65BZSnQFJwBqKKpmn~XCALx~GvNbPVsdOg0g9jP5932sgNXvd7E9RA4RPqhxKOatN1ia9u5Gr77Ce6fPkPlekXS1wR-XJUcs95Gta0PdPlvizESxTdD4HKrkGmSJ2ZiRBK6~BTj6VOiRRPBIwuNdmeJptne4113Ex1vL2vi5KS1ZPR1ohAKyFQ7mivNtUhP8hFpjy-yKhplcyOxsAKTf3K2zwsf9zRk3vP-70Q0U~d6R7V3i7HYHH0Z0F3PgyFxLEAbs8IUoei1YgALdzwg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=i4fCnUSeGdsjLLq0mH17dyXez0qrSqRhwrh2BXFZnbVHu8qDVSKtmKEJPAHRyt-MGRAJw6kyD~BYma-EK2QPKxUNHRlbPVJ6lY5P~qu63y4Oo1~WftxVml~ikFWI~W3bBAVbCjaJ56FlW5yBNlMnzKiIfLXevUPZZawsq8giLQZqUdQ1dBKGq6cyOLEpsVzGpL0eEMRzoRD8bxCX3KxO-rowkxyxqGKxVnZSu9e5dKhdMDSOZweMshGrb8B65lvArqCocKPSpDUbN9Zvvcv3cVD2Ys9ruRbXPDRGsKv8WPdGxS2JYOVLS0DOuS1po5TrPb0O~nq1TL~4tbjEy2QFQQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=wbplTygLCjQunlpWD2l0GuEtf0E1rbrvPTxVXRzDxRgd3XvhSX3fkGULnVp~TVUe74CKHKfQ19sdTPQocZiMLUTi3X8EgVh9kBR9lsMk1yDy4SCwsgvJ3pTrJ7l53uMwI74wZPyCoW3dIjretxvtNM3i0Fj9psSAVhnRbVMDjTS-p5lwGrqN5HlBPNszdZmw6TEbb1ouQRbFnB6bboHkNMgI2QqBDTI~6-cmH9KqhIsjndb0BE380MlDdyYra2Exe2602-1Qax~YZ69wq9RCoUocyvnn-9xqb5YQsxZR6wz1YKv6g8kNpGEpvZLAP9XNBn8k4HOCScKzv6wbiW1KZg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=ApULDl4M0vOsOC5zKIW3AZFlA2Tfx-LlC8P~pLZ8FyO76LUWfDvLJl8Hww5UUZQU7Lje~vLVMqHeFrV93Rj1aLwc1VB-dBQg82iNQRwIyF86lDPKanAgAt7kCW286IL7zPA77cuRdNFoLbV8j5gnCD7G2mdcObz~r9aN1DjryD~IK38TlptPpf6r0GsurVvFKIiDcMpXTxmKSZRByPg5UTk3ghM~3nOR8ib~pU6UGhYh7xuL1Lk6kGMhtzDeZ1JeM63GznO8lqmH6dPzMnZyN~JnXrD5gFTL0bWXWfmaREuEBl8AbHGHsifJbJtyL3nMrDx84JFKVbfq9TSMOrO~2A__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=Qcy4IvN-puD1WlkMDnX2h9puDjzu-7NmNjMZJ1v1Er5T7f3DYQGGCBDKCiJlRZkw8~0DMAjrfHYtuncW4LO7bWg6EhGCBVZfIz~YLp6MzsHMLS~huH0-t1jd-MQBwssiePimB7K~V0~khjEkPflK~0PgEAM1P36B0OZgbuUSgTdl44I82~SaYdRAgS4285AF90UxnIboQhy2~PbfCGVY5kigZ9lnz2kNyMKzExAYMtyltrpzC-~9yvyZNH3PmyFl68JqKc9bEPOJNvRdXXX1dS2m0cNX-ir1vMb6-9f8IRoOiQihu34-4T5QiQY5FOEsF-JQFtI7FoxctCYICVG7Bw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=yVuGNkjnRDvCUXppd3zp03UpXUR8-H-d7Yv4usxnyPR00nyjG0UscMiN3-ky0HGZX1zKJ9S1QHMXg6MsMvTPr8icPhr4nEdTeJSjVSooXEq1et5W531UBT8zaGKSGYsb-6zmvtrdQSMli-C3kghSrTMCVC1j8rYN1h0KT0Z4QjDkEYEs2J9-jSvJPit5bt~1R9t3oQe8kkU~vjULnssqvSWbO~oTA6irc9X~Azv509gimxQkmyAQfInJ9ThiNm3lYGBgec~rZIg2VQLmvLq940CNOz-agxqNjokiABOMtS~bqU3sztW~Xwe5rJtbkPJt3rOp-hspVh0~XhYydiHqOg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -2972,21 +2972,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/2e90f68d9fc0265548831b4330207f49/6a538fd0/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/86f1b53f0748786e1246e7b59f38febf/6a53e430/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9c5de5170d2509d68e120f2000d1e465/6a538fd0/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/c4731c7a3b330da7fb37a9a5043385f8/6a53e430/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/b5f2203f9b8fb42fb7b93d9dad46080e/6a538fd0/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/5cce6716a9da7fa9c2e6182edfbd536f/6a53e430/33/4x3/43x0/430x6/43061000024/700996933_1_ns/700996933.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3108,21 +3108,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=JpewOLQLqrLjIMGKmTueCPhC7WMT0VLFMzwsaFpaJU8p~v7F4wVTKlZCYJPUoIgKR4kQLi7fTold7HEtsoskIhbP9Jrk4691ETkC1xXsWsalab1zqC7p7YhSvzqT-g~LpXYHJZuf-vzVZ9gnU2JnDJ7c0aMdw8Q7CjkeA4GHJtboUxVJLXgeeCNVUwiQBYNOVt6SyhNyuzolAlMM9BqcxmH9jaayvzi4uZ-zPZ5iSd5v5ioHi-tgkV-h6sYvEVL-1DzZ3iUm9HpSEw43ySerFAfXmEZ16U9vz6pdOxcFB1jrr~MgyqZQOb30G3CFEnavLf2NMgeqhQEc155GfTj8ug__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=tgxGYwnVjKKR9dCi3g-qFHKU5N9DcixfUtxNowOSRWn64PfMQVVyuzvca~n~xgkm8BcA3ADm8MZRH9n2w8OsQ14PyFHvcT3c69BHlF57svDGFmohM-4rEQJ2abKNSvvFvAHj6uMsmM2eAFrhaM2phgZDYFuW9ac2DMZjgLD8Mo2oD48GHJEcUCmaarL5Obx5SWFeIfhvB6pK8nlXNld45RKqR~VumkEsBaIsRq5rRjj2MM-~qv~14nV8~Mci~O7pF1HUv~3Au80voGxBfY4mEjLrH-iBZSUKaorsS~VaTVL4j2HcqARw-N8ujR6gnKyA9fjc1MtvABPj77zr26QKbw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=YEYjKeP8Dw1UpyVkiFH-29-PgAZ9PbzQcqjlpdVibpCsFjd3-e~qGUrImCMzgargobFVqo520UjdowkO6Onb8iApg~CLxpIgyKkOa3dDQp1M-ATsHN5EtKblHUj6yDvY0bMPSqsOiIR28u-0HEPfnAGjfVCJcJg4BPeooI0HQ99-d3lXPmlXjdNO8RIlCcqqLNCTDpTEtNtWIEO9vbBr~YfianVLOaUIYmfwJWu462NTZcJs6Q4yLEtW6LaEthVyKFsNtm5dVKyKPjjR9ppjgae6HYTPNbmftvFYDpqiVS-rDNZx6ByFzCLXxlHrdndFA4FK85dsduYYDovFkMZOrA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=nZ3J~QJRB9Qr6~kBY5jDa0V6arvu4KHuutd8ouGzMT-sTjRmlxZUVXKw~xIiKHgRb7oQHC9xc8XmR0zwQDccOQl6ljvrdDwuv~OPIbJMfb5-DS3N8fbX9NZcj8OhxdLn1hUUBEtCXn12tdnhFzVVGj69iknTsAwXvYHEMfbaDJuQ7-p2lyLnDZW7N2d2C6s-l4H3Mtgwz-9KzfUzlVcJ5L5wGNOzlIYCDnAtL34VzXZh0e8Nea9Cd7lAWCgC5SeGjf~eaHaWhLVrOJjMaR5~z5B1puERRTFnYg2nL4C2GKiDyegJLgMLwIIjIPON1ng2coi2D9-A2vzS31HLc~NDCA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=dFnmfWqVA7FJiiT1Z6K3zCmBEoiSlgWO-Sjzh4ckaauljM2J~VyYBFDxWmXkHKkYBFM4xsX7IbA5tlI3X8X-TP0fO4T3yxEYeWanPHSd4XTiEEtQAIVa~Ah9e3G4EUnk76afi5pDNlLUVWef0-7PDuKph8uspM7qSA5U32mM9hrCvqm0ADXFmm9TWa8SC2zvp-8MIRY9rDDfFslL5cqwr1nI-gKS7KnrUCao8iEoH7Fxpm8trRhJNOiQfeozpsMB7-lJFenqIQ3cwu78FQbPF~PqFHdok4lHp90PmITx~UMkbESnzFCA5ECu25tUc6dISmpunWEbo~ATZgssQ-6rUw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=jWPkciMbvw1IisCIOKJqnl4HjJcW8JdPj2n6sPbfZqAicNrzfRB5vSwgVsmizJckkHjrCKffFNwGxZEazPpVDy8csMjZNMa9sp1tg9awZKpY3j9zjCh6kEUH2su6qBgP~ZK~W-feu6ivez9Eo6-P9ySIZJOwklzhAVuuARFFpgB7JQDkbqSQcwrglPNA6ohWUuB-wWvSEuGy~gw11IhPt2MpgOJn4E3-k5GHSLP1HSi2rXw6cVvh8tSRGWGi2uTZr0ADerSgixFpWbOAxX6d9eBWbOW7mn~AwSirwwVnwbchZ6oh~5XZSPG0impP23TUfbvr3UR1PEqrRXIXj01N0Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3135,21 +3135,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9da94bf1036cf47217469015cb6f0890/6a538fd0/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/6d2d9e7f2344a22ba4a59b2ef88acba7/6a53e430/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/bbfcb5c764ba1ba02678c62ec04e27a4/6a538fd0/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/f656c69c406f7863db55d1b5c20e3b0c/6a53e430/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/118ae3837b3b970afb80cf1180d053be/6a538fd0/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/13fc697c86005dabbf0c7803d1e57b81/6a53e430/43/4x3/43x0/430x6/43061000024/700996934_1_ns/700996934.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3271,21 +3271,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=fwnNjyuizVZY8EgN4DwEfeEq8jJwbmKSuh2XMwFSnFVJlmdDyn1eipQVjaTEwgWzEkl04~AV7FReQ5nCt1MqOEJSPmeuiPJQBYhtGlXjwcuknG6WEtrODy43jdQ5xYDFM46j7UEaDCJOpcaPH-djiadwtJ9B6xDatj-7mbGxc~c11gUmrRwhZqgUDf7EEM2IbZuGAvT3HTCrJRNQkTCbBgBZ4a555HBkWtPBFY7A6L~VaiVAQK1zpBHtp6WynkuaZIcSNHZFMClFhIsohsLuZdUnjwAbHAfE733uP4JhQ5KlGtrK6ftkmJRiuW5m9zQo9UkILZKfAWpL2PxMCCavnw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=vDY5yEeu9eZGC~hkjm~SsgFXrS3ijKadOL--5kfaTb2JLiqcdC5lDtnxEMXVM6qcYFpFozw~LZieZwVHSAGOG~Tt7pyMqOOxLBzrqtFzJFonGKIxk8ZD4R7A04mZDEAWpBlejYFccDqQxopSlRXxoETKF~09YR5gJ2g7X1VxCzanj~wkkY~AvlSD9v~2ubzq3mnZWZWjSI0g~beWRn4lDJK7kGOf~Hkfwm6lNZEJBEErQ2krKeLS2OWTVestRcCBLcZqrcYG6iSbcYu8WDrP-dIb5rYx0a96zUT4jcX0SB5xuh~o59krm3Jd31bxKZgGqxxcDJhgq2tcgs0T5RFYVg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=ERl9eU9sb9ueIBEgEgHEpHSUXpZtmG50y0kqGmXhTWdZdaxYOgvOpd2eeREa7G6xsOMidj7c0r-zGVOFsKSlx5-HGvFwe9RBAL0l7S7105wpsYlIJDfqcCAlQbjF7-U7rqcru~1EG1Eu3gTzLqUqXYl9n6YffxEoMQG6ceDsTJX0kjPW9CUh37v79XiQTSYR7OB8fnZCTceACxFEnA5wAqAMjhDgDeeKNt9yvZyxU32PQxpaun85zOq039lyT15f8Yy4gUkcH~n12p0cVOQP3uw7Xd3dC43qEo7WjT4FAE7aAKoBZbc9RYs1SIKlKkgejihokpTRQzQBnfHZvqdjlQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=AjUpVbvOploRZbLfDxEbXOvHtgilgPlDJy51MCxmSbfqEFHht8OiN3BANlnyZ4783WicJ08HIqDoeo5sr~qs2wlE4DDzCbJLNhKGr2Mo--AdcRDzpPKhwepKqiHs44okKBUFHMxTk2M3GAqiv0IDnOQ-dlzSKVxnAnknWNNYTTMfRrxxzKzg9QZPR~joebGanTcZbKpPNDVfwiq3rkooms4yVWRpnkfQQ0LA~kyeb2HvLOv-V4ByoDLQeXuaYtpYMr1Mao0HPfW0xY4Fj0YwUtScKyGIIJQ-0nTntfR4~fhL4wF9VS5irCB4TOOP1oA8cKr73HnlQDt8OZimunYZJw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=ayBfe8boQN2noPrsCpPV5Iy~PETNUC7xed-l~IKUE52qE27UZAZYR4~sBhAYIit89ShVKU53wtQJTmfF5HvWCx2mi0UcM9KcSTzL05PbCrO1JpkpeVY54F5Layr~-pGQ79eyD3jlLSINMlDrUpNyhvih1VZRgMZtp0a6Mtlvnr8cvwD-MM0RgJPQd2Re6UnS7A~tc4VQE1wvpG7uIdOV23nZvuuC7MZIIpXkfNLoZe1zMBqX0oUJY7acWl~mwMRrWFNku5VyUGRI4oUpvJxWMlMHNKyPvLdYd5DdUFfYTInWk807POCGTcy6o4OOAxhIriEagtkHS7hvH1Zfq5VJLA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=IF-WXvsMQ0R4KA0-WOMvQrrgk-xncLxKe8or2WH-TVaSpKdhIGbAQPzdu55chpCeboqBgP3Ee1aNO9WcRJtmf2sHSdaEDnEU8QeBkkRv-s24-vXSsi3Ar3MIBi20ZQYNAKN1Mv~m5bpG1a-frlG7VjgaNzBKHZ60aWdj8rLjwcH7ewHYDnMh5g3haUo65OUc~KcRFXOXJsV4bvdnVHNxbAs0-y1dZI0ILc89FfKbJRUlxpJV9oFY5tB10Am1AasfI9D4xsMBb6aw~T5eifzgQJv9u8dt6ui5tg-tsWBsbbiRbqBazV5CETRRywEB6J~kNKFQ5tI13VARWdK1C~sMhA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3298,21 +3298,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/05c4384d03e1e4b2b7afa2598fe2a91a/6a538fd0/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8841085a665cfbc2c04dfe28435b4815/6a53e430/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/7d0978b32b6de15db642cff10ad4d74b/6a538fd0/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/f052746cbfdb3ba50cb46c8a989481c7/6a53e430/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/1b18254e351b25d05033e886a6cedc1f/6a538fd0/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/7de58275932cd1554337e08424f52283/6a53e430/53/4x3/43x0/430x6/43061000024/700996935_1_ns/700996935.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3434,21 +3434,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=iWKj2Rcdwj1CeeIZoGTdgGH6HTAg-VZca1erGE8C7fb-CIlGksAQV62CDzL9ignO~gmB3JQGpytveMlOjlV958PDxhKps92HNXd~UDfpSi-VRe92l5iCE67Aulo~9Vp7OMDwN2~ZYKDmnJZPtUduwxQ7Lj5Bcy~neQsnjukBPaLhEgIvWFsVzd3UVFryKzTL~kI9q7oajc-fWIasBSjt-hYaSfnV3ZxJL6ucfaAhRklJ5ny-AhJoiBOd4UIwlNRlNSeKtESxE2L9BbajLBYyLmqpAZl4anTd9SXy38XvCCoSwQrL3udjyxBeSm0nIHObxsiZffAEm1DSeA8wfG2n8w__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=AcudmQMryposAVtK8ihENjhSU4YGtzjU3QPLhbj-pFFBZXJa~0r64xPMj6Azsig7UBBkqy2PNISdOloiCfI0Me31XUYSAdSi~K4f0HoDJIVrWk59CH9dqmCrKTyaRIzghL0kjVUJoxzn7yRBGcms8SVKcBr2ECHXIhYyCdD~QkLhtj4is-mP5k5l48~GAWjgHea0Fn6fL1DhsK9pNzTyZtCnwThUDFHHNUBeUSj7zTsl6ZF20Gpq7KzyE1dhGAPivDfpz-dXNINLgVNfa0dNzODbUEi9WJ~xu4e8lQCRwRDXPQAVrNy9-RQMlW9aMZc6mZV~33VOztfUEQ3CwgiQpg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=LFFaWQIJ9-51VQyXeCzORWbnqSMMcRh1NXumLCmfDh8ePiWyzsaToZ9XrLLNvRf9u4kG7da4EtpNCJQ9TQ8uVj7IlxEbNIpaVIhgDd~kAPXUAUgxG3qnwFv2Ucx3QHU0Kg6p8JKcqC7796ypKwoZhhmmAoJhOD6z5UHNt9aDjERwbbohsoZ6XFFUPNCUmutWCoXqgLXSMvYa6WaA4O5Zl7y3JG-DJLcN09QAxMjs4KdZb6HNFGRA2jJvvyEcYkuY700g5mUKWIhe36zRkXHAg0jZGkoyO7fieQD1pWVr~XCePHnm0qgSD~ygnRDr5EkASMIxsFYu9bhGYwvvEoKX5w__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=dbnN014Gl4RTZgeqkCJHJYv7YFL1F3NxzZZf~JXRXOYod7FrcHv-caGMPQwk1hqypZYpx4xb2Jb~tnqSDNnETVVRZA8cG8NdPMRT5VRS-SJzwVZ4w~-8bB7c9KunvAqR5NrrzRZllHDmhGR-KitY1BlO3hpZZKvyyayzjwTKH2gh229CudFgC3VgepBf5QZZz0~kOCrPa67rNFo2~ADtPKOzVttAWbXKm0f5Y~VSIQf6iJjqzNyUWW004lOu3W5Et7Mi1ZFWU~lqaVBsg6TQqUMPSv2awpBKbynytK5btMSl0MqJKFEYmMdSutcLC4dIsC5~L-XuNk1Go2q7gwmSzQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=G9ia3TLf~W-c~VicnLjZ103WUc432CbTAbkW3EkCKSmjGj4tJnFm62yy~l0rUF39PC-3Jd-iJhOzoE~~c4kx30DsBcG2XfpOOwoDUeNYqFnL26fzEG9eAiQ3dpCQilP5tsiEVmIv983Ak6L5QuVi73keulJ8VTXqG0TZLenf1-jIqT9Yu353obbU7fQUX0hn8EyEIUKaEQJNbcYpTCwfnPQUcIbqxTlb7CzYeop4BaJ8qfH~gcQS84np40eAq25fG2RbpqhBsTvepgIy0tXpwq3Yc1RLMqMXRUVI-cymtfQpRrxCLSg4TGxXabFhuFz7q2JY~e5ZCyLFwjvPBZyzPQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=zEOp7MhTxjRXsUb5XX7FSTC1mXs8qyG1o5dznIRPFpYTxF9tjUiGWcSubu0b5qro0~hHLHO~Qj1J9fD-CIFlyivIRLEKj4XES2-lPhL6Fe~IpePUlgC6YS2zWQUvPLMjwXF4pCX9cqP1gcyQvMoCiAEPs8StS6fVVSegumoIZYLSOxup8x1xz9rU9480p68sGzDFE8SjEs~KIRDm5xXxfUngfYQRM4RqYguBY7yYdSLqPcGKyv4h~TAOKpenc2ZIOHpNSKQsbjsXkk8bI8-y53crcUhiyINJH-GorR~Naeaq9S6PrqbPU4~yrMU1Z9pCwPkX4Kcle9fH0ylaajjwBg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3461,21 +3461,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/455d7f8661d55cf70b1a029c1965293b/6a538fd0/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ab59502f4eaaf398cbf856e307d6f78e/6a53e430/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/22eaeed68a4aa547ee440504d8a8d7f3/6a538fd0/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/ae710e9fb1f1db226b20fd1c33dbac30/6a53e430/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/52474db3ef0c620af0f89326a30356ec/6a538fd0/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8ecf78995d4a4c360a998d5886712724/6a53e430/63/4x3/43x0/430x6/43061000024/700996936_1_ns/700996936.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3597,21 +3597,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=EV8WVuunme62LPPiqGWqsnAtL3bFUcaKISV4KiwC5r9xIPiUxhkIlaUu3fkDDIS2F0xooHZfx5E5E44W-bbLa6JqOAIDaU03h0dTZaOF0r-eWVng-320DzdbBy9SyLoFHCBRlvu0X6KycvsNi66BCMwNXjj7neABo1iHBVgD-lIGe6BTgPGeqAUaicZwHK0Esl7ef-0yEzeFdPvK0imPV2Wu4Eww5YTBF7qH0~6I~N9iHoY76OYH3q3kpnZ1sZ1~dKIYpqbNymyLitX52aw3EfapIs7UZBcaSAoyaG7P90FB7ayOwBqyBmtDgVSvuHCvP4bsV~jWA4MunHH7ISvqtQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=AD6~sjshvaZmBlPnINh-oeHuwTUaNmZ2-ZrLAerU1v8RVYYs8UvU9FYbQX8Wzg-riAWATnzDhr1W0KeLxATDcUVAuTAbz7f1cYN4d4ZxddHBBac11UZl9s5NpdCwZ05T~jduO7rVZyISxYJDVat4Q2c-N5BaFbtEX0V~QbfCxEjw~k7DvZE65SmWntph9z9XoMlHY8qkVO-KgB7Au8g01vrj3LSItsvbyPvt1hcITK~WQBhssAEIhuIQF5~eHYORY1Hot9~x2CbqZ6yy1vxqM7Eya8tJfiOPrZyUSD6xf0zbwTW2eFPC-ShwD1g~QLrWxGXxB6LEP-ovcK6t0wKv-Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=fnLIT707cCvm3syVuQ1z80zoIARGZdbN5fung8PfAXLjxrevQOepp3KQ0ex6CmBZxzNRI4gNrfNqHoEBoOgUa3KTM22LrGE1p5e0Dxo8ad7b7zrGxDAj4Sj6ZWYYiNhqvXKTfpLccNWKefJlKRO-O5KIxytsUJRVGqHnhJKHyyV8WuqLhoh1uiAP-Ebs82MkBTVWkdcEIVgFUpKUmW4I6Yo5m1yX7GbtmoGjblBFS0KtaTj-kf18E~kXzQWX2mZvXwh--8x8ohTsM25S9GIYSc5i6vD1x~Cs3hurgfsKi5Et7ShffKeCKHb4Z5w4PI5A0S4PN3Hw47oBl7tpOQzjvg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=UEYHLrQ~UxKxdJq5p4kwwXvEYoN88dbk7TOhX9UldioSvJp9G8iwHisbI5vSpNkrL6A0FEQ2uGGFRqMQnzSrzE46pb74UwQGZ6klUlb0ulnpSWWFUK~q-aEp18dIvqorL1hhIkPE-Vqz2hl2gok4Tj05sWUuEnOASX9Q7m7EByYXpp3V7ipejcMujGtydMwYG4CIZhbgf9H3eB2SV1nlUSmqgklwgnhKDqKoOGHfLWfXq95pEaV2v3ZdXjLF7jpj-uZ~e37zBATiL1E-DCiJEc-qp2UYEWfkMvXQNRGUD7i7hBTl0w9YAPZ7rKe1PxDTWoFOfjv3r22YVOqWgT7oJA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=qCaE0a-MkvKPz~805mtatGw8~2CcxE2bw5IkOj~mlJ-XI8MAiOwey9cAU31Rv07TLVX5mKZF91i16pIUviZ-2g4-tYZOyELU45UQAWMeCszw5jvfVAXzm~eaHsFXEhV~7aLMmsGKeMB28VABLQADRXi23OE7PJw0K5iAmBuPpDjBagjGfCBSIfV5b8UIkeqvcCa8m5k~wk5u3hDmLBhdMkaiw1bpAHS44U1bEnUUq51Dn6UxECq2lNEz6koOzIky7GtqlMVG3wLPh9MbrA-TZb996OAl2TKvLpu41siFyk455s8bBAa36cKORZQSn1UqL82QMzeHFKtgnKE-pEFjRg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=EGqUi31nPicp7jc7LNupRpQ9zTNkmkKcbS3eSk37Fw7UViX-ySrxPZwMrifz073LgYThNqFlq64J8yLRm85C~3iEsi3Lyf2jCFhQIIp0NKgA7TG6ccwsCCBSuXYaXrrGFcVVURIwQuVguXgyKg7XRc4QW8ZMXoDqOjVzgRsvxQtPy7nqGIKho3ndOto8tb-fqBsKHqBiq1zTgq-7jVhvm2FIZlsUHShfv0e9qD2R5tmecAfbhyVH7MOkHAGfGVmi-8xtsstBeW4DQSPzaPefJBgz-bPorOFCdtwONnEROV9zG4lRlbQLtUkVPEPsUpvPTpMIAmOHuKWweYJ9uSVfcg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3624,21 +3624,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/fd7000cb8b38a6bf8025aaa2eddecf89/6a538fd0/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/20eb1b3dbc38c5f202684512ca9ac62d/6a53e430/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/a13d989ed14747b738e9c1eea38c54a2/6a538fd0/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a5e8bcebe1b24a5598b3ca904d9386c3/6a53e430/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/de353c5d9ad6309277454b5837763094/6a538fd0/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/d34c82a5ffed6069eaa34a922125575d/6a53e430/73/4x3/43x0/430x6/43061000024/700996937_1_ns/700996937.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3760,21 +3760,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=XEtwpxq8aQwT2wG3Q2bCYPuWk6ltnKcZaWy7zkxx68Zl-ThBrlFXbfiqpZX~IcXdLbIDxC4QlD9JpRNcO5ogmOWMIwDGPOoexNGhrswEEzCshtEc3Y3CrTBUEBJ6yi47x~xMJRR-7lFPaFNhtERWiSkh6U5dVIjyRZS442lXTv0mkz0Jm7ClSOQAl-zGCy~PomiHvBxx2dJDdtWoBVDqNphgXyenZzih8UfA1yUUge6knF65z5sTXuk-BJWWUNlMz9C5qeB2OJudzLCf1HtFhXymhJ2RiE9FFGKqEF50yDJzzFHLCuPCNWOn4Td7BkienoS6gCIftNmclksDhxfqeA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=EqIfBsTsscBSvRe0knBdwru3tSSY3BlxuPlXCg2~k~H5A9GYSoBGoOBAzRMJsCSwISY7Vh9QiFh2Gi6wQwgEVw3c3643p03SOubF~kn5alzK71mLcQeo7oD4z0WxC3Znd0M1z6mL3-T76fWKoSxcYDHNJ0RdTUBAq3tiHa3MntKoniXzzvi56Ya9kAuef0WVnl3pYD-LrVjDkclkYlI-OjnPxrMARTOIEcOdjoXfhnEU2MV3Pf4ZK91DEOZs-Y2iyJAweGdgd87U~8TVfkyd37XQa6jP5h-9zfP0VxryXrKCsHH2ns2TTI-BvkzRk55CCzKcj~yw3wkOuWHHMo0J3w__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=GrdRnFUyANMPfCCvcQjlnZTJvq9FlGA-sPtvY~Eg1~21W1XgBlS0D6w-Mp7jzeJyMjUr3XVOSWq3UXAC6wUgJ7uJpMcT-9W0wPckQpN-EZDLf63PWuy1q9KsN0VobmvybJ3s-E~L762bdHVF3HTHdaRN1GqX8YqAjqHsxVfezN25ugHN9TSCfNq2wyasBPYt6BXYEtMriSJ4e~zXCv6c~DF1Y09CZPAttw-UchPAufe0PT73jb21I0Lmz5E3sJ83uozlbyo~TCMvAAlWEdt1MNbu-UeELaM1-Mj395PRevzRltJpXOz0Qw8NFZUk9E18PlRwwhTW7pkS-ByLAIJhVw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=mtZkMni530wfC2X4cVik9w65DgJyXSdLKd08H9Rbr-qN8jqIMPljiVYw98R8lupMJeM2uT3W1MEu8zw1EzqvdFqicLQFJV2poynG9GNWTsjuIUM7v5Uewk8IUWAnKOGECWXvlbjCxqzmQQ-pU3cakjbQCcBP9d5MuiugBO8b0JWO9QRGIrWVwnlf1S-CXp5KriOGUaAm~Fv7GhGxFwLxT-wHeEf79KMXTy1HO~ET9lldYYGstuHlpf9Ttjk0FTTcTKiIkjiEr~9UDG9KKfshabQIPJTEOglcgu7yU9UxwBQKQzE0b0tcbGNQj04wuflaQwJCl31KMyAIq9ALQOGj8Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=P4BvcBG562rXaInOI-bZm7UlKvv-1N77vpR7pHGCY5aZCNClzxS9cLGffb9Dzt3vRsrUg8K0ZpHXl8iVkxXiipfcx89S9xTC6TPUbcAwC0K1EGE6aOlXLoZUxJNSK-bR7I2Dv3TPDitF3FIzCiBfqBZWoN-F4wFz5qsLqnzD7WP~zkYlHlzn7rPU59vWmx8Vy8Wall1kANFRmu6GszQ8kS-CIx-~oHwGhsOqYdT~wa5zyUTlV7eDBgfPOoS0IxaN7lxDuMI3EGSxeqMpYdDE0VhdmraSrgEfUYhJjT9pfdRWuJLx8MefAHyPa74xvRZWyRV7tsBW8qGaLJPnX~u2xA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=zRBAsELoDqXgI11zyAPfaI9yzZOuALS42b4HbfBNIzfdoXnVSYWRk6IpGxWcQePcFoYs~e44HQB9sVpFMHNFbRrIY59PNwAGeoPaeOde9eNzH2vVba7sHaEK5gL0qY31TFdcKZ75ep6awSaP1iclE7NGjbnbeQPSGxwcTgJ9PGXx-KvHsz8hljfdCnc6vL5j1A0r20I9ljAEDu6CUNYOGjA7bb3ZIwWsjg7-Z4t1R6ZgaXtzdRvfbr3a0WIeb8xuElqXYAW5-ysc9tMM4q0XP0TpS6NEH3Xc~OFC8pIzdustYqezR0qsU~iEkeG46Ye4ukmpZHMEd1JDAO4wBqdHFA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3787,21 +3787,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/93ed8dc9cbce059b0ebb2b25b52d4e1e/6a538fd0/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/1cd3a5a085d3cf512102e9b53e13ad59/6a53e430/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/25064299617743dfb4c8c146e9a90049/6a538fd0/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8058a3056bf9b2b1b1277c883aee855b/6a53e430/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/528249c5926ce9f59a2c311b436827f5/6a538fd0/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/524c5faa60a5d8e5ee8c4181befed909/6a53e430/83/4x3/43x0/430x6/43061000024/700996938_1_ns/700996938.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3923,21 +3923,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=bOfWx8Dbp5gneha6tVnAiUkTqi3PNeRammKBdeRd1S1vgvXY3UXmQ4RYtjwaAIWG6EKT8fSwPApIkYjF3rjJki8IYSrs4QHFMRpo7XKjSJgif~2Hvg3FeT5pzskSe3aiTHlzP88-6-81N9eAr~Qr9PJ3XrjT981B-SWO7wsEz~oZje0yJlcx5VuOsrqYeJMyHn-l9OY1BAR6K3jdu4sH2LyHMxQajEww7S-NQ7SQSovi9T~ZLAGsnIW9mkMHF43eTuuBPYrwnisQ2j-I-A~Cxb4xNssEcmd-w9jLbEPsoroW4zIg-xBoN4n2tcfCpoBU1gSshteDQ6HdCbPXFaC4Pg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=XyEkkV85x5XVrAc66zOyjVe4O24jq9a3XEIzOaD-Vnbz1rktmFpexNluLdhhkEVQki1PTf2M36rE-wUVT1TMVGuhxd3EMiryrnxU~qT~9aD-LHUH3MQLKS4WN9ZXHrf8FdbmT~-FNCSvV6FxSStCn-1RadWXTMYQhWcmMsYsKvHLmjH5fMvt7~D31LEiaovGsvTLTxXkQbTXlChpV1nAi082qQRmRumPxLYL1LM79B4d~beTBI~OweaFxb8f7CE9oAFRL9zcdh62L1Pze1owDtgBjpz321skPxp9m1oj4YwoIUA9m0wJt5nF8ZHLdVWucYM2Tdo-UOUvMkYKsvmbrA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=hndoI8pIAUJbIGOWUj0VY8rphTHaR4bTNEaFKx5Xq-3R46uHwaJnyGta20-syfFEDWRCXq9z1ip8M1EXjDA7JTVorlgXlUVyg1L2qie2-GgjZZY0xw7DuA-wo09FceRniLwA8k8LsH37Own3OkMd643WhCWNwqqONf0571w5ro6wMX26EJHyiQd4wm~3h4Jve7VHm0pi2WBa7JCIrbYesZXwcW1q6MozWTn7ndisn9bMiPER9~jf~fOWWJQ8-gJq~D5ATqhy44YtA6sseEDWDM~fRDFZPl8g-VY32nducC2LIQ8XnnNy6dRH28Rs6qJ4Di90tzrylxMjLdHq1W4j4A__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=vtQwqJZainOkDBLmeOIcGmXWgxdvGOD4FfnrXWWkEL-qgFcvQxA3xBFhQ-TvIHCu34iNEPHUPGCShGvi2eEa0VXh2pkjZyB9zHh~PaZswuI7IV1JjvtJRsWjeE9lIKCbTGd~31mlPqk2KN-ZF7S4ae-o8j4jjdxJuWcBy7z3hnsC98R5SAR~g5WGft2tnJodV6X5Hp13hNavib8-MFZhuOBLyA6Fr-5TjRCoOKqZWXhHNd~QbL6JyvM3I60yCyDTzmIiZqm0hstrpTJqlv8Vd2IMHmC9cWc1SOnla00eXxKbz~oGgBakEwyTppboJQFX0b3bYYxUAUpFivPv2SaTiw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=bXrZI7cvNvOgNbiez86lOZW~YLk7trboGCNQ2M5poq89Uh7~ec7r9x4q9PPDfR5UKLI8i8GO2CHBusn-zJywaMg4MH1G0PcqxKO6SKtzjTAiC6Q3pFOo1rHMf9Ht3ui4SFUhCTuQvXaY32ukHsGUomgjIKB7Ytio0y2jaIBQpCgC8uho~38RCf2NIHksMm9ryMVAF856qh6gMrwNAzeZChLLu-hgNkJlQXx-9HzRbkuOhSuznZuwidOXhA1Of97QQxZvyuPV87NpoIxmLQJc7dBl5xxhLKKlY6Q4eLvUMaLTxbiZrFH5Xsz5wEnuBpaEY6g4nXuDGPNoNOdqEzM80A__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=kij0rL0hXdzLU5f6C-r0uJyzjBBn8bxBzlCD8zN24zjAR7Z~ja8SRfBqGXnpLKUdfn0MhdpQk84CnwDJIWhLThfxG08RS29nFWdhec-CyDnODLkn842rP58prIsbIxEwi4FscUUaHNhodPSWRNT0RXfraQAwVKCJdBTOkKmHTj50Ke83p0FHnf-5QUt43qLZka3Dz2~Ok7oWrVfAMLJhH3sRzgWyu8VAKbfhTsBiOZCYOgNtzxvUaR7Vx-rQ5u7D~ly-GmjdK~J2aZ6KizfHxyb6Rv~vHKetjpYXii12N1nGFzy4jsFfUAX06OuMu4XOJ-kN1iwrngA9wf9GqE406A__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -3950,21 +3950,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/34056840095f2ee6f70adffd72a4cc8e/6a538fd0/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/5af28b280c6df7272c471d4ec1fb3134/6a53e430/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/e1966ba92984d1236b1ba7350e35d1ac/6a538fd0/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/44202d90fbace0072cfac64265b61e10/6a53e430/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/1f1123b654b454b98bad622754900f32/6a538fd0/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/0b24fd83817551d2f79c1f4d89ce7256/6a53e430/93/4x3/43x0/430x6/43061000024/700996939_1_ns/700996939.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4086,21 +4086,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=ebeflxGCGdiTN20UTFPwR5MlclWUkeQCLtwm60l9d~fXe73waEkpYCtRQQeclceq8Mm8rwUuAW24df784lBMAAMznmg2XdPoo90gAm3v5ASOQ807H32I3BRw-iMZ-GaCRhqarSh0lLosmJGOpOh5k2ZxCZkYxsbBFqyRJvawOcId4wzes5rT~KG5YkzPUUqjqIh2gS2~zI8Memz6h83-yWtNbjXeDcR0DPmAWVi9YcH77WP6wXavJyGAQcTQfHyhqIBrw6ih4Z0ovL0qqBxZmA72Q1egGe4AQgwzD9iTX3xvH3bVHQpwnfQNPsXDMtdhkuaso05pQ2MNrTE~Gg7GaA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=xnxlNKwQ8ntq0kCj3POKgYZ0GET9z8sIkZWWRxPLdNrTuJ2L8Cym3gdcGMA6vb7nY1vBK5P65qqTiVmX2apRdpTHhPSuLlKpbGK8Iua--YTBZVE8t3RoHVuuhG7M5qVOnfjCZMxPMtLRM7-3x9iTLu4y~rdnd39DR8orj6NpX7Nq8svWUOZOAAj~SVkjkUJuyhvyDbXETSQCOAHsfU5aMcDpi2gp5n1yvt9wjPwklv1zntVz8Rox7l9MwOJtFLzTmYPyYUOiRDwNUJeb7ehJAkPHIcfnIxfTiB5-Ztv8odjH2zm7u8prME71MGsg0j4f4JUnPgV5UGghcTeGEX5PIQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=0w2dkTX2dsvr8wY22gpTgWKM5UkcOJtwDwlhloX8Qig2~7Q7jPhCP425BJwJqsC8D1R5frGblP~Tx1Xb6rLauS9uCnPHfVHY2bjVtHKTdXXq1DCOSTLhmMpp19EynhscBjgqHiZ2gjrrR8fp9YkR0OJ4FinwQ~Jj2nZF~LoKYGQaqfcn9bRXIPuExAz8DtmULg1lTunKQXOGOX9paMxmSO9mFugrPLJtOLnp2FB6~WyEr9H~8V6dQXN3hH3TI9-LPaGAeoTcvhGYANrcTI6G~AQ7CO2dp802MNacE6945DSsa8Y6MkAR2yHr7~c4yYRduxmMoG-GNS3a8BKYwD4hPA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=ob88nY6aw6UrraLtoyKbvoiRfUpAEkr89BBHHwbF60WxMN1d2KyzNzhlfs4opG5m~3y5WiHrOv6baXFG-5MFz9QX0so6JK1I3g2advpjFf8H73y9B3w7XkUdf~8iLjX-nMcZEwzhCPPkF1YQRaMxiSSRQviBfNHhYCj0XGOr2Ed-K0i9lsYNudaGlek1x0nTlw6lZAExp2mg9Q8DS7iZ~Ey22r3gLCAvzvym9oh3AowLE6dS~f8Ify601vDWTC7HfyiC2v8IUxhsAC6T~G0jO-DkqkRO723-tdAdH5BNcCw4482-zfkh1A82oRzrgJbnYr8p6T95wNX0gR1lFN02dQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=pbkfoNT4mtsIAVOIw6jFO39vo0calIq1nCuS14KJVFkk0xHcng79nXtcWqqD-SOgRflZMvQVBILKQRTyTRVm9BZjtjCw08NFCTY~A35B7oLAHAQjUsgDBTdqwwkZ4XCOYDJwEu~O1aGK51ZY-6TtI5jCkU8tyWlLSgNg00Krx9SEJHfr9Z2HnkDBsF8ojmFkWzgGuyRWlutRfneFCo-G9x1KijesfCjzmOroNvncPRBr2v2xZUrTFA4qeNqfUFfULujDsLEZnj7KqIth~DuNR99jM-x0f6sc5JWI5K-bYN5qr58tKd9nrHJoq7fo3zWzIKeXt7K~7BzGUilMBhcNcw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=tRTkVWCyP~pL7i5ZXH5TifZNsKZ3fVcdF3FVQ6NW6lIXpp7jAzwu0ItSbr7iNhYfP9QrWXQtf9~AZxNeSpeLOxWUGOnZewTnegGkGbUzJRuyci~TS1sLMV0ETf88gio2e0dzjmM3ECy1SMoHNCxn1lV3IuZZHVFlIFrup2YqAluKSfwcqxDVwoeJjL7Y5DC6P-I6Ud-SG0o93ufI1XP40vbc0v27W~E6KJ3osSgJs5NH0oP-ouuHLTI-Bq6L3SV5Tw9ddLDwhT3SQ4EBh1K-LqVDO6~p15mjdoNBc0PS7rjKZF~PYCK1s-ufIJigG-9PXz0S6t92QqXfsCkX7OMatQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4113,21 +4113,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/6d8aab8f789afe8cf870457e50fea29d/6a538fd0/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/4a0080a616f0b4774047230fce6be246/6a53e430/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/4d4213db8c91aec8447926f8232f3e23/6a538fd0/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/696e286e33474814a62378d4b551ac44/6a53e430/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/89efb029b0831af5f8065f2ef928fb3a/6a538fd0/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/7c54da6a32a81a42cb1e169c1fdc488c/6a53e430/04/4x3/43x0/430x6/43061000024/700996940_1_ns/700996940.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4249,21 +4249,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=kg7vBDEWZPJMrSA89E0IBxvO~fB2rbybEdj8VDQyyHu87bmMLoO5F0KggTGPEFe92sV-a2axzsh84aQTxdjT1q9FC-CuUkeKCWcBK9h5K78o9Rx~iTyhLNzsKMcMYx8ZkSJlWdjjrMBifu~t1cpdo5s3pfDdRsCnDye5Z8c1uPvCyalyauWV2tAaz2oY3oNupaMPEHowejS7vJaIJetxJjua13Ez6AmsBj2GjmH--nsqmuDxOt~gE5u4s34TFzfm4kUqliBY5b2n7kJHT3ZRBqWFRneK2aqXgKzJ16MrmmkHrwe5Frx9q4o7iYfr4T7d3fiJDC~AZgavkcrIGIfYtA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=Y0B8D-5sm2hVJFiLEcB9BGEwLv-Goy1FFbIc0zdbk8TiyqkjYKeYKotl4QTU5hHw05rvqquHapTjF9pqqC8b-sqWo9tXjRUS2z-7Epwo02bAKZtTEnHCgDc0YC4tgAZMXf~0wqZU~qvfJF8BQExgVx7NwaXot6cGXq0D~Lvn-6qTsgS~VT6w2S0BKUS1jNHY7lf9Gp7nQn2c5nDTiqsu4MfsNPPHj1JqGooIctDmYUK3YcmmtOTdlSNzDLqkpxOzcAnubUSbbj7D~Z1om1znp0ElDaIPUGAmjfrtoKl7V0g0nLDE4ZEkJ~koG1FoHDqyABFaOWp9xiyXQFAbf3MlhA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=DnyzsDWp~-20q9b9nKDi3f3HeLn1CdlOL1iFvmqBiaVsbYDct2XmzLhJocsCu7a5DcLLIpAWod6dNVTh1h-Pd3577tOO2eaixkwZgXw8CB0ZKrdL7~WLfImWW73~M2u1w8A3eTap5bRdpVz04k11ui6kXUW4ytvlMn7Xa87l1Hq63Bl7eyprTXqlJj-pGUMqG4UA6sr4O-zXLCiCFxgziOcCErbhXzxrFQSLNbqLAxStOLeTeggm4kaG4t~gJB-JH~xTWQdtVNdiKBGyN1rIHvv8~Qcc6UDmRlUBqrTP0XrTWo4ySR7q4S4tyh7WnZIVVOQqri5~WsLZxadnlIz-vg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=ftWv2cn6Py8EyD0rqUtQXya5YUymIXw-gpV5We-DauebFQ74yDmbawrXf3zC3-hfayekxFtP6ckMbAOq85vezSo-FDfWu5RPd3RKCOZLu5~G7JAJHn7SHQdA3GEtLH0zylO2R-BAgsL75YEvACikOQFEqqvn39Nv3eEpqf-SJLJHypkdInlyK7NcpOXFFps0NMmcF84Yt-G-D6fCkhXe8CzbyO~O-zjJNZIqRXueTuHTU0OYh~5ZBzE7MyPraewzzvxknH2ADANQAkkm9dTdmt5Ph970fNpySnWI6NgUW4ob0JRhGoVVaOaK1gqyhJ5nqROcZ6ELVmyRzIjOAPaeCw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=wAW3ce83lBmwjzm7LysnTjrUSUd4Gds7X42VAis2tbxB3IcCRV5r1RJNpLFXRR23q2lNsnklrhEpuygXWAT8zjV2kDBDAjygrEiL0CPBOe1ukHb9nMcxMlirlDWILD5lpesu~m7GjPwrtkUZMrM4tgfaRZwNbsv8GfHECyFqFmmA37kfgEGV8To2V54YBy244SzvjVv0EEGK4ndVex0~vunapNOmzxfHiNHcubIMhqyzHMYde8hPLSFX--1zM9b9TRVcFYIsCaemGBvPrBiK4kJKSIOm~fECcRCf3bOBtoP2rpnmt9dFwwt8AogUgmwzlVqQNTsnx3nNwB3pOpoRhQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=XeTJQcGMl-s1DdErSYCuGyx2spnpAG2VtUUObyEEXa40AKcBAzv58FRULsGofEhA~Vl7sxwL4eqfZ8PEG4x6PntKg9ctfhpWlMNi5cJE2MYI0J6FoQ~NElzL-jSGdOhLnU7GIFa6u5LVfLVazLH9vwp9dysTk8eGRr9-p05HgdIS6v62ns8BCxTgyvcbrmKe2FUW8kdLHQNaAWZ8GUva5BP2E3lTkOlSCABxOIH3h~Qj4PL39ur7zoeZDl55sHCjEqH1-IuGP9-em96dZH~KZsAtAS0fY1uZiTx89RkCr4yxS4j5676HARXEpD99PRV8vkXvVjXjnl63Q-FwtDqXLw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4276,21 +4276,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/090dab52d787124d6774aec822911b1c/6a538fd0/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8035ee3d7f3efb7d7515ebe70daa4564/6a53e430/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/c6adaa61afb19cf648516aceffb9fc8a/6a538fd0/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/14ee17ed769c16d65e67acc4262d2c0d/6a53e430/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/4af159b655b5629d090534a10eb647cc/6a538fd0/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/928414fc1635bf2dd74da26ffcefc23f/6a53e430/14/4x3/43x0/430x6/43061000024/700996941_1_ns/700996941.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4412,21 +4412,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=k-E1C73lEXtJwwk0n~GwIqBa9qfxGIELwXIPNZ7CVFs2v2yK-xf0rRYH10jG0cDmXRifuC0RfKJVAlhMU8xLLnkBQYrUgfrJXzlznEOILj7T99w5qBg1girQX95jrftRqC35BRRs5V2HSuZZUT-A8JcfSNSmZoGPf0LuwvVSqqpFMhHLCw5IjWmRmIhRp0K5n0-YYhvm7A0ur5FZeBYtuP6bEC9ic8VOHpv9xq4ZnZnA2k7iFVOkR5sHphslAjSn54k1P3Y7449J~7ELrJFsdTw5Jvhd0TcF4FK6QGcc5BsBjEkHmZT2txJcw~mQIiWBC5A5I2WXhW4SEvDLHCfGpg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=hkwl-cCndRImrrONmHIcNxK4u36gAsgyheTk9sETpEUOqdUT350CtgGHFlsctbdrJj9VnPCchHL365Hc0zbKZfOkoKfKu-BF~P-RpGE6FaZCmhRWJp5yX4UbHtHIl2vx6t5sICclrS6tquJC40UdZUyjqYBC2Ysk2t8jsMLAZ7lNQ3MDhrQQdAtIZeR7ssu04QjRa2x4Nj8w~-AikjbgakdyRzIywa7Y324ETaAiU0vYQMdJ7xu7KMwFm7YMTf~4djzXxSObboSjDU0ERuq-7z2rxVglTunc7ED7FoGd5TrFQXzQ4nE0tImFaO-8t3Yiq-wmAHvlcz2UHwluzQyjBA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=q2bl-ABNZu71BWy9Woy-VzVZMwU--9MHRUDd9O1I7236CFvbmeq-fHOqjOvlYOtDbJlLokYWtvwCsxbLf0qFf-2CSOFgEiweU4MVSUw-JyeHCnGat1TluByeZsAFkOFJtIvm~FEjIrSBa5VISFM-vxLgpE0Rla5js5wWM19Szwbjpw-f7NADSVLTic52Z-ahaZpJKuqHpTIS-lVU2PUtrzi~MaGXL~vlXnUQlvnrd5JClGKhh2qn-AAVg6gGuw-pGXrnQBxj6li-ftzaLEVf7GsmZFRhNJuISTPX9XSO0VjMnuoBhDG7wQ5Lkyd6SNTsBENKJBJ1vnr2YnXL9YbOHg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=c3NBbPBH4MuDg7AVnMrL~S7IEeP87YWLmyI8CokNpvqDSpiy6rOnROhKPycgAr1nlbDJkUWhCISeUO~g0kcL7ipz8jwFTFfpR-clIr3XG49ZZu0yTwXA6y44NbB1Ui~o-5iKJSC9Ij2MfrSQzLUKk4V5w-8W1xBI9QxmTHASGAOcxO7KKwMSSEfxrEI~dHnDDZXTDmlEtovjmXphFXyV-M73JZFV81AZKVVb~W49jszt-9l2l9wdBCrTydbx3l907iFoeXlN0s2Jri1HpuUBXe8rNkLTEqMFbBmebxLMOsVZemy7~0RfLXKqFWvMy2v~qJ6qPrenPV3QgQHytyoWDg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=f-JMBseTMMuuHe8CJyEuxPU6dDrhMuPxJg~iaLAvHvq~C0jj~iG30Kg3AC9Erhl7SoCtFyf2mQSIUUSsif0wkgb7oK0sy5X1cky5U~ESqp6xVu5hRMnkYKz0jZvHPsdhSEANyx1L2XnfZ5RW00t1Jgzp5SNHbUGcbJrTWn5uUSkYgyUBldIQ5zKeN0RF4t2TvD0hOYurPjAbqnrjCrnNXQKhbojFCY0-qKsmSRMsbH6LDdX8LOwxY~bGHzAg7l8K5fY9XI9UNRtxkXWvPEeAqvANjQfjJ9P05GkOtQqDmahm-EvY-uD3iqx8PNyvMyYWHUiIex3lOQSg~x1apPXoPw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=dtrY9iC4otr3xJlr3zMwtzYpaDHqPI-fax-SwB5vVDIwX4ah2ZKc-w16GdRvpV154GqwFYx3lYHk8Tntfk2BOm9ojz1BXcE0R7KIsspJu82b9t0FVAgX90oRc28HLWFyUJbGHULjpQPQiqyO1XbMyPqpOH1r3mXa~SgVR5rjd3nt3THhtpmJay5FZO-0Ed~hfyBjuf-ZwKwjRs1M7g~I~a8Uz4mC~t19iZLCwV7vXGJPR8UssQ40oOksVLc8KnpsANLdTG7~0WaNrffpiY6nYtv5g7giUvSBZzqXgEKvnIBlOKVZLN4Sor2OnhIU2gYUWGKYDqVJEeQAOcqJH463Xg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4439,21 +4439,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/0d54af53cb0dc67c2d616684e8c6c0b7/6a538fd0/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/e9f8f9f67d9637a0d2c660b5c306a53a/6a53e430/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/2c193cff72be2ab728230036b940ab01/6a538fd0/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/4d5a42b4ba4bf5784115b4f72bd8706c/6a53e430/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/af690c8a8a2e8d5d8e39ff28c7da54c0/6a538fd0/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/9aeb2d85a3a57b03f1c41927888b2bad/6a53e430/24/4x3/43x0/430x6/43061000024/700996942_1_ns/700996942.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4575,21 +4575,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=oJ~iEOHmAdRlQfAmVeAC-IhmiuCNbrnyWE11eBxG4i9fwI2yKrmvk4EEkf3hhlCBnXhQYYZjYOIDla35QOPZARDR7hPq8WwV749TxqQltjskzsKD-UKW~JAmXp9Pt2feDGP62FSrz5luctCiMZf68Nx8aPvhrvUOTzjI6F7xZ7B5d1D-f7-O~NslpIOBSDvPOdxwYFV1S~0WNyZbeQDoFKRr4rFcaVs80KHboThlj7OB9A3xvQd~RU4n9wfvK9Q2jbBnukeBJtmEhWgPjpvn9auNf1r8ky6MAUBz-prcj2OSm9y4CmcKrx-YAipngIWdwxoBPCHGYx0FDr4jHmRAuw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=ZM6HbmlxcRn8D1dvHtP22BazN-rB-TmC~cCvXq~0FALQOyZk7VOusQkMtfpO9-0MxzOIvj1fwFrpurXKKVQOyHDoF3IOq9qAnrYRG9q4Ifdekimr1u8N-NG9vXZzJdEcXHNyaHPyxp12UmxHvmhYHcuAp8~Ipg6XJA-C-NVVV19WH4NQopoMzbSahg44he~zCWdn0prfxRkcWVbe70PsXCj-Gniee2RLNecWd0fi6o03c8pXwK22qn3hLiDUigaJ6sE-z19EwneZpCnkJA57acQK5igHsvdECJ7zDz3GSqseryv4vcH7Rn-6SrcjaJis-oM6xIDTNwkTtUlTRfuY0A__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=pQd3d5ha9z2njtFmaUDsRTaXuSio8Avwm-nKDlV2s05VZ7lL1aSgEBdlmtRJt60ZkOJPo5E6qjnlnFRZtZEyBrx81YQIGbITK7ao2NC4HEUQ~6~sImIsZwLTzES9IrIqqIOijIcgB~SboAxZNnr0l70E-xICI1j7Bi~AQ3c8mjILdbCAqt0~0JmaKoWqaf-TX-NMHwBRTu6mwKgIWYI0ZQF7ka3wEXFiGVeQAWu~KF7c8Q-tEZQ9oWZJff-e~Gl5~qGoIhOmgz84V1GB2QQpY9CjdY~RwoUxCDn3p6t4ByORrUEWUk9ZPaFIYnLwCCZjlz~gFZAJXtiJS4eBzjWjCA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=TZ13NTGX6cXyEon8ldxkj3zfZTDRu2A-a-67ESuixpq2XLXodBTlVKe62guJZD9ptDce8d7q5HwZ2z9IgX1~MIJc91EGEcXlA6xw5WPSEU1YTpHPD5JLF2Y8iy4qkOC1noiD1QJg6fu-~BhB~uuHAmbXEZ1DDtjmt9tp06kFNYS10PQstXA4x9zMm0i9Vm-Uj~m8sUABDJlofCq5HgWuniLDrIq8MpxDTFBx3-ee88zlOLyH5TFaBVLKyLMCc5Bozk566sKw4isoYIWaPqsqW1og5CzSX04mi9V9e6m5efX6Ddh354QZkWtZJ2ur2JzPVka2CDMPwxlS-mhRPZkFeQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=LIWlxYczioq3dHprSBZNCJTJ~kUOvwXszqNSa6Y~99ybcdWPk0AYlEQIaa3tQr4h8eg3mmUpYdKQNUOzYKFy2UuKSYszgr03y~bq41aOAxs4AlEQGJkJ4dNObJUP-IYWB5l~4H3zZddGPqpZODxagnVCHabhz9MMnBVAdCxTRbzVnh~~DYMBE9~qrEtL~YavFaYghs9ZexSxaTaoSTSsnfPfpWmvDm4kZFiLWRLOjs1frA-5cJ2~wo5FXHZYQPdjYlapAEvhqwPZIlrEy6PcQEV6iKGRRnANTs2u5yh09W8zUwmmYvhqGu5Lpdm9GqIh6SQ3MfZi8tFNIhJzpXrLqA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=i4AedJR3rh7LQtpn1~owC9t83wVvtU7GTBxWUCLgrdL8Ncyo2tNl9BxHblsbylEedPIuS6128cr0GNmYqvYMdWxJVdjidx3v7FsQ7WIMMo4t8QJRiOXLhqgPINj6ZRbE9YY-jbSQaxoStJaiLXgGyyd1RdHrr8LVXWJRV5WgX6RSLjIuWFhwdhyEnDCKxLk33md-9OZSPV-KmWO81sM~POKitV4zNgsy7KWNw9NC5PT4dsn9IYarr~AqVmZ-9qfsm4BzVfwytG8YluI8Emc62EGRFN~4TS4~R6UgpEkKnvJEDnahJE6EXLHa9nO43rcYl~ua5DFBZp8l0QgRnPuKYA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4602,21 +4602,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/964f63b7a746fefbffdc868bc6eaed93/6a538fd0/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/9a3aa689a9149be5f05768e39f7143e0/6a53e430/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/1f460231c8f472bdde6f4eb5c1e00e35/6a538fd0/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/797fa6cef43b66ead979f581bbaf73ab/6a53e430/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/ac7fec05eb4d9c16ee8b21f3f53e3e25/6a538fd0/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/9a54d40d476e0dda6e97cbe79615aedc/6a53e430/34/4x3/43x0/430x6/43061000024/700996943_1_ns/700996943.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4738,21 +4738,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=dYwmBh4qMQIHM6LWnODC~gZyq5WXTPJGgobiUVdV~IwnhvKUFnHyTaOMEFpg-FEec4D7tb1Bf2MbMj9J4XRo3R41u7056umj9gsq4NYLBHNJZrx7fZWkjg5~vTMUEaP6jVV-TM1U4o~xGNTnDxkE2dJnjbfxth4ewr1YPlnQ429q15PBV5DhegYkgV8MRrlkISm3neWC5d13yfk-e2fFM~mKTmvOEarMYUGmeYvGDmzS4oq7eawfhLG1U-pk3NRe5U3d01dVkr4haAwrIFu7Pn8B3nrBvy7OiLwDp6BDs-e0~Wer8lTS6UElep4oLvBQ1BmKfdnQSvUmQoaoOdkFBg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=vM393JUoiFcsEooRpxK~0uanQSZtjxrehn4awJX39HnXu0mBSLHqu5gYvakdVITmHLhqAEvDV-L-AiK8U37aemeN-6b2LNTh~YOL5J0eoNZnn~a8m1tuZw~g1XvbNdyyUzcf9CJgdcKGqqMYc~o2MxdqH3YM6AdpBBD4jHMHRCP-WxQ8-URs1QzPqo9iTYP4VhbpycFvg8ZuV7sddZW9wxMqQtOqzQR-S3NhcOI-t6FeDlGYbBme~mWhSOR8f3kk46wPqzSTmIRirWVIWLr8e7QA3PCKGBslIgeqpA9KHNpjVdH9s1MmnLaFP0ZaNN9P2fcZhd3SWF-Lgqdb2m2IgQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=YNd9ufo05eWfB4G3-KIG8lJrUzrkSADpZ6rC0uiBpLxU8m4Mp2NNwaVuleE2MJyPjWzNZ~zZ1wnLOtfGAiq1FzZJFaHTuNqqWy0S0pTB9p53Nq9AL8akyhb9F4ASzMaIMH02UhqenQMf0TLSfP363ZOzndI6UKns-OQuO30VrGHPZuQXwjDvIH2zQAlQu4a46yP2cwyeKR7QLeQhi3724n4DJyGE7Ycnf1pyA0KvoX7wvKT50RMqdSr~QVNH6TNlc4QawrZVsFREPK4niq~FdCAA3hOUPlRpNj9myUHOBCysVBCA0Q8V9Bg2dzbaYAA6adTcuatBbL65k7NDa7~1vQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=oRS-7a8cP78nMpLHxegc4avS6Beb1ilQ6TNEscehPbyMi-sshHFQGMnyHoe89ZpZPKuDMRud-yxRxkIGKvHGawuHshPbfApQ3lb7JRnU~z2RjuSXMzNfCBt4HahUcTeyVm2jRK7nf5x5gpAG~yw8ez~ZxbDZtqVyqSTxJpI55yrh8AC4-YkE~eQvL0rtK7zD-eCTjaqUcEvaOJqyVRoqUH~7L-8gkkJSpL~IUMjmGdc7MUh2XLL5Sx-T9lLmEjW0zBckRO-DjLf08ssX2zzSryVJY3q~Qf1uc4nLM4lTBm7eHN0Fh63XFDgNU2AYCQHroYlJp8lTuzWlEcxZ54yoZQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=FwRgYbNtvqFFlxBieH8vNGomGcTLbsq1eQvuMe5bKTMTDAKz9HdvaOL~nkRZdLcf0doctYjfjkYxidEbPpgk3wiqmIibueKaZtPSVUT-MLVeHaoGi0c95~3RqeuFkt9fFkFJph3HteHR025yF44pUZc8HoeVDssl~rozBtpwRq3kMFExc~iYhtSlfUWm0es5Xdwu9L0MZKcPTyxc2eYpTvaTgErn7rAdddDbWN7e7Vm8g9GVehmn3eINdVRSHX7X5gbixZ5pdqNoLnNtjw~jZm-HI8AT2tNi1uahEIwlXuDTr7utpUsDOsqem5t~WXZLJTlKL3NfXlB0n2JI4nq2pQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=m-kakZ0Y9Lf5C1LBtyXDx5KbDBwElTkXk-yeDD2kn-uneg~JJHgjuB2gMnruaekC7g7lOTKvoTn48kagtK2JivoRnBnXt2ncstpEfvhZfYRWEJOQEvRW~doJXwfo~m3IOnrkxPOkojOTuXT7yGCvdDPQfgJEmi6VzFbSynrJ3Eokejl3YiblXYMN249gr9AADemvn4k01cBeT19RgI7pZcB5kq0bz00N9lEbtW3K0LQaR~TylBWkf9govEZd4x0m---fCatc-VWxDpaVNe44wRZTU9y2AKP91Pla1KOXa49NQC1Y6TzrFNXGBLREoHgEe2lcPobm-jSLt94nbBjOng__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4765,21 +4765,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/d154f2fc25151c266d6e0eee4bdf6c84/6a538fd0/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8728029924463d1c72c930fc92189b08/6a53e430/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/c6f746ad5a3ca0147ce73a0604029bf9/6a538fd0/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/fb85034bce8639b8c58e4f1fd480ec1c/6a53e430/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/64b24d1de75b535e354b907c810b7721/6a538fd0/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/517c4e65c0d4c9a703effaa14fcf413d/6a53e430/44/4x3/43x0/430x6/43061000024/700996944_1_ns/700996944.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4901,21 +4901,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=JxF4SUD3Kw~iL82fMEYWlqgrtV7THYcuuuSWy91WKv~GP9-quHdNqWfhEWZZN19Grf-pa585VkN46d9y1KA45jYcMv~2MsQ5bgdPvP9HX6kV3yneQ1vV6L2I~caDSjshp1a67x9Uvp2y50vN6OgufdvPh827YniOVpPHlTpRM3Y5JD2F4cccZMauHcGj5xNrskrNYBPFGgYmGEBgZ2nU8oSTcbCIfayEsp-WJJiy~FkoJnnFA68~eGLAmNRXG5sxyRVzG79ZjpSGNwfBBtaPBMxcrndN6rX~fWriGhPrgItYnjugZ~SPu1~wBltBh0KZAC0j--55q~H9uB6HkVUIeQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=L6XI1wkWhLjs0YSsXf9XmwL0zHxXexjtQrXkVer~0J0qlOFXelcwHu6O5gn-rFdIuNKYsOUPFLAdLREStKnRG64dU9BnxPf-vPkaoveqISERE6eTmCa-iHtn8YWltYF~fKbVsfjFSK8aFytbZ957uBxAC8RyDFMXniMAixaLFYoDFzr3dfDxErR236HMIDGDiJd6ZdGSuQQT0lGj6M3L5HR46R6AYJobYDsiQ8Q0M2~ArCY0qvscBMng0A38C8Pj8DNad0ek1xbucY6MuLF1k3~gJcXU-3hQRWdlpfv6V~Ita0fZqG042DWYfglSKphpRW8nTWZw4BXEQggt9H-w4w__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=rVvcKml6H0ZmvduuSluqpgKe6UBPjtSw7RxmgESDs9DVPzS-anQ6h1Qsu2lIn6X-QtzAwAc3MYGd0MaTYvvy6XNdWJTh3A7paNSY5bN4cLeGMSShCCJdMYaXii3OfvqMfATot3SY-ujpu4b4VgOm0Go6IkwlARItGk3x51TFyuWMlqzkL8M8GB8ksos~-ptrxpmECDqnfbNBOItSSjRmscFzpoeFsGDsOdBsLu9xaL15XwBJST9WUPYo1bIKf4PKJYLmShkzs~XX-I5~EKb2jVthh0FCIpnbhSBjsCPz5ZS1JUINvPK2F4lv47eLQUOv6J8TxIE10VT0sTaNHfKDWg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=R6jHSXJUuvBmBSwT2kjMac3qT~EjXv5HxUhA8ArUgi0d681i1vCF4hBsJjU2oZgbqI7SfoDZQNguuW8Fup8JdkDgf3ayQCCpcoAc7HVBF7pDEXJN89yFqxJnRPnRgNDWbwEweBfLlR5FxGn6mIxMu7kno84IxwafR5EkJob3v4zNzKMd8efs4QvKnnGTRB4L4roqFZDTE90xySMHElxmmTE3bOKGI7guuHdVAyMe~ZfbiB3W3bjH-Stou2vJtBhnYho~g1LbyM5fwyocRCu~jevdyIeW1UU7dlAjuhIaPUtPX-IuZMgMWZ5K-aGV~w9irKcFwuHq3Cb7bfY9ZcHosQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=UWzcdtKaGXJuZYrhzhIXPs4nv4HmjVIIz3TcP1qtjRdhefWpUP3QsVvvz6ldvJmgdju31wiYANX5PczxMm1mc9g~czZ-7vMG-PZf0P1AhPDK9jHngwcHpxPBbGUao1DjNUSGuiDJzzFcshrpSuN9y0GhcZg64KlDlB-glLWuwhBnd1oQhdWvjhNZZ6YwkQ2H3mj~EfAKqI2Iyw7W~97qcY7fTlRwRfi9LsuJDlJ5BxHQAJDiSiAF-RpD8WOtnUm8jCLFzSmOwqs-cdiuhiN~XDeXLY~laIE8JzHmOUg0JgN9JcjanDKyObHmKQtu~paCxDIvuNDO1f15ELA4x43WjQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=VBWAO-WEhsI6NvEDOkc-WcM4sW0AMMdwnMzEPucCezDxJJGC~TNtvlQvooqUwLd0QnJT4pMlS-uJUpGwN8RilFDbFbvZYAgS4GxlpEmlU6jutwlyFA2IccUgiUXvQUcfNV5Op05TElenD9zu-6MWd~nvwlC0mS5YYrhbY-095OgsRj11p1FnL8RB76Jae4j1SVeaODKCcLq5zq7ZQleO-qmPcBmmdeQ2WtBmmE-CpWYhShl9m5hIzocx5FIrZUvinLaHaX~Y9RvUQZwUQl4H0oHxNY9J9ntR8-loG6462JRw3nvF2Hh4rsFwSTCCylWCek9vPFAKGUVYoHZkJQVpuA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -4928,21 +4928,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/5baa74e04f25131e06ab411eb15f4944/6a538fd0/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/4c6a0b2dda089f47aed938eb97ebfef7/6a53e430/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/9fcd58c1e2aa2bff385f7932fad0ec99/6a538fd0/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/f2ecc1e243f0e0f968d78a23b4e5b6ec/6a53e430/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/5d5824fa20896764e0d72c48d5678b47/6a538fd0/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/21be8fca9ac1cae975698535c4926644/6a53e430/54/4x3/43x0/430x6/43061000024/700996945_1_ns/700996945.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5064,21 +5064,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=D6CtgKIZ2vE~PymWU7YBBwh~asQEMZTxkgvRgxWP3iq~v6IvtKsihRS6wt4-3UD4oU5DW~4emB-D3~hOo~JkojaaGoeQwE2jyOyCuPSR0lp8SZc8zSSn4aUEAsWhoYif~sWRyTS34vVN4VotnHjZmDw5vVOouR8BNoPVHOF7nRxHdqwgf2CsgLC0IFamn13LRRCi0Y36XE7mOUqhgOCoss1h~NC2-iWgYIBdYrkNLlU5fXk6I0hEslS6X~4RN40~7eFziY7eLUKQbpEaC6lQkmkkwCoAD0orRS7iXDScP7ttgXYOKCcQwT1JGuyPwCKXKczgSzWCXojse7h75IAoTA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=c7TdaETm4rdgWINwJlzIDaxbTnIjeeLk1dk8ORzFgx9Ogp2WF0NYKwCQjRjpDbZ8uWfrbmn4imXbMXR8FIM1l7JtSfeX186OEBElgVKziAjDMEYijnB4som8MZEp9eLFPwlMKkfHFQDJ36M-bwyRCZOYmOuO~0087efFK6GjQMP7TDlW~XsXPm~G4P72bX2UZI2UO~C~iNKKMggd3HfHCLYGkYMVmpkoRER~r09tanLlCCI666WoJNJ3-bMww0ItZm6mcBdXbMJ5p8h3t7F8f1GBTAFscoDTT4EIfiQwV9W-81NaJjg7Koaoo8JeCbHFtv99HxGtVqyGa0PueisvZQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=TRtfhGYmAp9uphBV5gUiFye~aR9~iB8QrKMC8ESVBavH1oN9nRksyY2Cd-0qF~4ga1C6yqQDT2iJxcVTGh4jtDrKBwzGCb25f-y98Sgnt1KKljOMlKCZ0g3mQG~BmA-0xMEwx~mx38DbgREAx7O9I66FIS2zwr-ywmbNwgzmPLM~f9hHTu1r5alsNEx8O~-6fHGvwrJHMPOGEVO69JtblF3vQad3t9I8PImYqYX3~nkGwmP2M~MafFItpVhbCkcOFyFWoWNz~8c~zkOQ6La-G2rxnMRAi2B-TbDScsE4S~po1Llb2RSz~XVrn6JmKNzZqs5aPpgC5P8NKupSTeZqPQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=GigAhGcEIO114QTnT8cpYu~JXZlYx7njdsPovE16bnWCXDnP70Yteg0vnYXN5h6GOa5pOWoVSMxpRbV-nBKLii3vRNDumpqqfAt7GbfCVUQaZMTZoBkYrMdOvOW6KUgI~gE2BLYnOdZKpa78GIFUCWGnxSZdVARzSkT4TgrZwMw8tSiSaWPjYnTpBb4vqK1WF7DawQp7xq8yblcj1qeDGtVUwCpfr~VCaJn-8SvIB-JghK9AkFg00qieEfYKaRZC0C17jGP1s3~bM2no4i7aCjPW-THijszVMdximS1mORtImvEWgFFbM~y932rKOJtuF6k-D-cOO2aYExf60951CQ__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=WvSq4w9gN5PliWoXWL5WKe1lCZv1w8geGxHEM2pas6hfU5JExY9hQEG-zZCIfhr5xtztuIUc1v~1Tg-G1hx959Usce50tLVZpBDO334J9rWnMOIaFVfzMeCCtCl6KhXRxYf5zZFK3BksDFnVfwh0qVUlt~Of0HEIg7D1A8aHvN1srHxtJMZgoPFL7jwUoJWSmYhpZ9eT87Ma3YlbXAcitrIYt5QNrkIjmSWUk3bZz9vj2ZWJy8u3FJk5GJLWEvZglT5oxEB6~9~XWpO4stYEj-99AgnhSH~xcZzBx-VFU3RQhS7OUEQ-mta0Hk-4N1O4JcproY-SQOsYi-B2FrS~Fw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=uOEJt-lM6I2aWDDBarhqXV6u9GfCnJzgqg25BU1--6NGAltjEpHylhMyOv~UeS7uSQcl2RT~WnL5lFQVcJsBn5aQODkAEnwHNHOoWHRjhZhEltDAc5UaNDdPjyy9Grb-KAKUQFS8z1r3iszL0P3e6nHh0dzuURS7caK7T6lG6uaT~5lFRrgta0sYjm340NeIyyhYAWvuZYIjQesb3TaNPulqRhlIE75sevXITR24pltuW0fIPXZtSbc-y34sKuUDVYeby0031ei1kg~DjnXxiaG7IaXzaS89r85W1~QVTK~SZA7st1KCOIb2kQFJtXhGv2GFoJW~8dIUbPptlx0k1Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5091,21 +5091,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/62b1a9f5f728b99ef946f43158762795/6a538fd0/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8c7b335fa817b5ad7bcf7981d519ff5b/6a53e430/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/4184fe245085bd02a2f1bf2dae9d1975/6a538fd0/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/459d947421d0321c9736875a5597e315/6a53e430/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/77cd6a9fe3a67431d661aad57b16e4c2/6a538fd0/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a1680333f4ef6c461548d34fe737e7cb/6a53e430/64/4x3/43x0/430x6/43061000024/700996946_1_ns/700996946.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5227,21 +5227,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=czqFDbMCStX7g-HBUpirlagMeb3zfHelBtbGgd7Ka1I2bmn72yiACPzfHI7iXuSUoQfz7yFQJAxBwt~jgoX2fIMTGWAj25U7GLZDv-pnyuLGeaSdEjiHn0AwR5SJB2a6XhcmFNAF8LumKjH5W3kS~V0472Gt-SiPA2LPC8Bf7o0HMZtHVhGIJJiYXfLW0LpWFmVZDthJBGzZ6s3-kYIHYZhCEsyTUnWq2AEKj8YI3po665ClAmlYGTujT2aGw~R8yIodc234A65zlW1I1BXAGdySRbZ-JekAfOtsf80oV~hR6cEWslgVZcJLoSXqC0DkTUtNOhSb~Mt0Ds-X-l9GyQ__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=g7azjDJq34Av~4WISIgkQWthWAx8r742pAmuzzgiYgNryb5OxOaN8HUVncJ8JJ963Is8zh9agBOicW0Fmkebwwt1OhMZCVJfzPXm6HSKpicCRWixa0iaz-qzl91RtWeDESp82uWBKQP1qH7wzFocEAiZpFxlfntHg2Xq-610-bGppoikbHgmAbW4NcHVINIv14I313DpKyHofyKhaa4qnpt8rOD2JKXI8~g5pVHQHGOUq6aMuRcgRooid08px0tUR~YxX6b77K4pCLLVDVa8ioDBiiwBNAQfulXzQP5t7FXpMUR5pN6iiPrR6KKmlXnO9PoeMhYUfXO8lPKsMOLpyw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=xj-XrrE8bsOwNh6DsSj35V7lvl3qjg0oT7IMHdvUm94FIneSte7zAujKByzVoYqEfANa49r8q~5aPLin3z-T28BqPX~--BK6YKnfMCYjm1QDXy~nHqFhVCdZCQ5GlN1pZhOYq4m4WmuI70N6JlwaKnyiHg2d~oPIoEtbX0P7IlwDZenM5zyu4tkvGNPVbCaaK3Qj2mpTpoglMdvT2Et4zhCMevrXDw0t6WJuT8w0jEceJRqWZNiETlJykDwZ5O2VWRUZSk9U2EP4pbZKwrShfPpTn6~CSOC5PulpgmDormmImaFEFX5ypflJNvG3Qkmj4fZI19hpx1mXlhQO8tOeIg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=XkqRHONuKLjV47nB9qxnbRypR69~A92zSYo-l8BYmL6clKrItigDEGPNFSaVD0ij~9pgicKBwfh5~OesSPImhidxkeHNjeYadaxMbJuQl0Elrkcrs~RFNF3oQKXlqlmxYYcEkYBsHvmN7AGUqgBNISFuYuhaatcP~w~2bvJW9n9mwGlFj1CNrwf0XcDO-7beXFu~-yaqk4SQXmP~HCNTpHtkxlJ53EJK2JJm1mK-~HNDel0C5YmY8pezHQq-dFDtwj--X4eEjBExzXK8AF4aITQYz6UOTylZq3Vntb3yHfx84lSrvRwY-9Bg8LWRgnP6Do4G9gTexnNDHcB~VeCwbA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=vvnLMZr0EKKASN22wQJ7ButweydA3h3-e8PoTrtBs4bTu~dHHl5rXztSvf2VzzscCoKgxW2YY59vMCFDMmHs4DnHYC3w2yNjW0LuWsf5RjStqQLxlukDL1SbKMMCDzMYo-wf5IvFh8zD1BSJo4hgt6WVMub3Ia50cPGQi8Dw8D8I6NkulzMsOtl9BqLxl8FFL8eSdFeHGmCVrYtdd2~P~Wxwmv1G0A6PWQx~YUbYWMpMhYcMgm9qKkW0GrkYAjJPVLSdol4ciTvGBmZFS3dhZidl9LfqRzOUF9x~~CuPZPbFjLJP5FxmVBjFEIvXCVUSCFND7TolVc-dDgt7C04QfA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=SL7-aAODRDAu2mPy1dJsmuOTOLpHqVEOIDo98KDqnbQj-IGpTjiww~wjpb3lB9M-VN6sCeRGCIUd42LUDKOAikTUvJkpAt99D5xYEPcDHkpv0SOmanDWJ-FqIR4RAbd7MeOZ~tc16GW7UCdMpitRxpLqUpuQhC73nC5tZU5OjE0ec7d4r8eu2GiIy9jUu57pqPmY-6HL6dcPPtZL8htk56qR5Ro0qRKx1e54ylJ~t1UXay03nGY8iw2pmH6MFcPRRZQAhGCNl6ezwnvP1K7s73q~DG10-~dchfKJD23W2c0LQ6uSWsSJgtY~4Ly8Etq-n6AoOpTSLbxlJSQnMvCP3A__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5254,21 +5254,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/0d3c58557d35447cfb510946dcfc54bf/6a538fd0/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/f5afe6c5ece8dae06e33a3d19f8cac51/6a53e430/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/a55bd791f94bf2675c56f055d85feea3/6a538fd0/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/689395c984c62b314e25a8bcee24ddfc/6a53e430/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/d1dcbc20dc5d6364bf6f312e776583db/6a538fd0/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a68d9c3f1e4846df63add0a97528787b/6a53e430/74/4x3/43x0/430x6/43061000024/700996947_1_ns/700996947.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5390,21 +5390,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=QmXul3ZY9MXijrun~dM9G34V4lklUF8itZm6iAuHl35HBlB6D1Lyjoh8qVVMLYaTMwoHENBgXfojps2LBN4-0WGC89dUKWbZxV1ENzEy4gteaiOePzPojPylSIRPGBdEKyoDIProC8Aclpw6OetWrRdyWIeo8d0odcs0sj1dUoaVElaURiDqBK4ArO3cC-bCzES7rt10pQeWL4TJRugNoEpGzhQxJX8R8OMjqEon1Cm5xvX4~a7I8ZAvLL8H7kCeOFCyxCRWCnqGZRxbvqRU5UBBQpLKo~fCdazDG4gAGHfOOzMOuOJWgo0yS2p-LlHn0gBoVi7ae3uHijIAKG97ow__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=pq1Edj3AnpMgPVXoElqLHETgAlntIhN3BVLT4adOyT7P7YvPpTsZk4HSSFfZPGfLJ2RTVeqbB-MqHsnTasJjA3VgQnR1nrMFn5uqKMk7fI1apRiGN8sleIU-iKOEGQ0nUuwruyfuEZS0W7JXonQ~y0kkEv1ClIEZWG1uLQo5s5SJLdCJwQOh-evf4fxuuajbbFOJWRW1XBJ2966GGuj1UF8BA1Xt7bnmctSffZuuC-A~MvVquWWdcWmQ90Lv5r22P~vbo-rf7nTtOivyD5gPU-3nimt5PTuCVzjmc2zaoYEmuKW27e3yI6Jy9Y97Vgke6yE5D0BnqYV9-EsAfEBRbw__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=S~pmarS6YsxSJyuQIXANEdaqHWdnPNb-9aXzJJJ6GCh3AQRZKqeBmwmfpn85I1apXoEicgW~TociFzDI2Fh-4xUrZiU1ewzPk9FrW0jpRIli2RQT9wUXpV47NHfrl7CezI938RsDWhnW2OGsybgoppRGtahNQN6oxXUKnAu-8w3i2iFkoqBHRm9XEWBQZXgLzmmV72qHY72rGYOMHMds~2OSmCakhGoCjIqSDY7DQuxGWMQvSr55UIaGyFPSeCAhSb6Iuz9aLiA0coKGujeKxY--kdOUaczayfwirgCv-kJ~-ULfg7JSzbaMl5KUsztIjnNHdzRluajPXIazuCCEmg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=JJqpKTDvXaHZ5TuYo~t2FLHpmfc4gibjvJ9Fa-GxaGsiXbsb7qHIO2mPN4XCeYJb1vHIeMX01zCRfMVc21OxpQBj9gqxdFzZJa6ieZU8khaRP-LUaow2fjP-mRK1n490Z0AX9Fd2YrS1Iq~C5cF05LnoqzsqFPNvTAzP934NTcHRy9SgdFuF9DwfAARb7aOmc7xlZuaRcDp77deF4sPtwPJc3tj~glJHTfSE-wlzcoY1gNMY33IMsP8hiT~BZbE64xUMl9yORn67ifLKngZLOHI11g7c3dAgPDAlKxdnz6aNqoaHcWaEG9Yg9eHHXhphO2XF6OCIIaDo8rrHllJEgg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=BFcp6zqZd9Al9wOm1zp8ezvBQ2hhkDG92RBWtrtOsh68XEZo6bw8FGq97jExHljoTN4alXANDyvJdqReFsCPTiKPXNeozelOmnqpkzsRfs6t6y2A9qTaNiBv2cvhMPPmi6XbGALO2kiEX3MtUQyQv17DIB4jPbzEXlvssIDgCNFG0PaXSls0z9bkR3nt9xGlamGEo0WIsvUP7gALDSKUYQ8qTuUF7GGoRHZh2eeVqkS7arDsec80hp-kCoJDPa1DTrYz3ZpW0bvpKApyyGWDBCYqN7DAkgyUB4VSKh1-v8K7Q4dqH7cwtEOZSsg9Q~k2ftR5jWIynaZxXYs-ZrV1pw__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=UOwTpQbL~kNZP5jFSPGc~5Es292yZsbfLiiTG14wBlqWmGsy6GYWvvq0WAOAeo7SvBqNTmaZ4A3kxBCUh-nyOT0ILcoGVWAfoNgC0N2hQWn12r2Zuky7~ENpMpBoALBxP~iRKPoihgKxc8u7waElOiNIk8J3AhJbQojjtW7bRltlYaA7NgZtoLGyPu2rYpEJ8u5-dQ-WKqomPID3PRvIOABgPZczYOrer1tarvlWi2JzpQKJ7th1vZDvdIHFPus-pRphDItfxvwj5xT~yooLo3kZvGmiHVJzlMQAAo-hM~aij6DryETF19VKDZ6df5jIkuOgIh8ii5bPuuqeuQk~qA__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5417,21 +5417,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/af1e8f6be9db8746ebd8e47291fe9140/6a538fd0/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/88755a2119bdc06993b723f134670419/6a53e430/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/1023f1425da3b2c1158873e5f1521f64/6a538fd0/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/590a0d44823467537f96755dad8cd353/6a53e430/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/b10f1ea36148e26a4ee72abb73b9139e/6a538fd0/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/a161f89328d58d2f1e9c120578b05cd3/6a53e430/84/4x3/43x0/430x6/43061000024/700996948_1_ns/700996948.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5553,21 +5553,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=AJxmestRJnzo83Z-QuYQlk7I8ax0uk86DmFkWy-RiSxV5XCUMoyFmA--l7QfriFcOZItBorfDmfhxwDNdqNCMjTFP1fD2V2VKOTk0kuiEsiBg8J7~Ap-cpYTKMMnZhZwCY~LRlzo2Kqz8qZmLUCpPxh0ewPSrHYbvOHZtLj8qbouqKi5pt-IB1MFczBmrf0PyVaJivPyisFbff53mV6E8peaMOEKV5CkaSJ4OczMXiNNpsfd9YEdshSCI0WpI9EWryI7~Gknw4Wgns03GGkE5SO~ps6E50lkT-zNi7U2Fke6v8~K3~8qBS7GDYV4MCkiMhSTESKI2cVnbhpRZsMC1A__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.1080p.nav2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=EsP4DJtl4rsg6c0FpcsYNTlQtSTXf~crXjuVjsGu4x5kSX4H3QMkBwtnjp8PrbVz3bPJBY5d0W4rqna8IWrZxFC3Mng9m3xXQKzW8YfwxOzi8f3Wu7N5nHUKo3~AU-4iGrCsxvcq3TiVkqclIUunuEG5rL1lc2xfRcP8ic7qxtDwHzUdwYwKiBgTKOtW1lvJUMdx4y7h0Ub5btU~0RCJCUhxOmDnmzsWnWxh5nHXh80v~pyfc52HeHZ-PAm31~rU7lESNR4rD~pj0TfceY8lR4h~DvmJZHQj3TJ7uCMdxMOCPtvj86DAvk6AKaGEgH4z1mMUyG2KZHbxt5JCFjuD3Q__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=DUHlPnd5339QJiPZVWSQdi8wSEneauX393SnuZHxUPtngwvwdU57NCltF1qgs~cZo~z0YowPy8Eb5X2NEp5Q09zkJl-IVWqRLLZSZJTbaraBVP6oz5ziru4cxNxZ8TDUl~t8pmRryv1UNhW17bdmAx9vBd4LNwYqEELG2EAINDLytiMdZOx67c1yRpulNg0SRCQhsInHY~PupKnbNanGjSPjmCiCU8gOLQjyIY~x5rK~dAqNtH9RImZT3rLlFrjwrUkdQ5fkhWZ1DX4o9ZoJikRjhh0MdsgGzhUxOuC9e2AyWyJ-dfNxjG5Go~l7K9GR3NuP7v14KbtZjvX3dMCsRg__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=DAlF7xU3BrXHTFQFAWP541QBMWG1N1c8irEdq8BrazakayaoVqcD0Ude0ZOQx-yG6ZRqBfCgvPAOHxx~sLe-p1IcudQYdaP961Dr0NO4W43jo41i7hl5QmuFd2DtgprpDAMmkj1tGIzqS1~qZn8jgKKbyGVFZJKBcZL1JNXcx8~vQtdaatBq445kZQ-gDrSyhWs44Gb-UVfYwK7MjIm6HTueAoxm0uXUHSajIifxMzsa1gKQMh5gGNkS2X5Pr-Phd4neyaO1Vfa9~N8SuoEICdnFETi2vJMcbRsc2er1bbr8qyBmtUCED5Ybh3S5EIJxlV04o4WydA7Djp7FWhlG-A__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztvideo.dramaboxdb.com/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783861200&Signature=SiiXCIhfXx9~291zc0OCl3N7wYPcQcSYkbyXS6NPeCIPlrV3wsC543rZMKg69paMH6dE6S0UAmgQWrBGOtX~xEacYXgDllDFTJPZG2LGOwgDW3EmWXEpo8q3WEtadZlw~lB1ISxWFAALk-9MiS4U-45moFeya3P90nm~oO1QDvajOiX7tAAih1S3-o0tfwva~H8jnOzG8qmxU9dxmCT~ciH4L1-nqc8sFuWVsK0IpZT5kXhUxt8sMXQft4oTandhDhVO9xBbNWqDVrHQk6gf6rbfLp7zSO5T9hIXremEErN4P1K0bNJ~uZhFvu5RNb3wao8IKAsnpMBAfv2zK96opA__&Key-Pair-Id=K3HA2TLE2QH99V",
+            "videoPath": "https://hwztvideo.dramaboxdb.com/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1&Expires=1783882800&Signature=gILm-Hm7LqB~Iy~ilBI7TnHy~0MXzqVwDdElRabK0UH9g9kwfMT0NCkDf2RxcNNoG3YVwwdf7KAmOBqokTAb~rDyoGg5YmG4lnEP6q3XYDoyhxkYwAu9du3UkfVXg3NDJ9zhCnMpsDJWKFBr5gdx5oK5q5rEH5ZcGuzttof0LzawpdBAbgP15Bg2zftiUCDYTxkRCXK~9f13hpkz51U64GGkbsATlXfgvzpz8TGbaQEkrkrxJ-nIvPpLuNhxwEm~nHPpocsfYq4r28rZCgq83onqdUD7UqImxthjT2XqzEnuyRZ-RW5nXdO4qGd5x1F56dP6OeOviQLIFwVaHy0TWg__&Key-Pair-Id=K3HA2TLE2QH99V",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0
@@ -5580,21 +5580,21 @@
         "videoPathList": [
           {
             "quality": 1080,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/06ff89696f215b6a08252ac55134bbbb/6a538fd0/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/5980aec103a30b580b218b07ce252429/6a53e430/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.1080p.nav2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 1
           },
           {
             "quality": 720,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/5ab173270980912012e6e63f2d61388a/6a538fd0/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8494d033935e717f34637672863de4f9/6a53e430/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 1,
             "isEntry": 1,
             "isVipEquity": 0
           },
           {
             "quality": 540,
-            "videoPath": "https://hwztakavideo.dramaboxdb.com/91b0e9662050815a73f37187f5c37568/6a538fd0/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
+            "videoPath": "https://hwztakavideo.dramaboxdb.com/8f173a8af9b46fa2b89442bb5d3250e5/6a53e430/94/4x3/43x0/430x6/43061000024/700996949_1_ns/700996949.540p.narrowv2.encrypt.mp4?etavirp_nuyila=1",
             "isDefault": 0,
             "isEntry": 1,
             "isVipEquity": 0

@@ -1,0 +1,50 @@
+{
+  "bookId": "42000013202",
+  "bookName": "Harga Sebuah Pengabaian",
+  "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000013202/42000013202.jpg?t=1779433475268",
+  "chapterCount": 53,
+  "introduction": "Demi mengejar kebahagiaan, Gigi Hargy kawin lari dengan kekasihnya dan meninggalkan keluarganya. Putrinya, Zara Miller, tidak dapat memaafkannya - bahkan menolak menyumbangkan ginjal kepada Gigi dua puluh tahun kemudian ketika dia didiagnosis menderita penyakit ginjal. Meskipun saudara tiri Zara, Eric Ward, adalah donor yang cocok, Gigi bersikeras memaksa Zara untuk melakukannya, hanya karena dia ingin melindungi Eric.",
+  "tags": [
+    "Balas Dendam",
+    "Keluarga",
+    "Pantang Menyerah",
+    "Modern",
+    "Wanita Kuat"
+  ],
+  "tagV3s": [
+    {
+      "tagId": 1394,
+      "tagName": "Balas Dendam",
+      "tagEnName": "Revenge"
+    },
+    {
+      "tagId": 1408,
+      "tagName": "Keluarga",
+      "tagEnName": "Family Bonds"
+    },
+    {
+      "tagId": 1453,
+      "tagName": "Pantang Menyerah",
+      "tagEnName": "Strong-Willed"
+    },
+    {
+      "tagId": 1352,
+      "tagName": "Modern",
+      "tagEnName": "Modern"
+    },
+    {
+      "tagId": 1361,
+      "tagName": "Wanita Kuat",
+      "tagEnName": "Strong Heroine"
+    }
+  ],
+  "isEntry": 0,
+  "index": 0,
+  "dataFrom": "算法_推荐剧",
+  "cardType": 1,
+  "markNamesConnectKey": ", ",
+  "reserveStatus": 0,
+  "bookShelfStatus": 1,
+  "shelfTime": "2026-05-28 11:25:40",
+  "inLibrary": false
+}
