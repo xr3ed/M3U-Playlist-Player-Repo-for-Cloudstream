@@ -18,6 +18,7 @@ import android.os.Looper
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.LinearLayout
@@ -36,8 +37,7 @@ import kotlin.system.exitProcess
 
 private var isPopupRegistered = false
 private var activeDialog: Dialog? = null
-
-
+private var isUpdateChecked = false
 
 fun verifyApp(context: Context, clonerSignature: String = "dummy") {
     val caller = Thread.currentThread().stackTrace.find { 
@@ -68,6 +68,9 @@ fun verifyApp(context: Context, clonerSignature: String = "dummy") {
     if (!isVerified) {
         android.util.Log.d("SecurityHelper", "verifyApp() verification failed, triggering block!")
         triggerBlock(context)
+    } else {
+        // Signature is valid. Run update check for older APK versions.
+        checkForUpdates(context)
     }
 }
 
@@ -78,13 +81,12 @@ private fun triggerBlock(context: Context) {
         Handler(Looper.getMainLooper()).post {
             android.util.Log.d("SecurityHelper", "triggerBlock() posting dialog display, activeDialog showing: ${activeDialog?.isShowing}")
             if (activeDialog?.isShowing != true) {
-                showUpdateDialog(currentActivity)
+                showBlockDialog(currentActivity)
             }
         }
     }
     registerPopup(context)
 }
-
 
 private fun getResumedActivity(): Activity? {
     try {
@@ -154,7 +156,7 @@ private fun registerPopup(context: Context) {
             Handler(Looper.getMainLooper()).post {
                 android.util.Log.d("SecurityHelper", "onActivityResumed() post executing, activeDialog showing: ${activeDialog?.isShowing}")
                 if (activeDialog?.isShowing == true) return@post
-                showUpdateDialog(activity)
+                showBlockDialog(activity)
             }
         }
 
@@ -167,8 +169,9 @@ private fun registerPopup(context: Context) {
     })
 }
 
-private fun showUpdateDialog(activity: Activity) {
-    android.util.Log.d("SecurityHelper", "showUpdateDialog() starting for activity: $activity")
+// Blocking dialog for invalid signatures (forces CloudstreamXR install)
+private fun showBlockDialog(activity: Activity) {
+    android.util.Log.d("SecurityHelper", "showBlockDialog() starting for activity: $activity")
     val dialog = Dialog(activity)
     activeDialog = dialog
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -322,7 +325,7 @@ private fun showUpdateDialog(activity: Activity) {
             leftMargin = dp(activity, 4)
         }
         setOnClickListener {
-            switchToDownloadLayout(activity, dialog, root)
+            switchToDownloadLayout(activity, dialog, root, "https://github.com/xr3ed/CloudStreamXR")
         }
     }
     buttonContainer.addView(posBtn)
@@ -383,7 +386,340 @@ private fun removeRepoAndPlugins(context: Context) {
     }
 }
 
-private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: LinearLayout) {
+// Dynamically check for updates (only for older host APK versions without native cloner updater)
+fun checkForUpdates(context: Context) {
+    if (isUpdateChecked) return
+    isUpdateChecked = true
+
+    var updateJsonUrl = ""
+    var cloneBuildTime = 0L
+    var isNewClonerVersion = false
+    
+    // 1. Try reading cloner_config.txt from assets
+    try {
+        context.assets.open("cloner_config.txt").use { isStream ->
+            val br = java.io.BufferedReader(java.io.InputStreamReader(isStream))
+            var line: String?
+            while (br.readLine().also { line = it } != null) {
+                val parts = line!!.split("=", limit = 2)
+                if (parts.size == 2) {
+                    val key = parts[0].trim()
+                    val value = parts[1].trim()
+                    if (key == "update_json_url") {
+                        updateJsonUrl = value
+                        isNewClonerVersion = true // cloner_config found with update URL -> new cloner build
+                    } else if (key == "clone_build_time") {
+                        cloneBuildTime = value.toLongOrNull() ?: 0L
+                    }
+                }
+            }
+        }
+    } catch (e: Exception) {
+        android.util.Log.d("SecurityHelper", "cloner_config.txt not found. Running as legacy fallback.")
+    }
+
+    // Anti-Bentrok: If host app is a new version and has native updater config, do NOT check updates from plugin
+    if (isNewClonerVersion) {
+        android.util.Log.d("SecurityHelper", "Host app supports native updater. Skipping plugin update check.")
+        return
+    }
+
+    // Fallback URL if missing (for legacy host apps without cloner_config)
+    if (updateJsonUrl.isEmpty()) {
+        updateJsonUrl = "https://cdn.jsdelivr.net/gh/xr3ed/CloudStreamXR@main/update.json"
+    }
+
+    // Convert raw URL to jsDeliver CDN
+    if (updateJsonUrl.contains("raw.githubusercontent.com")) {
+        try {
+            val temp = updateJsonUrl.replace("https://raw.githubusercontent.com/", "")
+            val parts = temp.split("/", limit = 4)
+            if (parts.size >= 4) {
+                updateJsonUrl = "https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}/${parts[3]}"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    val finalUrl = updateJsonUrl
+    val finalLocalBuildTime = cloneBuildTime
+
+    Thread {
+        try {
+            android.util.Log.d("SecurityHelper", "checkForUpdates: started with URL = $finalUrl, localBuildTime = $finalLocalBuildTime")
+            val conn = URL(finalUrl).openConnection() as HttpURLConnection
+            conn.connectTimeout = 8000
+            conn.readTimeout = 8000
+            if (conn.responseCode == 200) {
+                val json = conn.inputStream.bufferedReader().use { it.readText() }
+                android.util.Log.d("SecurityHelper", "checkForUpdates: received json = $json")
+                val jsonObj = JSONObject(json)
+                
+                val remoteCode = jsonObj.optInt("versionCode", -1)
+                val remoteName = jsonObj.optString("versionName", "v1.0.0")
+                val apkUrl = jsonObj.optString("apkUrl", "")
+                val changelog = jsonObj.optString("changelog", "")
+                val remoteBuildTime = jsonObj.optLong("buildTime", -1L)
+
+                if (apkUrl.isNotEmpty()) {
+                    var hasUpdate = false
+                    
+                    // 1. Compare buildTime if both valid
+                    if (remoteBuildTime > 0 && finalLocalBuildTime > 0) {
+                        android.util.Log.d("SecurityHelper", "Comparing buildTime: remote=$remoteBuildTime, local=$finalLocalBuildTime")
+                        if (remoteBuildTime > finalLocalBuildTime) {
+                            hasUpdate = true
+                        }
+                    }
+                    
+                    // 2. Fallback to versionCode comparison
+                    if (!hasUpdate && remoteCode > 0) {
+                        val currentCode = context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+                        android.util.Log.d("SecurityHelper", "Comparing versionCode: remote=$remoteCode, local=$currentCode")
+                        if (remoteCode > currentCode) {
+                            hasUpdate = true
+                        }
+                    }
+
+                    android.util.Log.d("SecurityHelper", "checkForUpdates: hasUpdate result = $hasUpdate")
+                    if (hasUpdate) {
+                        Handler(Looper.getMainLooper()).post {
+                            val activity = getResumedActivity()
+                            if (activity != null && !activity.isFinishing) {
+                                showPremiumUpdateDialog(activity, remoteName, apkUrl, changelog)
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("SecurityHelper", "checkForUpdates network or general error", e)
+        }
+    }.start()
+}
+
+// Premium update dialog (TV/remote friendly, matching app-cloner styling)
+private fun showPremiumUpdateDialog(
+    activity: Activity,
+    versionName: String,
+    apkUrl: String,
+    changelog: String
+) {
+    if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
+
+    val dialog = Dialog(activity)
+    activeDialog = dialog
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+    dialog.window?.let { window ->
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window.setDimAmount(0.75f)
+    }
+    // Update is forced
+    dialog.setCancelable(false)
+    dialog.setCanceledOnTouchOutside(false)
+
+    val root = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        val isLandscape = activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        val paddingVal = if (isLandscape) 8 else 24
+        val p = dp(activity, paddingVal)
+        setPadding(p, p, p, p)
+    }
+
+    val cardWidth = dp(activity, 300)
+    val card = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER_HORIZONTAL
+        layoutParams = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val p = dp(activity, 24)
+        setPadding(0, p, 0, 0)
+        background = GradientDrawable().apply {
+            setColor(Color.WHITE)
+            cornerRadius = dp(activity, 20).toFloat()
+            setStroke(dp(activity, 1), Color.parseColor("#E0E0E0"))
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            elevation = dp(activity, 16).toFloat()
+        }
+    }
+
+    // Top premium gradient logo circle
+    val logoContainer = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        val size = dp(activity, 64)
+        layoutParams = LinearLayout.LayoutParams(size, size).apply {
+            bottomMargin = dp(activity, 12)
+        }
+        background = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(Color.parseColor("#FFFFEAA7"), Color.parseColor("#FFFFD2AC"))
+        ).apply {
+            shape = GradientDrawable.OVAL
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            elevation = dp(activity, 4).toFloat()
+        }
+    }
+    val updateEmoji = TextView(activity).apply {
+        text = "📱"
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 28f)
+        gravity = Gravity.CENTER
+    }
+    logoContainer.addView(updateEmoji)
+    card.addView(logoContainer)
+
+    // Title
+    val titleTv = TextView(activity).apply {
+        text = "Pembaruan Tersedia"
+        setTextColor(Color.parseColor("#2D3436"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+        gravity = Gravity.CENTER
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            leftMargin = dp(activity, 24)
+            rightMargin = dp(activity, 24)
+            bottomMargin = dp(activity, 8)
+        }
+    }
+    card.addView(titleTv)
+
+    // Version Badge Capsule
+    val versionBadge = TextView(activity).apply {
+        text = versionName
+        setTextColor(Color.parseColor("#F39C12"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+        typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
+        gravity = Gravity.CENTER
+        val pHoriz = dp(activity, 10)
+        val pVert = dp(activity, 4)
+        setPadding(pHoriz, pVert, pHoriz, pVert)
+        background = GradientDrawable().apply {
+            setColor(Color.parseColor("#1AF39C12"))
+            cornerRadius = dp(activity, 6).toFloat()
+            setStroke(dp(activity, 1), Color.parseColor("#33F39C12"))
+        }
+        layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+            bottomMargin = dp(activity, 16)
+        }
+    }
+    card.addView(versionBadge)
+
+    // Changelog Header
+    val changelogHeader = TextView(activity).apply {
+        text = "APA YANG BARU:"
+        setTextColor(Color.parseColor("#636E72"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+        typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+        gravity = Gravity.START
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            leftMargin = dp(activity, 24)
+            rightMargin = dp(activity, 24)
+            bottomMargin = dp(activity, 4)
+        }
+    }
+    card.addView(changelogHeader)
+
+    // Changelog Body
+    val changelogBody = TextView(activity).apply {
+        text = if (changelog.isNotEmpty()) changelog else "Pembaruan rutin stabilitas aplikasi."
+        setTextColor(Color.parseColor("#2D3436"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        gravity = Gravity.START
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            leftMargin = dp(activity, 24)
+            rightMargin = dp(activity, 24)
+            bottomMargin = dp(activity, 24)
+        }
+    }
+    card.addView(changelogBody)
+
+    // Footer Banner Pinkish Red
+    val footerBanner = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        val p = dp(activity, 12)
+        setPadding(p, p, p, p)
+        background = GradientDrawable().apply {
+            setColor(Color.parseColor("#E52A5A"))
+            val r = dp(activity, 20).toFloat()
+            cornerRadii = floatArrayOf(0f, 0f, 0f, 0f, r, r, r, r)
+        }
+    }
+    val footerText = TextView(activity).apply {
+        text = "Silakan perbarui untuk menjaga kelancaran streaming"
+        setTextColor(Color.WHITE)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
+        gravity = Gravity.CENTER
+        typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+    }
+    footerBanner.addView(footerText)
+    card.addView(footerBanner)
+
+    root.addView(card)
+
+    // Symmetrical TV-remote friendly button layout
+    val buttonContainer = LinearLayout(activity).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER
+        layoutParams = LinearLayout.LayoutParams(
+            cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topMargin = dp(activity, 16)
+        }
+    }
+
+    // Negative action is always Exit (Forced)
+    val negBtn = Button(activity).apply {
+        text = "Keluar"
+        setTextColor(Color.WHITE)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+        isFocusable = true
+        background = createButtonDrawable(activity, Color.parseColor("#D63031"))
+        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 1.0f).apply {
+            rightMargin = dp(activity, 6)
+        }
+        setOnClickListener {
+            dialog.dismiss()
+            activity.finishAffinity()
+            exitProcess(0)
+        }
+    }
+    buttonContainer.addView(negBtn)
+
+    val posBtn = Button(activity).apply {
+        text = "Perbarui"
+        setTextColor(Color.WHITE)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+        isFocusable = true
+        background = createButtonDrawable(activity, Color.parseColor("#F39C12"))
+        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 1.0f).apply {
+            leftMargin = dp(activity, 6)
+        }
+        setOnClickListener {
+            switchToDownloadLayout(activity, dialog, root, apkUrl)
+        }
+    }
+    buttonContainer.addView(posBtn)
+    root.addView(buttonContainer)
+
+    dialog.setContentView(root)
+    dialog.show()
+}
+
+private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: LinearLayout, apkUrl: String) {
     root.removeAllViews()
 
     val cardWidth = dp(activity, 300)
@@ -391,8 +727,8 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
         orientation = LinearLayout.VERTICAL
         gravity = Gravity.CENTER_HORIZONTAL
         layoutParams = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
-        val padding = dp(activity, 24)
-        setPadding(padding, padding, padding, padding)
+        val p = dp(activity, 24)
+        setPadding(p, p, p, p)
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
             cornerRadius = dp(activity, 20).toFloat()
@@ -443,62 +779,6 @@ private fun switchToDownloadLayout(activity: Activity, dialog: Dialog, root: Lin
 
     Thread {
         try {
-            fun getConfig(ctx: android.content.Context, field: String): String {
-                val classNames = listOf(
-                    "${ctx.packageName}.BuildConfig",
-                    "com.lagradost.DramaBox.BuildConfig",
-                    "com.lagradost.ShortMax.BuildConfig",
-                    "com.lagradost.Melolo.BuildConfig",
-                    "com.lagradost.RBTVPlus.BuildConfig",
-                    "com.xr3ed.BuildConfig"
-                )
-                val loaders = listOf(ctx.classLoader, object {}.javaClass.classLoader)
-                for (cn in classNames) {
-                    for (loader in loaders) {
-                        if (loader == null) continue
-                        try {
-                            val c = loader.loadClass(cn)
-                            return c.getField(field).get(null) as String
-                        } catch (_: Throwable) {}
-                    }
-                }
-                return ""
-            }
-            var apkUrl = getConfig(activity, "FALLBACK_RELEASE_URL")
-            var updateUrl = getConfig(activity, "UPDATE_JSON_URL")
-            if (apkUrl.isEmpty() || apkUrl == "dummy") {
-                apkUrl = "https://github.com/xr3ed/CloudStreamXR"
-            }
-            if (updateUrl.isEmpty() || updateUrl == "dummy") {
-                updateUrl = "https://raw.githubusercontent.com/xr3ed/CloudStreamXR/main/update.json"
-            }
-            if (updateUrl.contains("raw.githubusercontent.com")) {
-                try {
-                    val temp = updateUrl.replace("https://raw.githubusercontent.com/", "")
-                    val parts = temp.split("/", limit = 4)
-                    if (parts.size >= 4) {
-                        updateUrl = "https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}/${parts[3]}"
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-            try {
-                val conn = URL(updateUrl).openConnection() as HttpURLConnection
-                conn.connectTimeout = 8000
-                conn.readTimeout = 8000
-                if (conn.responseCode == 200) {
-                    val json = conn.inputStream.bufferedReader().use { it.readText() }
-                    val jsonObj = JSONObject(json)
-                    if (jsonObj.has("apkUrl")) {
-                        apkUrl = jsonObj.getString("apkUrl")
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
             val url = URL(apkUrl)
             val conn = url.openConnection() as HttpURLConnection
             conn.connect()
