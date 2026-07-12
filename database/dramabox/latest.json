@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "12.9K",
+      "hotCode": "15.4K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -177,43 +177,64 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000020247",
-    "bookName": "Istri Baik Apaan?",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
-    "chapterCount": 62,
-    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
+    "bookId": "42000018258",
+    "bookName": "Tak Bisa Kabur dari Raja Naga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
+    "chapterCount": 52,
+    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
     "tags": [
-      "Balas Dendam",
-      "Melawan Balik",
-      "Kebangkitan"
+      "Pembalikan Identitas",
+      "Cinta Paksaan",
+      "Takdir Cinta",
+      "Romansa",
+      "BG",
+      "Gairah"
     ],
     "tagV3s": [
       {
-        "tagId": 818,
-        "tagName": "Balas Dendam"
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 822,
-        "tagName": "Melawan Balik"
+        "tagId": 1378,
+        "tagName": "Cinta Paksaan",
+        "tagEnName": "Forced Love"
       },
       {
-        "tagId": 825,
-        "tagName": "Kebangkitan"
+        "tagId": 1382,
+        "tagName": "Takdir Cinta",
+        "tagEnName": "Destined Love"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1358,
+        "tagName": "BG",
+        "tagEnName": "BG"
+      },
+      {
+        "tagId": 10047,
+        "tagName": "Gairah",
+        "tagEnName": "Steamy"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Juan Lee,  Nadia Meka",
+    "protagonist": "Sam Malik,  Lia Halim",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.5K",
+      "hotCode": "6.2K",
       "sort": 4
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783404954000,
-    "shelfTime": "2026-07-07 14:15:54",
+    "bookShelfTime": 1783303200000,
+    "shelfTime": "2026-07-06 10:00:00",
     "inLibrary": false
   },
   {
@@ -272,125 +293,43 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000018258",
-    "bookName": "Tak Bisa Kabur dari Raja Naga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018258/42000018258.jpg?t=1782210346502",
-    "chapterCount": 52,
-    "introduction": "Di malam Valentine yang hujan, Lia, seorang perawat, menyelamatkan pria misterius yang ternyata adalah Sam, Raja Naga. Dipaksa memilih menjadi pasangan takdirnya atau mati, Lia terjebak dalam dunia supranatural berbahaya. Saat kontrak 30 hari berakhir, apakah dia akan memilih kebebasan atau cinta sang Raja Naga?",
+    "bookId": "42000020247",
+    "bookName": "Istri Baik Apaan?",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020247/42000020247.jpg?t=1783392523443",
+    "chapterCount": 62,
+    "introduction": "Di hari kepulangan sahabat suaminya, Mery Park, Nadia menerima email anonim berisi video perselingkuhan Juan dan Mery. Lebih parah, mereka merencanakan pembunuhan dengan menyuapkan obat harian Nadia perlahan-lahan, demi merampas seluruh hartanya. Pengkhianatan ini menghancurkan hatinya. Nadia tak rela terus berperan sebagai istri baik yang pasrah. Ia bangkit dengan sumpah keras: merebut kembali semua yang dirampas darinya, dengan caranya sendiri.",
     "tags": [
-      "Pembalikan Identitas",
-      "Cinta Paksaan",
-      "Takdir Cinta",
-      "Romansa",
-      "BG",
-      "Gairah"
+      "Balas Dendam",
+      "Melawan Balik",
+      "Kebangkitan"
     ],
     "tagV3s": [
       {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
+        "tagId": 818,
+        "tagName": "Balas Dendam"
       },
       {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
+        "tagId": 822,
+        "tagName": "Melawan Balik"
       },
       {
-        "tagId": 1382,
-        "tagName": "Takdir Cinta",
-        "tagEnName": "Destined Love"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1358,
-        "tagName": "BG",
-        "tagEnName": "BG"
-      },
-      {
-        "tagId": 10047,
-        "tagName": "Gairah",
-        "tagEnName": "Steamy"
+        "tagId": 825,
+        "tagName": "Kebangkitan"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Sam Malik,  Lia Halim",
+    "protagonist": "Juan Lee,  Nadia Meka",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "4.8K",
+      "hotCode": "4.5K",
       "sort": 6
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783303200000,
-    "shelfTime": "2026-07-06 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000020608",
-    "bookName": "Balas Dendam Sang Bapak Rumah Tangga",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020608/42000020608.jpg?t=1783586976237",
-    "chapterCount": 68,
-    "introduction": "Di hari jadi pernikahan ke-20, istri dan putra dari Rangga pergike luar negeri untuk merayakan ulang tahun pria lain yang adalah cinta pertama sang istri. Ketika mereka diculik, ia membawa uang tebusan namun dipaksa tinggal sebagai sandera pengganti agar pria lain itu bisa bebas. Setelah menunggu tiga tahun untuk diselamatkan, ia pulang ke rumah dan mendapati putranya memanggil pria lain \"Ayah\", serta istrinya terus membiarkan dia disakiti. ",
-    "tags": [
-      "Balas Dendam",
-      "Keadilan",
-      "Serangan Balik",
-      "Modern",
-      "Pria Dominan",
-      "Perselingkuhan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 10037,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
-      },
-      {
-        "tagId": 1340,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1318,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      },
-      {
-        "tagId": 1341,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Rangga",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "4.1K",
-      "sort": 7
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783648801000,
-    "shelfTime": "2026-07-10 10:00:01",
+    "bookShelfTime": 1783404954000,
+    "shelfTime": "2026-07-07 14:15:54",
     "inLibrary": false
   },
   {
@@ -446,8 +385,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "3.9K",
-      "sort": 8
+      "hotCode": "4.2K",
+      "sort": 7
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783396800000,
@@ -501,8 +440,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "3.3K",
-      "sort": 9
+      "hotCode": "3.6K",
+      "sort": 8
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783310400000,
@@ -542,11 +481,72 @@
     "rankVo": {
       "rankType": 3,
       "hotCode": "3K",
-      "sort": 10
+      "sort": 9
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783735200000,
     "shelfTime": "2026-07-11 10:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000020608",
+    "bookName": "Balas Dendam Sang Bapak Rumah Tangga",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020608/42000020608.jpg?t=1783586976237",
+    "chapterCount": 68,
+    "introduction": "Di hari jadi pernikahan ke-20, istri dan putra dari Rangga pergike luar negeri untuk merayakan ulang tahun pria lain yang adalah cinta pertama sang istri. Ketika mereka diculik, ia membawa uang tebusan namun dipaksa tinggal sebagai sandera pengganti agar pria lain itu bisa bebas. Setelah menunggu tiga tahun untuk diselamatkan, ia pulang ke rumah dan mendapati putranya memanggil pria lain \"Ayah\", serta istrinya terus membiarkan dia disakiti. ",
+    "tags": [
+      "Balas Dendam",
+      "Keadilan",
+      "Serangan Balik",
+      "Modern",
+      "Pria Dominan",
+      "Perselingkuhan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 10037,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1341,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Rangga",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "2.9K",
+      "sort": 10
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783648801000,
+    "shelfTime": "2026-07-10 10:00:01",
     "inLibrary": false
   }
 ]

@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "40.1K",
+      "hotCode": "37.9K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "30.9K",
+      "hotCode": "22.2K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,73 +174,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "23.7K",
+      "hotCode": "20.6K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783051200000,
     "shelfTime": "2026-07-03 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017985",
-    "bookName": "Satu Malam yang Mengubah Takdirku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
-    "chapterCount": 56,
-    "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
-    "tags": [
-      "Kabur Saat Hamil",
-      "Salah Identitas",
-      "Cinta Semalam",
-      "Balas Dendam",
-      "Modern",
-      "Romansa"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1397,
-        "tagName": "Kabur Saat Hamil",
-        "tagEnName": "Secret Baby"
-      },
-      {
-        "tagId": 1403,
-        "tagName": "Salah Identitas",
-        "tagEnName": "Mistaken Identity"
-      },
-      {
-        "tagId": 1385,
-        "tagName": "Cinta Semalam",
-        "tagEnName": "One Night Stand"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Johny Kirta,  Judy Laros",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "18.2K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782502499000,
-    "shelfTime": "2026-06-27 03:34:59",
     "inLibrary": false
   },
   {
@@ -296,8 +235,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "15.6K",
-      "sort": 5
+      "hotCode": "14.5K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1764052944000,
@@ -305,33 +244,151 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000017520",
-    "bookName": "Diantar oleh Takdir (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "bookId": "42000017985",
+    "bookName": "Satu Malam yang Mengubah Takdirku",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017985/42000017985.jpg?t=1782185325285",
+    "chapterCount": 56,
+    "introduction": "Setelah bermalam dengan Johny Kirta, Judy Laros melahirkan anak kembar. Tapi Jina Laros, adik tirinya yang jahat mencuri salah satu anak Judy dan berbohong bahwa dialah ibu kandungnya. Kemudian Jina menggunakan hal ini untuk menipu Johny menjadi tunangannya. Enam tahun kemudian, Judy kembali sebagai perancang parfum terkenal dunia yang bernama \"Arna\".",
     "tags": [
+      "Kabur Saat Hamil",
+      "Salah Identitas",
+      "Cinta Semalam",
       "Balas Dendam",
-      "Pembalikan Identitas",
-      "Ilmuwan",
       "Modern",
-      "Wanita Kuat"
+      "Romansa"
     ],
     "tagV3s": [
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1403,
+        "tagName": "Salah Identitas",
+        "tagEnName": "Mistaken Identity"
+      },
+      {
+        "tagId": 1385,
+        "tagName": "Cinta Semalam",
+        "tagEnName": "One Night Stand"
+      },
       {
         "tagId": 1394,
         "tagName": "Balas Dendam",
         "tagEnName": "Revenge"
       },
       {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Johny Kirta,  Judy Laros",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "14.1K",
+      "sort": 5
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1782502499000,
+    "shelfTime": "2026-06-27 03:34:59",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000012810",
+    "bookName": "Diantar oleh Takdir",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012810/42000012810.jpg?t=1779263881245",
+    "chapterCount": 66,
+    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "tags": [
+      "Pembalikan Identitas",
+      "Cinta Setelah Menikah",
+      "Romansa",
+      "Balas Dendam",
+      "Serangan Balik",
+      "Perselingkuhan"
+    ],
+    "tagV3s": [
+      {
         "tagId": 1395,
         "tagName": "Pembalikan Identitas",
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 10033,
-        "tagName": "Ilmuwan",
-        "tagEnName": "Researcher"
+        "tagId": 1393,
+        "tagName": "Cinta Setelah Menikah",
+        "tagEnName": "Love After Marriage"
+      },
+      {
+        "tagId": 1357,
+        "tagName": "Romansa",
+        "tagEnName": "Romance"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Han Do-yoon,  Nam Yun-joo",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 2,
+      "hotCode": "10.1K",
+      "sort": 6
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1779523200000,
+    "shelfTime": "2026-05-23 16:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018961",
+    "bookName": "Aku Merawat Anak Selingkuhan Suamiku (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018961/42000018961.jpg?t=1782700514161",
+    "chapterCount": 60,
+    "introduction": "Delapan tahun lalu, Mirae menyelamatkan Woojin hingga kehilangan kesuburannya. Demi cinta, ia menyembunyikan pengorbanan itu dan statusnya sebagai pewaris Grup Giwon. Selama tujuh tahun, ia merawat Jian dengan kasih sayang. Namun kebenaran terbongkar: pernikahannya palsu, Jian adalah anak Woojin dan selingkuhannya, Chaewon, yang masih dilindungi Woojin karena dikira penyelamatnya.",
+    "tags": [
+      "Perselingkuhan",
+      "Putri Kaya",
+      "Modern",
+      "Wanita Kuat",
+      "Penyesalan",
+      "Balas Dendam"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1400,
+        "tagName": "Perselingkuhan",
+        "tagEnName": "Betrayal"
+      },
+      {
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
       },
       {
         "tagId": 1352,
@@ -342,67 +399,16 @@
         "tagId": 1361,
         "tagName": "Wanita Kuat",
         "tagEnName": "Strong Heroine"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Han Do-yoon,  Nam Yun-joo",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 2,
-      "hotCode": "11.5K",
-      "sort": 6
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1781798400000,
-    "shelfTime": "2026-06-19 00:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000012352",
-    "bookName": "Aku Merawat Anak Selingkuhan Suamiku",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000012352/42000012352.jpg?t=1778840207518",
-    "chapterCount": 60,
-    "introduction": "Delapan tahun lalu, Mirae menyelamatkan Woojin hingga kehilangan kesuburannya. Demi cinta, ia menyembunyikan pengorbanan itu dan statusnya sebagai pewaris Grup Giwon. Selama tujuh tahun, ia merawat Jian dengan kasih sayang. Namun kebenaran terbongkar: pernikahannya palsu, Jian adalah anak Woojin dan selingkuhannya, Chaewon, yang masih dilindungi Woojin karena dikira penyelamatnya.",
-    "tags": [
-      "Penyesalan",
-      "Serangan Balik",
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Perselingkuhan",
-      "Putri Kaya"
-    ],
-    "tagV3s": [
+      },
       {
         "tagId": 1654,
         "tagName": "Penyesalan",
         "tagEnName": "All-Too-Late"
       },
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
         "tagId": 1394,
         "tagName": "Balas Dendam",
         "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
       }
     ],
     "isEntry": 0,
@@ -412,12 +418,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "11.5K",
+      "hotCode": "8.6K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1778918400000,
-    "shelfTime": "2026-05-16 16:00:00",
+    "bookShelfTime": 1782957600000,
+    "shelfTime": "2026-07-02 10:00:00",
     "inLibrary": false
   },
   {
@@ -473,7 +479,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "9K",
+      "hotCode": "8.3K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -534,7 +540,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "8.6K",
+      "hotCode": "5.9K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",
@@ -543,24 +549,34 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000011177",
-    "bookName": "Merebut Kembali Segalanya",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000011177/42000011177.jpg?t=1778122792367",
-    "chapterCount": 58,
-    "introduction": "Rea, ahli waris yang kehilangan segalanya, akhirnya kembali ke keluarganya yang elite. Alih-alih memilih cinta, dia memprioritaskan kekuasaan dan bertekad merebut kembali haknya. Drama ini menyajikan konflik emosional yang tajam, ketika ikatan keluarga, ambisi, dan keputusan besar saling bertabrakan.",
+    "bookId": "42000019623",
+    "bookName": "Koki Legendaris",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019623/42000019623.jpg?t=1782983726059",
+    "chapterCount": 57,
+    "introduction": "Helen, juru masak istana legendaris yang dijuluki Raja sebagai Dewi Kuliner, meninggal tepat sebelum menerima penghargaan tertinggi. Terlahir kembali 100 tahun kemudian, dia menjadi asisten dapur di restoran ternama dan berjuang menyelamatkan restoran itu dari pengkhianatan serta kehancuran.",
     "tags": [
-      "Intrik Keluarga",
-      "Wanita Kuat",
-      "Balas Dendam",
       "Serangan Balik",
-      "Putri Kaya",
-      "Modern"
+      "Terlahir Kembali",
+      "Wanita Karier",
+      "Wanita Kuat",
+      "Pembalikan Identitas",
+      "Bangkitnya Orang Biasa"
     ],
     "tagV3s": [
       {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1405,
+        "tagName": "Terlahir Kembali",
+        "tagEnName": "Rebirth"
+      },
+      {
+        "tagId": 1375,
+        "tagName": "Wanita Karier",
+        "tagEnName": "Career Woman"
       },
       {
         "tagId": 1361,
@@ -568,39 +584,29 @@
         "tagEnName": "Strong Heroine"
       },
       {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
+        "tagId": 1398,
+        "tagName": "Bangkitnya Orang Biasa",
+        "tagEnName": "Underdog Story"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Nico,  Rea",
+    "protagonist": "Theo Gunawan,  Helen Candra",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 2,
-      "hotCode": "7.8K",
+      "hotCode": "5.7K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1778378400000,
-    "shelfTime": "2026-05-10 10:00:00",
+    "bookShelfTime": 1783045344000,
+    "shelfTime": "2026-07-03 10:22:24",
     "inLibrary": false
   }
 ]

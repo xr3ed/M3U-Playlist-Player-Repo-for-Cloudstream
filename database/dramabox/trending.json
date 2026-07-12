@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "434K",
+      "hotCode": "460K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "420K",
+      "hotCode": "398K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,7 +174,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "219K",
+      "hotCode": "228K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
@@ -235,67 +235,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "179K",
+      "hotCode": "170K",
       "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783045344000,
     "shelfTime": "2026-07-03 10:22:24",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017520",
-    "bookName": "Diantar oleh Takdir (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
-    "chapterCount": 66,
-    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
-    "tags": [
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Ilmuwan",
-      "Modern",
-      "Wanita Kuat"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 10033,
-        "tagName": "Ilmuwan",
-        "tagEnName": "Researcher"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Han Do-yoon,  Nam Yun-joo",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "162K",
-      "sort": 5
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1781798400000,
-    "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
   },
   {
@@ -351,12 +296,67 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "159K",
-      "sort": 6
+      "hotCode": "166K",
+      "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1779523200000,
     "shelfTime": "2026-05-23 16:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017520",
+    "bookName": "Diantar oleh Takdir (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017520/42000017520.jpg?t=1781754973740",
+    "chapterCount": 66,
+    "introduction": "Yun-joo, yang dikhianati teman masa kecilnya Jun-ho, impulsif melamar Do-yoon, pria asing berseragam kurir. Tak disangka, Do-yoon adalah CEO Hawon Holdings. Saat bekerja di perusahaan yang sama, Yun-joo menghadapi hinaan, penculikan, dan tekanan dari Ye-na. Dengan dukungan Do-yoon dan keberaniannya, ia bangkit. Ye-na dihukum, Jun-ho hancur, dan Yun-joo kembali lebih percaya diri untuk membangun masa depan penuh cinta.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Ilmuwan",
+      "Modern",
+      "Wanita Kuat"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 10033,
+        "tagName": "Ilmuwan",
+        "tagEnName": "Researcher"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Han Do-yoon,  Nam Yun-joo",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "156K",
+      "sort": 6
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1781798400000,
+    "shelfTime": "2026-06-19 00:00:00",
     "inLibrary": false
   },
   {
@@ -412,7 +412,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "134K",
+      "hotCode": "120K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
@@ -473,7 +473,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "126K",
+      "hotCode": "111K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
@@ -534,7 +534,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "110K",
+      "hotCode": "106K",
       "sort": 9
     },
     "markNamesConnectKey": ", ",
@@ -543,54 +543,54 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000017472",
-    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
-    "chapterCount": 70,
-    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
+    "bookId": "42000018935",
+    "bookName": "Bukan Aku yang Kamu Pilih (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018935/42000018935.jpg?t=1782698035729",
+    "chapterCount": 61,
+    "introduction": "Leo, Saskia, dan Nova adalah sahabat masa kecil. Awalnya, demi kedua sahabatnya itu, Leo melepaskan kesempatan untuk melanjutkan studi ke luar negeri dan memilih kuliah di universitas yang sama. Namun, setelah Gavin muncul, kedua sahabatnya itu sering mengabaikan Leo. Lambat laun, Leo menjadi patah hati dan memutuskan untuk melanjutkan studi ke luar negeri demi mengejar mimpinya. Setelah Leo pergi, kedua sahabatnya itu menyesal dan berusaha keras mengejarnya kembali.",
     "tags": [
-      "Keadilan",
-      "Serangan Balik",
-      "Putri Kaya",
-      "Balas Dendam",
-      "Intrik Keluarga",
-      "Modern"
+      "Penyesalan",
+      "Mengejar Suami",
+      "Pelajar",
+      "Cinta Segitiga",
+      "Modern",
+      "Balas Dendam"
     ],
     "tagV3s": [
       {
-        "tagId": 10038,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
+        "tagId": 1658,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
       },
       {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
+        "tagId": 1681,
+        "tagName": "Mengejar Suami",
+        "tagEnName": "Winning Him Back"
       },
       {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
+        "tagId": 1467,
+        "tagName": "Pelajar",
+        "tagEnName": "Student"
       },
       {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
+        "tagId": 1413,
+        "tagName": "Cinta Segitiga",
+        "tagEnName": "Love Triangle"
       },
       {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1352,
+        "tagId": 1318,
         "tagName": "Modern",
         "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Wendy,  Alvaro,  Wilian,  Yukia",
+    "protagonist": "Leo Fadhil,  Saskia Wira,  Nova Zhenda",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
@@ -599,8 +599,8 @@
       "sort": 10
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1782360000000,
-    "shelfTime": "2026-06-25 12:00:00",
+    "bookShelfTime": 1783051200000,
+    "shelfTime": "2026-07-03 12:00:00",
     "inLibrary": false
   }
 ]
