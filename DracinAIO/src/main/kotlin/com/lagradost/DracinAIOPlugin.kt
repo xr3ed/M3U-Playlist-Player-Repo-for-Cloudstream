@@ -9,6 +9,7 @@ import com.lagradost.DracinAIO.BuildConfig
 class DracinAIOPlugin: Plugin() {
     override fun load(context: Context) {
         verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        DracinAIOProvider.appContext = context
         registerMainAPI(DracinAIOProvider())
     }
 }

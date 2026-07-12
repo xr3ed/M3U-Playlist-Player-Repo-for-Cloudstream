@@ -8,6 +8,9 @@ import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import com.lagradost.DracinAIO.BuildConfig
+import android.content.Context
+import com.lagradost.cloudstream3.utils.DataStore.getKey
+import com.lagradost.cloudstream3.utils.DataStore.setKey
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Headers.Companion.toHeaders
@@ -25,6 +28,7 @@ import kotlin.math.min
 
 class DracinAIOProvider : MainAPI() {
     companion object {
+        var appContext: Context? = null
         private val BASE_URL = String(Base64.decode(BuildConfig.MELOLO_URL, Base64.DEFAULT), Charsets.UTF_8)
         private val API_URL = "$BASE_URL/api"
 
@@ -245,6 +249,21 @@ class DracinAIOProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        val context = appContext
+        if (context != null) {
+            val cachedJson = context.getKey<String>("dracin_aio_home_cache_v2")
+            val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v2") ?: 0L
+            val now = System.currentTimeMillis()
+            // Cache TTL: 10 minutes (600.000 ms)
+            if (cachedJson != null && now - cachedTime < 600000) {
+                val cachedLists = deserializeHomeCache(cachedJson)
+                if (cachedLists.isNotEmpty()) {
+                    Log.d("DracinAIO", "Loading homepage from local DataStore cache (Age: ${(now - cachedTime)/1000}s)")
+                    return newHomePageResponse(cachedLists, hasNext = false)
+                }
+            }
+        }
+
         val homePageLists = ArrayList<HomePageList>()
 
         // 1. Load Global Lists (Top 10, Trending, Baru Tayang)
@@ -363,6 +382,19 @@ class DracinAIOProvider : MainAPI() {
 
         val providerLists = deferredLists.awaitAll().filterNotNull().flatten()
         homePageLists.addAll(providerLists)
+
+        if (homePageLists.isNotEmpty() && context != null) {
+            try {
+                val jsonStr = serializeHomeCache(homePageLists)
+                if (jsonStr.isNotEmpty()) {
+                    context.setKey("dracin_aio_home_cache_v2", jsonStr)
+                    context.setKey("dracin_aio_home_cache_time_v2", System.currentTimeMillis())
+                    Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         return newHomePageResponse(homePageLists, hasNext = false)
     }
@@ -689,5 +721,60 @@ class DracinAIOProvider : MainAPI() {
             e.printStackTrace()
             return false
         }
+    }
+
+    private fun serializeHomeCache(lists: List<HomePageList>): String {
+        try {
+            val root = JSONArray()
+            for (list in lists) {
+                val listObj = JSONObject()
+                listObj.put("name", list.name)
+                val itemsArr = JSONArray()
+                for (item in list.list) {
+                    val itemObj = JSONObject()
+                    itemObj.put("title", item.name)
+                    itemObj.put("url", item.url)
+                    itemObj.put("poster", item.posterUrl)
+                    itemsArr.put(itemObj)
+                }
+                listObj.put("items", itemsArr)
+                root.put(listObj)
+            }
+            return root.toString()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            return ""
+        }
+    }
+
+    private fun deserializeHomeCache(jsonStr: String): List<HomePageList> {
+        val result = ArrayList<HomePageList>()
+        try {
+            val root = JSONArray(jsonStr)
+            for (i in 0 until root.length()) {
+                val listObj = root.getJSONObject(i)
+                val name = listObj.getString("name")
+                val itemsArr = listObj.getJSONArray("items")
+                val searchResponses = ArrayList<SearchResponse>()
+                for (j in 0 until itemsArr.length()) {
+                    val itemObj = itemsArr.getJSONObject(j)
+                    val title = itemObj.getString("title")
+                    val url = itemObj.getString("url")
+                    val poster = itemObj.optString("poster", "")
+                    
+                    searchResponses.add(
+                        newMovieSearchResponse(title, url, TvType.TvSeries) {
+                            this.posterUrl = poster
+                        }
+                    )
+                }
+                if (searchResponses.isNotEmpty()) {
+                    result.add(HomePageList(name, searchResponses))
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return result
     }
 }
