@@ -50,7 +50,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -62,217 +62,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340442\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509448\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "146M",
     "bookShelfTime": 1764052944000,
     "shelfTime": "2025-11-25 14:42:24",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000016017",
-    "bookName": "Ibuku Triliuner Rahasia (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016017/42000016017.jpg?t=1781071314892",
-    "chapterCount": 52,
-    "introduction": "Setelah para ibu komite sekolah menjebak putranya, seorang ibu sederhana dipermalukan dan disingkirkan. Namun, mereka tak tahu wanita yang dianggap bukan siapa-siapa itu sebenarnya triliuner rahasia di balik sekolah tersebut. Kini, nasib mereka ada di tangannya.",
-    "tags": [
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Wanita Kuat",
-      "Modern",
-      "Serangan Balik",
-      "CEO"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1362,
-        "tagName": "CEO",
-        "tagEnName": "Billionaire"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "5.5M",
-    "bookShelfTime": 1781164800000,
-    "shelfTime": "2026-06-11 16:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "41000122939",
-    "bookName": "Istriku Tiga, Takdirku Gila (Sulih Suara) ",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122939/41000122939.jpg?t=1765787838538",
-    "chapterCount": 74,
-    "introduction": "Arsa melakukan perjalanan waktu ke Dinasti Kina kuno. Kebetulan, pemerintah saat itu sedang memaksa para pemuda lajang untuk menikah. Di antara para calon istri itu, ada seorang putri kerajaan, putri dari keluarga jenderal, dan putri dari keluarga kaya. Saat Arsa masih bingung memilih, sebuah sistem tiba-tiba muncul dan memaksanya untuk menikahi ketiga wanita itu. Dia hanya bisa mendapatkan berbagai hadiah menarik dengan meningkatkan tingkat kasih sayang dari mereka...",
-    "tags": [
-      "Perjalanan Waktu",
-      "Sistem",
-      "Kekuatan Khusus",
-      "Sejarah",
-      "Bangsawan",
-      "Pria Dominan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1344,
-        "tagName": "Perjalanan Waktu",
-        "tagEnName": "Time Travel"
-      },
-      {
-        "tagId": 1346,
-        "tagName": "Sistem",
-        "tagEnName": "Gamified World"
-      },
-      {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      },
-      {
-        "tagId": 1319,
-        "tagName": "Sejarah",
-        "tagEnName": "Historical"
-      },
-      {
-        "tagId": 1327,
-        "tagName": "Bangsawan",
-        "tagEnName": "Royalty"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "172M",
-    "bookShelfTime": 1761537600000,
-    "shelfTime": "2025-10-27 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000017472",
-    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
-    "chapterCount": 70,
-    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
-    "tags": [
-      "Keadilan",
-      "Serangan Balik",
-      "Putri Kaya",
-      "Balas Dendam",
-      "Intrik Keluarga",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 10038,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
-      },
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.6M",
-    "bookShelfTime": 1782360000000,
-    "shelfTime": "2026-06-25 12:00:00",
     "inLibrary": false
   },
   {
@@ -326,7 +119,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -338,10 +131,148 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "501K",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509448\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "529K",
     "bookShelfTime": 1783051200000,
     "shelfTime": "2026-07-03 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "41000122939",
+    "bookName": "Istriku Tiga, Takdirku Gila (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000122939/41000122939.jpg?t=1765787838538",
+    "chapterCount": 74,
+    "introduction": "Arsa melakukan perjalanan waktu ke Dinasti Kina kuno. Kebetulan, pemerintah saat itu sedang memaksa para pemuda lajang untuk menikah. Di antara para calon istri itu, ada seorang putri kerajaan, putri dari keluarga jenderal, dan putri dari keluarga kaya. Saat Arsa masih bingung memilih, sebuah sistem tiba-tiba muncul dan memaksanya untuk menikahi ketiga wanita itu. Dia hanya bisa mendapatkan berbagai hadiah menarik dengan meningkatkan tingkat kasih sayang dari mereka...",
+    "tags": [
+      "Perjalanan Waktu",
+      "Sistem",
+      "Kekuatan Khusus",
+      "Sejarah",
+      "Bangsawan",
+      "Pria Dominan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1344,
+        "tagName": "Perjalanan Waktu",
+        "tagEnName": "Time Travel"
+      },
+      {
+        "tagId": 1346,
+        "tagName": "Sistem",
+        "tagEnName": "Gamified World"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      },
+      {
+        "tagId": 1319,
+        "tagName": "Sejarah",
+        "tagEnName": "Historical"
+      },
+      {
+        "tagId": 1327,
+        "tagName": "Bangsawan",
+        "tagEnName": "Royalty"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 6,
+      "name": "Terpopuler",
+      "color": "#F54E96"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509448\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "172M",
+    "bookShelfTime": 1761537600000,
+    "shelfTime": "2025-10-27 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000016017",
+    "bookName": "Ibuku Triliuner Rahasia (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000016017/42000016017.jpg?t=1781071314892",
+    "chapterCount": 52,
+    "introduction": "Setelah para ibu komite sekolah menjebak putranya, seorang ibu sederhana dipermalukan dan disingkirkan. Namun, mereka tak tahu wanita yang dianggap bukan siapa-siapa itu sebenarnya triliuner rahasia di balik sekolah tersebut. Kini, nasib mereka ada di tangannya.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Wanita Kuat",
+      "Modern",
+      "Serangan Balik",
+      "CEO"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1362,
+        "tagName": "CEO",
+        "tagEnName": "Billionaire"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 6,
+      "name": "Terpopuler",
+      "color": "#F54E96"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "5.5M",
+    "bookShelfTime": 1781164800000,
+    "shelfTime": "2026-06-11 16:00:00",
     "inLibrary": false
   },
   {
@@ -395,7 +326,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -407,79 +338,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "27.3M",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "27.4M",
     "bookShelfTime": 1766987470000,
     "shelfTime": "2025-12-29 13:51:10",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000008313",
-    "bookName": "Istriku Tiga, Takdirku Gila S2 (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008313/42000008313.jpg?t=1774255575124",
-    "chapterCount": 70,
-    "introduction": "Arsa Wira, seorang pria modern, melakukan perjalanan lintas waktu ke masa kuno dan memperoleh sebuah sistem poin afeksi. Dia menikahi tiga istri yang cantik jelita dan menjadi orang yang sangat kaya. Masalah mulai terjadi ketika tiba-tiba saja istri keduanya diculik.",
-    "tags": [
-      "Pembalikan Identitas",
-      "Perjalanan Waktu",
-      "Sistem",
-      "Penebusan",
-      "Tokoh Legendaris",
-      "Kekuatan Khusus"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1338,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1344,
-        "tagName": "Perjalanan Waktu",
-        "tagEnName": "Time Travel"
-      },
-      {
-        "tagId": 1346,
-        "tagName": "Sistem",
-        "tagEnName": "Gamified World"
-      },
-      {
-        "tagId": 1478,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
-      },
-      {
-        "tagId": 1332,
-        "tagName": "Tokoh Legendaris",
-        "tagEnName": "Divine Tycoon"
-      },
-      {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 3,
-      "name": "Sulih Suara",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "8.7M",
-    "bookShelfTime": 1774504800000,
-    "shelfTime": "2026-03-26 14:00:00",
     "inLibrary": false
   },
   {
@@ -533,137 +395,68 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 3,
-      "name": "Sulih Suara",
-      "color": "#8773DF"
+      "cornerType": 6,
+      "name": "Terpopuler",
+      "color": "#F54E96"
     },
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "13.4M",
     "bookShelfTime": 1774584000000,
     "shelfTime": "2026-03-27 12:00:00",
     "inLibrary": false
   },
   {
-    "bookId": "42000010956",
-    "bookName": "Sang Permaisuri dan Anak Kucingnya (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010956/42000010956.jpg?t=1777541282133",
-    "chapterCount": 70,
-    "introduction": "Sita, wanita subur, masuk istana untuk melayani Kaisar Dani yang tidak punya keturunan, tetapi malah melahirkan dua anak kucing. Demi selamat, dia mengaku hanya buang air besar. Dikira hamil palsu, Sita dikurung di Istana Dingin. Di sana, kucing berubah jadi anak-anak dan memanggilnya ibu. Sita merawat mereka sambil terjebak intrik istana.",
+    "bookId": "42000009437",
+    "bookName": "Suami Kontrak, Cinta Tanpa Syarat (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000009437/42000009437.jpg?t=1775788578469",
+    "chapterCount": 80,
+    "introduction": "Intan, presdir Grup Suarta, tidak mau kekuasaan perusahaannya jatuh ke tangan ibu tirinya. Demi mendapatkan 10% saham warisan kakek untuk calon suaminya, dia memilih Roy, pria paling tampan dan miskin untuk dinikahi. Roy selalu bilang dirinya sangat miskin, tetapi Intan malah mendengar semua orang diam-diam memanggilnya \"Tuan Roy \"…",
     "tags": [
-      "Intrik Istana",
-      "Kabur Saat Hamil",
-      "Fantasi",
-      "Wanita Mandiri",
-      "Wanita Kuat",
-      "Kehamilan"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1410,
-        "tagName": "Intrik Istana",
-        "tagEnName": "Palace Intrigue"
-      },
-      {
-        "tagId": 1397,
-        "tagName": "Kabur Saat Hamil",
-        "tagEnName": "Secret Baby"
-      },
-      {
-        "tagId": 1355,
-        "tagName": "Fantasi",
-        "tagEnName": "Fantasy"
-      },
-      {
-        "tagId": 1452,
-        "tagName": "Wanita Mandiri",
-        "tagEnName": "Independent Woman"
-      },
-      {
-        "tagId": 1361,
-        "tagName": "Wanita Kuat",
-        "tagEnName": "Strong Heroine"
-      },
-      {
-        "tagId": 1641,
-        "tagName": "Kehamilan",
-        "tagEnName": "Pregnancy"
-      }
-    ],
-    "bookSource": {
-      "sceneId": "ovs_vd_cat_video_rec",
-      "expId": "bigdata_rec",
-      "strategyId": "ghygip88",
-      "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
-    },
-    "isEntry": 0,
-    "index": 0,
-    "corner": {
-      "cornerType": 3,
-      "name": "Sulih Suara",
-      "color": "#8773DF"
-    },
-    "dataFrom": "算法_分类筛选",
-    "cardType": 1,
-    "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "1.8M",
-    "bookShelfTime": 1777544832000,
-    "shelfTime": "2026-04-30 18:27:12",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000001023",
-    "bookName": "Kala Penyesalan Mengetuk Hati (Sulih Suara) ",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000001023/42000001023.jpg?t=1764912858790",
-    "chapterCount": 74,
-    "introduction": "Sejak kecil, Wenny diabaikan oleh ayahnya yang lebih menyayangi adik tirinya. Setelah dewasa, dia memilih Haris sebagai pengawal pribadinya. Perlahan, Wenny jatuh cinta padanya dan mulai mendekatinya selama lebih dari tiga bulan. Namun, Haris tetap tidak tertarik, bahkan melukai hati Wenny. Hingga akhirnya, Wenny tahu bahwa Haris mendekatinya hanya untuk memenangkan hati adik tirinya. Akhirnya, Wenny patah hati dan memilih menikah dengan putra bangsawan yang lumpuh...",
-    "tags": [
+      "Pembalikan Identitas",
       "Intrik Keluarga",
-      "Mengejar Istri",
-      "Putri Kaya",
-      "Cinta Segitiga",
-      "Romansa",
-      "BG"
+      "CEO",
+      "Kekuatan Khusus",
+      "Cinta Paksaan",
+      "Modern"
     ],
     "tagV3s": [
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
       {
         "tagId": 1411,
         "tagName": "Intrik Keluarga",
         "tagEnName": "Family Intrigue"
       },
       {
-        "tagId": 1401,
-        "tagName": "Mengejar Istri",
-        "tagEnName": "Winning Her Back"
+        "tagId": 1362,
+        "tagName": "CEO",
+        "tagEnName": "Billionaire"
       },
       {
-        "tagId": 1450,
-        "tagName": "Putri Kaya",
-        "tagEnName": "Heiress"
+        "tagId": 1371,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
       },
       {
-        "tagId": 1380,
-        "tagName": "Cinta Segitiga",
-        "tagEnName": "Love Triangle"
+        "tagId": 1378,
+        "tagName": "Cinta Paksaan",
+        "tagEnName": "Forced Love"
       },
       {
-        "tagId": 1357,
-        "tagName": "Romansa",
-        "tagEnName": "Romance"
-      },
-      {
-        "tagId": 1358,
-        "tagName": "BG",
-        "tagEnName": "BG"
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
       }
     ],
     "bookSource": {
@@ -671,7 +464,76 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 6,
+      "name": "Terpopuler",
+      "color": "#F54E96"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "10.3M",
+    "bookShelfTime": 1776225600000,
+    "shelfTime": "2026-04-15 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000008313",
+    "bookName": "Istriku Tiga, Takdirku Gila S2 (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000008313/42000008313.jpg?t=1774255575124",
+    "chapterCount": 70,
+    "introduction": "Arsa Wira, seorang pria modern, melakukan perjalanan lintas waktu ke masa kuno dan memperoleh sebuah sistem poin afeksi. Dia menikahi tiga istri yang cantik jelita dan menjadi orang yang sangat kaya. Masalah mulai terjadi ketika tiba-tiba saja istri keduanya diculik.",
+    "tags": [
+      "Pembalikan Identitas",
+      "Perjalanan Waktu",
+      "Sistem",
+      "Penebusan",
+      "Tokoh Legendaris",
+      "Kekuatan Khusus"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1338,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1344,
+        "tagName": "Perjalanan Waktu",
+        "tagEnName": "Time Travel"
+      },
+      {
+        "tagId": 1346,
+        "tagName": "Sistem",
+        "tagEnName": "Gamified World"
+      },
+      {
+        "tagId": 1478,
+        "tagName": "Penebusan",
+        "tagEnName": "Redemption"
+      },
+      {
+        "tagId": 1332,
+        "tagName": "Tokoh Legendaris",
+        "tagEnName": "Divine Tycoon"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -683,10 +545,10 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340443\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "15.7M",
-    "bookShelfTime": 1764918446000,
-    "shelfTime": "2025-12-05 15:07:26",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "8.7M",
+    "bookShelfTime": 1774504800000,
+    "shelfTime": "2026-03-26 14:00:00",
     "inLibrary": false
   },
   {
@@ -740,7 +602,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -752,10 +614,79 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340444\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "10.9M",
     "bookShelfTime": 1778750374000,
     "shelfTime": "2026-05-14 17:19:34",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000010956",
+    "bookName": "Sang Permaisuri dan Anak Kucingnya (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000010956/42000010956.jpg?t=1777541282133",
+    "chapterCount": 70,
+    "introduction": "Sita, wanita subur, masuk istana untuk melayani Kaisar Dani yang tidak punya keturunan, tetapi malah melahirkan dua anak kucing. Demi selamat, dia mengaku hanya buang air besar. Dikira hamil palsu, Sita dikurung di Istana Dingin. Di sana, kucing berubah jadi anak-anak dan memanggilnya ibu. Sita merawat mereka sambil terjebak intrik istana.",
+    "tags": [
+      "Intrik Istana",
+      "Kabur Saat Hamil",
+      "Fantasi",
+      "Wanita Mandiri",
+      "Wanita Kuat",
+      "Kehamilan"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1410,
+        "tagName": "Intrik Istana",
+        "tagEnName": "Palace Intrigue"
+      },
+      {
+        "tagId": 1397,
+        "tagName": "Kabur Saat Hamil",
+        "tagEnName": "Secret Baby"
+      },
+      {
+        "tagId": 1355,
+        "tagName": "Fantasi",
+        "tagEnName": "Fantasy"
+      },
+      {
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
+      },
+      {
+        "tagId": 1641,
+        "tagName": "Kehamilan",
+        "tagEnName": "Pregnancy"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.8M",
+    "bookShelfTime": 1777544832000,
+    "shelfTime": "2026-04-30 18:27:12",
     "inLibrary": false
   },
   {
@@ -803,7 +734,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -815,7 +746,7 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340444\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "4M",
     "bookShelfTime": 1781798400000,
     "shelfTime": "2026-06-19 00:00:00",
@@ -872,7 +803,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -884,54 +815,54 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340444\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "56.3M",
     "bookShelfTime": 1739787183000,
     "shelfTime": "2025-02-17 18:13:03",
     "inLibrary": false
   },
   {
-    "bookId": "42000009437",
-    "bookName": "Suami Kontrak, Cinta Tanpa Syarat (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000009437/42000009437.jpg?t=1775788578469",
-    "chapterCount": 80,
-    "introduction": "Intan, presdir Grup Suarta, tidak mau kekuasaan perusahaannya jatuh ke tangan ibu tirinya. Demi mendapatkan 10% saham warisan kakek untuk calon suaminya, dia memilih Roy, pria paling tampan dan miskin untuk dinikahi. Roy selalu bilang dirinya sangat miskin, tetapi Intan malah mendengar semua orang diam-diam memanggilnya \"Tuan Roy \"…",
+    "bookId": "41000110318",
+    "bookName": "Presdir Cantikku (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x1/41x0/410x0/41000110318/41000110318.jpg?t=1735629378450",
+    "chapterCount": 93,
+    "introduction": "Pemimpin Pasukan Serigala, si Dewa Perang, Agus Salim menyembunyikan identitasnya dan menjalin pernikahan dengan Nona Besar Keluarga Kinara, Sarah Kinara. Agus juga harus melindungi Grup Cenara agar dapat mencapai puncak kejayaan.",
     "tags": [
+      "Balas Dendam",
       "Pembalikan Identitas",
-      "Intrik Keluarga",
-      "CEO",
-      "Kekuatan Khusus",
-      "Cinta Paksaan",
+      "Serangan Balik",
+      "Tokoh Legendaris",
+      "Pura-Pura Bodoh",
       "Modern"
     ],
     "tagV3s": [
       {
-        "tagId": 1395,
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1338,
         "tagName": "Pembalikan Identitas",
         "tagEnName": "Hidden Identity"
       },
       {
-        "tagId": 1411,
-        "tagName": "Intrik Keluarga",
-        "tagEnName": "Family Intrigue"
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
       },
       {
-        "tagId": 1362,
-        "tagName": "CEO",
-        "tagEnName": "Billionaire"
+        "tagId": 1332,
+        "tagName": "Tokoh Legendaris",
+        "tagEnName": "Divine Tycoon"
       },
       {
-        "tagId": 1371,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
+        "tagId": 1333,
+        "tagName": "Pura-Pura Bodoh",
+        "tagEnName": "Playing Dumb"
       },
       {
-        "tagId": 1378,
-        "tagName": "Cinta Paksaan",
-        "tagEnName": "Forced Love"
-      },
-      {
-        "tagId": 1352,
+        "tagId": 1318,
         "tagName": "Modern",
         "tagEnName": "Modern"
       }
@@ -941,22 +872,22 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
     "corner": {
-      "cornerType": 6,
-      "name": "Terpopuler",
-      "color": "#F54E96"
+      "cornerType": 3,
+      "name": "Sulih Suara",
+      "color": "#8773DF"
     },
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340444\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
-    "playCount": "10.3M",
-    "bookShelfTime": 1776225600000,
-    "shelfTime": "2026-04-15 12:00:00",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "25.2M",
+    "bookShelfTime": 1735806804000,
+    "shelfTime": "2025-01-02 16:33:24",
     "inLibrary": false
   },
   {
@@ -1004,7 +935,7 @@
       "expId": "bigdata_rec",
       "strategyId": "ghygip88",
       "strategyName": "EXP_3",
-      "log_id": "950231d8a12ca26dc55b61f22698467d"
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
     },
     "isEntry": 0,
     "index": 0,
@@ -1016,10 +947,79 @@
     "dataFrom": "算法_分类筛选",
     "cardType": 1,
     "markNamesConnectKey": ", ",
-    "algorithmRecomDot": "{\"log_id\":\"950231d8a12ca26dc55b61f22698467d\",\"ret_time\":\"1783861340444\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509449\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
     "playCount": "34.1M",
     "bookShelfTime": 1748928758000,
     "shelfTime": "2025-06-03 13:32:38",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000017472",
+    "bookName": "Saudara Dalam Tipu Daya (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000017472/42000017472.jpg?t=1781748139190",
+    "chapterCount": 70,
+    "introduction": "Wendy Hartawan sejak kecil melindungi adik kembarnya, Wilian, bahkan mendonorkan sumsum tulang demi menyelamatkannya. Namun saat pulang menyambut pacar Wilian, Yukia, Wendy justru diprovokasi dan diincar hartanya. Yukia bersekongkol dengan Budi untuk merebut aset keluarga, sementara Wilian tertipu kebohongan Yukia yang pura-pura hamil. Bersama Alvaro, Wendy membongkar semuanya hingga Yukia dan Budi dihukum, dan Wilian menyesal.",
+    "tags": [
+      "Keadilan",
+      "Serangan Balik",
+      "Putri Kaya",
+      "Balas Dendam",
+      "Intrik Keluarga",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 10038,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1450,
+        "tagName": "Putri Kaya",
+        "tagEnName": "Heiress"
+      },
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1411,
+        "tagName": "Intrik Keluarga",
+        "tagEnName": "Family Intrigue"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "bookSource": {
+      "sceneId": "ovs_vd_cat_video_rec",
+      "expId": "bigdata_rec",
+      "strategyId": "ghygip88",
+      "strategyName": "EXP_3",
+      "log_id": "8e5cafe37d00b128e2ce8d4faacc7b8f"
+    },
+    "isEntry": 0,
+    "index": 0,
+    "corner": {
+      "cornerType": 6,
+      "name": "Terpopuler",
+      "color": "#F54E96"
+    },
+    "dataFrom": "算法_分类筛选",
+    "cardType": 1,
+    "markNamesConnectKey": ", ",
+    "algorithmRecomDot": "{\"log_id\":\"8e5cafe37d00b128e2ce8d4faacc7b8f\",\"ret_time\":\"1783882509450\",\"scene_id\":\"ovs_vd_cat_video_rec\",\"rec_id\":\"bigdata_rec\"}",
+    "playCount": "1.6M",
+    "bookShelfTime": 1782360000000,
+    "shelfTime": "2026-06-25 12:00:00",
     "inLibrary": false
   }
 ]

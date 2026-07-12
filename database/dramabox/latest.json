@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "10.4K",
+      "hotCode": "10.5K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "9.3K",
+      "hotCode": "10K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -153,73 +153,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "6K",
+      "hotCode": "9.1K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783735200000,
     "shelfTime": "2026-07-11 10:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000019257",
-    "bookName": "Kembali untuk Membalas (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019257/42000019257.jpg?t=1782872450767",
-    "chapterCount": 55,
-    "introduction": "Yuna meninggalkan Keluarga Sito demi membalas budi pada orang tua kandungnya yang telah melahirkannya, namun justru diabaikan dan dijebak oleh Rita, anak angkat mereka, hingga dipenjara tiga tahun. Setelah bebas, dia mempermalukan Keluarga Karim dan memutuskan hubungan. Saat putus asa, Keluarga Sito datang menyelamatkannya, sementara Keluarga Karim masih yakin dia akan kembali suatu hari.",
-    "tags": [
-      "Balas Dendam",
-      "Pembalikan Identitas",
-      "Serangan Balik",
-      "Wanita Mandiri",
-      "Pantang Menyerah",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1394,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      },
-      {
-        "tagId": 1395,
-        "tagName": "Pembalikan Identitas",
-        "tagEnName": "Hidden Identity"
-      },
-      {
-        "tagId": 1399,
-        "tagName": "Serangan Balik",
-        "tagEnName": "Counterattack"
-      },
-      {
-        "tagId": 1452,
-        "tagName": "Wanita Mandiri",
-        "tagEnName": "Independent Woman"
-      },
-      {
-        "tagId": 1453,
-        "tagName": "Pantang Menyerah",
-        "tagEnName": "Strong-Willed"
-      },
-      {
-        "tagId": 1352,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": " Max Karim,  Yuna Sito",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "5.8K",
-      "sort": 4
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783562400000,
-    "shelfTime": "2026-07-09 10:00:00",
     "inLibrary": false
   },
   {
@@ -254,8 +193,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.7K",
-      "sort": 5
+      "hotCode": "7K",
+      "sort": 4
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783404954000,
@@ -315,12 +254,73 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "5.2K",
-      "sort": 6
+      "hotCode": "5.9K",
+      "sort": 5
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783396800000,
     "shelfTime": "2026-07-07 12:00:00",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000019257",
+    "bookName": "Kembali untuk Membalas (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000019257/42000019257.jpg?t=1782872450767",
+    "chapterCount": 55,
+    "introduction": "Yuna meninggalkan Keluarga Sito demi membalas budi pada orang tua kandungnya yang telah melahirkannya, namun justru diabaikan dan dijebak oleh Rita, anak angkat mereka, hingga dipenjara tiga tahun. Setelah bebas, dia mempermalukan Keluarga Karim dan memutuskan hubungan. Saat putus asa, Keluarga Sito datang menyelamatkannya, sementara Keluarga Karim masih yakin dia akan kembali suatu hari.",
+    "tags": [
+      "Balas Dendam",
+      "Pembalikan Identitas",
+      "Serangan Balik",
+      "Wanita Mandiri",
+      "Pantang Menyerah",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1394,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      },
+      {
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1399,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
+      },
+      {
+        "tagId": 1453,
+        "tagName": "Pantang Menyerah",
+        "tagEnName": "Strong-Willed"
+      },
+      {
+        "tagId": 1352,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": " Max Karim,  Yuna Sito",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "4.8K",
+      "sort": 6
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783562400000,
+    "shelfTime": "2026-07-09 10:00:00",
     "inLibrary": false
   },
   {
@@ -370,12 +370,67 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "4.9K",
+      "hotCode": "4.7K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783391952000,
     "shelfTime": "2026-07-07 10:39:12",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018065",
+    "bookName": "Menantu Naga Tak Terkalahkan",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018065/42000018065.jpg?t=1782196194297",
+    "chapterCount": 74,
+    "introduction": "Arga, murid terakhir Guru Zanar dari Pegunungan Ulmar, turun gunung setelah tiga tahun kultivasi dan mencapai Tingkat Tapak Dewa. Atas perintah gurunya, ia datang untuk menikahi Laila dari Keluarga Sanjaya. Meski memiliki kemampuan medis dan bela diri luar biasa, Arga terus diremehkan karena berasal dari desa. Bahkan setelah menyelamatkan banyak orang dan mengalahkan para ahli, ia tetap dianggap pembual. Hingga identitas aslinya terungkap dan semua orang menyadari kesalahan m",
+    "tags": [
+      "Serangan Balik",
+      "Kekuatan Khusus",
+      "Keadilan",
+      "Pria Dominan",
+      "Modern"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1340,
+        "tagName": "Serangan Balik",
+        "tagEnName": "Counterattack"
+      },
+      {
+        "tagId": 1334,
+        "tagName": "Kekuatan Khusus",
+        "tagEnName": "The Chosen One"
+      },
+      {
+        "tagId": 10037,
+        "tagName": "Keadilan",
+        "tagEnName": "Justice Served"
+      },
+      {
+        "tagId": 1323,
+        "tagName": "Pria Dominan",
+        "tagEnName": "Powerful Male Lead"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Arga Maudi,  Laila Baskara",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 3,
+      "hotCode": "4.7K",
+      "sort": 8
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783310400000,
+    "shelfTime": "2026-07-06 12:00:00",
     "inLibrary": false
   },
   {
@@ -431,8 +486,8 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "4K",
-      "sort": 8
+      "hotCode": "4.2K",
+      "sort": 9
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1783742400000,
@@ -440,119 +495,58 @@
     "inLibrary": false
   },
   {
-    "bookId": "42000018065",
-    "bookName": "Menantu Naga Tak Terkalahkan",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018065/42000018065.jpg?t=1782196194297",
-    "chapterCount": 74,
-    "introduction": "Arga, murid terakhir Guru Zanar dari Pegunungan Ulmar, turun gunung setelah tiga tahun kultivasi dan mencapai Tingkat Tapak Dewa. Atas perintah gurunya, ia datang untuk menikahi Laila dari Keluarga Sanjaya. Meski memiliki kemampuan medis dan bela diri luar biasa, Arga terus diremehkan karena berasal dari desa. Bahkan setelah menyelamatkan banyak orang dan mengalahkan para ahli, ia tetap dianggap pembual. Hingga identitas aslinya terungkap dan semua orang menyadari kesalahan m",
+    "bookId": "42000020144",
+    "bookName": "Istri CEO Tak Bisa Disembunyikan (Sulih Suara) ",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000020144/42000020144.jpg?t=1783322991127",
+    "chapterCount": 60,
+    "introduction": "Kang Ji‑won menyembunyikan identitasnya sebagai istri CEO dan desainer terkenal saat bekerja di perusahaan suaminya, Min Woo‑bin. Namun, Lee Yun‑ju mengaku sebagai istri Min Woo‑bin dan terus menindas Kang Ji‑won. Saat karya desainnya dicuri, Kang Ji‑won membongkar semua kebohongan dan mengungkap jati dirinya di depan semua orang.",
     "tags": [
+      "Pembalikan Identitas",
       "Serangan Balik",
-      "Kekuatan Khusus",
-      "Keadilan",
-      "Pria Dominan",
-      "Modern"
+      "Wanita Mandiri",
+      "Modern",
+      "Wanita Kuat"
     ],
     "tagV3s": [
       {
-        "tagId": 1340,
+        "tagId": 1395,
+        "tagName": "Pembalikan Identitas",
+        "tagEnName": "Hidden Identity"
+      },
+      {
+        "tagId": 1399,
         "tagName": "Serangan Balik",
         "tagEnName": "Counterattack"
       },
       {
-        "tagId": 1334,
-        "tagName": "Kekuatan Khusus",
-        "tagEnName": "The Chosen One"
-      },
-      {
-        "tagId": 10037,
-        "tagName": "Keadilan",
-        "tagEnName": "Justice Served"
-      },
-      {
-        "tagId": 1323,
-        "tagName": "Pria Dominan",
-        "tagEnName": "Powerful Male Lead"
-      },
-      {
-        "tagId": 1318,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Arga Maudi,  Laila Baskara",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 3,
-      "hotCode": "3.9K",
-      "sort": 9
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783310400000,
-    "shelfTime": "2026-07-06 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018259",
-    "bookName": "Mawar Selalu Berduri",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018259/42000018259.jpg?t=1782210396199",
-    "chapterCount": 71,
-    "introduction": "Bella tumbuh disayang keluarga, namun hidupnya berubah saat hamil dan berhenti sekolah. Menjelang melahirkan, ia mengetahui bahwa pernikahan dan kehamilannya hanyalah rencana ayah dan suaminya untuk mendapatkan darah tali pusar demi menyelamatkan putri lain. Hancur oleh pengkhianatan itu, Bella memalsukan kematiannya dan menghilang. Saat ayah dan suaminya menyesal serta mencari kebenaran, mereka akhirnya sadar akan kesalahan mereka, tetapi semuanya sudah terlambat.",
-    "tags": [
-      "Mengejar Istri",
-      "Penyesalan",
-      "Cinta Retak",
-      "Perselingkuhan",
-      "Penebusan",
-      "Modern"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1401,
-        "tagName": "Mengejar Istri",
-        "tagEnName": "Winning Her Back"
-      },
-      {
-        "tagId": 1654,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
-      },
-      {
-        "tagId": 1636,
-        "tagName": "Cinta Retak",
-        "tagEnName": "Love After Divorce"
-      },
-      {
-        "tagId": 1400,
-        "tagName": "Perselingkuhan",
-        "tagEnName": "Betrayal"
-      },
-      {
-        "tagId": 1459,
-        "tagName": "Penebusan",
-        "tagEnName": "Redemption"
+        "tagId": 1452,
+        "tagName": "Wanita Mandiri",
+        "tagEnName": "Independent Woman"
       },
       {
         "tagId": 1352,
         "tagName": "Modern",
         "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1361,
+        "tagName": "Wanita Kuat",
+        "tagEnName": "Strong Heroine"
       }
     ],
     "isEntry": 0,
     "index": 0,
-    "protagonist": "Akson Lee,  Bella Ongko",
+    "protagonist": "Min Woo‑bin,  Kang Ji‑won",
     "dataFrom": "大数据",
     "cardType": 1,
     "rankVo": {
       "rankType": 3,
-      "hotCode": "3.6K",
+      "hotCode": "3.2K",
       "sort": 10
     },
     "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783310400000,
-    "shelfTime": "2026-07-06 12:00:00",
+    "bookShelfTime": 1783476000000,
+    "shelfTime": "2026-07-08 10:00:00",
     "inLibrary": false
   }
 ]

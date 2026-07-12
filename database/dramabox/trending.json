@@ -52,7 +52,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "503K",
+      "hotCode": "478K",
       "sort": 1
     },
     "markNamesConnectKey": ", ",
@@ -113,7 +113,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "276K",
+      "hotCode": "239K",
       "sort": 2
     },
     "markNamesConnectKey": ", ",
@@ -174,7 +174,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "224K",
+      "hotCode": "208K",
       "sort": 3
     },
     "markNamesConnectKey": ", ",
@@ -235,7 +235,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "192K",
+      "hotCode": "201K",
       "sort": 4
     },
     "markNamesConnectKey": ", ",
@@ -296,7 +296,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "174K",
+      "hotCode": "160K",
       "sort": 5
     },
     "markNamesConnectKey": ", ",
@@ -351,7 +351,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "157K",
+      "hotCode": "141K",
       "sort": 6
     },
     "markNamesConnectKey": ", ",
@@ -412,7 +412,7 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "120K",
+      "hotCode": "132K",
       "sort": 7
     },
     "markNamesConnectKey": ", ",
@@ -473,73 +473,12 @@
     "cardType": 1,
     "rankVo": {
       "rankType": 1,
-      "hotCode": "116K",
+      "hotCode": "112K",
       "sort": 8
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1782360000000,
     "shelfTime": "2026-06-25 12:00:00",
-    "inLibrary": false
-  },
-  {
-    "bookId": "42000018935",
-    "bookName": "Bukan Aku yang Kamu Pilih (Sulih Suara)",
-    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018935/42000018935.jpg?t=1782698035729",
-    "chapterCount": 61,
-    "introduction": "Leo, Saskia, dan Nova adalah sahabat masa kecil. Awalnya, demi kedua sahabatnya itu, Leo melepaskan kesempatan untuk melanjutkan studi ke luar negeri dan memilih kuliah di universitas yang sama. Namun, setelah Gavin muncul, kedua sahabatnya itu sering mengabaikan Leo. Lambat laun, Leo menjadi patah hati dan memutuskan untuk melanjutkan studi ke luar negeri demi mengejar mimpinya. Setelah Leo pergi, kedua sahabatnya itu menyesal dan berusaha keras mengejarnya kembali.",
-    "tags": [
-      "Penyesalan",
-      "Mengejar Suami",
-      "Pelajar",
-      "Cinta Segitiga",
-      "Modern",
-      "Balas Dendam"
-    ],
-    "tagV3s": [
-      {
-        "tagId": 1658,
-        "tagName": "Penyesalan",
-        "tagEnName": "All-Too-Late"
-      },
-      {
-        "tagId": 1681,
-        "tagName": "Mengejar Suami",
-        "tagEnName": "Winning Him Back"
-      },
-      {
-        "tagId": 1467,
-        "tagName": "Pelajar",
-        "tagEnName": "Student"
-      },
-      {
-        "tagId": 1413,
-        "tagName": "Cinta Segitiga",
-        "tagEnName": "Love Triangle"
-      },
-      {
-        "tagId": 1318,
-        "tagName": "Modern",
-        "tagEnName": "Modern"
-      },
-      {
-        "tagId": 1337,
-        "tagName": "Balas Dendam",
-        "tagEnName": "Revenge"
-      }
-    ],
-    "isEntry": 0,
-    "index": 0,
-    "protagonist": "Leo Fadhil,  Saskia Wira,  Nova Zhenda",
-    "dataFrom": "大数据",
-    "cardType": 1,
-    "rankVo": {
-      "rankType": 1,
-      "hotCode": "108K",
-      "sort": 9
-    },
-    "markNamesConnectKey": ", ",
-    "bookShelfTime": 1783051200000,
-    "shelfTime": "2026-07-03 12:00:00",
     "inLibrary": false
   },
   {
@@ -596,11 +535,72 @@
     "rankVo": {
       "rankType": 1,
       "hotCode": "108K",
-      "sort": 10
+      "sort": 9
     },
     "markNamesConnectKey": ", ",
     "bookShelfTime": 1764052944000,
     "shelfTime": "2025-11-25 14:42:24",
+    "inLibrary": false
+  },
+  {
+    "bookId": "42000018935",
+    "bookName": "Bukan Aku yang Kamu Pilih (Sulih Suara)",
+    "coverWap": "https://hwztchapter.dramaboxdb.com/data/cppartner/4x2/42x0/420x0/42000018935/42000018935.jpg?t=1782698035729",
+    "chapterCount": 61,
+    "introduction": "Leo, Saskia, dan Nova adalah sahabat masa kecil. Awalnya, demi kedua sahabatnya itu, Leo melepaskan kesempatan untuk melanjutkan studi ke luar negeri dan memilih kuliah di universitas yang sama. Namun, setelah Gavin muncul, kedua sahabatnya itu sering mengabaikan Leo. Lambat laun, Leo menjadi patah hati dan memutuskan untuk melanjutkan studi ke luar negeri demi mengejar mimpinya. Setelah Leo pergi, kedua sahabatnya itu menyesal dan berusaha keras mengejarnya kembali.",
+    "tags": [
+      "Penyesalan",
+      "Mengejar Suami",
+      "Pelajar",
+      "Cinta Segitiga",
+      "Modern",
+      "Balas Dendam"
+    ],
+    "tagV3s": [
+      {
+        "tagId": 1658,
+        "tagName": "Penyesalan",
+        "tagEnName": "All-Too-Late"
+      },
+      {
+        "tagId": 1681,
+        "tagName": "Mengejar Suami",
+        "tagEnName": "Winning Him Back"
+      },
+      {
+        "tagId": 1467,
+        "tagName": "Pelajar",
+        "tagEnName": "Student"
+      },
+      {
+        "tagId": 1413,
+        "tagName": "Cinta Segitiga",
+        "tagEnName": "Love Triangle"
+      },
+      {
+        "tagId": 1318,
+        "tagName": "Modern",
+        "tagEnName": "Modern"
+      },
+      {
+        "tagId": 1337,
+        "tagName": "Balas Dendam",
+        "tagEnName": "Revenge"
+      }
+    ],
+    "isEntry": 0,
+    "index": 0,
+    "protagonist": "Leo Fadhil,  Saskia Wira,  Nova Zhenda",
+    "dataFrom": "大数据",
+    "cardType": 1,
+    "rankVo": {
+      "rankType": 1,
+      "hotCode": "97.5K",
+      "sort": 10
+    },
+    "markNamesConnectKey": ", ",
+    "bookShelfTime": 1783051200000,
+    "shelfTime": "2026-07-03 12:00:00",
     "inLibrary": false
   }
 ]
