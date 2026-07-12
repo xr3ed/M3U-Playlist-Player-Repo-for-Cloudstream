@@ -1,454 +1,190 @@
 package com.lagradost
 
+import android.util.Base64
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.newExtractorLink
-import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
-import com.lagradost.cloudstream3.utils.DataStore.getKey
-import com.lagradost.cloudstream3.utils.DataStore.setKey
-import org.json.JSONObject
-import org.json.JSONArray
-import android.util.Base64
-import java.security.MessageDigest
-import javax.crypto.Cipher
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.SecretKeySpec
+import com.lagradost.cloudstream3.utils.Qualities
+import com.lagradost.cloudstream3.utils.newExtractorLink
+import com.lagradost.ShortMax.BuildConfig
 import kotlin.math.min
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Headers.Companion.toHeaders
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ShortMaxProvider : MainAPI() {
     companion object {
-        private var cfDeferred: Deferred<Boolean>? = null
-        private val PASSWORD = com.lagradost.ShortMax.BuildConfig.SHORTMAX_KEY
+        private val BASE_URL = String(Base64.decode(BuildConfig.MELOLO_URL, Base64.DEFAULT), Charsets.UTF_8)
+        private val API_URL = "$BASE_URL/api/shortmax"
 
-        private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+        private var sessionCookie: String? = null
 
-        private val cleanClient: okhttp3.OkHttpClient by lazy {
-            okhttp3.OkHttpClient.Builder()
-                .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-                .build()
-        }
+        private val headers = mapOf(
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer" to "$BASE_URL/"
+        )
 
-        fun getCfCookies(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_COOKIES")
-        fun setCfCookies(context: Context?, value: String?) {
-            context?.setKey("SHORTMAX_CF_COOKIES", value)
-        }
+        private val cleanClient = OkHttpClient.Builder()
+            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
 
-        fun getCfUserAgent(context: Context?): String? = context?.getKey<String>("SHORTMAX_CF_USER_AGENT")
-        fun setCfUserAgent(context: Context?, value: String?) {
-            context?.setKey("SHORTMAX_CF_USER_AGENT", value)
-        }
-
-        fun decryptCryptoJS(encryptedText: String): String {
-            val ciphertextBytes = Base64.decode(encryptedText, Base64.DEFAULT)
-            val header = "Salted__".toByteArray(Charsets.US_ASCII)
-            if (ciphertextBytes.size < 16 || !ciphertextBytes.sliceArray(0..7).contentEquals(header)) {
-                throw IllegalArgumentException("Invalid CryptoJS ciphertext")
-            }
-            val salt = ciphertextBytes.sliceArray(8..15)
-            val encrypted = ciphertextBytes.sliceArray(16 until ciphertextBytes.size)
-
-            val passwordBytes = PASSWORD.toByteArray(Charsets.UTF_8)
-            val keyIv = ByteArray(48)
-            var prev = ByteArray(0)
-            var keyIvOffset = 0
-            val md = MessageDigest.getInstance("MD5")
-
-            while (keyIvOffset < keyIv.size) {
-                md.reset()
-                md.update(prev)
-                md.update(passwordBytes)
-                md.update(salt)
-                prev = md.digest()
-                val copyLen = min(prev.size, keyIv.size - keyIvOffset)
-                System.arraycopy(prev, 0, keyIv, keyIvOffset, copyLen)
-                keyIvOffset += copyLen
-            }
-
-            val key = keyIv.sliceArray(0..31)
-            val iv = keyIv.sliceArray(32..47)
-
-            val secretKey = SecretKeySpec(key, "AES")
-            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(iv))
-
-            return String(cipher.doFinal(encrypted), Charsets.UTF_8)
-        }
+        private val mapper = ObjectMapper()
+            .registerModule(KotlinModule.Builder().build())
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
-    override var mainUrl = com.lagradost.ShortMax.BuildConfig.SHORTMAX_URL
     override var name = "#Dracin ShortMax"
-    override val supportedTypes = setOf(TvType.TvSeries)
+    override var mainUrl = BASE_URL
     override var lang = "id"
+    override var supportedTypes = setOf(TvType.TvSeries)
     override val hasMainPage = true
 
     override val mainPage = listOf(
-        MainPageData("ShortMax - For You", "foryou"),
-        MainPageData("ShortMax - Rekomendasi", "rekomendasi"),
-        MainPageData("ShortMax - Dub Indo", "dubindo")
+        MainPageData("Drama Populer", "populer"),
+        MainPageData("Drama Terbaru", "terbaru"),
+        MainPageData("Dub Indo", "dubindo")
     )
 
-    private fun showToast(msg: String) {
-        val act = CommonActivity.activity
-        if (act != null) {
-            act.runOnUiThread {
-                android.widget.Toast.makeText(act, msg, android.widget.Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    private fun checkResponse(response: String) {
-        val trimmed = response.trim()
-        if (trimmed.startsWith("<!DOCTYPE", ignoreCase = true) || trimmed.startsWith("<html", ignoreCase = true)) {
-            throw Exception("Harap selesaikan tantangan Cloudflare (Klik Buka di Peramban / Ikon Bumi di kanan atas)!")
-        }
-    }
-
-    private suspend fun solveCloudflare(activity: AppCompatActivity, url: String): Boolean {
-        val deferred = synchronized(this) {
-            cfDeferred?.let { return@synchronized it }
-
-            val newDeferred = CompletableDeferred<Boolean>()
-            cfDeferred = newDeferred
-
-            activity.runOnUiThread {
-                var resumed = false
-                fun safeResume(success: Boolean) {
-                    if (!resumed) {
-                        resumed = true
-                        newDeferred.complete(success)
-                    }
-                }
-                val dialog = CloudflareWebViewDialog(
-                    targetUrl = url,
-                    userAgent = USER_AGENT,
-                    onFinished = { success -> safeResume(success) }
-                )
-                newDeferred.invokeOnCompletion {
-                    activity.runOnUiThread {
-                        runCatching { dialog.dismissAllowingStateLoss() }
-                    }
-                }
-                dialog.show(activity.supportFragmentManager, "cf_bypass_shortmax")
-            }
-            newDeferred
-        }
-
-        val result = deferred.await()
-
-        synchronized(this) {
-            if (cfDeferred === deferred) {
-                cfDeferred = null
-            }
-        }
-        return result
-    }
-
-    private suspend fun requestWithCf(url: String, params: Map<String, String>? = null): String {
-        val ctx = CommonActivity.activity
-        val currentCookies = getCfCookies(ctx)
-        val currentUA = getCfUserAgent(ctx)
-        System.out.println("ShortMax request: $url | cfCookies: $currentCookies | cfUA: $currentUA")
-
-        val headersBuilder = okhttp3.Headers.Builder()
-        headersBuilder.add("Referer", "$mainUrl/")
-        headersBuilder.add("User-Agent", currentUA ?: USER_AGENT)
-        currentCookies?.let { headersBuilder.add("Cookie", it) }
-
-        var finalUrl = url
-        if (params != null && params.isNotEmpty()) {
-            val parsedUrl = url.toHttpUrlOrNull()
-            if (parsedUrl != null) {
-                val urlBuilder = parsedUrl.newBuilder()
-                for ((k, v) in params) {
-                    urlBuilder.addQueryParameter(k, v)
-                }
-                finalUrl = urlBuilder.build().toString()
-            }
-        }
-
-        val request = okhttp3.Request.Builder()
-            .url(finalUrl)
-            .headers(headersBuilder.build())
-            .build()
-
-        val response = try {
-            cleanClient.newCall(request).execute().use { resp ->
-                resp.body?.string() ?: ""
-            }
-        } catch (e: Exception) {
-            throw e
-        }
-
-        System.out.println("ShortMax response: ${response.take(300)}")
-
-        try {
-            checkResponse(response)
-            return response
-        } catch (e: Exception) {
-            val activity = (CommonActivity.activity as? AppCompatActivity) ?: throw e
-            setCfCookies(ctx, null)
-            setCfUserAgent(ctx, null)
-            val solved = solveCloudflare(activity, mainUrl)
-            if (solved) {
-                val newCookies = getCfCookies(ctx)
-                val newUA = getCfUserAgent(ctx)
-                val newHeadersBuilder = okhttp3.Headers.Builder()
-                newHeadersBuilder.add("Referer", "$mainUrl/")
-                newHeadersBuilder.add("User-Agent", newUA ?: USER_AGENT)
-                newCookies?.let { newHeadersBuilder.add("Cookie", it) }
-
-                val retryRequest = okhttp3.Request.Builder()
-                    .url(finalUrl)
-                    .headers(newHeadersBuilder.build())
+    private suspend fun getHeaders(forceRefresh: Boolean = false): Map<String, String> {
+        if (sessionCookie == null || forceRefresh) {
+            try {
+                val req = Request.Builder()
+                    .url(BASE_URL)
+                    .headers(headers.toHeaders())
                     .build()
-
-                val retryResponse = cleanClient.newCall(retryRequest).execute().use { resp ->
-                    resp.body?.string() ?: ""
+                val response = withContext(Dispatchers.IO) {
+                    cleanClient.newCall(req).execute()
                 }
-                checkResponse(retryResponse)
-                return retryResponse
-            } else {
-                throw e
-            }
-        }
-    }
-
-    private suspend fun fetchForyou(page: Int): List<SearchResponse> {
-        val path = "/api/shortmax/foryou?page=$page"
-        val rawHome = try {
-            requestWithCf("$mainUrl$path")
-        } catch (e: Exception) {
-            return emptyList()
-        }
-
-        val decrypted = try {
-            val json = JSONObject(rawHome)
-            if (json.has("data")) {
-                decryptCryptoJS(json.getString("data"))
-            } else {
-                throw Exception("Respon server tidak valid.")
-            }
-        } catch (e: Exception) {
-            return emptyList()
-        }
-
-        val jsonObj = JSONObject(decrypted)
-        val results = jsonObj.optJSONArray("data")
-            ?: jsonObj.optJSONArray("results")
-            ?: jsonObj.optJSONArray("list")
-            ?: JSONArray()
-
-        val list = mutableListOf<SearchResponse>()
-        for (i in 0 until results.length()) {
-            val item = results.optJSONObject(i) ?: continue
-            val id = item.optString("shortPlayId").takeIf { it.isNotEmpty() }
-                ?: item.optString("id").takeIf { it.isNotEmpty() }
-                ?: continue
-            val title = item.optString("title").takeIf { it.isNotEmpty() }
-                ?: item.optString("name").takeIf { it.isNotEmpty() }
-                ?: "Drama $id"
-            val cover = item.optString("cover").takeIf { it.isNotEmpty() }
-                ?: item.optString("image").takeIf { it.isNotEmpty() }
-                ?: ""
-
-            list.add(
-                newTvSeriesSearchResponse(
-                    name = title,
-                    url = id,
-                    type = TvType.TvSeries
-                ) {
-                    this.posterUrl = cover
+                val setCookie = response.header("set-cookie")
+                if (setCookie != null) {
+                    sessionCookie = setCookie.substringBefore(";")
                 }
-            )
-        }
-        return list
-    }
-
-    private suspend fun fetchRekomendasi(): List<SearchResponse> {
-        val path = "/api/shortmax/rekomendasi"
-        val rawHome = try {
-            requestWithCf("$mainUrl$path")
-        } catch (e: Exception) {
-            return emptyList()
-        }
-
-        val decrypted = try {
-            val json = JSONObject(rawHome)
-            if (json.has("data")) {
-                decryptCryptoJS(json.getString("data"))
-            } else {
-                throw Exception("Respon server tidak valid.")
+            } catch (e: Exception) {
+                // Ignore
             }
-        } catch (e: Exception) {
-            return emptyList()
         }
-
-        val results = if (decrypted.trim().startsWith("[")) {
-            JSONArray(decrypted)
+        val currentCookie = sessionCookie
+        return if (currentCookie != null) {
+            headers + mapOf("Cookie" to currentCookie)
         } else {
-            val jsonObj = JSONObject(decrypted)
-            jsonObj.optJSONArray("results")
-                ?: jsonObj.optJSONArray("data")
-                ?: jsonObj.optJSONArray("list")
-                ?: JSONArray()
+            headers
         }
+    }
 
-        val list = mutableListOf<SearchResponse>()
-        for (i in 0 until results.length()) {
-            val item = results.optJSONObject(i) ?: continue
-            val id = item.optString("shortPlayId").takeIf { it.isNotEmpty() }
-                ?: item.optString("id").takeIf { it.isNotEmpty() }
-                ?: continue
-            val title = item.optString("title").takeIf { it.isNotEmpty() }
-                ?: item.optString("name").takeIf { it.isNotEmpty() }
-                ?: "Drama $id"
-            val cover = item.optString("cover").takeIf { it.isNotEmpty() }
-                ?: item.optString("image").takeIf { it.isNotEmpty() }
-                ?: ""
-
-            list.add(
-                newTvSeriesSearchResponse(
-                    name = title,
-                    url = id,
-                    type = TvType.TvSeries
-                ) {
-                    this.posterUrl = cover
+    private suspend inline fun <reified T : Any> parsedGet(url: String): T? {
+        return try {
+            val reqHeaders = getHeaders()
+            val req = Request.Builder()
+                .url(url)
+                .headers(reqHeaders.toHeaders())
+                .build()
+            val responseText = withContext(Dispatchers.IO) {
+                cleanClient.newCall(req).execute().body?.string() ?: ""
+            }
+            if (responseText.contains("Unauthorized") || responseText.contains("401")) {
+                val retryHeaders = getHeaders(forceRefresh = true)
+                val retryReq = Request.Builder()
+                    .url(url)
+                    .headers(retryHeaders.toHeaders())
+                    .build()
+                val retryText = withContext(Dispatchers.IO) {
+                    cleanClient.newCall(retryReq).execute().body?.string() ?: ""
                 }
-            )
+                mapper.readValue(retryText, T::class.java)
+            } else {
+                mapper.readValue(responseText, T::class.java)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        return list
+    }
+
+    private fun isDubOrIndo(title: String): Boolean {
+        val titleLower = title.lowercase()
+        return titleLower.contains("dub") || 
+               titleLower.contains("indo") || 
+               titleLower.contains("sulih") || 
+               titleLower.contains("di juluki") || 
+               titleLower.contains("juluk")
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
-        fun isDubOrIndo(title: String): Boolean {
-            val titleLower = title.lowercase()
-            return titleLower.contains("dub") || titleLower.contains("indo") || titleLower.contains("sulih") || titleLower.contains("juluk")
+        val url = "$API_URL?action=rank"
+        val res = parsedGet<ShortMaxRankResponse>(url)
+        val rawItems = res?.items ?: return null
+
+        val filteredItems = when (request.data) {
+            "dubindo" -> rawItems.filter { isDubOrIndo(it.name ?: "") }
+            "terbaru" -> rawItems.filter { !isDubOrIndo(it.name ?: "") }
+                .sortedByDescending { it.id?.toLongOrNull() ?: 0L }
+            else -> rawItems.filter { !isDubOrIndo(it.name ?: "") }
         }
 
-        if (request.data == "dubindo") {
-            val foryouItems = fetchForyou(1)
-            val rekomendasiItems = fetchRekomendasi()
-            
-            val dubList = (foryouItems + rekomendasiItems)
-                .filter { isDubOrIndo(it.name) }
-                .distinctBy { it.url }
+        val pageSize = 24
+        val start = (page - 1) * pageSize
+        if (start >= filteredItems.size) return newHomePageResponse(request.name, emptyList(), hasNext = false)
+        val end = min(start + pageSize, filteredItems.size)
+        val pageItems = filteredItems.subList(start, end)
+        val hasNext = end < filteredItems.size
 
-            return newHomePageResponse(request.name, dubList, hasNext = false)
+        val searchResponses = pageItems.map {
+            val coverUrl = if (it.cover?.startsWith("/") == true) "$mainUrl${it.cover}" else it.cover
+            newMovieSearchResponse(it.name ?: "", "https://lynk.id/xr3ed#${it.code}", TvType.TvSeries) {
+                this.posterUrl = coverUrl
+            }
         }
 
-        val items = if (request.data == "foryou") {
-            fetchForyou(page)
-        } else {
-            fetchRekomendasi()
-        }
-
-        val filteredList = items.filter { !isDubOrIndo(it.name) }
-
-        return newHomePageResponse(request.name, filteredList, hasNext = request.data == "foryou" && items.isNotEmpty())
+        return newHomePageResponse(request.name, searchResponses, hasNext)
     }
 
-    override suspend fun search(query: String): List<SearchResponse> {
-        val rawSearch = try {
-            requestWithCf("$mainUrl/api/shortmax/search", mapOf("query" to query))
-        } catch (e: Exception) {
-            showToast("Gagal mencari drama. Server sedang gangguan.")
-            return emptyList()
-        }
+    override suspend fun search(query: String): List<SearchResponse>? {
+        val url = "$API_URL?action=search&q=${java.net.URLEncoder.encode(query, "UTF-8")}"
+        val res = parsedGet<ShortMaxRankResponse>(url)
+        val items = res?.items ?: return null
 
-        val decrypted = try {
-            val json = JSONObject(rawSearch)
-            decryptCryptoJS(json.getString("data"))
-        } catch (e: Exception) {
-            showToast("Gagal mencari drama. Server sedang gangguan.")
-            return emptyList()
+        return items.map {
+            val coverUrl = if (it.cover?.startsWith("/") == true) "$mainUrl${it.cover}" else it.cover
+            newMovieSearchResponse(it.name ?: "", "https://lynk.id/xr3ed#${it.code}", TvType.TvSeries) {
+                this.posterUrl = coverUrl
+            }
         }
-        val json = JSONObject(decrypted)
-        val results = json.optJSONArray("results") ?: return emptyList()
-
-        val list = mutableListOf<SearchResponse>()
-        for (i in 0 until results.length()) {
-            val item = results.optJSONObject(i) ?: continue
-            val id = item.optString("shortPlayId").takeIf { it.isNotEmpty() }
-                ?: item.optString("id").takeIf { it.isNotEmpty() }
-                ?: continue
-            val title = item.optString("title").takeIf { it.isNotEmpty() }
-                ?: item.optString("name").takeIf { it.isNotEmpty() }
-                ?: "Drama $id"
-            val cover = item.optString("cover").takeIf { it.isNotEmpty() }
-                ?: item.optString("image").takeIf { it.isNotEmpty() }
-                ?: ""
-
-            list.add(
-                newTvSeriesSearchResponse(
-                    name = title,
-                    url = id,
-                    type = TvType.TvSeries
-                ) {
-                    this.posterUrl = cover
-                }
-            )
-        }
-        return list
     }
 
     override suspend fun load(url: String): LoadResponse? {
         val shortPlayId = when {
             url.contains("lynk.id") -> url.substringAfterLast("#", "")
-            url.contains("/detail/") -> url.substringAfter("/detail/").substringBefore("?").substringBefore("/")
-            else -> url.substringAfterLast("/").substringBefore("?")
+            else -> url.substringAfterLast("/")
         }
         if (shortPlayId.isEmpty()) return null
 
-        val rawDetail = try {
-            requestWithCf("$mainUrl/api/shortmax/detail?shortPlayId=$shortPlayId")
-        } catch (e: Exception) {
-            showToast("Gagal memuat detail drama. Server sedang gangguan.")
-            return null
-        }
+        val detailUrl = "$API_URL?action=detail&id=$shortPlayId"
+        val res = parsedGet<ShortMaxDetailResponse>(detailUrl) ?: return null
 
-        val decryptedDetail = try {
-            val json = JSONObject(rawDetail)
-            decryptCryptoJS(json.getString("data"))
-        } catch (e: Exception) {
-            showToast("Gagal memuat detail drama. Server sedang gangguan.")
-            return null
-        }
-        val json = JSONObject(decryptedDetail)
-
-        val title = json.optString("title").takeIf { it.isNotEmpty() } ?: "Drama $shortPlayId"
-        val cover = json.optString("cover")
-        val description = json.optString("description")
-
-        val totalEpisodes = json.optInt("totalEpisodes").takeIf { it > 0 }
-            ?: json.optInt("updateEpisode").takeIf { it > 0 }
-            ?: 100
-
-        val episodes = (1..totalEpisodes).map { num ->
-            newEpisode(
-                data = "$shortPlayId|$num"
-            ) {
-                this.name = "Episode $num"
-                this.episode = num
+        val coverUrl = if (res.cover?.startsWith("/") == true) "$mainUrl${res.cover}" else res.cover
+        val episodes = res.episodes?.map {
+            val epNo = it.episodeNo ?: 1
+            newEpisode("${res.id}::$epNo") {
+                this.name = it.title ?: "Episode $epNo"
+                this.episode = epNo
             }
-        }
+        } ?: emptyList()
 
         return newTvSeriesLoadResponse(
-            name = title,
-            url = "https://lynk.id/xr3ed#$shortPlayId",
-            type = TvType.TvSeries,
-            episodes = episodes
+            res.title ?: "",
+            "https://lynk.id/xr3ed#$shortPlayId",
+            TvType.TvSeries,
+            episodes
         ) {
-            this.posterUrl = cover
-            this.plot = description
+            this.posterUrl = coverUrl
+            this.plot = res.description
+            this.tags = res.tags
         }
     }
 
@@ -458,73 +194,93 @@ class ShortMaxProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val parts = data.split("|")
-        if (parts.size < 2) return false
-        var shortPlayId = parts[0]
-        if (shortPlayId.startsWith("http://") || shortPlayId.startsWith("https://")) {
-            val parsedId = when {
-                shortPlayId.contains("/play/") -> shortPlayId.substringAfter("/play/").substringBefore("?").substringBefore("/")
-                shortPlayId.contains("/detail/") -> shortPlayId.substringAfter("/detail/").substringBefore("?").substringBefore("/")
-                else -> shortPlayId.substringAfterLast("/").substringBefore("?")
-            }
-            if (parsedId.isNotEmpty()) {
-                shortPlayId = parsedId
-            }
+        android.util.Log.d("ShortMaxDebug", "loadLinks called with data: $data")
+        val cleanData = data.replace(mainUrl, "").removePrefix("/")
+        val parts = cleanData.split("::")
+        if (parts.size < 2) {
+            android.util.Log.d("ShortMaxDebug", "parts size too small: ${parts.size}")
+            return false
         }
-        val episodeNum = parts[1]
+        val rawId = parts[0]
+        val id = if (rawId.startsWith("http://") || rawId.startsWith("https://")) {
+            rawId.substringAfterLast("/").substringBefore("?")
+        } else {
+            rawId
+        }
+        val ep = parts[1]
 
-        val rawEpisode = try {
-            requestWithCf("$mainUrl/api/shortmax/episode?shortPlayId=$shortPlayId&episodeNumber=$episodeNum")
-        } catch (e: Exception) {
-            showToast("Gagal memuat video. Server sedang gangguan.")
+        val videoUrl = "$API_URL?action=episode_video&id=$id&ep=$ep"
+        android.util.Log.d("ShortMaxDebug", "Fetching videoUrl: $videoUrl")
+        val res = parsedGet<ShortMaxStreamResponse>(videoUrl)
+        if (res == null) {
+            android.util.Log.d("ShortMaxDebug", "parsedGet returned null for $videoUrl")
+            return false
+        }
+        val streamUrl = res.url
+        if (streamUrl == null) {
+            android.util.Log.d("ShortMaxDebug", "streamUrl is null in res: $res")
             return false
         }
 
-        val decryptedEpisode = try {
-            val json = JSONObject(rawEpisode)
-            decryptCryptoJS(json.getString("data"))
-        } catch (e: Exception) {
-            showToast("Gagal memuat video. Server sedang gangguan.")
-            return false
+        var finalUrl = if (streamUrl.startsWith("/")) "$mainUrl$streamUrl" else streamUrl
+        android.util.Log.d("ShortMaxDebug", "Original streamUrl: $streamUrl, initial finalUrl: $finalUrl")
+        if (finalUrl.contains("url=")) {
+            val extracted = java.net.URLDecoder.decode(finalUrl.substringAfter("url="), "UTF-8")
+            if (extracted.startsWith("http")) {
+                finalUrl = extracted
+            }
         }
-        val json = JSONObject(decryptedEpisode)
+        android.util.Log.d("ShortMaxDebug", "Decoded finalUrl: $finalUrl")
+        val isM3u8 = finalUrl.contains("m3u8", ignoreCase = true)
+        val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
 
-        val episodeObj = json.optJSONObject("episode") ?: return false
-        val videoUrlObj = episodeObj.optJSONObject("videoUrl") ?: return false
-
-        // Siapkan header pemutar video (Cookie + User-Agent)
-        val currentUA = getCfUserAgent(CommonActivity.activity) ?: USER_AGENT
-        val currentCookies = getCfCookies(CommonActivity.activity)
-        val headersMap = mutableMapOf(
-            "Referer" to "$mainUrl/",
-            "User-Agent" to currentUA
+        val linkHeaders = getHeaders()
+        callback.invoke(
+            newExtractorLink(
+                name = name,
+                source = name,
+                url = finalUrl,
+                type = linkType
+            ) {
+                this.quality = Qualities.P720.value
+                this.headers = linkHeaders
+            }
         )
-        currentCookies?.let { headersMap["Cookie"] = it }
-
-        var foundLink = false
-        for (key in listOf("video_1080", "video_720", "video_480")) {
-            val videoPath = videoUrlObj.optString(key)
-            if (videoPath.isNotEmpty()) {
-                val absoluteUrl = if (videoPath.startsWith("http")) videoPath else "$mainUrl$videoPath"
-                val quality = when (key) {
-                    "video_1080" -> Qualities.P1080.value
-                    "video_720" -> Qualities.P720.value
-                    else -> Qualities.P480.value
-                }
-                callback.invoke(
-                    newExtractorLink(
-                        name = "ShortMax - $key",
-                        source = this.name,
-                        url = absoluteUrl,
-                        type = ExtractorLinkType.M3U8
-                    ) {
-                        this.quality = quality
-                        this.headers = headersMap
-                    }
-                )
-                foundLink = true
-            }
-        }
-        return foundLink
+        return true
     }
+
+    data class ShortMaxRankResponse(
+        @JsonProperty("items") val items: List<ShortMaxItem>? = null
+    )
+
+    data class ShortMaxItem(
+        @JsonProperty("id") val id: String? = null,
+        @JsonProperty("code") val code: String? = null,
+        @JsonProperty("name") val name: String? = null,
+        @JsonProperty("cover") val cover: String? = null,
+        @JsonProperty("summary") val summary: String? = null,
+        @JsonProperty("episodes") val episodes: Int? = null
+    )
+
+    data class ShortMaxDetailResponse(
+        @JsonProperty("id") val id: String? = null,
+        @JsonProperty("title") val title: String? = null,
+        @JsonProperty("cover") val cover: String? = null,
+        @JsonProperty("description") val description: String? = null,
+        @JsonProperty("totalEpisodes") val totalEpisodes: Int? = null,
+        @JsonProperty("tags") val tags: List<String>? = null,
+        @JsonProperty("episodes") val episodes: List<ShortMaxEpisode>? = null
+    )
+
+    data class ShortMaxEpisode(
+        @JsonProperty("videoFakeId") val videoFakeId: String? = null,
+        @JsonProperty("episodeNo") val episodeNo: Int? = null,
+        @JsonProperty("title") val title: String? = null
+    )
+
+    data class ShortMaxStreamResponse(
+        @JsonProperty("url") val url: String? = null,
+        @JsonProperty("episode") val episode: Int? = null,
+        @JsonProperty("title") val title: String? = null
+    )
 }

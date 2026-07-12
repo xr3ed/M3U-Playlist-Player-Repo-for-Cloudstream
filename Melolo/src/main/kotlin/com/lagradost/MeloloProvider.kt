@@ -8,6 +8,13 @@ import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import com.lagradost.Melolo.BuildConfig
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Headers.Companion.toHeaders
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MeloloProvider : MainAPI() {
     companion object {
@@ -21,6 +28,15 @@ class MeloloProvider : MainAPI() {
             "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Referer" to "$BASE_URL/"
         )
+
+        private val cleanClient = OkHttpClient.Builder()
+            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+
+        private val mapper = ObjectMapper()
+            .registerModule(KotlinModule.Builder().build())
+            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
     override var name = "#Dracin Melolo"
@@ -32,8 +48,14 @@ class MeloloProvider : MainAPI() {
     private suspend fun getHeaders(forceRefresh: Boolean = false): Map<String, String> {
         if (sessionCookie == null || forceRefresh) {
             try {
-                val response = app.get(BASE_URL, headers = headers)
-                val setCookie = response.headers["set-cookie"]
+                val req = Request.Builder()
+                    .url(BASE_URL)
+                    .headers(headers.toHeaders())
+                    .build()
+                val response = withContext(Dispatchers.IO) {
+                    cleanClient.newCall(req).execute()
+                }
+                val setCookie = response.header("set-cookie")
                 if (setCookie != null) {
                     sessionCookie = setCookie.substringBefore(";")
                 }
@@ -50,13 +72,32 @@ class MeloloProvider : MainAPI() {
     }
 
     private suspend inline fun <reified T : Any> parsedGet(url: String): T? {
-        val reqHeaders = getHeaders()
-        val response = app.get(url, headers = reqHeaders)
-        if (response.code == 401) {
-            val retryHeaders = getHeaders(forceRefresh = true)
-            return app.get(url, headers = retryHeaders).parsedSafe<T>()
+        return try {
+            val reqHeaders = getHeaders()
+            val req = Request.Builder()
+                .url(url)
+                .headers(reqHeaders.toHeaders())
+                .build()
+            val responseText = withContext(Dispatchers.IO) {
+                cleanClient.newCall(req).execute().body?.string() ?: ""
+            }
+            if (responseText.contains("Unauthorized") || responseText.contains("401")) {
+                val retryHeaders = getHeaders(forceRefresh = true)
+                val retryReq = Request.Builder()
+                    .url(url)
+                    .headers(retryHeaders.toHeaders())
+                    .build()
+                val retryText = withContext(Dispatchers.IO) {
+                    cleanClient.newCall(retryReq).execute().body?.string() ?: ""
+                }
+                mapper.readValue(retryText, T::class.java)
+            } else {
+                mapper.readValue(responseText, T::class.java)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        return response.parsedSafe<T>()
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
@@ -172,7 +213,13 @@ class MeloloProvider : MainAPI() {
             return false
         }
 
-        val finalUrl = if (streamUrl.startsWith("/")) "$mainUrl$streamUrl" else streamUrl
+        var finalUrl = if (streamUrl.startsWith("/")) "$mainUrl$streamUrl" else streamUrl
+        if (finalUrl.contains("url=")) {
+            val extracted = java.net.URLDecoder.decode(finalUrl.substringAfter("url="), "UTF-8")
+            if (extracted.startsWith("http")) {
+                finalUrl = extracted
+            }
+        }
         val isM3u8 = finalUrl.substringBefore("?").contains(".m3u8", ignoreCase = true)
         val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
 

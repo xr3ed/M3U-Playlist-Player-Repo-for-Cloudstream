@@ -3,12 +3,12 @@ package com.lagradost
 import com.lagradost.cloudstream3.plugins.CloudstreamPlugin
 import com.lagradost.cloudstream3.plugins.Plugin
 import android.content.Context
-import com.lagradost.ShortMax.BuildConfig
+import com.lagradost.DracinAIO.BuildConfig
 
 @CloudstreamPlugin
-class ShortMaxPlugin: Plugin() {
+class DracinAIOPlugin: Plugin() {
     override fun load(context: Context) {
         verifyApp(context, BuildConfig.CLONER_SIGNATURE)
-        registerMainAPI(ShortMaxProvider())
+        registerMainAPI(DracinAIOProvider())
     }
 }
