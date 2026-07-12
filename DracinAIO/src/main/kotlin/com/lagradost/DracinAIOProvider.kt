@@ -202,6 +202,23 @@ class DracinAIOProvider : MainAPI() {
         return AioItem(id, title, cover, episodes)
     }
 
+    private fun getDirectImageUrl(url: String): String {
+        if (url.isEmpty()) return ""
+        try {
+            if (url.contains("proxy?u=") || url.contains("img?u=")) {
+                val base64Part = url.substringAfter("u=").substringBefore("&")
+                val decodedBytes = Base64.decode(base64Part, Base64.DEFAULT)
+                val decodedUrl = String(decodedBytes, Charsets.UTF_8)
+                if (decodedUrl.startsWith("http")) {
+                    return decodedUrl
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return if (url.startsWith("/")) "$mainUrl$url" else url
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         val parts = request.data.split("|")
         if (parts.size < 2) return null
@@ -227,7 +244,7 @@ class DracinAIOProvider : MainAPI() {
         val hasNext = end < filteredItems.size
 
         val searchResponses = pageItems.map {
-            val coverUrl = if (it.cover.startsWith("/")) "$mainUrl${it.cover}" else it.cover
+            val coverUrl = getDirectImageUrl(it.cover)
             newMovieSearchResponse(it.title, "$provider|${it.id}", TvType.TvSeries) {
                 this.posterUrl = coverUrl
             }
@@ -248,7 +265,7 @@ class DracinAIOProvider : MainAPI() {
                         val resText = httpGet(searchUrl)
                         val items = parseRankItems(resText)
                         items.map { item ->
-                            val coverUrl = if (item.cover.startsWith("/")) "$mainUrl${item.cover}" else item.cover
+                            val coverUrl = getDirectImageUrl(item.cover)
                             newMovieSearchResponse(item.title, "${prov.code}|${item.id}", TvType.TvSeries) {
                                 this.posterUrl = coverUrl
                             }
@@ -363,7 +380,7 @@ class DracinAIOProvider : MainAPI() {
                 }
             }
 
-            val coverUrl = if (cover.startsWith("/")) "$mainUrl$cover" else cover
+            val coverUrl = getDirectImageUrl(cover)
             return newTvSeriesLoadResponse(
                 title,
                 "https://lynk.id/xr3ed#$provider-$id",
