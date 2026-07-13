@@ -3,6 +3,6 @@
   "displayName": "#Dracin All in One",
   "description": "Ekstensi Cloudstream untuk menonton drama pendek dari berbagai provider",
   "author": "xr3ed",
-  "version": 3,
+  "version": 4,
   "tvTypes": ["TvSeries"]
 }

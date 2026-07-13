@@ -76,7 +76,12 @@ class DracinAIOProvider : MainAPI() {
     override var supportedTypes = setOf(TvType.TvSeries)
     override val hasMainPage = true
 
-    override val mainPage = listOf(MainPageData("Beranda", "beranda")) + providers.flatMap { prov ->
+    override val mainPage = listOf(
+        MainPageData("Beranda", "beranda"),
+        MainPageData("Top 10 Minggu Ini", "global|top10"),
+        MainPageData("Lagi Trending", "global|trending"),
+        MainPageData("Baru Tayang", "global|barutayang")
+    ) + providers.flatMap { prov ->
         listOf(
             MainPageData("[${prov.name}] - Semua", "${prov.code}|semua"),
             MainPageData("[${prov.name}] - Dub Indo", "${prov.code}|dubindo")
@@ -409,6 +414,50 @@ class DracinAIOProvider : MainAPI() {
             }
 
             return newHomePageResponse(homePageLists, hasNext = false)
+        } else if (filterData.startsWith("global|")) {
+            val type = filterData.substringAfter("global|")
+            val term = when (type) {
+                "top10" -> "Top 10 Minggu Ini"
+                "trending" -> "Lagi Trending"
+                else -> "Baru Tayang"
+            }
+
+            val responseText = httpGet(mainUrl)
+            val list = ArrayList<SearchResponse>()
+            if (responseText.isNotEmpty()) {
+                val startIndex = responseText.indexOf(term)
+                if (startIndex != -1) {
+                    val block = responseText.substring(startIndex, kotlin.math.min(startIndex + 25000, responseText.length))
+                    val anchorRegex = """<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>""".toRegex(RegexOption.DOT_MATCHES_ALL)
+                    val matches = anchorRegex.findAll(block)
+                    for (m in matches) {
+                        val href = m.groupValues[1]
+                        val inner = m.groupValues[2]
+                        val watchPart = href.substringAfter("/watch/")
+                        val providerCode = watchPart.substringBefore("/")
+                        val id = watchPart.substringAfter("--")
+                        if (providerCode.isEmpty() || id.isEmpty()) continue
+                        val srcRegex = """src="([^"]+)"""".toRegex()
+                        val altRegex = """alt="([^"]+)"""".toRegex()
+                        val src = srcRegex.find(inner)?.groupValues?.get(1) ?: ""
+                        val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
+                        val coverUrl = getDirectImageUrl(src)
+                        list.add(
+                            newMovieSearchResponse(alt, "https://lynk.id/xr3ed#$providerCode-$id", TvType.TvSeries) {
+                                this.posterUrl = coverUrl
+                            }
+                        )
+                    }
+                }
+            }
+
+            val pageSize = 24
+            val start = (page - 1) * pageSize
+            if (start >= list.size) return newHomePageResponse(request, emptyList(), hasNext = false)
+            val end = kotlin.math.min(start + pageSize, list.size)
+            val pageItems = list.subList(start, end)
+
+            return newHomePageResponse(request, pageItems, hasNext = end < list.size)
         } else {
             val parts = filterData.split("|")
             if (parts.size < 2) return null
