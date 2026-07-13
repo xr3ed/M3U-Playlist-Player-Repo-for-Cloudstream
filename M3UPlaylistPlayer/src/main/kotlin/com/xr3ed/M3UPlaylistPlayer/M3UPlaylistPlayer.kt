@@ -232,12 +232,8 @@ class M3UPlaylistPlayer(
         val playlist = fetchPlaylist()
         if (playlist.items.isEmpty()) {
             return newHomePageResponse(
-                listOf(
-                    HomePageList(
-                        "Silakan konfigurasi URL M3U di pengaturan",
-                        emptyList()
-                    )
-                ),
+                request.name.ifEmpty { "Silakan konfigurasi URL M3U di pengaturan" },
+                emptyList(),
                 hasNext = false
             )
         }
@@ -273,7 +269,7 @@ class M3UPlaylistPlayer(
                 }
             )
 
-            newHomePageResponse(listOf(homePageList), hasNext = false)
+            newHomePageResponse(request.name.ifEmpty { groupName }, homePageList.list, hasNext = false)
         }
     }
 

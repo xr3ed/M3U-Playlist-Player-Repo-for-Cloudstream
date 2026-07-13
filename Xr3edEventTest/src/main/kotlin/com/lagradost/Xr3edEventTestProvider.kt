@@ -1072,8 +1072,10 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
 
         dynamicMainPageTitle = categoryTitle
 
+        val flatList = homePageLists.firstOrNull()?.list ?: emptyList()
         return newHomePageResponse(
-            homePageLists,
+            request.name.ifEmpty { categoryTitle },
+            flatList,
             hasNext = false
         )
     }
