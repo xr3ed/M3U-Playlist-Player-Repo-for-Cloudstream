@@ -76,6 +76,13 @@ class DracinAIOProvider : MainAPI() {
     override var supportedTypes = setOf(TvType.TvSeries)
     override val hasMainPage = true
 
+    override val mainPage = listOf(MainPageData("Beranda", "beranda")) + providers.flatMap { prov ->
+        listOf(
+            MainPageData("[${prov.name}] - Semua", "${prov.code}|semua"),
+            MainPageData("[${prov.name}] - Dub Indo", "${prov.code}|dubindo")
+        )
+    }
+
 
 
     private suspend fun getHeaders(forceRefresh: Boolean = false): Map<String, String> {
@@ -249,154 +256,191 @@ class DracinAIOProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
-        val context = appContext
-        if (context != null) {
-            val cachedJson = context.getKey<String>("dracin_aio_home_cache_v2")
-            val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v2") ?: 0L
-            val now = System.currentTimeMillis()
-            // Cache TTL: 10 minutes (600.000 ms)
-            if (cachedJson != null && now - cachedTime < 600000) {
-                val cachedLists = deserializeHomeCache(cachedJson)
-                if (cachedLists.isNotEmpty()) {
-                    Log.d("DracinAIO", "Loading homepage from local DataStore cache (Age: ${(now - cachedTime)/1000}s)")
-                    return newHomePageResponse(cachedLists, hasNext = false)
-                }
-            }
-        }
+        val filterData = request.data.ifEmpty { "beranda" }
 
-        val homePageLists = ArrayList<HomePageList>()
+        if (filterData == "beranda") {
+            if (page > 1) return newHomePageResponse(emptyList(), hasNext = false)
 
-        // 1. Load Global Lists (Top 10, Trending, Baru Tayang)
-        try {
-            val responseText = httpGet(mainUrl)
-            if (responseText.isNotEmpty()) {
-                val sections = listOf(
-                    "Top 10 Minggu Ini" to "Top 10 Minggu Ini",
-                    "Lagi Trending" to "Lagi Trending",
-                    "Baru Tayang" to "Baru Tayang"
-                )
-                for ((title, term) in sections) {
-                    val startIndex = responseText.indexOf(term)
-                    if (startIndex != -1) {
-                        val block = responseText.substring(startIndex, kotlin.math.min(startIndex + 25000, responseText.length))
-                        val anchorRegex = """<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>""".toRegex(RegexOption.DOT_MATCHES_ALL)
-                        val matches = anchorRegex.findAll(block)
-                        val list = ArrayList<SearchResponse>()
-                        for (m in matches) {
-                            val href = m.groupValues[1]
-                            val inner = m.groupValues[2]
-                            val watchPart = href.substringAfter("/watch/")
-                            val providerCode = watchPart.substringBefore("/")
-                            val id = watchPart.substringAfter("--")
-                            if (providerCode.isEmpty() || id.isEmpty()) continue
-                            val srcRegex = """src="([^"]+)"""".toRegex()
-                            val altRegex = """alt="([^"]+)"""".toRegex()
-                            val src = srcRegex.find(inner)?.groupValues?.get(1) ?: ""
-                            val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
-                            val coverUrl = getDirectImageUrl(src)
-                            list.add(
-                                newMovieSearchResponse(alt, "https://lynk.id/xr3ed#$providerCode-$id", TvType.TvSeries) {
-                                    this.posterUrl = coverUrl
-                                }
-                            )
-                        }
-                        if (list.isNotEmpty()) {
-                            homePageLists.add(HomePageList(title, list))
-                        }
+            val context = appContext
+            if (context != null) {
+                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v2")
+                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v2") ?: 0L
+                val now = System.currentTimeMillis()
+                // Cache TTL: 10 minutes (600.000 ms)
+                if (cachedJson != null && now - cachedTime < 600000) {
+                    val cachedLists = deserializeHomeCache(cachedJson)
+                    if (cachedLists.isNotEmpty()) {
+                        Log.d("DracinAIO", "Loading homepage from local DataStore cache (Age: ${(now - cachedTime)/1000}s)")
+                        return newHomePageResponse(cachedLists, hasNext = false)
                     }
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
 
-        // 2. Load All Provider Lists in Parallel
-        val deferredLists = withContext(Dispatchers.IO) {
-            providers.map { prov ->
-                async {
-                    try {
-                        val url = "$API_URL/${prov.code}?action=rank"
-                        val responseText = httpGet(url)
-                        val rawItems = parseRankItems(responseText)
-                        
-                        val dubItems = rawItems.filter { isDubOrIndo(it.title) }
-                        val nonDubItems = rawItems.filter { !isDubOrIndo(it.title) }
-                        
-                        val lists = ArrayList<HomePageList>()
-                        
-                        suspend fun buildList(items: List<AioItem>, titleName: String) {
-                            val pageItems = items.take(24)
-                            val pageItemsWithCovers = pageItems.mapIndexed { index, item ->
-                                if (item.cover.isEmpty() && index < 10) {
-                                    try {
-                                        val detailUrl = if (prov.code == "freereels") "$API_URL/${prov.code}?action=detail&seriesKey=${item.id}" else "$API_URL/${prov.code}?action=detail&id=${item.id}"
-                                        val detailText = httpGet(detailUrl)
-                                        if (detailText.isNotEmpty()) {
-                                            val root = JSONObject(detailText)
-                                            val targetJson = if (root.has("data")) {
-                                                val dataVal = root.opt("data")
-                                                if (dataVal is JSONObject && !dataVal.has("chapters") && !dataVal.has("chapterList")) dataVal else root
-                                            } else if (root.has("drama")) {
-                                                root.optJSONObject("drama") ?: root
-                                            } else {
-                                                root
-                                            }
-                                            
-                                            val fetchedCover = if (targetJson.has("bookInfo")) {
-                                                targetJson.getJSONObject("bookInfo").optString("cover").ifEmpty { targetJson.getJSONObject("bookInfo").optString("poster") }
-                                            } else {
-                                                targetJson.optString("cover").ifEmpty { targetJson.optString("poster").ifEmpty { targetJson.optString("icon") } }
-                                            }
-                                            
-                                            if (fetchedCover.isNotEmpty()) {
-                                                return@mapIndexed item.copy(cover = fetchedCover)
-                                            }
-                                        }
-                                    } catch (e: Exception) {
-                                        // Ignore
-                                    }
-                                }
-                                item
-                            }
-                            val searchResponses = pageItemsWithCovers.map {
-                                val coverUrl = getDirectImageUrl(it.cover)
-                                newMovieSearchResponse(it.title, "https://lynk.id/xr3ed#${prov.code}-${it.id}", TvType.TvSeries) {
-                                    this.posterUrl = coverUrl
-                                }
-                            }
-                            if (searchResponses.isNotEmpty()) {
-                                lists.add(HomePageList(titleName, searchResponses))
-                            }
-                        }
-                        
-                        buildList(nonDubItems, "[${prov.name}] - Semua")
-                        buildList(dubItems, "[${prov.name}] - Dub Indo")
-                        
-                        lists
-                    } catch (e: Exception) {
-                        null
-                    }
-                }
-            }
-        }
+            val homePageLists = ArrayList<HomePageList>()
 
-        val providerLists = deferredLists.awaitAll().filterNotNull().flatten()
-        homePageLists.addAll(providerLists)
-
-        if (homePageLists.isNotEmpty() && context != null) {
+            // 1. Load Global Lists (Top 10, Trending, Baru Tayang)
             try {
-                val jsonStr = serializeHomeCache(homePageLists)
-                if (jsonStr.isNotEmpty()) {
-                    context.setKey("dracin_aio_home_cache_v2", jsonStr)
-                    context.setKey("dracin_aio_home_cache_time_v2", System.currentTimeMillis())
-                    Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
+                val responseText = httpGet(mainUrl)
+                if (responseText.isNotEmpty()) {
+                    val sections = listOf(
+                        "Top 10 Minggu Ini" to "Top 10 Minggu Ini",
+                        "Lagi Trending" to "Lagi Trending",
+                        "Baru Tayang" to "Baru Tayang"
+                    )
+                    for ((title, term) in sections) {
+                        val startIndex = responseText.indexOf(term)
+                        if (startIndex != -1) {
+                            val block = responseText.substring(startIndex, kotlin.math.min(startIndex + 25000, responseText.length))
+                            val anchorRegex = """<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>""".toRegex(RegexOption.DOT_MATCHES_ALL)
+                            val matches = anchorRegex.findAll(block)
+                            val list = ArrayList<SearchResponse>()
+                            for (m in matches) {
+                                val href = m.groupValues[1]
+                                val inner = m.groupValues[2]
+                                val watchPart = href.substringAfter("/watch/")
+                                val providerCode = watchPart.substringBefore("/")
+                                val id = watchPart.substringAfter("--")
+                                if (providerCode.isEmpty() || id.isEmpty()) continue
+                                val srcRegex = """src="([^"]+)"""".toRegex()
+                                val altRegex = """alt="([^"]+)"""".toRegex()
+                                val src = srcRegex.find(inner)?.groupValues?.get(1) ?: ""
+                                val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
+                                val coverUrl = getDirectImageUrl(src)
+                                list.add(
+                                    newMovieSearchResponse(alt, "https://lynk.id/xr3ed#$providerCode-$id", TvType.TvSeries) {
+                                        this.posterUrl = coverUrl
+                                    }
+                                )
+                            }
+                            if (list.isNotEmpty()) {
+                                homePageLists.add(HomePageList(title, list))
+                            }
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
 
-        return newHomePageResponse(homePageLists, hasNext = false)
+            // 2. Load All Provider Lists in Parallel
+            val deferredLists = withContext(Dispatchers.IO) {
+                providers.map { prov ->
+                    async {
+                        try {
+                            val url = "$API_URL/${prov.code}?action=rank"
+                            val responseText = httpGet(url)
+                            val rawItems = parseRankItems(responseText)
+                            
+                            val dubItems = rawItems.filter { isDubOrIndo(it.title) }
+                            val nonDubItems = rawItems.filter { !isDubOrIndo(it.title) }
+                            
+                            val lists = ArrayList<HomePageList>()
+                            
+                            suspend fun buildList(items: List<AioItem>, titleName: String) {
+                                val pageItems = items.take(24)
+                                val pageItemsWithCovers = pageItems.mapIndexed { index, item ->
+                                    if (item.cover.isEmpty() && index < 10) {
+                                        try {
+                                            val detailUrl = if (prov.code == "freereels") "$API_URL/${prov.code}?action=detail&seriesKey=${item.id}" else "$API_URL/${prov.code}?action=detail&id=${item.id}"
+                                            val detailText = httpGet(detailUrl)
+                                            if (detailText.isNotEmpty()) {
+                                                val root = JSONObject(detailText)
+                                                val targetJson = if (root.has("data")) {
+                                                    val dataVal = root.opt("data")
+                                                    if (dataVal is JSONObject && !dataVal.has("chapters") && !dataVal.has("chapterList")) dataVal else root
+                                                } else if (root.has("drama")) {
+                                                    root.optJSONObject("drama") ?: root
+                                                } else {
+                                                    root
+                                                }
+                                                
+                                                val fetchedCover = if (targetJson.has("bookInfo")) {
+                                                    targetJson.getJSONObject("bookInfo").optString("cover").ifEmpty { targetJson.getJSONObject("bookInfo").optString("poster") }
+                                                } else {
+                                                    targetJson.optString("cover").ifEmpty { targetJson.optString("poster").ifEmpty { targetJson.optString("icon") } }
+                                                }
+                                                
+                                                if (fetchedCover.isNotEmpty()) {
+                                                    return@mapIndexed item.copy(cover = fetchedCover)
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            // Ignore
+                                        }
+                                    }
+                                    item
+                                }
+                                val searchResponses = pageItemsWithCovers.map {
+                                    val coverUrl = getDirectImageUrl(it.cover)
+                                    newMovieSearchResponse(it.title, "https://lynk.id/xr3ed#${prov.code}-${it.id}", TvType.TvSeries) {
+                                        this.posterUrl = coverUrl
+                                    }
+                                }
+                                if (searchResponses.isNotEmpty()) {
+                                    lists.add(HomePageList(titleName, searchResponses))
+                                }
+                            }
+                            
+                            buildList(nonDubItems, "[${prov.name}] - Semua")
+                            buildList(dubItems, "[${prov.name}] - Dub Indo")
+                            
+                            lists
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                }
+            }
+
+            val providerLists = deferredLists.awaitAll().filterNotNull().flatten()
+            homePageLists.addAll(providerLists)
+
+            if (homePageLists.isNotEmpty() && context != null) {
+                try {
+                    val jsonStr = serializeHomeCache(homePageLists)
+                    if (jsonStr.isNotEmpty()) {
+                        context.setKey("dracin_aio_home_cache_v2", jsonStr)
+                        context.setKey("dracin_aio_home_cache_time_v2", System.currentTimeMillis())
+                        Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            return newHomePageResponse(homePageLists, hasNext = false)
+        } else {
+            val parts = filterData.split("|")
+            if (parts.size < 2) return null
+            val provider = parts[0]
+            val filter = parts[1]
+
+            val url = "$API_URL/$provider?action=rank"
+            val responseText = httpGet(url)
+            val rawItems = parseRankItems(responseText)
+
+            val filteredItems = if (filter == "dubindo") {
+                rawItems.filter { isDubOrIndo(it.title) }
+            } else {
+                rawItems.filter { !isDubOrIndo(it.title) }
+            }
+
+            val pageSize = 24
+            val start = (page - 1) * pageSize
+            if (start >= filteredItems.size) return newHomePageResponse(request, emptyList(), hasNext = false)
+            val end = kotlin.math.min(start + pageSize, filteredItems.size)
+            val pageItems = filteredItems.subList(start, end)
+            val hasNext = end < filteredItems.size
+
+            val searchResponses = pageItems.map {
+                val coverUrl = getDirectImageUrl(it.cover)
+                newMovieSearchResponse(it.title, "https://lynk.id/xr3ed#$provider-${it.id}", TvType.TvSeries) {
+                    this.posterUrl = coverUrl
+                }
+            }
+
+            return newHomePageResponse(request, searchResponses, hasNext)
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse>? {
