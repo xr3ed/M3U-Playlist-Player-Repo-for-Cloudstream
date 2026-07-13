@@ -269,7 +269,7 @@ class M3UPlaylistPlayer(
                 }
             )
 
-            newHomePageResponse(request.name.ifEmpty { groupName }, homePageList.list, hasNext = false)
+            newHomePageResponse(request, homePageList.list, hasNext = false)
         }
     }
 

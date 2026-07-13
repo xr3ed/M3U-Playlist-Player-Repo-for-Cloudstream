@@ -1072,10 +1072,12 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
 
         dynamicMainPageTitle = categoryTitle
 
-        val flatList = homePageLists.firstOrNull()?.list ?: emptyList()
+        // Disable spotlight by prepending an empty Spotlight list.
+        // Cloudstream will bind this empty list to the spotlight container, effectively hiding it.
+        homePageLists.add(0, HomePageList("Spotlight", emptyList()))
+
         return newHomePageResponse(
-            request.name.ifEmpty { categoryTitle },
-            flatList,
+            homePageLists,
             hasNext = false
         )
     }
