@@ -1,14 +1,21 @@
 package com.lagradost
 
+import android.util.Log
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.Actor
+import com.lagradost.cloudstream3.ActorData
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
+import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import com.lagradost.xr3edFlix.BuildConfig
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -17,6 +24,8 @@ import java.net.URLEncoder
 
 class xr3edFlixProvider : MainAPI() {
     companion object {
+        val addedUrls = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+
         private val mapper = ObjectMapper()
             .registerModule(KotlinModule.Builder().build())
             .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -72,8 +81,10 @@ class xr3edFlixProvider : MainAPI() {
         private suspend inline fun <reified T : Any> parsedGet(url: String): T? {
             return try {
                 val text = app.get(url, timeout = 15).text
+                Log.d("xr3edFlix", "parsedGet OK: $url -> ${text.take(120)}")
                 mapper.readValue(text, T::class.java)
             } catch (e: Exception) {
+                Log.e("xr3edFlix", "parsedGet ERROR: $url -> ${e.message}")
                 e.printStackTrace()
                 null
             }
@@ -196,120 +207,6 @@ class xr3edFlixProvider : MainAPI() {
         return fetchTmdbList(path, params)
     }
 
-    private suspend fun fetchWeTvDirectList(): List<SearchResponse> {
-        return try {
-            val html = app.get("https://wetv.vip/id/channel/10003?id=10003&type=PAGE_TYPE_MODULE_LIST", timeout = 10).text
-            
-            val buildIdRegex = Regex(""""buildId":"([^"]+)"""")
-            val buildId = buildIdRegex.find(html)?.groupValues?.get(1)
-            
-            val pageCtxRegex = Regex(""""page_ctx":"([^"]+)"""")
-            val pageCtx = pageCtxRegex.find(html)?.groupValues?.get(1)
-            
-            var allContent = html
-            if (buildId != null && pageCtx != null) {
-                try {
-                    val encodedCtx = java.net.URLEncoder.encode(pageCtx, "UTF-8")
-                    val nextUrl = "https://wetv.vip/_next/data/$buildId/id/channel/10003.json?id=10003&type=PAGE_TYPE_MODULE_LIST&page_ctx=$encodedCtx"
-                    val nextPageJson = app.get(nextUrl, timeout = 10).text
-                    allContent += nextPageJson
-                    
-                    val pageCtxMatch = Regex(""""page_ctx":"([^"]+)"""").find(nextPageJson)
-                    val pageCtx2 = pageCtxMatch?.groupValues?.get(1)
-                    if (pageCtx2 != null && pageCtx2 != pageCtx) {
-                        val encodedCtx2 = java.net.URLEncoder.encode(pageCtx2, "UTF-8")
-                        val nextUrl2 = "https://wetv.vip/_next/data/$buildId/id/channel/10003.json?id=10003&type=PAGE_TYPE_MODULE_LIST&page_ctx=$encodedCtx2"
-                        val nextPageJson2 = app.get(nextUrl2, timeout = 10).text
-                        allContent += nextPageJson2
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-            
-            val regex = Regex("""\{"type":"ITEM_TYPE_ALBUM","id":"([^"]+)","title":"([^"]+)"""")
-            val matches = regex.findAll(allContent).toList()
-            val seen = mutableSetOf<String>()
-            val directList = mutableListOf<SearchResponse>()
-            
-            for (m in matches) {
-                val cid = m.groupValues[1]
-                val rawTitle = m.groupValues[2]
-                
-                val startIdx = m.range.first
-                val endIdx = minOf(allContent.length, startIdx + 800)
-                val substring = allContent.substring(startIdx, endIdx)
-                val picRegex = Regex(""""pic":"([^"]+)"""")
-                val picMatch = picRegex.find(substring)
-                val pic = picMatch?.groupValues?.get(1)?.replace("\\u002F", "/")?.replace("\\/", "/") ?: ""
-                
-                if (pic.contains("/350") && !seen.contains(rawTitle)) {
-                    seen.add(rawTitle)
-                    
-                    val title = rawTitle
-                        .replace("&amp;", "&")
-                        .replace("&quot;", "\"")
-                        .replace("&#39;", "'")
-                        .replace("&lt;", "<")
-                        .replace("&gt;", ">")
-                    
-                    val queryStr = if (title.equals("Samuel", ignoreCase = true)) "WeTV Original Samuel" else title
-                    val encoded = java.net.URLEncoder.encode(queryStr, "UTF-8")
-                    val searchUrl = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=en-US"
-                    
-                    var tmdbMedia: SearchResponse? = null
-                    try {
-                        val searchRes = parsedGet<TMDBDiscoverResponse>(searchUrl)
-                        val media = searchRes?.results?.firstOrNull {
-                            it.mediaType == "tv" || it.name != null || it.mediaType == "movie" || it.title != null
-                        }
-                        if (media != null) {
-                            val titleName = if (media.originalLanguage == "id") {
-                                media.originalTitle ?: media.originalName ?: media.title ?: media.name ?: title
-                            } else {
-                                media.title ?: media.name ?: title
-                            }
-                            val isMovie = media.mediaType == "movie" || media.title != null
-                            val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
-                            tmdbMedia = newMovieSearchResponse(
-                                name = titleName,
-                                url = if (isMovie) "movie::${media.id}" else "tv::${media.id}",
-                                type = if (isMovie) TvType.Movie else TvType.TvSeries
-                            ) {
-                                this.posterUrl = poster
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    
-                    if (tmdbMedia != null) {
-                        directList.add(tmdbMedia)
-                    } else {
-                        val rawMedia = newTvSeriesSearchResponse(
-                            name = title,
-                            url = "wetv_raw::$title::$pic",
-                            type = TvType.TvSeries
-                        ) {
-                            this.posterUrl = pic
-                        }
-                        directList.add(rawMedia)
-                    }
-                }
-            }
-            
-            val limitDirect = directList.take(30)
-            
-            val networkPopList = fetchTmdbList("discover/tv", mapOf("with_networks" to "3732", "with_original_language" to "id", "sort_by" to "popularity.desc"))
-            val networkDateList = fetchTmdbList("discover/tv", mapOf("with_networks" to "3732", "with_original_language" to "id", "sort_by" to "first_air_date.desc"))
-            (limitDirect + networkDateList + networkPopList).distinctBy { it.url }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            val networkPopList = fetchTmdbList("discover/tv", mapOf("with_networks" to "3732", "with_original_language" to "id", "sort_by" to "popularity.desc"))
-            val networkDateList = fetchTmdbList("discover/tv", mapOf("with_networks" to "3732", "with_original_language" to "id", "sort_by" to "first_air_date.desc"))
-            (networkDateList + networkPopList).distinctBy { it.url }
-        }
-    }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
@@ -347,7 +244,7 @@ class xr3edFlixProvider : MainAPI() {
                 HomePageList("Viu Series", combined)
             }
             
-            val wetvSeries = async { HomePageList("WeTV Series", fetchWeTvDirectList()) }
+
             
             val vidioMovies = async { HomePageList("Vidio Movies", fetchRecentRegionalList("489", true)) }
             
@@ -375,16 +272,8 @@ class xr3edFlixProvider : MainAPI() {
             
             val crunchyrollSeries = async { HomePageList("Crunchyroll Series", fetchFlixPatrolList("https://flixpatrol.com/top10/crunchyroll/indonesia/", false, "283", "discover/tv")) }
             
-            val genflixMovies = async { HomePageList("Genflix Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/genflix/indonesia/", true, "468", "discover/movie")) }
-            val genflixSeries = async { HomePageList("Genflix Series", fetchFlixPatrolList("https://flixpatrol.com/top10/genflix/indonesia/", false, "468", "discover/tv")) }
-            
             val lionsgateMovies = async { HomePageList("Lionsgate Play Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/lionsgate/indonesia/", true, "561", "discover/movie")) }
             val lionsgateSeries = async { HomePageList("Lionsgate Play Series", fetchFlixPatrolList("https://flixpatrol.com/top10/lionsgate/indonesia/", false, "561", "discover/tv")) }
-            
-            val mubiMovies = async { HomePageList("MUBI Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/mubi/indonesia/", true, "11", "discover/movie")) }
-            
-            val maxstreamMovies = async { HomePageList("MAX Stream Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/maxstream/indonesia/", true, "483", "discover/movie")) }
-            val maxstreamSeries = async { HomePageList("MAX Stream Series", fetchFlixPatrolList("https://flixpatrol.com/top10/maxstream/indonesia/", false, "483", "discover/tv")) }
  
             listOf(
                 trendingMovies.await(), popularMovies.await(),
@@ -393,17 +282,14 @@ class xr3edFlixProvider : MainAPI() {
                 disneyMovies.await(), disneySeries.await(),
                 primeMovies.await(), primeSeries.await(),
                 appleMovies.await(), appleSeries.await(),
-                viuSeries.await(), wetvSeries.await(),
+                viuSeries.await(),
                 vidioMovies.await(), vidioSeries.await(),
                 hboMovies.await(), hboSeries.await(),
                 catchplayMovies.await(),
                 visionMovies.await(), visionSeries.await(),
                 klikfilmMovies.await(),
                 crunchyrollSeries.await(),
-                genflixMovies.await(), genflixSeries.await(),
-                lionsgateMovies.await(), lionsgateSeries.await(),
-                mubiMovies.await(),
-                maxstreamMovies.await(), maxstreamSeries.await()
+                lionsgateMovies.await(), lionsgateSeries.await()
             ).filter { it.list.isNotEmpty() }
         }
         return newHomePageResponse(lists, false)
@@ -438,39 +324,49 @@ class xr3edFlixProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        if (url.startsWith("wetv_raw::")) {
-            val parts = url.split("::")
-            val title = parts.getOrNull(1) ?: "Unknown"
-            val poster = parts.getOrNull(2)
-            val episodes = listOf(
-                newEpisode("wetv_dummy") {
-                    this.name = "Konten ini tidak terindeks di TMDB (Tidak dapat diputar)"
-                    this.episode = 1
-                    this.season = 1
-                    this.description = "Serial WeTV Original '$title' belum didaftarkan di TMDB, sehingga link streaming Vidnest tidak tersedia."
-                }
-            )
-            return newTvSeriesLoadResponse(
-                name = title,
-                url = url,
-                type = TvType.TvSeries,
-                episodes = episodes
-            ) {
-                this.posterUrl = poster
-                this.plot = "Serial WeTV Original '$title' belum didaftarkan di TMDB, sehingga link streaming Vidnest tidak tersedia."
-            }
-        }
+        addedUrls.clear()
+        // Cloudstream prepend mainUrl, jadi url bisa "https://watch-v2.autoembed.app/movie::123"
+        // Strip mainUrl prefix jika ada
+        val cleanUrl = if (url.contains("://") && url.contains("::")) {
+            // Ambil bagian "movie::123" atau "tv::123" dari URL
+            val slashIdx = url.lastIndexOf('/', url.indexOf("::"))
+            if (slashIdx != -1) url.substring(slashIdx + 1) else url
+        } else url
 
-        val parts = url.split("::")
+        val parts = cleanUrl.split("::")
         if (parts.size < 2) return null
         val type = parts[0]
         val id = parts[1]
+        Log.d("xr3edFlix", "load() url=$url cleanUrl=$cleanUrl type=$type id=$id")
 
         if (type == "movie") {
-            val detailUrl = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=id"
-            val res = parsedGet<TMDBDetailResponse>(detailUrl) ?: return null
+            // Fetch dengan credits sekaligus
+            val detailUrlId = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits"
+            val resId = parsedGet<TMDBDetailResponse>(detailUrlId)
+            // Fallback ke en-US jika title kosong
+            val res = if (resId?.title.isNullOrEmpty()) {
+                val detailUrlEn = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits"
+                parsedGet<TMDBDetailResponse>(detailUrlEn) ?: resId
+            } else resId
+            res ?: return null
+
+            // Fallback plot ke en-US jika overview kosong di id
+            val plot = if (res.overview.isNullOrEmpty()) {
+                val enRes = parsedGet<TMDBDetailResponse>("$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=en-US")
+                enRes?.overview?.ifEmpty { null }
+            } else res.overview
+
             val poster = res.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             val backdrop = res.backdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" }
+            val actors = res.credits?.cast?.take(10)?.mapNotNull { cast ->
+                if (cast.name != null) ActorData(
+                    actor = Actor(
+                        name = cast.name,
+                        image = cast.profilePath?.let { "https://image.tmdb.org/t/p/w185$it" }
+                    ),
+                    roleString = cast.character
+                ) else null
+            }
 
             return newMovieLoadResponse(
                 name = res.title ?: "Unknown",
@@ -480,21 +376,48 @@ class xr3edFlixProvider : MainAPI() {
             ) {
                 this.posterUrl = poster
                 this.backgroundPosterUrl = backdrop
-                this.plot = res.overview
+                this.plot = plot
                 this.year = res.releaseDate?.take(4)?.toIntOrNull()
+                this.actors = actors
             }
         } else {
-            val detailUrl = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=id"
-            val res = parsedGet<TMDBDetailResponse>(detailUrl) ?: return null
+            val detailUrlId = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits"
+            val resId = parsedGet<TMDBDetailResponse>(detailUrlId)
+            // Fallback ke en-US jika name kosong
+            val res = if (resId?.name.isNullOrEmpty()) {
+                val detailUrlEn = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits"
+                parsedGet<TMDBDetailResponse>(detailUrlEn) ?: resId
+            } else resId
+            res ?: return null
+
+            val plot = if (res.overview.isNullOrEmpty()) {
+                val enRes = parsedGet<TMDBDetailResponse>("$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=en-US")
+                enRes?.overview?.ifEmpty { null }
+            } else res.overview
+
             val poster = res.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             val backdrop = res.backdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" }
+            val actors = res.credits?.cast?.take(10)?.mapNotNull { cast ->
+                if (cast.name != null) ActorData(
+                    actor = Actor(
+                        name = cast.name,
+                        image = cast.profilePath?.let { "https://image.tmdb.org/t/p/w185$it" }
+                    ),
+                    roleString = cast.character
+                ) else null
+            }
 
             val episodes = coroutineScope {
                 res.seasons?.map { season ->
                     async {
                         val seasonNum = season.seasonNumber ?: 1
-                        val seasonUrl = "$TMDB_API_BASE/tv/$id/season/$seasonNum?api_key=${getTmdbKey()}&language=id"
-                        val seasonRes = parsedGet<TMDBSeasonDetailResponse>(seasonUrl)
+                        // Coba bahasa id dulu, fallback ke en-US
+                        val seasonUrlId = "$TMDB_API_BASE/tv/$id/season/$seasonNum?api_key=${getTmdbKey()}&language=id"
+                        val seasonResId = parsedGet<TMDBSeasonDetailResponse>(seasonUrlId)
+                        val seasonRes = if (seasonResId?.episodes.isNullOrEmpty()) {
+                            val seasonUrlEn = "$TMDB_API_BASE/tv/$id/season/$seasonNum?api_key=${getTmdbKey()}&language=en-US"
+                            parsedGet<TMDBSeasonDetailResponse>(seasonUrlEn) ?: seasonResId
+                        } else seasonResId
                         seasonRes?.episodes?.map { ep ->
                             newEpisode("tv::$id::${ep.seasonNumber}::${ep.episodeNumber}") {
                                 this.name = ep.name ?: "Episode ${ep.episodeNumber}"
@@ -515,7 +438,8 @@ class xr3edFlixProvider : MainAPI() {
             ) {
                 this.posterUrl = poster
                 this.backgroundPosterUrl = backdrop
-                this.plot = res.overview
+                this.plot = plot
+                this.actors = actors
             }
         }
     }
@@ -543,10 +467,6 @@ class xr3edFlixProvider : MainAPI() {
         val endpoints = listOf(
             "Catflix" to "$API_BASE/movies5f/$subpath",
             "Prime" to "$API_BASE/hollymoviehd/$subpath",
-            "Beta" to "$API_BASE/videasy/$subpath",
-            "Ophim" to "$API_BASE/klikxxi/$subpath",
-            "Alfa" to "$API_BASE/moviesapi/$subpath",
-            "Hexa" to "$API_BASE/vidlink/$subpath",
             "Gama" to "$API_BASE/moviebox/$subpath"
         )
 
@@ -558,8 +478,41 @@ class xr3edFlixProvider : MainAPI() {
 
         var foundAny = false
 
+        val season = parts.getOrNull(2) ?: "1"
+        val episode = parts.getOrNull(3) ?: "1"
+
+        val extraExtractors = if (type == "movie") {
+            listOf(
+                "https://vidsrc.net/embed/movie/$id",
+                "https://vidsrc.pm/embed/movie/$id",
+                "https://autoembed.to/movie/$id",
+                "https://vidsrc.to/embed/movie/$id",
+                "https://vidsrc.me/embed/$id",
+                "https://vidsrc.in/embed/movie/$id",
+                "https://vidlink.pro/embed/movie/$id",
+                "https://vidsrc.cc/v2/embed/movie/$id",
+                "https://vidsrc.rip/embed/movie/$id",
+                "https://vidsrc.vip/embed/movie/$id",
+                "https://www.2embed.cc/embed/$id"
+            )
+        } else {
+            listOf(
+                "https://vidsrc.net/embed/tv/$id/$season/$episode",
+                "https://vidsrc.pm/embed/tv/$id/$season/$episode",
+                "https://autoembed.to/tv/$id/$season/$episode",
+                "https://vidsrc.to/embed/tv/$id/$season/$episode",
+                "https://vidsrc.me/embed/$id/$season-$episode",
+                "https://vidsrc.in/embed/tv/$id/$season/$episode",
+                "https://vidlink.pro/embed/tv/$id/$season/$episode",
+                "https://vidsrc.cc/v2/embed/tv/$id/$season/$episode",
+                "https://vidsrc.rip/embed/tv/$id/$season/$episode",
+                "https://vidsrc.vip/embed/tv/$id/$season/$episode",
+                "https://www.2embed.cc/embed/$id?s=$season&e=$episode"
+            )
+        }
+
         coroutineScope {
-            endpoints.map { (serverName, url) ->
+            val jobs = endpoints.map { (serverName, url) ->
                 async {
                     try {
                         val response = app.get(url, headers = headers, timeout = 8)
@@ -570,106 +523,278 @@ class xr3edFlixProvider : MainAPI() {
                                 val cipher = encryptedObj.data
                                 if (!cipher.isNullOrEmpty()) {
                                     val decrypted = decrypt(cipher)
-                                    val streamRes = mapper.readValue(decrypted, StreamResponse::class.java)
-                                    val streamData = streamRes.data ?: streamRes
+                                    Log.d("xr3edFlix", "$serverName decrypted: ${decrypted.take(200)}")
 
-                                    // Parse direct streams from downloads
-                                    for (dl in streamData.downloads ?: emptyList()) {
-                                        if (dl.url != null) {
-                                            val link = newExtractorLink(
-                                                name = "$serverName - ${dl.resolution}p",
-                                                source = serverName,
-                                                url = dl.url,
-                                                type = ExtractorLinkType.VIDEO
-                                            ) {
-                                                this.quality = dl.resolution ?: Qualities.Unknown.value
-                                                this.headers = mapOf(
-                                                    "Origin" to "https://fmoviesunblocked.net",
-                                                    "Referer" to "https://fmoviesunblocked.net/"
-                                                )
-                                            }
-                                            synchronized(callback) {
-                                                callback.invoke(link)
-                                                foundAny = true
-                                            }
-                                        }
-                                    }
+                                    // Parse fleksibel dengan JsonNode
+                                    val root = mapper.readTree(decrypted)
+                                    val dataNode = if (root.has("data") && root.get("data").isObject) root.get("data") else root
 
-                                    // Parse HLS url list
-                                    for (u in streamData.urlList ?: emptyList()) {
-                                        if (u.link != null) {
-                                            val resolutionVal = u.resolution?.replace("p", "")?.toIntOrNull() ?: Qualities.Unknown.value
-                                            val link = newExtractorLink(
-                                                name = "$serverName - ${u.resolution ?: "HLS"}",
-                                                source = serverName,
-                                                url = u.link,
-                                                type = if (u.type == "hls" || u.link.contains("m3u8")) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-                                            ) {
-                                                this.quality = resolutionVal
-                                                this.headers = mapOf(
-                                                    "Origin" to "https://fmoviesunblocked.net",
-                                                    "Referer" to "https://fmoviesunblocked.net/"
-                                                )
-                                            }
-                                            synchronized(callback) {
-                                                callback.invoke(link)
-                                                foundAny = true
-                                            }
-                                        }
-                                    }
-
-                                    // Parse direct url
-                                    if (streamData.url != null) {
+                                    suspend fun addLink(
+                                        linkUrl: String, 
+                                        name: String, 
+                                        quality: Int, 
+                                        isHls: Boolean,
+                                        customHeaders: Map<String, String>? = null
+                                    ) {
+                                        if (!addedUrls.add(linkUrl)) return
                                         val link = newExtractorLink(
-                                            name = "$serverName - HD",
+                                            name = name,
                                             source = serverName,
-                                            url = streamData.url,
-                                            type = if (streamData.url.contains("m3u8")) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-                                        ) {
-                                            this.quality = Qualities.P1080.value
-                                            this.headers = streamData.headers ?: mapOf(
-                                                "Origin" to "https://fmoviesunblocked.net",
-                                                "Referer" to "https://fmoviesunblocked.net/"
-                                            )
+                                            url = linkUrl,
+                                            type = if (isHls || linkUrl.contains("m3u8")) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                                        ) { 
+                                            this.quality = quality 
+                                             val defaultHeaders = when (serverName) {
+                                                 "Catflix" -> mapOf(
+                                                     "Origin" to "https://fmoviesunblocked.net",
+                                                     "Referer" to "https://fmoviesunblocked.net/"
+                                                 )
+                                                 else -> emptyMap()
+                                             }
+                                             this.headers = if (serverName == "Gama" || serverName == "Prime") {
+                                                 emptyMap()
+                                             } else {
+                                                 if (!customHeaders.isNullOrEmpty()) customHeaders else defaultHeaders
+                                             }
                                         }
-                                        synchronized(callback) {
-                                            callback.invoke(link)
-                                            foundAny = true
-                                        }
+                                        callback.invoke(link)
+                                        foundAny = true
                                     }
 
-                                    // Parse streams list
-                                    for (str in streamData.streams ?: emptyList()) {
-                                        if (str.url != null) {
-                                            val link = newExtractorLink(
-                                                name = "$serverName - ${str.language ?: "HLS"}",
-                                                source = serverName,
-                                                url = str.url,
-                                                type = if (str.type == "hls" || str.url.contains("m3u8")) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-                                            ) {
-                                                this.quality = Qualities.Unknown.value
-                                                this.headers = mapOf(
-                                                    "Origin" to "https://fmoviesunblocked.net",
-                                                    "Referer" to "https://fmoviesunblocked.net/"
-                                                )
-                                            }
-                                            synchronized(callback) {
-                                                callback.invoke(link)
-                                                foundAny = true
+                                    // Format 1: url array (MovieBox: [{lang,link,resolution,type}])
+                                    val urlNode = dataNode.get("url")
+                                    if (urlNode != null && urlNode.isArray) {
+                                        urlNode.forEach { item ->
+                                            val link = item.get("link")?.asText()
+                                            val res = item.get("resolution")?.asText() ?: ""
+                                            val typ = item.get("type")?.asText() ?: ""
+                                            val lang = item.get("lang")?.asText() ?: ""
+                                            if (!link.isNullOrEmpty()) {
+                                                val q = when { res.contains("1080") -> Qualities.P1080.value; res.contains("720") -> Qualities.P720.value; res.contains("480") -> Qualities.P480.value; res.contains("360") -> Qualities.P360.value; else -> Qualities.Unknown.value }
+                                                addLink(link, "$serverName - $res ${if(lang.isNotEmpty()) "[$lang]" else ""}", q, typ == "hls" || link.contains("m3u8"), emptyMap())
                                             }
                                         }
+                                    } else if (urlNode != null && urlNode.isTextual) {
+                                        // Format url: string langsung
+                                        val u = urlNode.asText()
+                                        if (u.isNotEmpty()) addLink(u, "$serverName - HD", Qualities.P1080.value, u.contains("m3u8"))
                                     }
 
-                                    // Fetch captions
-                                    for (sub in streamData.captions ?: emptyList()) {
+                                     // Format 2: sources[] (klikxxi: [{url,type,quality}])
+                                     val sourcesNode = dataNode.get("sources")
+                                     if (sourcesNode != null && sourcesNode.isArray) {
+                                         sourcesNode.forEach { item ->
+                                             val u = item.get("url")?.asText()
+                                             val typ = item.get("type")?.asText() ?: ""
+                                             val qual = item.get("quality")?.asText() ?: "auto"
+                                             if (!u.isNullOrEmpty()) {
+                                                 if (u.contains("multimovies.rpmhub.site")) {
+                                                     try {
+                                                         val hash = u.substringAfter("#")
+                                                         if (hash.isNotEmpty() && hash != u) {
+                                                             val playerUrl = "https://multimovies.rpmhub.site/api/v1/video?id=$hash&w=1920&h=1080&r="
+                                                             val ophimHeaders = mapOf(
+                                                                 "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                                                                 "Referer" to "https://multimovies.rpmhub.site/",
+                                                                 "Origin" to "https://multimovies.rpmhub.site"
+                                                             )
+                                                             val apiRes = app.get(playerUrl, headers = ophimHeaders, timeout = 8)
+                                                             if (apiRes.code == 200) {
+                                                                 val decodedText = decodeDecimalString(apiRes.text)
+                                                                 if (decodedText.isNotEmpty() && !decodedText.contains("error")) {
+                                                                     val decrypted = decryptOphimAes(decodedText)
+                                                                     val innerRoot = mapper.readTree(decrypted)
+                                                                     val innerData = if (innerRoot.has("data")) innerRoot.get("data") else innerRoot
+                                                                     val innerSources = innerData.get("sources")
+                                                                     if (innerSources != null && innerSources.isArray) {
+                                                                         innerSources.forEach { innerItem ->
+                                                                             val streamUrl = innerItem.get("url")?.asText()
+                                                                             val streamType = innerItem.get("type")?.asText() ?: ""
+                                                                             val streamQual = innerItem.get("quality")?.asText() ?: "auto"
+                                                                             if (!streamUrl.isNullOrEmpty()) {
+                                                                                 val q = when { streamQual.contains("1080") -> Qualities.P1080.value; streamQual.contains("720") -> Qualities.P720.value; streamQual.contains("480") -> Qualities.P480.value; streamQual.contains("360") -> Qualities.P360.value; else -> Qualities.Unknown.value }
+                                                                                 addLink(streamUrl, "$serverName - $streamQual", q, streamType == "hls" || streamUrl.contains("m3u8"), emptyMap())
+                                                                             }
+                                                                         }
+                                                                     }
+                                                                 } else {
+                                                                     Log.w("xr3edFlix", "Ophim token/decode error: $decodedText")
+                                                                 }
+                                                             }
+                                                         }
+                                                     } catch (e: Exception) {
+                                                         Log.e("xr3edFlix", "Ophim decrypt failed", e)
+                                                     }
+                                                 } else {
+                                                     val q = when { qual.contains("1080") -> Qualities.P1080.value; qual.contains("720") -> Qualities.P720.value; qual.contains("480") -> Qualities.P480.value; qual.contains("360") -> Qualities.P360.value; else -> Qualities.Unknown.value }
+                                                     addLink(u, "$serverName - $qual", q, typ == "hls" || u.contains("m3u8"))
+                                                 }
+                                             }
+                                         }
+                                     }
+
+                                    // Format 3: StreamResponse standard (vidnest)
+                                    val streamRes = try { mapper.readValue(decrypted, StreamResponse::class.java) } catch(e: Exception) { null }
+                                    val streamData = streamRes?.data ?: streamRes
+                                    val headersMap = streamData?.headers
+
+                                    for (dl in streamData?.downloads ?: emptyList()) {
+                                        if (dl.url != null) addLink(dl.url, "$serverName - ${dl.resolution}p", dl.resolution ?: Qualities.Unknown.value, false, headersMap)
+                                    }
+                                    for (u in streamData?.urlList ?: emptyList()) {
+                                        if (u.link != null) {
+                                            val q = u.resolution?.replace("p","")?.toIntOrNull() ?: Qualities.Unknown.value
+                                            addLink(u.link, "$serverName - ${u.resolution ?: "HLS"}", q, u.type == "hls" || u.link.contains("m3u8"), headersMap)
+                                        }
+                                    }
+                                     for (str in streamData?.streams ?: emptyList()) {
+                                         if (str.url != null) {
+                                              if (serverName != "Prime" || str.language == "MAIN") {
+                                                  val isPrimeMain = serverName == "Prime" && str.language == "MAIN"
+                                                  val nameLabel = if (isPrimeMain) "$serverName - 1440p" else "$serverName - ${str.language ?: "HLS"}"
+                                                  val q = if (isPrimeMain) 1440 else Qualities.Unknown.value
+                                                  addLink(str.url, nameLabel, q, str.type == "hls" || str.url.contains("m3u8"), headersMap)
+                                              }
+                                         }
+                                     }
+
+                                    // Captions
+                                    for (sub in streamData?.captions ?: emptyList()) {
                                         if (sub.url != null) {
-                                            val lang = sub.lanName ?: sub.lan ?: "Unknown"
-                                            val subFile = newSubtitleFile(
-                                                lang,
-                                                sub.url
-                                            )
-                                            synchronized(subtitleCallback) {
-                                                subtitleCallback.invoke(subFile)
+                                            val subFile = newSubtitleFile(sub.lanName ?: sub.lan ?: "Unknown", sub.url)
+                                            subtitleCallback.invoke(subFile)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            } + extraExtractors.map { embedUrl ->
+                async {
+                    try {
+                        var currentUrl = embedUrl
+                        var resolved = false
+                        var hops = 0
+                        while (hops < 3 && !resolved) {
+                            resolved = loadExtractor(currentUrl, subtitleCallback, callback)
+                            if (resolved) break
+                            
+                            // Fetch HTML to find next iframe
+                            val response = app.get(currentUrl, timeout = 8)
+                            if (response.code != 200) break
+                            
+                            val html = response.text
+                            val iframeRegex = """iframe[^>]+src=["']([^"']+)["']""".toRegex()
+                            val iframeSrc = iframeRegex.find(html)?.groups?.get(1)?.value
+                            if (iframeSrc.isNullOrEmpty()) break
+                            
+                            currentUrl = when {
+                                iframeSrc.startsWith("//") -> "https:$iframeSrc"
+                                iframeSrc.startsWith("/") -> {
+                                    val uri = java.net.URI(currentUrl)
+                                    "${uri.scheme}://${uri.host}$iframeSrc"
+                                }
+                                else -> iframeSrc
+                            }
+                            hops++
+                        }
+                        if (resolved) {
+                            foundAny = true
+                        }
+                    } catch (e: Exception) {
+                        Log.e("xr3edFlix", "loadExtractor failed for: $embedUrl - ${e.message}")
+                    }
+                }
+            } + listOf(
+                async {
+                    try {
+                        val vaplayerUrl = if (type == "movie") {
+                            "https://streamdata.vaplayer.ru/api.php?tmdb=$id&type=movie"
+                        } else {
+                            "https://streamdata.vaplayer.ru/api.php?tmdb=$id&type=tv&season=$season&episode=$episode"
+                        }
+                        val apiHeaders = mapOf(
+                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                            "Referer" to "https://nextgencloudfabric.com/",
+                            "Origin" to "https://nextgencloudfabric.com"
+                        )
+                        val apiRes = app.get(vaplayerUrl, headers = apiHeaders, timeout = 10)
+                        if (apiRes.code == 200) {
+                            val root = mapper.readTree(apiRes.text)
+                            val dataNode = root.get("data")
+                            if (dataNode != null) {
+                                val streamUrls = dataNode.get("stream_urls")
+                                if (streamUrls != null && streamUrls.isArray) {
+                                    streamUrls.forEach { uNode ->
+                                        val streamUrl = uNode.asText()
+                                        if (!streamUrl.isNullOrEmpty()) {
+                                            try {
+                                                val manifestRes = app.get(streamUrl, headers = apiHeaders, timeout = 6)
+                                                if (manifestRes.code == 200 && manifestRes.text.contains("#EXT-X-STREAM-INF")) {
+                                                    val uri = java.net.URI(streamUrl)
+                                                    val hostUrl = "${uri.scheme}://${uri.host}"
+                                                    val lines = manifestRes.text.split("\n")
+                                                    var currentRes = ""
+                                                    var parsedAny = false
+                                                    for (line in lines) {
+                                                        val trimmed = line.trim()
+                                                        if (trimmed.startsWith("#EXT-X-STREAM-INF")) {
+                                                            val resRegex = """RESOLUTION=(\d+)x(\d+)""".toRegex()
+                                                            val match = resRegex.find(trimmed)
+                                                            if (match != null) {
+                                                                val height = match.groupValues[2].toInt()
+                                                                val standardHeight = when {
+                                                                    height >= 800 -> 1080
+                                                                    height >= 500 -> 720
+                                                                    height >= 350 -> 480
+                                                                    else -> 360
+                                                                }
+                                                                currentRes = "${standardHeight}p"
+                                                            }
+                                                        } else if (trimmed.isNotEmpty() && !trimmed.startsWith("#")) {
+                                                            if (currentRes.isNotEmpty()) {
+                                                                val absoluteUrl = if (trimmed.startsWith("/")) {
+                                                                    hostUrl + trimmed
+                                                                } else if (trimmed.startsWith("http")) {
+                                                                    trimmed
+                                                                } else {
+                                                                    val parentPath = streamUrl.substring(0, streamUrl.lastIndexOf('/') + 1)
+                                                                    parentPath + trimmed
+                                                                }
+                                                                 val dedupKey = if (absoluteUrl.contains("/index.m3u8")) {
+                                                                     absoluteUrl.substringBefore("/index.m3u8").substringAfterLast("/")
+                                                                 } else {
+                                                                     absoluteUrl
+                                                                 }
+                                                                 if (addedUrls.add(dedupKey)) {
+                                                                     val q = currentRes.replace("p","").toIntOrNull() ?: Qualities.Unknown.value
+                                                                     val link = newExtractorLink(
+                                                                         name = "VidsrcPM - $currentRes",
+                                                                         source = "VidsrcPM",
+                                                                         url = absoluteUrl,
+                                                                         type = ExtractorLinkType.M3U8
+                                                                     ) {
+                                                                         this.quality = q
+                                                                         this.headers = emptyMap()
+                                                                     }
+                                                                     callback.invoke(link)
+                                                                     parsedAny = true
+                                                                 }
+                                                                 currentRes = ""
+                                                            }
+                                                        }
+                                                    }
+                                                    if (parsedAny) {
+                                                        foundAny = true
+                                                        return@forEach
+                                                    }
+                                                }
+                                            } catch (manifestEx: Exception) {
+                                                Log.e("xr3edFlix", "manifest parse failed", manifestEx)
                                             }
                                         }
                                     }
@@ -677,10 +802,11 @@ class xr3edFlixProvider : MainAPI() {
                             }
                         }
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e("xr3edFlix", "vaplayer query failed", e)
                     }
                 }
-            }.awaitAll()
+            )
+            jobs.awaitAll()
         }
 
         return foundAny
@@ -700,6 +826,16 @@ class xr3edFlixProvider : MainAPI() {
         @JsonProperty("original_language") val originalLanguage: String? = null
     )
 
+    data class TMDBCastMember(
+        val name: String? = null,
+        val character: String? = null,
+        @JsonProperty("profile_path") val profilePath: String? = null
+    )
+
+    data class TMDBCredits(
+        val cast: List<TMDBCastMember>? = null
+    )
+
     data class TMDBDetailResponse(
         val id: Int? = null,
         val title: String? = null,
@@ -709,7 +845,8 @@ class xr3edFlixProvider : MainAPI() {
         val overview: String? = null,
         @JsonProperty("release_date") val releaseDate: String? = null,
         @JsonProperty("first_air_date") val firstAirDate: String? = null,
-        val seasons: List<TMDBSeason>? = null
+        val seasons: List<TMDBSeason>? = null,
+        val credits: TMDBCredits? = null
     )
 
     data class TMDBSeason(
@@ -738,9 +875,11 @@ class xr3edFlixProvider : MainAPI() {
         val url: String? = null,
         val headers: Map<String, String>? = null,
         val downloads: List<DownloadItem>? = null,
-        @JsonProperty("url") val urlList: List<UrlItem>? = null,
+        @JsonProperty("playlist") val urlList: List<UrlItem>? = null,
         val streams: List<StreamItem>? = null,
-        val captions: List<CaptionItem>? = null
+        val captions: List<CaptionItem>? = null,
+        // klikxxi format: {sources:[{quality,type,url}]}
+        val sources: List<SourceItem>? = null
     )
 
     data class DownloadItem(
@@ -760,9 +899,52 @@ class xr3edFlixProvider : MainAPI() {
         val language: String? = null
     )
 
+    data class SourceItem(
+        val url: String? = null,
+        val type: String? = null,
+        val quality: String? = null
+    )
+
     data class CaptionItem(
         val url: String? = null,
         val lan: String? = null,
         val lanName: String? = null
     )
+
+    private fun decryptOphimAes(cipherHex: String): String {
+        val keySpec = SecretKeySpec("klgmtlgnmua911ca".toByteArray(Charsets.UTF_8), "AES")
+        val ivBytes = byteArrayOf(
+            0xc9.toByte(), 0x80.toByte(), 0xc9.toByte(), 0x81.toByte(),
+            0xc9.toByte(), 0x82.toByte(), 0xc9.toByte(), 0x83.toByte(),
+            0xc9.toByte(), 0x84.toByte(), 0xc9.toByte(), 0x85.toByte(),
+            0xc9.toByte(), 0x86.toByte(), 0xc9.toByte(), 0x87.toByte()
+        )
+        val ivSpec = IvParameterSpec(ivBytes)
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+        val decryptedBytes = cipher.doFinal(hexToByteArray(cipherHex))
+        return String(decryptedBytes, Charsets.UTF_8)
+    }
+
+    private fun hexToByteArray(hex: String): ByteArray {
+        val l = hex.length
+        val out = ByteArray(l / 2)
+        for (i in 0 until l step 2) {
+            out[i / 2] = ((Character.digit(hex[i], 16) shl 4) + Character.digit(hex[i + 1], 16)).toByte()
+        }
+        return out
+    }
+
+    private fun decodeDecimalString(decimalStr: String): String {
+        return try {
+            val parts = decimalStr.trim().split("\\s+".toRegex())
+            val chars = parts.filter { it.isNotEmpty() && it.all { c -> c.isDigit() } }
+                .map { it.toInt().toChar() }
+                .toCharArray()
+            String(chars)
+        } catch (e: Exception) {
+            Log.e("xr3edFlix", "decodeDecimalString error: ${e.message}")
+            ""
+        }
+    }
 }
