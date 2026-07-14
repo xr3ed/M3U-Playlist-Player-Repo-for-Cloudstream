@@ -97,6 +97,28 @@ class xr3edFlixProvider : MainAPI() {
     override var supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
     override val hasMainPage = true
 
+    override val mainPage = listOf(
+        MainPageData("Film Trending", "Film Trending"),
+        MainPageData("Film Populer", "Film Populer"),
+        MainPageData("Seri Trending", "Seri Trending"),
+        MainPageData("Seri Populer", "Seri Populer"),
+        MainPageData("Netflix Movies", "Netflix Movies"),
+        MainPageData("Netflix Series", "Netflix Series"),
+        MainPageData("Disney+ Movies", "Disney+ Movies"),
+        MainPageData("Disney+ Series", "Disney+ Series"),
+        MainPageData("Prime Video Movies", "Prime Video Movies"),
+        MainPageData("Prime Video Series", "Prime Video Series"),
+        MainPageData("Apple TV+ Movies", "Apple TV+ Movies"),
+        MainPageData("Apple TV+ Series", "Apple TV+ Series"),
+        MainPageData("Viu Series", "Viu Series"),
+        MainPageData("HBO GO Movies", "HBO GO Movies"),
+        MainPageData("HBO GO Series", "HBO GO Series"),
+        MainPageData("Catchplay+ Movies", "Catchplay+ Movies"),
+        MainPageData("Crunchyroll Series", "Crunchyroll Series"),
+        MainPageData("Lionsgate Play Movies", "Lionsgate Play Movies"),
+        MainPageData("Lionsgate Play Series", "Lionsgate Play Series")
+    )
+
     private suspend fun fetchTmdbList(path: String, params: Map<String, String>): List<SearchResponse> {
         val mapWithLang = params + mapOf("language" to "en-US")
         val queryParams = mapWithLang.entries.joinToString("&") { "${it.key}=${it.value}" }
