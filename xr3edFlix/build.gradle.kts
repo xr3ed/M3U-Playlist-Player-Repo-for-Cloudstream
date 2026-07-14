@@ -1,4 +1,4 @@
-version = 9
+version = 10
 
 android {
     namespace = "com.lagradost.xr3edFlix"

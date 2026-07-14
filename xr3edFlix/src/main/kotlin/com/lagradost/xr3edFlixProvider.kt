@@ -366,146 +366,95 @@ class xr3edFlixProvider : MainAPI() {
             val base = "https://mapple.rip"
             val mediaType = if (season == null) "movie" else "tv"
             val tvSlug = if (season != null && episode != null) "$season-$episode" else ""
+            val idStr = if (mediaType == "movie") tmdbId.toString() else "$tmdbId/$tvSlug"
 
             val headers = mapOf(
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Referer" to "$base/",
+                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+                "Referer" to "$base/embed/$mediaType/$idStr",
                 "Origin" to base,
-                "Accept" to "*/*",
-                "Content-Type" to "application/json"
+                "Accept" to "application/json, text/plain, */*",
+                "Content-Type" to "application/json",
+                "Sec-Fetch-Dest" to "empty",
+                "Sec-Fetch-Mode" to "cors",
+                "Sec-Fetch-Site" to "same-origin"
             )
 
-            val watchUrl = if (mediaType == "movie") {
-                "$base/watch/movie/$tmdbId"
-            } else {
-                "$base/watch/tv/$tmdbId/$tvSlug"
-            }
-
-            val watchRequest = okhttp3.Request.Builder()
-                .url(watchUrl)
+            // Let's request the embed page first to set the session cookies
+            val embedUrl = "$base/embed/$mediaType/$idStr"
+            val embedRequest = okhttp3.Request.Builder()
+                .url(embedUrl)
                 .headers(headers.toHeaders())
                 .build()
-            val watchRes = cleanClient.newCall(watchRequest).execute()
-            if (watchRes.code != 200) {
-                watchRes.close()
+            val embedRes = cleanClient.newCall(embedRequest).execute()
+            if (embedRes.code != 200) {
+                embedRes.close()
                 return
             }
-            val page = watchRes.body?.string() ?: ""
-            watchRes.close()
+            val embedHtml = embedRes.body?.string() ?: ""
+            embedRes.close()
 
             val tokenRegex = Regex("""window\.__REQUEST_TOKEN__\s*=\s*"([^"]+)"""")
-            val requestToken = tokenRegex.find(page)?.groupValues?.get(1) ?: return
+            val requestToken = tokenRegex.find(embedHtml)?.groupValues?.get(1) ?: return
 
-            val body = """
-                {
-                    "mediaId": $tmdbId,
-                    "mediaType": "$mediaType",
-                    "requestToken": "$requestToken"
-                }
-            """.trimIndent()
+            val requestHeaders = headers.toMutableMap()
+            requestHeaders["x-request-token"] = requestToken
 
+            // We can query multiple servers to get different CDN links!
+            val servers = listOf("Mapple 4K", "Lyra", "Luna", "Pulse", "Orion")
             val postMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-            val tokenRequest1 = okhttp3.Request.Builder()
-                .url("$base/api/stream-token")
-                .post(body.toRequestBody(postMediaType))
-                .headers(headers.toHeaders())
-                .build()
-            
-            val tokenResponse1 = cleanClient.newCall(tokenRequest1).execute()
-            if (tokenResponse1.code != 200) {
-                tokenResponse1.close()
-                return
-            }
-            val tokenRes1Text = tokenResponse1.body?.string() ?: ""
-            tokenResponse1.close()
-
-            val tokenRes1 = org.json.JSONObject(tokenRes1Text)
-            if (!tokenRes1.optBoolean("success")) return
-
-            val finalToken = if (tokenRes1.optBoolean("requiresPow")) {
-                val pow = tokenRes1.getJSONObject("pow")
-                val challenge = pow.getString("challenge")
-                val difficulty = pow.getInt("difficulty")
-                val nonce = solvePowChallenge(challenge, difficulty) ?: return
-
-                val body2 = """
-                    {
-                        "mediaId": $tmdbId,
-                        "mediaType": "$mediaType",
-                        "requestToken": "$requestToken",
-                        "pow": {
-                            "challengeId": "${pow.getString("challengeId")}",
-                            "nonce": "$nonce"
-                        }
-                    }
-                """.trimIndent()
-
-                val tokenRequest2 = okhttp3.Request.Builder()
-                    .url("$base/api/stream-token")
-                    .post(body2.toRequestBody(postMediaType))
-                    .headers(headers.toHeaders())
-                    .build()
-                
-                val tokenResponse2 = cleanClient.newCall(tokenRequest2).execute()
-                if (tokenResponse2.code != 200) {
-                    tokenResponse2.close()
-                    return
-                }
-                val tokenRes2Text = tokenResponse2.body?.string() ?: ""
-                tokenResponse2.close()
-
-                val tokenRes2 = org.json.JSONObject(tokenRes2Text)
-                if (!tokenRes2.optBoolean("success")) return
-                tokenRes2.getString("token")
-            } else {
-                tokenRes1.getString("token")
-            }
-
-            val sources = listOf(
-                "mapple", "willow", "cherry", "pines", "oak", "sequoia", "sakura", "magnolia"
-            )
 
             coroutineScope {
-                sources.map { source ->
+                servers.map { serverName ->
                     async {
                         try {
-                            val streamUrl = "$base/api/stream?mediaId=$tmdbId&mediaType=$mediaType&tv_slug=$tvSlug" +
-                                    "&source=$source&apikey=mptv_sk_a8f29c4e7b3d1f" +
-                                    "&requestToken=$requestToken&token=$finalToken"
+                            val body = """
+                                {
+                                    "id": "$idStr",
+                                    "mediaId": $tmdbId,
+                                    "type": "$mediaType",
+                                    "mediaType": "$mediaType",
+                                    "server": "$serverName",
+                                    "season": ${season ?: "null"},
+                                    "episode": ${episode ?: "null"}
+                                }
+                            """.trimIndent()
 
-                            val streamRequest = okhttp3.Request.Builder()
-                                .url(streamUrl)
-                                .headers(headers.toHeaders())
+                            val tokenRequest = okhttp3.Request.Builder()
+                                .url("$base/api/stream-token")
+                                .post(body.toRequestBody(postMediaType))
+                                .headers(requestHeaders.toHeaders())
                                 .build()
-                            
-                            val streamResponse = cleanClient.newCall(streamRequest).execute()
-                            if (streamResponse.code == 200) {
-                                val streamResText = streamResponse.body?.string() ?: ""
-                                streamResponse.close()
-                                val streamRes = org.json.JSONObject(streamResText)
-                                if (streamRes.optBoolean("success")) {
-                                    val m3u8 = streamRes.getJSONObject("data").optString("stream_url")
+
+                            val response = cleanClient.newCall(tokenRequest).execute()
+                            val code = response.code
+                            val text = response.body?.string() ?: ""
+                            response.close()
+
+                            Log.d("xr3edFlix", "Mapple server=$serverName response code=$code body=$text")
+
+                            if (code == 200 && text.isNotEmpty()) {
+                                val json = org.json.JSONObject(text)
+                                if (json.optBoolean("success")) {
+                                    val m3u8 = json.optString("url")
                                     if (m3u8.isNotEmpty()) {
                                         com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
-                                            source = "Mapple - ${source.uppercase(java.util.Locale.US)}",
+                                            source = "Mapple - $serverName",
                                             streamUrl = m3u8,
                                             referer = "$base/",
                                             headers = headers
                                         ).forEach(callback)
                                     }
                                 }
-                            } else {
-                                streamResponse.close()
                             }
                         } catch (ex: Exception) {
-                            ex.printStackTrace()
+                            Log.e("xr3edFlix", "Mapple server=$serverName failed", ex)
                         }
                     }
                 }
             }
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("xr3edFlix", "Mapple error", e)
         }
     }
 
