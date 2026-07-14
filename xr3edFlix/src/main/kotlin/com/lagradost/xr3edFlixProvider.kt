@@ -25,6 +25,7 @@ import java.net.URLEncoder
 class xr3edFlixProvider : MainAPI() {
     companion object {
         val addedUrls = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+        private val titleSearchCache = java.util.concurrent.ConcurrentHashMap<String, SearchResponse>()
 
         private val mapper = ObjectMapper()
             .registerModule(KotlinModule.Builder().build())
@@ -142,6 +143,65 @@ class xr3edFlixProvider : MainAPI() {
         } ?: emptyList()
     }
 
+    private suspend fun fetchFlixPatrolList(providerUrl: String, isMovie: Boolean, fallbackProviderId: String, fallbackPath: String): List<SearchResponse> {
+        return try {
+            val html = app.get(providerUrl, timeout = 8).text
+            val heading = if (isMovie) "TOP 10 Movies" else "TOP 10 TV Shows"
+            val idx = html.indexOf(heading)
+            if (idx == -1) {
+                return fetchRecentRegionalList(fallbackProviderId, isMovie)
+            }
+            val nextIdx = html.indexOf("by day", idx)
+            val section = if (nextIdx != -1) html.substring(idx, nextIdx) else html.substring(idx)
+            
+            val regex = Regex("""<a href="/title/([^"]+)/" class="hover:underline">([^<]+)</a>""")
+            val titles = regex.findAll(section).map { it.groupValues[2].trim() }.toList().take(10)
+            
+            if (titles.isEmpty()) {
+                return fetchRecentRegionalList(fallbackProviderId, isMovie)
+            }
+            
+            coroutineScope {
+                titles.map { title ->
+                    async {
+                        val cacheKey = "${title}_${if (isMovie) "movie" else "tv"}"
+                        titleSearchCache[cacheKey]?.let { return@async it }
+
+                        val encoded = java.net.URLEncoder.encode(title, "UTF-8")
+                        val searchUrl = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=en-US"
+                        val searchRes = parsedGet<TMDBDiscoverResponse>(searchUrl)
+                        val media = searchRes?.results?.firstOrNull {
+                            if (isMovie) it.mediaType == "movie" || it.title != null
+                            else it.mediaType == "tv" || it.name != null
+                        }
+                        if (media != null) {
+                            val titleName = if (media.originalLanguage == "id") {
+                                media.originalTitle ?: media.originalName ?: media.title ?: media.name ?: title
+                            } else {
+                                media.title ?: media.name ?: title
+                            }
+                            val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
+                            val res = newMovieSearchResponse(
+                                name = titleName,
+                                url = if (isMovie) "movie::${media.id}" else "tv::${media.id}",
+                                type = if (isMovie) TvType.Movie else TvType.TvSeries
+                            ) {
+                                this.posterUrl = poster
+                            }
+                            titleSearchCache[cacheKey] = res
+                            res
+                        } else {
+                            null
+                        }
+                    }
+                }.awaitAll().filterNotNull()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            fetchRecentRegionalList(fallbackProviderId, isMovie)
+        }
+    }
+
 
 
     private suspend fun fetchRecentRegionalList(providerId: String, isMovie: Boolean, lang: String? = null): List<SearchResponse> {
@@ -190,8 +250,8 @@ class xr3edFlixProvider : MainAPI() {
             val popularSeries = async { HomePageList("Seri Populer", fetchTmdbList("discover/tv", mapOf("sort_by" to "popularity.desc"))) }
 
             // Providers - Movies & Series (watch_region=ID)
-            val netflixMovies = async { HomePageList("Netflix Movies", fetchRecentRegionalList("8", true)) }
-            val netflixSeries = async { HomePageList("Netflix Series", fetchRecentRegionalList("8", false)) }
+            val netflixMovies = async { HomePageList("Netflix Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", true, "8", "discover/movie")) }
+            val netflixSeries = async { HomePageList("Netflix Series", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", false, "8", "discover/tv")) }
             
             val disneyMovies = async { HomePageList("Disney+ Movies", fetchRecentRegionalList("122", true)) }
             val disneySeries = async { HomePageList("Disney+ Series", fetchRecentRegionalList("122", false)) }
