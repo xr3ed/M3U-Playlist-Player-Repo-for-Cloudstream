@@ -246,29 +246,10 @@ class xr3edFlixProvider : MainAPI() {
             
 
             
-            val vidioMovies = async { HomePageList("Vidio Movies", fetchRecentRegionalList("489", true)) }
-            
-            val vidioSeries = async {
-                val vidId = fetchRecentRegionalList("489", false, "id")
-                val vidAll = fetchRecentRegionalList("489", false)
-                val combined = mutableListOf<SearchResponse>()
-                val maxLen = maxOf(vidId.size, vidAll.size)
-                for (i in 0 until maxLen) {
-                    if (i < vidId.size) combined.add(vidId[i])
-                    if (i < vidAll.size) combined.add(vidAll[i])
-                }
-                HomePageList("Vidio Series", combined.distinctBy { it.url })
-            }
-            
             val hboMovies = async { HomePageList("HBO GO Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/hbo-max/indonesia/", true, "1899", "discover/movie")) }
             val hboSeries = async { HomePageList("HBO GO Series", fetchFlixPatrolList("https://flixpatrol.com/top10/hbo-max/indonesia/", false, "1899", "discover/tv")) }
             
             val catchplayMovies = async { HomePageList("Catchplay+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", true, "159", "discover/movie")) }
-            
-            val visionMovies = async { HomePageList("Vision+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/vision/indonesia/", true, "575", "discover/movie")) }
-            val visionSeries = async { HomePageList("Vision+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/vision/indonesia/", false, "575", "discover/tv")) }
-            
-            val klikfilmMovies = async { HomePageList("KlikFilm Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/klikfilm/indonesia/", true, "576", "discover/movie")) }
             
             val crunchyrollSeries = async { HomePageList("Crunchyroll Series", fetchFlixPatrolList("https://flixpatrol.com/top10/crunchyroll/indonesia/", false, "283", "discover/tv")) }
             
@@ -283,11 +264,8 @@ class xr3edFlixProvider : MainAPI() {
                 primeMovies.await(), primeSeries.await(),
                 appleMovies.await(), appleSeries.await(),
                 viuSeries.await(),
-                vidioMovies.await(), vidioSeries.await(),
                 hboMovies.await(), hboSeries.await(),
                 catchplayMovies.await(),
-                visionMovies.await(), visionSeries.await(),
-                klikfilmMovies.await(),
                 crunchyrollSeries.await(),
                 lionsgateMovies.await(), lionsgateSeries.await()
             ).filter { it.list.isNotEmpty() }
@@ -297,10 +275,14 @@ class xr3edFlixProvider : MainAPI() {
 
     override suspend fun search(query: String): List<SearchResponse>? {
         val encoded = URLEncoder.encode(query, "UTF-8")
-        val url = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=id"
+        val url = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=en-US"
         val res = parsedGet<TMDBDiscoverResponse>(url)
         return res?.results?.filter { it.mediaType == "movie" || it.mediaType == "tv" }?.map { media ->
-            val title = media.title ?: media.name ?: "Unknown"
+            val title = if (media.originalLanguage == "id") {
+                media.originalTitle ?: media.originalName ?: media.title ?: media.name ?: "Unknown"
+            } else {
+                media.title ?: media.name ?: "Unknown"
+            }
             val isMovie = media.mediaType == "movie"
             val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             if (isMovie) {
@@ -343,8 +325,14 @@ class xr3edFlixProvider : MainAPI() {
             // Fetch dengan credits sekaligus
             val detailUrlId = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits"
             val resId = parsedGet<TMDBDetailResponse>(detailUrlId)
-            // Fallback ke en-US jika title kosong
-            val res = if (resId?.title.isNullOrEmpty()) {
+            
+            // Cek apakah original_language bukan 'id'/'en' dan title sama dengan original_title (artinya tidak ada terjemahan id/en)
+            val needsEnglishFallback = resId?.let {
+                val originalLang = it.originalLanguage ?: "en"
+                originalLang != "id" && originalLang != "en" && it.title == it.originalTitle
+            } ?: false
+
+            val res = if (resId?.title.isNullOrEmpty() || needsEnglishFallback) {
                 val detailUrlEn = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits"
                 parsedGet<TMDBDetailResponse>(detailUrlEn) ?: resId
             } else resId
@@ -368,11 +356,14 @@ class xr3edFlixProvider : MainAPI() {
                 ) else null
             }
 
+            val imdbId = res.imdbId ?: ""
+            val cleanTitle = (res.title ?: "Unknown").replace("::", ":")
+
             return newMovieLoadResponse(
                 name = res.title ?: "Unknown",
                 url = "movie::$id",
                 type = TvType.Movie,
-                dataUrl = "movie::$id"
+                dataUrl = "movie::$id::$imdbId::$cleanTitle"
             ) {
                 this.posterUrl = poster
                 this.backgroundPosterUrl = backdrop
@@ -381,11 +372,17 @@ class xr3edFlixProvider : MainAPI() {
                 this.actors = actors
             }
         } else {
-            val detailUrlId = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits"
+            val detailUrlId = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits,external_ids"
             val resId = parsedGet<TMDBDetailResponse>(detailUrlId)
-            // Fallback ke en-US jika name kosong
-            val res = if (resId?.name.isNullOrEmpty()) {
-                val detailUrlEn = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits"
+            
+            // Cek apakah original_language bukan 'id'/'en' dan name sama dengan original_name (artinya tidak ada terjemahan id/en)
+            val needsEnglishFallback = resId?.let {
+                val originalLang = it.originalLanguage ?: "en"
+                originalLang != "id" && originalLang != "en" && it.name == it.originalName
+            } ?: false
+
+            val res = if (resId?.name.isNullOrEmpty() || needsEnglishFallback) {
+                val detailUrlEn = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits,external_ids"
                 parsedGet<TMDBDetailResponse>(detailUrlEn) ?: resId
             } else resId
             res ?: return null
@@ -407,6 +404,9 @@ class xr3edFlixProvider : MainAPI() {
                 ) else null
             }
 
+            val imdbId = res.imdbId ?: res.externalIds?.imdbId ?: ""
+            val cleanTitle = (res.name ?: "Unknown").replace("::", ":")
+
             val episodes = coroutineScope {
                 res.seasons?.map { season ->
                     async {
@@ -419,7 +419,7 @@ class xr3edFlixProvider : MainAPI() {
                             parsedGet<TMDBSeasonDetailResponse>(seasonUrlEn) ?: seasonResId
                         } else seasonResId
                         seasonRes?.episodes?.map { ep ->
-                            newEpisode("tv::$id::${ep.seasonNumber}::${ep.episodeNumber}") {
+                            newEpisode("tv::$id::${ep.seasonNumber}::${ep.episodeNumber}::$imdbId::$cleanTitle") {
                                 this.name = ep.name ?: "Episode ${ep.episodeNumber}"
                                 this.episode = ep.episodeNumber
                                 this.season = ep.seasonNumber
@@ -454,6 +454,17 @@ class xr3edFlixProvider : MainAPI() {
         if (parts.size < 2) return false
         val type = parts[0]
         val id = parts[1]
+        val imdbId = if (type == "movie") parts.getOrNull(2) else parts.getOrNull(4)
+        val title = if (type == "movie") parts.getOrNull(3) else parts.getOrNull(5)
+
+        val hasIndonesian = java.util.concurrent.atomic.AtomicBoolean(false)
+        val subCallback = { subFile: SubtitleFile ->
+            val lang = subFile.lang.lowercase()
+            if (lang.contains("indonesia") || lang.contains("indo") || lang == "id" || lang == "in") {
+                hasIndonesian.set(true)
+                subtitleCallback.invoke(subFile)
+            }
+        }
 
         val subpath = if (type == "movie") {
             "movie/$id"
@@ -658,13 +669,13 @@ class xr3edFlixProvider : MainAPI() {
                                          }
                                      }
 
-                                    // Captions
-                                    for (sub in streamData?.captions ?: emptyList()) {
-                                        if (sub.url != null) {
-                                            val subFile = newSubtitleFile(sub.lanName ?: sub.lan ?: "Unknown", sub.url)
-                                            subtitleCallback.invoke(subFile)
-                                        }
-                                    }
+                                     // Captions
+                                     for (sub in streamData?.captions ?: emptyList()) {
+                                         if (sub.url != null) {
+                                             val subFile = newSubtitleFile(sub.lanName ?: sub.lan ?: "Unknown", sub.url)
+                                             subCallback.invoke(subFile)
+                                         }
+                                     }
                                 }
                             }
                         }
@@ -680,7 +691,7 @@ class xr3edFlixProvider : MainAPI() {
                         var resolved = false
                         var hops = 0
                         while (hops < 3 && !resolved) {
-                            resolved = loadExtractor(currentUrl, subtitleCallback, callback)
+                            resolved = loadExtractor(currentUrl, subCallback, callback)
                             if (resolved) break
                             
                             // Fetch HTML to find next iframe
@@ -804,6 +815,69 @@ class xr3edFlixProvider : MainAPI() {
                     } catch (e: Exception) {
                         Log.e("xr3edFlix", "vaplayer query failed", e)
                     }
+                },
+                async {
+                    try {
+                        kotlinx.coroutines.delay(2000)
+                        if (hasIndonesian.get()) {
+                            Log.d("xr3edFlix", "Indonesian subtitle already loaded, skipping OpenSubtitles search.")
+                            return@async
+                        }
+                        val cleanImdb = imdbId?.removePrefix("tt") ?: ""
+                        val subHeaders = mapOf("User-Agent" to "TemporaryUserAgent")
+                        
+                        var subResponseText: String? = null
+                        var subResponseCode: Int? = null
+                        
+                        if (cleanImdb.isNotEmpty()) {
+                            val subUrl = if (type == "movie") {
+                                "https://rest.opensubtitles.org/search/imdbid-$cleanImdb/sublanguageid-ind"
+                            } else {
+                                "https://rest.opensubtitles.org/search/episode-$episode/imdbid-$cleanImdb/season-$season/sublanguageid-ind"
+                            }
+                            Log.d("xr3edFlix", "OpenSubtitles querying by IMDb ID: $subUrl")
+                            val subResponse = app.get(subUrl, headers = subHeaders, timeout = 10)
+                            subResponseText = subResponse.text
+                            subResponseCode = subResponse.code
+                        }
+                        
+                        var array: com.fasterxml.jackson.databind.JsonNode? = if (subResponseText != null && subResponseCode == 200) {
+                            mapper.readTree(subResponseText)
+                        } else null
+                        
+                        if (array == null || !array.isArray || array.size() == 0) {
+                            if (!title.isNullOrEmpty()) {
+                                val encodedTitle = URLEncoder.encode(title, "UTF-8")
+                                val queryUrl = if (type == "movie") {
+                                    "https://rest.opensubtitles.org/search/query-$encodedTitle/sublanguageid-ind"
+                                } else {
+                                    "https://rest.opensubtitles.org/search/episode-$episode/query-$encodedTitle/season-$season/sublanguageid-ind"
+                                }
+                                Log.d("xr3edFlix", "OpenSubtitles falling back to query search: $queryUrl")
+                                val queryResponse = app.get(queryUrl, headers = subHeaders, timeout = 10)
+                                if (queryResponse.code == 200) {
+                                    array = mapper.readTree(queryResponse.text)
+                                }
+                            }
+                        }
+                        
+                        if (array != null && array.isArray && array.size() > 0) {
+                            var subCount = 0
+                            for (i in 0 until array.size()) {
+                                if (subCount >= 3) break
+                                val item = array.get(i)
+                                val downloadLink = item?.get("SubDownloadLink")?.asText()
+                                val fileName = item?.get("SubFileName")?.asText() ?: "Indonesian ${subCount + 1}"
+                                if (!downloadLink.isNullOrEmpty()) {
+                                    val srtUrl = downloadLink.replace(".gz", ".srt")
+                                    subtitleCallback.invoke(newSubtitleFile("Indonesia ${subCount + 1}", srtUrl))
+                                    subCount++
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("xr3edFlix", "OpenSubtitles query failed", e)
+                    }
                 }
             )
             jobs.awaitAll()
@@ -836,17 +910,26 @@ class xr3edFlixProvider : MainAPI() {
         val cast: List<TMDBCastMember>? = null
     )
 
+    data class TMDBExternalIds(
+        @JsonProperty("imdb_id") val imdbId: String? = null
+    )
+
     data class TMDBDetailResponse(
         val id: Int? = null,
         val title: String? = null,
         val name: String? = null,
+        @JsonProperty("original_title") val originalTitle: String? = null,
+        @JsonProperty("original_name") val originalName: String? = null,
+        @JsonProperty("original_language") val originalLanguage: String? = null,
         @JsonProperty("poster_path") val posterPath: String? = null,
         @JsonProperty("backdrop_path") val backdropPath: String? = null,
         val overview: String? = null,
         @JsonProperty("release_date") val releaseDate: String? = null,
         @JsonProperty("first_air_date") val firstAirDate: String? = null,
         val seasons: List<TMDBSeason>? = null,
-        val credits: TMDBCredits? = null
+        val credits: TMDBCredits? = null,
+        @JsonProperty("imdb_id") val imdbId: String? = null,
+        @JsonProperty("external_ids") val externalIds: TMDBExternalIds? = null
     )
 
     data class TMDBSeason(
