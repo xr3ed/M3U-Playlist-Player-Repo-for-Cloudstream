@@ -377,22 +377,33 @@ class xr3edFlixProvider : MainAPI() {
             val tvSlug = if (season != null && episode != null) "$season-$episode" else ""
             val idStr = if (mediaType == "movie") tmdbId.toString() else "$tmdbId/$tvSlug"
 
-            val headers = mapOf(
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
-                "Referer" to "$base/embed/$mediaType/$idStr",
-                "Origin" to base,
-                "Accept" to "application/json, text/plain, */*",
-                "Content-Type" to "application/json",
-                "Sec-Fetch-Dest" to "empty",
-                "Sec-Fetch-Mode" to "cors",
-                "Sec-Fetch-Site" to "same-origin"
+            // 1. Let's request the home page first to set the session cookies
+            val homeRequest = okhttp3.Request.Builder()
+                .url(base)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+                .build()
+            cleanClient.newCall(homeRequest).execute().close()
+
+            val getHeaders = mapOf(
+                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "Accept-Language" to "en-US,en;q=0.9",
+                "Connection" to "keep-alive",
+                "Upgrade-Insecure-Requests" to "1",
+                "Sec-Fetch-Dest" to "document",
+                "Sec-Fetch-Mode" to "navigate",
+                "Sec-Fetch-Site" to "none",
+                "Sec-Fetch-User" to "?1",
+                "Sec-Ch-Ua" to "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"",
+                "Sec-Ch-Ua-Mobile" to "?0",
+                "Sec-Ch-Ua-Platform" to "\"Windows\""
             )
 
-            // Let's request the embed page first to set the session cookies
+            // 2. Let's request the embed page with exact Chrome headers to extract requestToken
             val embedUrl = "$base/embed/$mediaType/$idStr"
             val embedRequest = okhttp3.Request.Builder()
                 .url(embedUrl)
-                .headers(headers.toHeaders())
+                .headers(getHeaders.toHeaders())
                 .build()
             val embedRes = cleanClient.newCall(embedRequest).execute()
             if (embedRes.code != 200) {
@@ -405,8 +416,18 @@ class xr3edFlixProvider : MainAPI() {
             val tokenRegex = Regex("""window\.__REQUEST_TOKEN__\s*=\s*"([^"]+)"""")
             val requestToken = tokenRegex.find(embedHtml)?.groupValues?.get(1) ?: return
 
-            val requestHeaders = headers.toMutableMap()
-            requestHeaders["x-request-token"] = requestToken
+            // 3. Setup postHeaders for API POST request
+            val postHeaders = mapOf(
+                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "Referer" to "$base/embed/$mediaType/$idStr",
+                "Origin" to base,
+                "Accept" to "application/json, text/plain, */*",
+                "Content-Type" to "application/json",
+                "Sec-Fetch-Dest" to "empty",
+                "Sec-Fetch-Mode" to "cors",
+                "Sec-Fetch-Site" to "same-origin",
+                "x-request-token" to requestToken
+            )
 
             // We can query multiple servers to get different CDN links!
             val servers = listOf("Mapple 4K", "Lyra", "Luna", "Pulse", "Orion")
@@ -431,7 +452,7 @@ class xr3edFlixProvider : MainAPI() {
                             val tokenRequest = okhttp3.Request.Builder()
                                 .url("$base/api/stream-token")
                                 .post(body.toRequestBody(postMediaType))
-                                .headers(requestHeaders.toHeaders())
+                                .headers(postHeaders.toHeaders())
                                 .build()
 
                             val response = cleanClient.newCall(tokenRequest).execute()
@@ -450,7 +471,7 @@ class xr3edFlixProvider : MainAPI() {
                                             source = "Mapple - $serverName",
                                             streamUrl = m3u8,
                                             referer = "$base/",
-                                            headers = headers
+                                            headers = postHeaders
                                         ).forEach(callback)
                                     }
                                 }
