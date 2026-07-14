@@ -1,4 +1,6 @@
-version = 15
+import java.util.Properties as JavaProperties
+
+version = 24
 
 android {
     namespace = "com.lagradost.xr3edFlix"
@@ -6,7 +8,16 @@ android {
         buildConfig = true
     }
     defaultConfig {
+        val properties = JavaProperties()
+        val localPropFile = project.rootProject.file("local.properties")
+        if (localPropFile.exists()) {
+            localPropFile.inputStream().use { properties.load(it) }
+        }
+        val mbDefault = System.getenv("MOVIEBOX_SECRET_KEY_DEFAULT") ?: (properties.getProperty("MOVIEBOX_SECRET_KEY_DEFAULT") ?: "")
+        val mbAlt = System.getenv("MOVIEBOX_SECRET_KEY_ALT") ?: (properties.getProperty("MOVIEBOX_SECRET_KEY_ALT") ?: "")
         buildConfigField("String", "XSTREAM_TMDB_API", "\"${System.getenv("XSTREAM_TMDB_API") ?: ""}\"")
+        buildConfigField("String", "MOVIEBOX_SECRET_KEY_DEFAULT", "\"$mbDefault\"")
+        buildConfigField("String", "MOVIEBOX_SECRET_KEY_ALT", "\"$mbAlt\"")
     }
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")

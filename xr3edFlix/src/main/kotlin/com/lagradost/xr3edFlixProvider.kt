@@ -1247,6 +1247,15 @@ class xr3edFlixProvider : MainAPI() {
                 },
                 async {
                     try {
+                        val seasonNum = if (type == "movie") null else (season.toIntOrNull() ?: 1)
+                        val episodeNum = if (type == "movie") null else (episode.toIntOrNull() ?: 1)
+                        invokeMovieBox(title, seasonNum, episodeNum, subCallback, callback)
+                    } catch (e: Exception) {
+                        Log.e("xr3edFlix", "MovieBox query failed", e)
+                    }
+                },
+                async {
+                    try {
                         kotlinx.coroutines.delay(2000)
                         if (hasIndonesian.get()) {
                             Log.d("xr3edFlix", "Indonesian subtitle already loaded, skipping OpenSubtitles search.")
@@ -1469,6 +1478,299 @@ class xr3edFlixProvider : MainAPI() {
         } catch (e: Exception) {
             Log.e("xr3edFlix", "decodeDecimalString error: ${e.message}")
             ""
+        }
+    }
+
+    // ==========================================
+    // MovieBox Extractor Helpers & Implementation
+    // ==========================================
+    
+    private val movieBox = "https://api.inmoviebox.com"
+    private val MOVIEBOX_TOKEN_B64 = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SjFhV1FpT2pJME1UUTFOak0yTkRneU9USTJOelEzTnpZc0ltVjRjQ0k2TVRjNU1ESTFNemc0T1N3aWFXRjBJam94TnpneU5EYzNOVGc1ZlEuUUFLR1Z4SGd6VDItQjVnRWhUT2NCREVwM0Rla0RKcmdnVFBteVViVXJ1QQ=="
+    private val MOVIEBOX_BEARER_TOKEN: String get() = try {
+        String(android.util.Base64.decode(MOVIEBOX_TOKEN_B64, android.util.Base64.DEFAULT), Charsets.UTF_8)
+    } catch(e: Exception) { "" }
+
+    private fun md5(input: ByteArray): String {
+        return MessageDigest.getInstance("MD5").digest(input)
+            .joinToString("") { "%02x".format(it) }
+    }
+
+    private fun generateDeviceId(): String {
+        val bytes = ByteArray(16)
+        java.security.SecureRandom().nextBytes(bytes)
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun generateXClientToken(): String {
+        val timestamp = System.currentTimeMillis().toString()
+        val reversed = timestamp.reversed()
+        val hash = md5(reversed.toByteArray())
+        return "$timestamp,$hash"
+    }
+
+    private fun buildCanonicalString(
+        method: String,
+        accept: String?,
+        contentType: String?,
+        url: String,
+        body: String?,
+        timestamp: Long
+    ): String {
+        val parsed = android.net.Uri.parse(url)
+        val path = parsed.path ?: ""
+        
+        val query = if (parsed.queryParameterNames.isNotEmpty()) {
+            parsed.queryParameterNames.sorted().joinToString("&") { key ->
+                parsed.getQueryParameters(key).joinToString("&") { value ->
+                    "$key=$value"
+                }
+            }
+        } else ""
+
+        val canonicalUrl = if (query.isNotEmpty()) "$path?$query" else path
+
+        val bodyBytes = body?.toByteArray(Charsets.UTF_8)
+        val bodyHash = if (bodyBytes != null) {
+            val trimmed = if (bodyBytes.size > 102400) bodyBytes.copyOfRange(0, 102400) else bodyBytes
+            md5(trimmed)
+        } else ""
+
+        val bodyLength = bodyBytes?.size?.toString() ?: ""
+        return "${method.uppercase()}\n" +
+                "${accept ?: ""}\n" +
+                "${contentType ?: ""}\n" +
+                "$bodyLength\n" +
+                "$timestamp\n" +
+                "$bodyHash\n" +
+                canonicalUrl
+    }
+
+    private fun generateXTrSignature(
+        method: String,
+        accept: String? = "application/json",
+        contentType: String? = "application/json",
+        url: String,
+        body: String? = null,
+        useAltKey: Boolean = false
+    ): String {
+        val timestamp = System.currentTimeMillis()
+        val canonical = buildCanonicalString(
+            method = method,
+            accept = accept,
+            contentType = contentType,
+            url = url,
+            body = body,
+            timestamp = timestamp
+        )
+        val secretKey = if (useAltKey) {
+            BuildConfig.MOVIEBOX_SECRET_KEY_ALT
+        } else {
+            BuildConfig.MOVIEBOX_SECRET_KEY_DEFAULT
+        }
+        val secretBytes = try {
+            if (secretKey.isEmpty() || secretKey == "dummy") {
+                ByteArray(0)
+            } else {
+                val decodedOnce = android.util.Base64.decode(secretKey, android.util.Base64.DEFAULT)
+                val decodedOnceStr = String(decodedOnce, Charsets.UTF_8)
+                if (decodedOnceStr.matches(Regex("^[A-Za-z0-9+/=_-]{30,80}$"))) {
+                    android.util.Base64.decode(decodedOnceStr, android.util.Base64.DEFAULT)
+                } else {
+                    decodedOnce
+                }
+            }
+        } catch(e: Exception) {
+            ByteArray(0)
+        }
+        if (secretBytes.isEmpty()) {
+            Log.w("xr3edFlix", "MovieBox secretBytes is empty for key=$secretKey")
+            return "$timestamp|2|dummy_signature"
+        }
+        val mac = javax.crypto.Mac.getInstance("HmacMD5").apply {
+            init(SecretKeySpec(secretBytes, "HmacMD5"))
+        }
+        val rawSignature = mac.doFinal(canonical.toByteArray(Charsets.UTF_8))
+        val signatureBase64 = android.util.Base64.encodeToString(rawSignature, android.util.Base64.NO_WRAP)
+        return "$timestamp|2|$signatureBase64"
+    }
+
+    private fun getQualityFromName(qualityName: String?): Int {
+        if (qualityName.isNullOrEmpty()) return Qualities.Unknown.value
+        val clean = qualityName.lowercase()
+        return when {
+            clean.contains("1080") -> Qualities.P1080.value
+            clean.contains("720") -> Qualities.P720.value
+            clean.contains("480") -> Qualities.P480.value
+            clean.contains("360") -> Qualities.P360.value
+            else -> Qualities.Unknown.value
+        }
+    }
+
+    private fun isTitleMatch(name: String, title: String): Boolean {
+        val cleanName = name.lowercase().replace(Regex("[^a-zA-Z0-9]"), "")
+        val cleanTitle = title.lowercase().replace(Regex("[^a-zA-Z0-9]"), "")
+        if (cleanName.contains(cleanTitle) || cleanTitle.contains(cleanName)) return true
+        
+        if (title.contains(":")) {
+            val part = title.substringBefore(":").trim().lowercase().replace(Regex("[^a-zA-Z0-9]"), "")
+            if (part.isNotEmpty() && (cleanName.contains(part) || part.contains(cleanName))) return true
+        }
+        if (title.contains("-")) {
+            val part = title.substringBefore("-").trim().lowercase().replace(Regex("[^a-zA-Z0-9]"), "")
+            if (part.isNotEmpty() && (cleanName.contains(part) || part.contains(cleanName))) return true
+        }
+        return false
+    }
+
+    suspend fun invokeMovieBox(
+        title: String?,
+        season: Int? = 0,
+        episode: Int? = 0,
+        subCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        try {
+            if (title.isNullOrBlank()) return false
+            Log.d("xr3edFlix", "MovieBox Hybrid query starting: title=$title, season=$season, episode=$episode")
+
+            val searchUrl = "https://api.inmoviebox.com/wefeed-mobile-bff/subject-api/search/v2"
+            val jsonBody = """{"page":1,"perPage":10,"keyword":"$title"}"""
+            val xClientToken = generateXClientToken()
+            val xTrSignature = generateXTrSignature(
+                "POST", "application/json", "application/json; charset=utf-8", searchUrl, jsonBody
+            )
+            val devId = generateDeviceId()
+            val searchHeaders = mapOf(
+                "user-agent" to "com.community.oneroom/50020088 (Linux; U; Android 13; en_US; Subsystem for Android(TM); Build/TQ3A.230901.001; Cronet/145.0.7582.0)",
+                "accept" to "application/json",
+                "content-type" to "application/json; charset=utf-8",
+                "x-client-token" to xClientToken,
+                "x-tr-signature" to xTrSignature,
+                "x-client-info" to """{"package_name":"com.community.oneroom","version_name":"3.0.13.0325.03","version_code":50020088,"os":"android","os_version":"13","install_ch":"ps","device_id":"$devId","install_store":"ps","gaid":"1b2212c1-dadf-43c3-a0c8-bd6ce48ae22d","brand":"Windows","model":"Subsystem for Android(TM)","system_language":"en","net":"NETWORK_WIFI","region":"US","timezone":"Asia/Calcutta","sp_code":"","X-Play-Mode":"1","X-Idle-Data":"1","X-Family-Mode":"0","X-Content-Mode":"0"}""",
+                "x-client-status" to "0",
+                "Authorization" to "Bearer $MOVIEBOX_BEARER_TOKEN"
+            )
+
+            val requestBody = jsonBody.toRequestBody("application/json".toMediaTypeOrNull())
+            val response = app.post(searchUrl, headers = searchHeaders, requestBody = requestBody)
+            Log.d("xr3edFlix", "MovieBox search response: code=${response.code}")
+            if (response.code != 200) return false
+
+            val root = mapper.readTree(response.text)
+            val results = root["data"]?.get("results") ?: return false
+
+            val matchingIds = mutableListOf<String>()
+            for (result in results) {
+                val subjects = result["subjects"] ?: continue
+                for (subject in subjects) {
+                    val name = subject["title"]?.asText() ?: continue
+                    val subjectId = subject["subjectId"]?.asText() ?: continue
+                    val type = subject["subjectType"]?.asInt() ?: 0
+                    if (isTitleMatch(name, title) && (type == 1 || type == 2)) {
+                        matchingIds.add(subjectId)
+                    }
+                }
+            }
+
+            Log.d("xr3edFlix", "MovieBox matchingIds: $matchingIds")
+            if (matchingIds.isEmpty()) return false
+
+            var foundLinks = false
+            val targetSeason = season ?: 0
+            val targetEpisode = episode ?: 0
+
+            for (subjectId in matchingIds) {
+                try {
+                    val downloadUrl = "https://h5-api.aoneroom.com/wefeed-h5api-bff/subject/download" +
+                            "?subjectId=${java.net.URLEncoder.encode(subjectId, "UTF-8")}" +
+                            "&se=$targetSeason&ep=$targetEpisode&detailPath="
+
+                    val downloadHeaders = mapOf(
+                        "accept" to "*/*",
+                        "accept-language" to "en-US,en;q=0.5",
+                        "user-agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+                        "origin" to "https://videodownloader.site",
+                        "referer" to "https://videodownloader.site/"
+                    )
+
+                    val dlRes = app.get(downloadUrl, headers = downloadHeaders)
+                    Log.d("xr3edFlix", "MovieBox download response: code=${dlRes.code} for subjectId=$subjectId")
+                    if (dlRes.code != 200) continue
+
+                    val dlRoot = mapper.readTree(dlRes.text)
+                    if (dlRoot["code"]?.asInt() != 0) continue
+                    val dlData = dlRoot["data"] ?: continue
+
+                    val downloads = dlData["downloads"]
+                    val captions = dlData["captions"]
+
+                    if (downloads != null && downloads.isArray) {
+                        for (download in downloads) {
+                            val streamUrl = download["url"]?.asText() ?: continue
+                            if (streamUrl.isBlank()) continue
+                            val resolution = download["resolution"]?.asInt()
+                            val quality = when (resolution) {
+                                2160 -> Qualities.P2160.value
+                                1440 -> Qualities.P1440.value
+                                1080 -> Qualities.P1080.value
+                                720 -> Qualities.P720.value
+                                480 -> Qualities.P480.value
+                                360 -> Qualities.P360.value
+                                240 -> Qualities.P240.value
+                                else -> resolution ?: Qualities.Unknown.value
+                            }
+
+                            val linkType = when {
+                                streamUrl.startsWith("magnet:", ignoreCase = true) -> ExtractorLinkType.MAGNET
+                                streamUrl.contains(".mpd", ignoreCase = true) -> ExtractorLinkType.DASH
+                                streamUrl.endsWith(".torrent", ignoreCase = true) -> ExtractorLinkType.TORRENT
+                                streamUrl.endsWith(".m3u8", ignoreCase = true) -> ExtractorLinkType.M3U8
+                                else -> ExtractorLinkType.VIDEO
+                            }
+
+                            callback.invoke(
+                                newExtractorLink(
+                                    source = "MovieBox",
+                                    name = "MovieBox ${resolution ?: ""}".trim(),
+                                    url = streamUrl,
+                                    type = linkType
+                                ) {
+                                    this.quality = quality
+                                    this.referer = "https://videodownloader.site/"
+                                    this.headers = mapOf(
+                                        "Referer" to "https://videodownloader.site/",
+                                        "Origin" to "https://videodownloader.site"
+                                    )
+                                }
+                            )
+                            Log.d("xr3edFlix", "MovieBox Hybrid added link: $streamUrl")
+                            foundLinks = true
+                        }
+                    }
+
+                    if (captions != null && captions.isArray) {
+                        for (caption in captions) {
+                            val captionUrl = caption["url"]?.asText() ?: continue
+                            if (captionUrl.isBlank()) continue
+                            val lang = caption["lanName"]?.asText() ?: caption["lan"]?.asText() ?: "Unknown"
+                            subCallback.invoke(
+                                newSubtitleFile(
+                                    url = captionUrl,
+                                    lang = lang
+                                )
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("xr3edFlix", "MovieBox Hybrid download parse error", e)
+                }
+            }
+
+            return foundLinks
+        } catch (e: Exception) {
+            Log.e("xr3edFlix", "MovieBox Hybrid main error", e)
+            return false
         }
     }
 }
