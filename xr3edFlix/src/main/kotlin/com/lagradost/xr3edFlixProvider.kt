@@ -142,59 +142,7 @@ class xr3edFlixProvider : MainAPI() {
         } ?: emptyList()
     }
 
-    private suspend fun fetchFlixPatrolList(providerUrl: String, isMovie: Boolean, fallbackProviderId: String, fallbackPath: String): List<SearchResponse> {
-        return try {
-            val html = app.get(providerUrl, timeout = 10).text
-            val heading = if (isMovie) "TOP 10 Movies" else "TOP 10 TV Shows"
-            val idx = html.indexOf(heading)
-            if (idx == -1) {
-                return fetchTmdbList(fallbackPath, mapOf("with_watch_providers" to fallbackProviderId, "watch_region" to "ID", "sort_by" to "popularity.desc"))
-            }
-            val nextIdx = html.indexOf("by day", idx)
-            val section = if (nextIdx != -1) html.substring(idx, nextIdx) else html.substring(idx)
-            
-            val regex = Regex("""<a href="/title/([^"]+)/" class="hover:underline">([^<]+)</a>""")
-            val titles = regex.findAll(section).map { it.groupValues[2].trim() }.toList().take(10)
-            
-            if (titles.isEmpty()) {
-                return fetchTmdbList(fallbackPath, mapOf("with_watch_providers" to fallbackProviderId, "watch_region" to "ID", "sort_by" to "popularity.desc"))
-            }
-            
-            coroutineScope {
-                titles.map { title ->
-                    async {
-                        val encoded = URLEncoder.encode(title, "UTF-8")
-                        val searchUrl = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=en-US"
-                        val searchRes = parsedGet<TMDBDiscoverResponse>(searchUrl)
-                        val media = searchRes?.results?.firstOrNull {
-                            if (isMovie) it.mediaType == "movie" || it.title != null
-                            else it.mediaType == "tv" || it.name != null
-                        }
-                        if (media != null) {
-                            val titleName = if (media.originalLanguage == "id") {
-                                media.originalTitle ?: media.originalName ?: media.title ?: media.name ?: title
-                            } else {
-                                media.title ?: media.name ?: title
-                            }
-                            val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
-                            newMovieSearchResponse(
-                                name = titleName,
-                                url = if (isMovie) "movie::${media.id}" else "tv::${media.id}",
-                                type = if (isMovie) TvType.Movie else TvType.TvSeries
-                            ) {
-                                this.posterUrl = poster
-                            }
-                        } else {
-                            null
-                        }
-                    }
-                }.awaitAll().filterNotNull()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            fetchTmdbList(fallbackPath, mapOf("with_watch_providers" to fallbackProviderId, "watch_region" to "ID", "sort_by" to "popularity.desc"))
-        }
-    }
+
 
     private suspend fun fetchRecentRegionalList(providerId: String, isMovie: Boolean, lang: String? = null): List<SearchResponse> {
         val path = if (isMovie) "discover/movie" else "discover/tv"
@@ -242,17 +190,17 @@ class xr3edFlixProvider : MainAPI() {
             val popularSeries = async { HomePageList("Seri Populer", fetchTmdbList("discover/tv", mapOf("sort_by" to "popularity.desc"))) }
 
             // Providers - Movies & Series (watch_region=ID)
-            val netflixMovies = async { HomePageList("Netflix Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", true, "8", "discover/movie")) }
-            val netflixSeries = async { HomePageList("Netflix Series", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", false, "8", "discover/tv")) }
+            val netflixMovies = async { HomePageList("Netflix Movies", fetchRecentRegionalList("8", true)) }
+            val netflixSeries = async { HomePageList("Netflix Series", fetchRecentRegionalList("8", false)) }
             
-            val disneyMovies = async { HomePageList("Disney+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/disney/indonesia/", true, "122", "discover/movie")) }
-            val disneySeries = async { HomePageList("Disney+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/disney/indonesia/", false, "122", "discover/tv")) }
+            val disneyMovies = async { HomePageList("Disney+ Movies", fetchRecentRegionalList("122", true)) }
+            val disneySeries = async { HomePageList("Disney+ Series", fetchRecentRegionalList("122", false)) }
             
-            val primeMovies = async { HomePageList("Prime Video Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/amazon-prime/indonesia/", true, "119", "discover/movie")) }
-            val primeSeries = async { HomePageList("Prime Video Series", fetchFlixPatrolList("https://flixpatrol.com/top10/amazon-prime/indonesia/", false, "119", "discover/tv")) }
+            val primeMovies = async { HomePageList("Prime Video Movies", fetchRecentRegionalList("119", true)) }
+            val primeSeries = async { HomePageList("Prime Video Series", fetchRecentRegionalList("119", false)) }
             
-            val appleMovies = async { HomePageList("Apple TV+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", true, "350", "discover/movie")) }
-            val appleSeries = async { HomePageList("Apple TV+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", false, "350", "discover/tv")) }
+            val appleMovies = async { HomePageList("Apple TV+ Movies", fetchRecentRegionalList("350", true)) }
+            val appleSeries = async { HomePageList("Apple TV+ Series", fetchRecentRegionalList("350", false)) }
             
             val viuSeries = async {
                 val viuKo = fetchRecentRegionalList("158", false, "ko")
@@ -266,17 +214,15 @@ class xr3edFlixProvider : MainAPI() {
                 HomePageList("Viu Series", combined)
             }
             
-
+            val hboMovies = async { HomePageList("HBO GO Movies", fetchRecentRegionalList("1899", true)) }
+            val hboSeries = async { HomePageList("HBO GO Series", fetchRecentRegionalList("1899", false)) }
             
-            val hboMovies = async { HomePageList("HBO GO Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/hbo-max/indonesia/", true, "1899", "discover/movie")) }
-            val hboSeries = async { HomePageList("HBO GO Series", fetchFlixPatrolList("https://flixpatrol.com/top10/hbo-max/indonesia/", false, "1899", "discover/tv")) }
+            val catchplayMovies = async { HomePageList("Catchplay+ Movies", fetchRecentRegionalList("159", true)) }
             
-            val catchplayMovies = async { HomePageList("Catchplay+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", true, "159", "discover/movie")) }
+            val crunchyrollSeries = async { HomePageList("Crunchyroll Series", fetchRecentRegionalList("283", false)) }
             
-            val crunchyrollSeries = async { HomePageList("Crunchyroll Series", fetchFlixPatrolList("https://flixpatrol.com/top10/crunchyroll/indonesia/", false, "283", "discover/tv")) }
-            
-            val lionsgateMovies = async { HomePageList("Lionsgate Play Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/lionsgate/indonesia/", true, "561", "discover/movie")) }
-            val lionsgateSeries = async { HomePageList("Lionsgate Play Series", fetchFlixPatrolList("https://flixpatrol.com/top10/lionsgate/indonesia/", false, "561", "discover/tv")) }
+            val lionsgateMovies = async { HomePageList("Lionsgate Play Movies", fetchRecentRegionalList("561", true)) }
+            val lionsgateSeries = async { HomePageList("Lionsgate Play Series", fetchRecentRegionalList("561", false)) }
  
             listOf(
                 trendingMovies.await(), popularMovies.await(),
