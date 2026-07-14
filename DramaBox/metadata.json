@@ -3,6 +3,6 @@
   "displayName": "#Dracin DramaBox",
   "description": "Ekstensi Cloudstream untuk menonton drama pendek DramaBox",
   "author": "xr3ed",
-  "version": 13,
+  "version": 14,
   "tvTypes": ["TvSeries"]
 }
