@@ -113,7 +113,7 @@ class xr3edFlixProvider : MainAPI() {
     }
 
     override var name = "xr3edFlix"
-    override var mainUrl = "https://lynk.id/xr3ed"
+    override var mainUrl = "https://watch-v2.autoembed.app"
     override var lang = "id"
     override var supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
     override val hasMainPage = true
