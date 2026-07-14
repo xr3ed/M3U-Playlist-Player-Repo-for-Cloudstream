@@ -25,6 +25,11 @@ import org.json.JSONArray
 import java.net.URLDecoder
 import java.net.URLEncoder
 import kotlin.math.min
+import java.net.ServerSocket
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.concurrent.thread
 
 class DracinAIOProvider : MainAPI() {
     companion object {
@@ -48,6 +53,26 @@ class DracinAIOProvider : MainAPI() {
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .build()
 
+        private val unsafeClient: OkHttpClient by lazy {
+            try {
+                val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+                    override fun checkClientTrusted(chain: Array<out java.security.cert.X509Certificate>?, authType: String?) {}
+                    override fun checkServerTrusted(chain: Array<out java.security.cert.X509Certificate>?, authType: String?) {}
+                    override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+                })
+                val sslContext = javax.net.ssl.SSLContext.getInstance("SSL")
+                sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+                OkHttpClient.Builder()
+                    .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                    .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                    .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as javax.net.ssl.X509TrustManager)
+                    .hostnameVerifier { _, _ -> true }
+                    .build()
+            } catch (e: Exception) {
+                cleanClient
+            }
+        }
+
         data class ProviderInfo(val code: String, val name: String)
 
         val providers = listOf(
@@ -66,8 +91,136 @@ class DracinAIOProvider : MainAPI() {
             ProviderInfo("starshort", "StarShort"),
             ProviderInfo("stardusttv", "StardustTV"),
             ProviderInfo("dramawave", "DramaWave"),
-            ProviderInfo("dramanova", "DramaNova")
+            ProviderInfo("dramanova", "DramaNova"),
+            ProviderInfo("moviebox", "MovieBox"),
+            ProviderInfo("dotdrama", "DotDrama"),
+            ProviderInfo("netshort", "NetShort"),
+            ProviderInfo("velolo", "Velolo"),
+            ProviderInfo("cubetv", "CubeTV"),
+            ProviderInfo("bilitv", "BiliTV")
         )
+
+        val providersWithDub = setOf("reelshort", "shortmax", "dramabox", "dramarush", "melolo", "starshort", "netshort", "cubetv")
+
+        private var serverSocket: ServerSocket? = null
+        private var serverPort: Int = 0
+        private val playlistCache = ConcurrentHashMap<String, String>()
+
+        fun startLocalServer(): Int {
+            if (serverSocket != null) return serverPort
+            try {
+                val socket = ServerSocket(0)
+                serverSocket = socket
+                serverPort = socket.localPort
+                thread(start = true, isDaemon = true) {
+                    while (!socket.isClosed) {
+                        try {
+                            val client = socket.accept()
+                            thread(start = true, isDaemon = true) {
+                                try {
+                                    val reader = BufferedReader(InputStreamReader(client.getInputStream()))
+                                    val line = reader.readLine() ?: ""
+                                    val path = line.split(" ").getOrNull(1) ?: ""
+                                    if (path.startsWith("/play_") && path.endsWith(".m3u8")) {
+                                        val streamId = path.substringAfter("/play_").substringBefore(".m3u8")
+                                        val m3u8 = playlistCache[streamId]
+                                        val os = client.getOutputStream()
+                                        if (m3u8 != null) {
+                                            val response = "HTTP/1.1 200 OK\r\n" +
+                                                    "Content-Type: application/vnd.apple.mpegurl\r\n" +
+                                                    "Content-Length: ${m3u8.toByteArray(Charsets.UTF_8).size}\r\n" +
+                                                    "Connection: close\r\n\r\n" +
+                                                    m3u8
+                                            os.write(response.toByteArray(Charsets.UTF_8))
+                                        } else {
+                                            val response = "HTTP/1.1 404 Not Found\r\n" +
+                                                    "Content-Length: 9\r\n" +
+                                                    "Connection: close\r\n\r\n" +
+                                                    "Not Found"
+                                            os.write(response.toByteArray(Charsets.UTF_8))
+                                        }
+                                        os.flush()
+                                    } else if (path.startsWith("/img_")) {
+                                        val encodedUrl = path.substringAfter("/img_")
+                                        val decodedUrl = try {
+                                            val cleanBase64 = encodedUrl.replace('_', '/').replace('-', '+')
+                                            val pad = (4 - cleanBase64.length % 4) % 4
+                                            val finalBase64 = if (pad > 0) cleanBase64 + "=".repeat(pad) else cleanBase64
+                                            String(Base64.decode(finalBase64, Base64.DEFAULT), Charsets.UTF_8)
+                                        } catch(e: Exception) { "" }
+                                        
+                                        val os = client.getOutputStream()
+                                        if (decodedUrl.startsWith("http")) {
+                                            try {
+                                                val request = Request.Builder().url(decodedUrl).build()
+                                                val response = unsafeClient.newCall(request).execute()
+                                                val bytes = response.body.bytes()
+                                                val mime = response.header("Content-Type", "image/jpeg")
+                                                val responseHeaders = "HTTP/1.1 200 OK\r\n" +
+                                                        "Content-Type: $mime\r\n" +
+                                                        "Content-Length: ${bytes.size}\r\n" +
+                                                        "Connection: close\r\n\r\n"
+                                                os.write(responseHeaders.toByteArray(Charsets.UTF_8))
+                                                os.write(bytes)
+                                            } catch (e: Exception) {
+                                                val response = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                                                os.write(response.toByteArray(Charsets.UTF_8))
+                                            }
+                                        } else {
+                                            val response = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                                            os.write(response.toByteArray(Charsets.UTF_8))
+                                        }
+                                        os.flush()
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                } finally {
+                                    try { client.close() } catch (e: Exception) {}
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // ignore
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return serverPort
+        }
+    }
+
+    private fun buildDetailUrl(provider: String, id: String, title: String, cover: String): String {
+        return try {
+            val encodedTitle = URLEncoder.encode(title, "UTF-8")
+            val encodedCover = URLEncoder.encode(cover, "UTF-8")
+            "https://lynk.id/xr3ed#$provider-$id?title=$encodedTitle&cover=$encodedCover"
+        } catch (e: Exception) {
+            "https://lynk.id/xr3ed#$provider-$id"
+        }
+    }
+
+    private fun rewritePlaylistLine(line: String): String {
+        var newLine = line
+        val m3u8ProxyRegex = """/api/m3u8-proxy\?url=([^"\r\n\s]+)""".toRegex()
+        newLine = m3u8ProxyRegex.replace(newLine) { matchResult ->
+            val encoded = matchResult.groupValues[1]
+            try {
+                URLDecoder.decode(encoded, "UTF-8")
+            } catch (e: Exception) {
+                matchResult.value
+            }
+        }
+        val proxyRegex = """/api/proxy\?u=([A-Za-z0-9+/=_-]+)""".toRegex()
+        newLine = proxyRegex.replace(newLine) { matchResult ->
+            val encoded = matchResult.groupValues[1]
+            try {
+                String(Base64.decode(encoded, Base64.DEFAULT), Charsets.UTF_8)
+            } catch (e: Exception) {
+                matchResult.value
+            }
+        }
+        return newLine
     }
 
     override var name = "#Dracin All in One"
@@ -82,10 +235,12 @@ class DracinAIOProvider : MainAPI() {
         MainPageData("Lagi Trending", "global|trending"),
         MainPageData("Baru Tayang", "global|barutayang")
     ) + providers.flatMap { prov ->
-        listOf(
-            MainPageData("[${prov.name}] - Semua", "${prov.code}|semua"),
-            MainPageData("[${prov.name}] - Dub Indo", "${prov.code}|dubindo")
-        )
+        val list = ArrayList<MainPageData>()
+        list.add(MainPageData("[${prov.name}] - Semua", "${prov.code}|semua"))
+        if (providersWithDub.contains(prov.code)) {
+            list.add(MainPageData("[${prov.name}] - Dub Indo", "${prov.code}|dubindo"))
+        }
+        list
     }
 
 
@@ -188,8 +343,8 @@ class DracinAIOProvider : MainAPI() {
         if (responseText.isEmpty()) return emptyList()
         try {
             val root = JSONObject(responseText)
-            // 1. Check if "items" array is at root
-            val itemsArray = root.optJSONArray("items")
+            // 1. Check if "items" or "dramas" array is at root
+            val itemsArray = root.optJSONArray("items") ?: root.optJSONArray("dramas")
             if (itemsArray != null) {
                 val list = ArrayList<AioItem>()
                 for (i in 0 until itemsArray.length()) {
@@ -204,7 +359,7 @@ class DracinAIOProvider : MainAPI() {
                 val sectionsArray = dataObj.optJSONArray("sections")
                 if (sectionsArray != null && sectionsArray.length() > 0) {
                     val section0 = sectionsArray.optJSONObject(0)
-                    val secItems = section0?.optJSONArray("items")
+                    val secItems = section0?.optJSONArray("items") ?: section0?.optJSONArray("dramas")
                     if (secItems != null) {
                         val list = ArrayList<AioItem>()
                         for (i in 0 until secItems.length()) {
@@ -213,6 +368,15 @@ class DracinAIOProvider : MainAPI() {
                         }
                         return list
                     }
+                }
+                val dataItems = dataObj.optJSONArray("items") ?: dataObj.optJSONArray("dramas")
+                if (dataItems != null) {
+                    val list = ArrayList<AioItem>()
+                    for (i in 0 until dataItems.length()) {
+                        val obj = dataItems.optJSONObject(i) ?: continue
+                        list.add(parseAioItem(obj))
+                    }
+                    return list
                 }
             } else if (dataObj is JSONArray) {
                 val list = ArrayList<AioItem>()
@@ -230,9 +394,9 @@ class DracinAIOProvider : MainAPI() {
 
     private fun parseAioItem(obj: JSONObject): AioItem {
         val code = obj.optString("code")
-        val id = if (code.isNotEmpty() && obj.has("id")) code else obj.optString("id").ifEmpty { obj.optString("key").ifEmpty { obj.optString("code") } }
+        val id = if (code.isNotEmpty() && obj.has("id")) code else obj.optString("id").ifEmpty { obj.optString("fakeId").ifEmpty { obj.optString("key").ifEmpty { obj.optString("code") } } }
         val title = obj.optString("title").ifEmpty { obj.optString("name") }
-        val cover = obj.optString("cover").ifEmpty { obj.optString("poster").ifEmpty { obj.optString("icon") } }
+        val cover = obj.optString("cover").ifEmpty { obj.optString("poster").ifEmpty { obj.optString("coverImgUrl").ifEmpty { obj.optString("icon") } } }
         val episodes = obj.optInt("totalEpisodes", 0).let { if (it > 0) it else obj.optInt("episodes", 0).let { if (it > 0) it else obj.optInt("chapters", 0) } }
         return AioItem(id, title, cover, episodes)
     }
@@ -250,8 +414,22 @@ class DracinAIOProvider : MainAPI() {
                 val cleanBase64 = base64Part.replace('_', '/').replace('-', '+')
                 val decodedBytes = Base64.decode(cleanBase64, Base64.DEFAULT)
                 val decodedUrl = String(decodedBytes, Charsets.UTF_8)
+                if (decodedUrl.contains("awscover.netshort.com")) {
+                    val port = startLocalServer()
+                    if (port > 0) {
+                        val enc = Base64.encodeToString(decodedUrl.toByteArray(Charsets.UTF_8), Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
+                        return "http://127.0.0.1:$port/img_$enc"
+                    }
+                }
                 if (decodedUrl.startsWith("http")) {
                     return decodedUrl
+                }
+            }
+            if (url.contains("awscover.netshort.com")) {
+                val port = startLocalServer()
+                if (port > 0) {
+                    val enc = Base64.encodeToString(url.toByteArray(Charsets.UTF_8), Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
+                    return "http://127.0.0.1:$port/img_$enc"
                 }
             }
         } catch (e: Exception) {
@@ -268,8 +446,8 @@ class DracinAIOProvider : MainAPI() {
 
             val context = appContext
             if (context != null) {
-                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v2")
-                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v2") ?: 0L
+                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v4")
+                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v4") ?: 0L
                 val now = System.currentTimeMillis()
                 // Cache TTL: 10 minutes (600.000 ms)
                 if (cachedJson != null && now - cachedTime < 600000) {
@@ -312,7 +490,7 @@ class DracinAIOProvider : MainAPI() {
                                 val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
                                 val coverUrl = getDirectImageUrl(src)
                                 list.add(
-                                    newMovieSearchResponse(alt, "https://lynk.id/xr3ed#$providerCode-$id", TvType.TvSeries) {
+                                    newMovieSearchResponse(alt, buildDetailUrl(providerCode, id, alt, src), TvType.TvSeries) {
                                         this.posterUrl = coverUrl
                                     }
                                 )
@@ -332,7 +510,12 @@ class DracinAIOProvider : MainAPI() {
                 providers.map { prov ->
                     async {
                         try {
-                            val url = "$API_URL/${prov.code}?action=rank"
+                            val action = when (prov.code) {
+                                "dotdrama" -> "list"
+                                "netshort" -> "home"
+                                else -> "rank"
+                            }
+                            val url = "$API_URL/${prov.code}?action=$action"
                             val responseText = httpGet(url)
                             val rawItems = parseRankItems(responseText)
                             
@@ -377,7 +560,7 @@ class DracinAIOProvider : MainAPI() {
                                 }
                                 val searchResponses = pageItemsWithCovers.map {
                                     val coverUrl = getDirectImageUrl(it.cover)
-                                    newMovieSearchResponse(it.title, "https://lynk.id/xr3ed#${prov.code}-${it.id}", TvType.TvSeries) {
+                                    newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
                                         this.posterUrl = coverUrl
                                     }
                                 }
@@ -387,7 +570,9 @@ class DracinAIOProvider : MainAPI() {
                             }
                             
                             buildList(nonDubItems, "[${prov.name}] - Semua")
-                            buildList(dubItems, "[${prov.name}] - Dub Indo")
+                            if (providersWithDub.contains(prov.code)) {
+                                buildList(dubItems, "[${prov.name}] - Dub Indo")
+                            }
                             
                             lists
                         } catch (e: Exception) {
@@ -404,8 +589,8 @@ class DracinAIOProvider : MainAPI() {
                 try {
                     val jsonStr = serializeHomeCache(homePageLists)
                     if (jsonStr.isNotEmpty()) {
-                        context.setKey("dracin_aio_home_cache_v2", jsonStr)
-                        context.setKey("dracin_aio_home_cache_time_v2", System.currentTimeMillis())
+                        context.setKey("dracin_aio_home_cache_v4", jsonStr)
+                        context.setKey("dracin_aio_home_cache_time_v4", System.currentTimeMillis())
                         Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
                     }
                 } catch (e: Exception) {
@@ -443,7 +628,7 @@ class DracinAIOProvider : MainAPI() {
                         val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
                         val coverUrl = getDirectImageUrl(src)
                         list.add(
-                            newMovieSearchResponse(alt, "https://lynk.id/xr3ed#$providerCode-$id", TvType.TvSeries) {
+                            newMovieSearchResponse(alt, buildDetailUrl(providerCode, id, alt, src), TvType.TvSeries) {
                                 this.posterUrl = coverUrl
                             }
                         )
@@ -464,7 +649,12 @@ class DracinAIOProvider : MainAPI() {
             val provider = parts[0]
             val filter = parts[1]
 
-            val url = "$API_URL/$provider?action=rank"
+            val action = when (provider) {
+                "dotdrama" -> "list"
+                "netshort" -> "home"
+                else -> "rank"
+            }
+            val url = "$API_URL/$provider?action=$action"
             val responseText = httpGet(url)
             val rawItems = parseRankItems(responseText)
 
@@ -483,7 +673,7 @@ class DracinAIOProvider : MainAPI() {
 
             val searchResponses = pageItems.map {
                 val coverUrl = getDirectImageUrl(it.cover)
-                newMovieSearchResponse(it.title, "https://lynk.id/xr3ed#$provider-${it.id}", TvType.TvSeries) {
+                newMovieSearchResponse(it.title, buildDetailUrl(provider, it.id, it.title, it.cover), TvType.TvSeries) {
                     this.posterUrl = coverUrl
                 }
             }
@@ -505,7 +695,7 @@ class DracinAIOProvider : MainAPI() {
                         val items = parseRankItems(resText)
                         items.map { item ->
                             val coverUrl = getDirectImageUrl(item.cover)
-                            newMovieSearchResponse(item.title, "https://lynk.id/xr3ed#${prov.code}-${item.id}", TvType.TvSeries) {
+                            newMovieSearchResponse(item.title, buildDetailUrl(prov.code, item.id, item.title, item.cover), TvType.TvSeries) {
                                 this.posterUrl = coverUrl
                             }
                         }
@@ -523,10 +713,29 @@ class DracinAIOProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val rawProvider: String
         val id: String
+        var passedTitle = ""
+        var passedCover = ""
+        
         if (url.contains("#")) {
             val hashPart = url.substringAfter("#")
             rawProvider = hashPart.substringBefore("-")
-            id = hashPart.substringAfter("-")
+            val idAndParams = hashPart.substringAfter("-")
+            if (idAndParams.contains("?")) {
+                id = idAndParams.substringBefore("?")
+                val query = idAndParams.substringAfter("?")
+                val pairs = query.split("&")
+                for (pair in pairs) {
+                    val idx = pair.indexOf("=")
+                    if (idx != -1) {
+                        val key = pair.substring(0, idx)
+                        val value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8")
+                        if (key == "title") passedTitle = value
+                        if (key == "cover") passedCover = value
+                    }
+                }
+            } else {
+                id = idAndParams
+            }
         } else {
             val parts = url.split("|")
             if (parts.size < 2) return null
@@ -559,8 +768,8 @@ class DracinAIOProvider : MainAPI() {
             // Format 1: Reelshort (has "data" object containing "chapters")
             if (targetObj === root && root.has("data")) {
                 val dataObj = root.getJSONObject("data")
-                title = dataObj.optString("title").ifEmpty { dataObj.optString("bookName") }
-                cover = dataObj.optString("cover").ifEmpty { dataObj.optString("poster").ifEmpty { dataObj.optString("icon") } }
+                title = dataObj.optString("title").ifEmpty { dataObj.optString("bookName").ifEmpty { passedTitle.ifEmpty { id } } }
+                cover = dataObj.optString("cover").ifEmpty { dataObj.optString("poster").ifEmpty { dataObj.optString("icon").ifEmpty { passedCover } } }
                 plot = dataObj.optString("description").ifEmpty { dataObj.optString("introduction") }
                 val bookId = dataObj.optString("bookId").ifEmpty { id }
 
@@ -586,8 +795,8 @@ class DracinAIOProvider : MainAPI() {
             // Format 2: Dramabox (has "bookInfo" and "chapterList")
             else if (targetObj.has("bookInfo")) {
                 val bookInfo = targetObj.getJSONObject("bookInfo")
-                title = bookInfo.optString("bookName").ifEmpty { bookInfo.optString("title") }
-                cover = bookInfo.optString("cover").ifEmpty { bookInfo.optString("poster").ifEmpty { bookInfo.optString("icon") } }
+                title = bookInfo.optString("bookName").ifEmpty { bookInfo.optString("title").ifEmpty { passedTitle.ifEmpty { id } } }
+                cover = bookInfo.optString("cover").ifEmpty { bookInfo.optString("poster").ifEmpty { bookInfo.optString("icon").ifEmpty { passedCover } } }
                 plot = bookInfo.optString("introduction").ifEmpty { bookInfo.optString("description") }
                 val bookId = bookInfo.optString("bookId").ifEmpty { id }
 
@@ -612,16 +821,16 @@ class DracinAIOProvider : MainAPI() {
             // Format 3: Others (has keys "title", "cover", "episodes" / "list")
             else {
                 val infoObj = if (root.has("drama")) root.getJSONObject("drama") else targetObj
-                title = infoObj.optString("title").ifEmpty { infoObj.optString("name").ifEmpty { id } }
-                cover = infoObj.optString("cover").ifEmpty { infoObj.optString("poster").ifEmpty { infoObj.optString("icon") } }
-                plot = infoObj.optString("description").ifEmpty { infoObj.optString("summary") }
+                title = infoObj.optString("title").ifEmpty { infoObj.optString("name").ifEmpty { passedTitle.ifEmpty { id } } }
+                cover = infoObj.optString("cover").ifEmpty { infoObj.optString("poster").ifEmpty { infoObj.optString("coverImgUrl").ifEmpty { infoObj.optString("icon").ifEmpty { passedCover } } } }
+                plot = infoObj.optString("description").ifEmpty { infoObj.optString("summary").ifEmpty { infoObj.optString("introduce") } }
 
                 val episodes = root.optJSONArray("episodes") ?: targetObj.optJSONArray("episodes") ?: targetObj.optJSONArray("list")
                 if (episodes != null) {
                     for (i in 0 until episodes.length()) {
                         val ch = episodes.optJSONObject(i) ?: continue
                         val epNo = ch.optInt("episodeNo", 0).let { if (it > 0) it else ch.optInt("index", i + 1) }
-                        val epTitle = ch.optString("title").ifEmpty { "Episode $epNo" }
+                        val epTitle = ch.optString("title").ifEmpty { ch.optString("name").ifEmpty { "Episode $epNo" } }
                         
                         val directUrl = ch.optString("_h264").ifEmpty { ch.optString("_h265").ifEmpty { ch.optString("url").ifEmpty { ch.optString("videoUrl") } } }
                         val epData = if (directUrl.isNotEmpty()) {
@@ -646,7 +855,7 @@ class DracinAIOProvider : MainAPI() {
             val coverUrl = getDirectImageUrl(cover)
             return newTvSeriesLoadResponse(
                 title,
-                "https://lynk.id/xr3ed#$provider-$id",
+                buildDetailUrl(provider, id, title, cover),
                 TvType.TvSeries,
                 episodesList
             ) {
@@ -756,14 +965,33 @@ class DracinAIOProvider : MainAPI() {
             if (streamUrl.isEmpty()) return false
 
             var finalUrl = if (streamUrl.startsWith("/")) "$mainUrl$streamUrl" else streamUrl
-            if (finalUrl.contains("url=")) {
+            if (finalUrl.contains("url=") && !finalUrl.contains("/api/m3u8-proxy")) {
                 val extracted = URLDecoder.decode(finalUrl.substringAfter("url="), "UTF-8")
                 if (extracted.startsWith("http")) {
                     finalUrl = extracted
                 }
             }
 
-            val isM3u8 = finalUrl.substringBefore("?").contains(".m3u8", ignoreCase = true)
+            if (finalUrl.contains("/api/m3u8-proxy?url=")) {
+                try {
+                    val res = httpGet(finalUrl)
+                    if (res.contains("#EXTM3U")) {
+                        val lines = res.split("\n")
+                        val newLines = lines.map { line ->
+                            rewritePlaylistLine(line)
+                        }
+                        val newM3u8 = newLines.joinToString("\n")
+                        val streamId = System.currentTimeMillis().toString() + "_" + (1000..9999).random()
+                        playlistCache[streamId] = newM3u8
+                        val port = startLocalServer()
+                        finalUrl = "http://127.0.0.1:$port/play_$streamId.m3u8"
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            val isM3u8 = finalUrl.substringBefore("?").contains(".m3u8", ignoreCase = true) || finalUrl.contains("http://127.0.0.1:")
             val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
 
             val subArray = root.optJSONArray("subtitles") ?: root.optJSONObject("data")?.optJSONArray("subtitles")
