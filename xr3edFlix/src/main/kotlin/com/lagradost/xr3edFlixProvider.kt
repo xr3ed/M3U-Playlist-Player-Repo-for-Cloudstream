@@ -22,6 +22,8 @@ import kotlinx.coroutines.coroutineScope
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Headers.Companion.toHeaders
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.math.BigInteger
 import java.security.MessageDigest
 
@@ -29,6 +31,12 @@ class xr3edFlixProvider : MainAPI() {
     companion object {
         val addedUrls = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
         private val titleSearchCache = java.util.concurrent.ConcurrentHashMap<String, SearchResponse>()
+        private val cleanClient = okhttp3.OkHttpClient.Builder()
+            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .followRedirects(true)
+            .followSslRedirects(true)
+            .build()
 
         private val mapper = ObjectMapper()
             .registerModule(KotlinModule.Builder().build())
@@ -373,9 +381,18 @@ class xr3edFlixProvider : MainAPI() {
                 "$base/watch/tv/$tmdbId/$tvSlug"
             }
 
-            val pageRes = app.get(watchUrl, headers = headers, timeout = 8)
-            if (pageRes.code != 200) return
-            val page = pageRes.text
+            val watchRequest = okhttp3.Request.Builder()
+                .url(watchUrl)
+                .headers(headers.toHeaders())
+                .build()
+            val watchRes = cleanClient.newCall(watchRequest).execute()
+            if (watchRes.code != 200) {
+                watchRes.close()
+                return
+            }
+            val page = watchRes.body?.string() ?: ""
+            watchRes.close()
+
             val tokenRegex = Regex("""window\.__REQUEST_TOKEN__\s*=\s*"([^"]+)"""")
             val requestToken = tokenRegex.find(page)?.groupValues?.get(1) ?: return
 
@@ -387,7 +404,21 @@ class xr3edFlixProvider : MainAPI() {
                 }
             """.trimIndent()
 
-            val tokenRes1Text = app.post("$base/api/stream-token", requestBody = body.toRequestBody(), headers = headers, timeout = 8).text
+            val postMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
+            val tokenRequest1 = okhttp3.Request.Builder()
+                .url("$base/api/stream-token")
+                .post(body.toRequestBody(postMediaType))
+                .headers(headers.toHeaders())
+                .build()
+            
+            val tokenResponse1 = cleanClient.newCall(tokenRequest1).execute()
+            if (tokenResponse1.code != 200) {
+                tokenResponse1.close()
+                return
+            }
+            val tokenRes1Text = tokenResponse1.body?.string() ?: ""
+            tokenResponse1.close()
+
             val tokenRes1 = org.json.JSONObject(tokenRes1Text)
             if (!tokenRes1.optBoolean("success")) return
 
@@ -409,7 +440,20 @@ class xr3edFlixProvider : MainAPI() {
                     }
                 """.trimIndent()
 
-                val tokenRes2Text = app.post("$base/api/stream-token", requestBody = body2.toRequestBody(), headers = headers, timeout = 8).text
+                val tokenRequest2 = okhttp3.Request.Builder()
+                    .url("$base/api/stream-token")
+                    .post(body2.toRequestBody(postMediaType))
+                    .headers(headers.toHeaders())
+                    .build()
+                
+                val tokenResponse2 = cleanClient.newCall(tokenRequest2).execute()
+                if (tokenResponse2.code != 200) {
+                    tokenResponse2.close()
+                    return
+                }
+                val tokenRes2Text = tokenResponse2.body?.string() ?: ""
+                tokenResponse2.close()
+
                 val tokenRes2 = org.json.JSONObject(tokenRes2Text)
                 if (!tokenRes2.optBoolean("success")) return
                 tokenRes2.getString("token")
@@ -429,18 +473,29 @@ class xr3edFlixProvider : MainAPI() {
                                     "&source=$source&apikey=mptv_sk_a8f29c4e7b3d1f" +
                                     "&requestToken=$requestToken&token=$finalToken"
 
-                            val streamResText = app.get(streamUrl, headers = headers, timeout = 8).text
-                            val streamRes = org.json.JSONObject(streamResText)
-                            if (streamRes.optBoolean("success")) {
-                                val m3u8 = streamRes.getJSONObject("data").optString("stream_url")
-                                if (m3u8.isNotEmpty()) {
-                                    com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
-                                        source = "Mapple - ${source.uppercase(java.util.Locale.US)}",
-                                        streamUrl = m3u8,
-                                        referer = "$base/",
-                                        headers = headers
-                                    ).forEach(callback)
+                            val streamRequest = okhttp3.Request.Builder()
+                                .url(streamUrl)
+                                .headers(headers.toHeaders())
+                                .build()
+                            
+                            val streamResponse = cleanClient.newCall(streamRequest).execute()
+                            if (streamResponse.code == 200) {
+                                val streamResText = streamResponse.body?.string() ?: ""
+                                streamResponse.close()
+                                val streamRes = org.json.JSONObject(streamResText)
+                                if (streamRes.optBoolean("success")) {
+                                    val m3u8 = streamRes.getJSONObject("data").optString("stream_url")
+                                    if (m3u8.isNotEmpty()) {
+                                        com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
+                                            source = "Mapple - ${source.uppercase(java.util.Locale.US)}",
+                                            streamUrl = m3u8,
+                                            referer = "$base/",
+                                            headers = headers
+                                        ).forEach(callback)
+                                    }
                                 }
+                            } else {
+                                streamResponse.close()
                             }
                         } catch (ex: Exception) {
                             ex.printStackTrace()
