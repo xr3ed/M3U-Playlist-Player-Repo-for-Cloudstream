@@ -1,6 +1,6 @@
 import java.util.Properties as JavaProperties
 
-version = 26
+version = 27
 
 android {
     namespace = "com.lagradost.xr3edFlix"
