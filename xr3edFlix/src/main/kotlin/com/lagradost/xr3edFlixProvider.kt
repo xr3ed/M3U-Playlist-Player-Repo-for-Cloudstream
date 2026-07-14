@@ -641,8 +641,9 @@ class xr3edFlixProvider : MainAPI() {
             val primeMovies = async { HomePageList("Prime Video Movies", fetchRecentRegionalList("119", true)) }
             val primeSeries = async { HomePageList("Prime Video Series", fetchRecentRegionalList("119", false)) }
             
-            val appleMovies = async { HomePageList("Apple TV+ Movies", fetchRecentRegionalList("350", true)) }
-            val appleSeries = async { HomePageList("Apple TV+ Series", fetchRecentRegionalList("350", false)) }
+            val appleMovies = async { HomePageList("Apple TV+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", true, "350", "discover/movie")) }
+            val appleSeries = async { HomePageList("Apple TV+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", false, "350", "discover/tv")) }
+            val itunesMovies = async { HomePageList("iTunes Store Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/itunes/indonesia/", true, "350", "discover/movie")) }
             
             val viuSeries = async {
                 val viuKo = fetchRecentRegionalList("158", false, "ko")
@@ -673,6 +674,7 @@ class xr3edFlixProvider : MainAPI() {
                 disneyMovies.await(), disneySeries.await(),
                 primeMovies.await(), primeSeries.await(),
                 appleMovies.await(), appleSeries.await(),
+                itunesMovies.await(),
                 viuSeries.await(),
                 hboMovies.await(), hboSeries.await(),
                 catchplayMovies.await(),
