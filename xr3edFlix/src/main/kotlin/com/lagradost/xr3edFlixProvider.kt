@@ -21,6 +21,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.math.BigInteger
+import java.security.MessageDigest
 
 class xr3edFlixProvider : MainAPI() {
     companion object {
@@ -319,6 +322,133 @@ class xr3edFlixProvider : MainAPI() {
                     }
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun solvePowChallenge(challenge: String, difficulty: Int): String? {
+        val target = BigInteger.ONE.shiftLeft(256 - difficulty)
+        val md = MessageDigest.getInstance("SHA-256")
+
+        var nonce = 0L
+        while (true) {
+            val input = challenge + nonce.toString()
+            val hashBytes = md.digest(input.toByteArray())
+            val hashInt = BigInteger(1, hashBytes)
+
+            if (hashInt < target) {
+                return nonce.toString()
+            }
+
+            nonce++
+            md.reset()
+            if (nonce > 10_000_000) return null
+        }
+    }
+
+    private suspend fun invokeMapple(
+        tmdbId: Int?,
+        season: Int?,
+        episode: Int?,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        if (tmdbId == null) return
+        try {
+            val base = "https://mapple.rip"
+            val mediaType = if (season == null) "movie" else "tv"
+            val tvSlug = if (season != null && episode != null) "$season-$episode" else ""
+
+            val headers = mapOf(
+                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer" to "$base/",
+                "Origin" to base,
+                "Accept" to "*/*",
+                "Content-Type" to "application/json"
+            )
+
+            val watchUrl = if (mediaType == "movie") {
+                "$base/watch/movie/$tmdbId"
+            } else {
+                "$base/watch/tv/$tmdbId/$tvSlug"
+            }
+
+            val pageRes = app.get(watchUrl, headers = headers, timeout = 8)
+            if (pageRes.code != 200) return
+            val page = pageRes.text
+            val tokenRegex = Regex("""window\.__REQUEST_TOKEN__\s*=\s*"([^"]+)"""")
+            val requestToken = tokenRegex.find(page)?.groupValues?.get(1) ?: return
+
+            val body = """
+                {
+                    "mediaId": $tmdbId,
+                    "mediaType": "$mediaType",
+                    "requestToken": "$requestToken"
+                }
+            """.trimIndent()
+
+            val tokenRes1Text = app.post("$base/api/stream-token", requestBody = body.toRequestBody(), headers = headers, timeout = 8).text
+            val tokenRes1 = org.json.JSONObject(tokenRes1Text)
+            if (!tokenRes1.optBoolean("success")) return
+
+            val finalToken = if (tokenRes1.optBoolean("requiresPow")) {
+                val pow = tokenRes1.getJSONObject("pow")
+                val challenge = pow.getString("challenge")
+                val difficulty = pow.getInt("difficulty")
+                val nonce = solvePowChallenge(challenge, difficulty) ?: return
+
+                val body2 = """
+                    {
+                        "mediaId": $tmdbId,
+                        "mediaType": "$mediaType",
+                        "requestToken": "$requestToken",
+                        "pow": {
+                            "challengeId": "${pow.getString("challengeId")}",
+                            "nonce": "$nonce"
+                        }
+                    }
+                """.trimIndent()
+
+                val tokenRes2Text = app.post("$base/api/stream-token", requestBody = body2.toRequestBody(), headers = headers, timeout = 8).text
+                val tokenRes2 = org.json.JSONObject(tokenRes2Text)
+                if (!tokenRes2.optBoolean("success")) return
+                tokenRes2.getString("token")
+            } else {
+                tokenRes1.getString("token")
+            }
+
+            val sources = listOf(
+                "mapple", "willow", "cherry", "pines", "oak", "sequoia", "sakura", "magnolia"
+            )
+
+            coroutineScope {
+                sources.map { source ->
+                    async {
+                        try {
+                            val streamUrl = "$base/api/stream?mediaId=$tmdbId&mediaType=$mediaType&tv_slug=$tvSlug" +
+                                    "&source=$source&apikey=mptv_sk_a8f29c4e7b3d1f" +
+                                    "&requestToken=$requestToken&token=$finalToken"
+
+                            val streamResText = app.get(streamUrl, headers = headers, timeout = 8).text
+                            val streamRes = org.json.JSONObject(streamResText)
+                            if (streamRes.optBoolean("success")) {
+                                val m3u8 = streamRes.getJSONObject("data").optString("stream_url")
+                                if (m3u8.isNotEmpty()) {
+                                    com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
+                                        source = "Mapple - ${source.uppercase(java.util.Locale.US)}",
+                                        streamUrl = m3u8,
+                                        referer = "$base/",
+                                        headers = headers
+                                    ).forEach(callback)
+                                }
+                            }
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
+                    }
+                }
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -998,6 +1128,12 @@ class xr3edFlixProvider : MainAPI() {
                     val s = if (type == "movie") null else parts.getOrNull(2)?.toIntOrNull()
                     val e = if (type == "movie") null else parts.getOrNull(3)?.toIntOrNull()
                     invokeXpass(tmdbId, s, e, callback)
+                },
+                async {
+                    val tmdbId = id.toIntOrNull()
+                    val s = if (type == "movie") null else parts.getOrNull(2)?.toIntOrNull()
+                    val e = if (type == "movie") null else parts.getOrNull(3)?.toIntOrNull()
+                    invokeMapple(tmdbId, s, e, callback)
                 }
             )
             jobs.awaitAll()
