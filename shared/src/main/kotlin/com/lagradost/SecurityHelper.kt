@@ -893,13 +893,25 @@ private fun switchToDownloadLayout(
     val cachedCode = prefs.getInt("downloaded_version_code", -1)
     val cachedBuildTime = prefs.getLong("downloaded_build_time", -1L)
 
-    if (apkFile.exists() && 
-        ((remoteBuildTime > 0 && cachedBuildTime == remoteBuildTime) || 
-         (remoteCode > 0 && cachedCode == remoteCode))) {
-        android.util.Log.d("SecurityHelper", "Cache hit: update.apk matches remote version. Skipping download.")
-        installApk(activity, apkFile)
-        dialog.dismiss()
-        return
+    if (apkFile.exists()) {
+        val archiveInfo = try {
+            activity.packageManager.getPackageArchiveInfo(apkFile.absolutePath, 0)
+        } catch (e: Exception) {
+            null
+        }
+        if (archiveInfo != null && 
+            ((remoteBuildTime > 0 && cachedBuildTime == remoteBuildTime) || 
+             (remoteCode > 0 && cachedCode == remoteCode))) {
+            android.util.Log.d("SecurityHelper", "Cache hit: update.apk matches remote version and is valid. Skipping download.")
+            installApk(activity, apkFile)
+            dialog.dismiss()
+            return
+        } else if (archiveInfo == null) {
+            try {
+                apkFile.delete()
+                android.util.Log.d("SecurityHelper", "Deleted corrupt/invalid cached update.apk.")
+            } catch (e: Exception) {}
+        }
     }
 
     root.removeAllViews()
@@ -1012,6 +1024,11 @@ private fun switchToDownloadLayout(
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            try {
+                val apkFile = File(activity.externalCacheDir, "update.apk")
+                if (apkFile.exists()) apkFile.delete()
+                android.util.Log.d("SecurityHelper", "Cleaned up failed/partial update.apk download.")
+            } catch (ex: Exception) {}
             activity.runOnUiThread {
                 dialog.dismiss()
                 Toast.makeText(activity, "Gagal mengunduh pembaruan: ${e.message}", Toast.LENGTH_LONG).show()
