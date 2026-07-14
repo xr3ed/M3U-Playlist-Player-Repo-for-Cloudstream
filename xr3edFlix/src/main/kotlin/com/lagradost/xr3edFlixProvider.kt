@@ -237,6 +237,92 @@ class xr3edFlixProvider : MainAPI() {
         return fetchTmdbList(path, params)
     }
 
+    private suspend fun invokeXpass(
+        tmdbId: Int?,
+        season: Int?,
+        episode: Int?,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        if (tmdbId == null) return
+        try {
+            val baseRef = "https://play.xpass.top/"
+            val embedUrl = if (season == null) {
+                "https://play.xpass.top/e/movie/$tmdbId"
+            } else {
+                "https://play.xpass.top/e/tv/$tmdbId/$season/$episode"
+            }
+
+            val htmlResponse = app.get(embedUrl, referer = baseRef, timeout = 8)
+            if (htmlResponse.code != 200) return
+            val html = htmlResponse.text
+            
+            val raw = Regex("""var backups=(\[.*?]);""", RegexOption.DOT_MATCHES_ALL)
+                .find(html)?.groupValues?.get(1) ?: return
+            val array = org.json.JSONArray(raw)
+            val backups = (0 until array.length()).mapNotNull { i ->
+                val obj  = array.getJSONObject(i)
+                val name = obj.optString("name").takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                val url  = obj.optString("url").takeIf  { it.isNotBlank() } ?: return@mapNotNull null
+                if (name.contains("VIP", ignoreCase = true)) {
+                    Pair(name, url)
+                } else {
+                    null
+                }
+            }
+
+            coroutineScope {
+                backups.map { (name, url) ->
+                    async {
+                        try {
+                            val fullUrl = if (url.startsWith("http")) url else "https://play.xpass.top" + url
+                            val response = app.get(fullUrl, referer = baseRef, timeout = 8)
+                            if (response.code == 200) {
+                                val json = response.text
+                                val root = org.json.JSONObject(json)
+                                val playlist = root.optJSONArray("playlist")
+                                val firstPlay = playlist?.optJSONObject(0)
+                                val sources = firstPlay?.optJSONArray("sources")
+                                if (sources != null) {
+                                    for (j in 0 until sources.length()) {
+                                        val src = sources.optJSONObject(j) ?: continue
+                                        val fileUrl = src.optString("file")
+                                        if (fileUrl.isNotEmpty() && fileUrl.startsWith("http")) {
+                                            val type = src.optString("type")
+                                            val isHls = type.contains("hls", true) || fileUrl.contains(".m3u8")
+                                            if (isHls) {
+                                                com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
+                                                    source = "Xpass - $name",
+                                                    streamUrl = fileUrl,
+                                                    referer = baseRef
+                                                ).forEach { link ->
+                                                    callback.invoke(link)
+                                                }
+                                            } else {
+                                                callback.invoke(
+                                                    newExtractorLink(
+                                                        name = "Xpass - $name",
+                                                        source = "Xpass - $name",
+                                                        url = fileUrl,
+                                                        type = ExtractorLinkType.VIDEO
+                                                    ) {
+                                                        this.referer = baseRef
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
@@ -906,6 +992,12 @@ class xr3edFlixProvider : MainAPI() {
                     } catch (e: Exception) {
                         Log.e("xr3edFlix", "OpenSubtitles query failed", e)
                     }
+                },
+                async {
+                    val tmdbId = id.toIntOrNull()
+                    val s = if (type == "movie") null else parts.getOrNull(2)?.toIntOrNull()
+                    val e = if (type == "movie") null else parts.getOrNull(3)?.toIntOrNull()
+                    invokeXpass(tmdbId, s, e, callback)
                 }
             )
             jobs.awaitAll()
