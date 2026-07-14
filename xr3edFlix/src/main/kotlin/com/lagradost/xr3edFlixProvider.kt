@@ -743,7 +743,7 @@ class xr3edFlixProvider : MainAPI() {
 
             return newMovieLoadResponse(
                 name = res.title ?: "Unknown",
-                url = "movie::$id",
+                url = "https://lynk.id/xr3ed#movie::$id",
                 type = TvType.Movie,
                 dataUrl = "movie::$id::$imdbId::$cleanTitle"
             ) {
@@ -814,7 +814,7 @@ class xr3edFlixProvider : MainAPI() {
 
             return newTvSeriesLoadResponse(
                 name = res.name ?: "Unknown",
-                url = "tv::$id",
+                url = "https://lynk.id/xr3ed#tv::$id",
                 type = TvType.TvSeries,
                 episodes = episodes
             ) {
