@@ -38,6 +38,10 @@ class xr3edFlixProvider : MainAPI() {
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .followRedirects(true)
             .followSslRedirects(true)
+            .dispatcher(okhttp3.Dispatcher().apply {
+                maxRequests = 120
+                maxRequestsPerHost = 40
+            })
             .cookieJar(object : okhttp3.CookieJar {
                 private val cookieStore = java.util.concurrent.ConcurrentHashMap<String, List<okhttp3.Cookie>>()
                 override fun saveFromResponse(url: okhttp3.HttpUrl, cookies: List<okhttp3.Cookie>) {
@@ -103,7 +107,15 @@ class xr3edFlixProvider : MainAPI() {
 
         private suspend inline fun <reified T : Any> parsedGet(url: String): T? {
             return try {
-                val text = app.get(url, timeout = 15).text
+                val request = okhttp3.Request.Builder()
+                    .url(url)
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
+                    .build()
+                val text = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    cleanClient.newCall(request).execute().use { response ->
+                        response.body?.string() ?: ""
+                    }
+                }
                 Log.d("xr3edFlix", "parsedGet OK: $url -> ${text.take(120)}")
                 mapper.readValue(text, T::class.java)
             } catch (e: Exception) {
