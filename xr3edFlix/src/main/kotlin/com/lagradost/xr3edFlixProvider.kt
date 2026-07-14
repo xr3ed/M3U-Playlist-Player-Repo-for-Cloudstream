@@ -1152,6 +1152,19 @@ class xr3edFlixProvider : MainAPI() {
                         val apiRes = app.get(vaplayerUrl, headers = apiHeaders, timeout = 10)
                         if (apiRes.code == 200) {
                             val root = mapper.readTree(apiRes.text)
+                            
+                            // Load subtitles
+                            val defaultSubs = root.get("default_subs")
+                            if (defaultSubs != null && defaultSubs.isArray) {
+                                defaultSubs.forEach { subNode ->
+                                    val lang = subNode.get("lang")?.asText() ?: subNode.get("code")?.asText() ?: "Unknown"
+                                    val subUrl = subNode.get("url")?.asText()
+                                    if (!subUrl.isNullOrEmpty()) {
+                                        subCallback.invoke(newSubtitleFile(lang, subUrl))
+                                    }
+                                }
+                            }
+
                             val dataNode = root.get("data")
                             if (dataNode != null) {
                                 val streamUrls = dataNode.get("stream_urls")
@@ -1200,8 +1213,8 @@ class xr3edFlixProvider : MainAPI() {
                                                                  if (addedUrls.add(dedupKey)) {
                                                                      val q = currentRes.replace("p","").toIntOrNull() ?: Qualities.Unknown.value
                                                                      val link = newExtractorLink(
-                                                                         name = "VidsrcPM - $currentRes",
-                                                                         source = "VidsrcPM",
+                                                                         name = "Vaplayer - $currentRes",
+                                                                         source = "Vaplayer",
                                                                          url = absoluteUrl,
                                                                          type = ExtractorLinkType.M3U8
                                                                      ) {
