@@ -36,6 +36,15 @@ class xr3edFlixProvider : MainAPI() {
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .followRedirects(true)
             .followSslRedirects(true)
+            .cookieJar(object : okhttp3.CookieJar {
+                private val cookieStore = java.util.concurrent.ConcurrentHashMap<String, List<okhttp3.Cookie>>()
+                override fun saveFromResponse(url: okhttp3.HttpUrl, cookies: List<okhttp3.Cookie>) {
+                    cookieStore[url.host] = cookies
+                }
+                override fun loadForRequest(url: okhttp3.HttpUrl): List<okhttp3.Cookie> {
+                    return cookieStore[url.host] ?: emptyList()
+                }
+            })
             .build()
 
         private val mapper = ObjectMapper()
