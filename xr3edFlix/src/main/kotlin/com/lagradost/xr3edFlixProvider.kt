@@ -155,7 +155,7 @@ class xr3edFlixProvider : MainAPI() {
             val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             newMovieSearchResponse(
                 name = title,
-                url = if (isMovie) "movie::${media.id}" else "tv::${media.id}",
+                url = if (isMovie) "https://lynk.id/xr3ed#movie::${media.id}" else "https://lynk.id/xr3ed#tv::${media.id}",
                 type = if (isMovie) TvType.Movie else TvType.TvSeries
             ) {
                 this.posterUrl = poster
@@ -203,7 +203,7 @@ class xr3edFlixProvider : MainAPI() {
                             val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
                             val res = newMovieSearchResponse(
                                 name = titleName,
-                                url = if (isMovie) "movie::${media.id}" else "tv::${media.id}",
+                                url = if (isMovie) "https://lynk.id/xr3ed#movie::${media.id}" else "https://lynk.id/xr3ed#tv::${media.id}",
                                 type = if (isMovie) TvType.Movie else TvType.TvSeries
                             ) {
                                 this.posterUrl = poster
@@ -664,7 +664,7 @@ class xr3edFlixProvider : MainAPI() {
             if (isMovie) {
                 newMovieSearchResponse(
                     name = title,
-                    url = "movie::${media.id}",
+                    url = "https://lynk.id/xr3ed#movie::${media.id}",
                     type = TvType.Movie
                 ) {
                     this.posterUrl = poster
@@ -672,7 +672,7 @@ class xr3edFlixProvider : MainAPI() {
             } else {
                 newTvSeriesSearchResponse(
                     name = title,
-                    url = "tv::${media.id}",
+                    url = "https://lynk.id/xr3ed#tv::${media.id}",
                     type = TvType.TvSeries
                 ) {
                     this.posterUrl = poster
@@ -683,13 +683,19 @@ class xr3edFlixProvider : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         addedUrls.clear()
+        
+        var targetUrl = url
+        if (targetUrl.contains("lynk.id")) {
+            targetUrl = targetUrl.substringAfterLast("#", "")
+        }
+
         // Cloudstream prepend mainUrl, jadi url bisa "https://watch-v2.autoembed.app/movie::123"
         // Strip mainUrl prefix jika ada
-        val cleanUrl = if (url.contains("://") && url.contains("::")) {
+        val cleanUrl = if (targetUrl.contains("://") && targetUrl.contains("::")) {
             // Ambil bagian "movie::123" atau "tv::123" dari URL
-            val slashIdx = url.lastIndexOf('/', url.indexOf("::"))
-            if (slashIdx != -1) url.substring(slashIdx + 1) else url
-        } else url
+            val slashIdx = targetUrl.lastIndexOf('/', targetUrl.indexOf("::"))
+            if (slashIdx != -1) targetUrl.substring(slashIdx + 1) else targetUrl
+        } else targetUrl
 
         val parts = cleanUrl.split("::")
         if (parts.size < 2) return null
