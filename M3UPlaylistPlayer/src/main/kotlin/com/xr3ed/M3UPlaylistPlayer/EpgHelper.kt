@@ -10,6 +10,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 data class EpgProgram(
     val title: String,
@@ -23,6 +26,8 @@ object EpgHelper {
     private val qualityRegex = Regex("\\s+(hd|fhd|sd|hevc|h265|1080p|720p|id|indo|indonesia|tv|asia)\\b")
     private val nonAlphaNumRegex = Regex("[^a-z0-9\\s]")
     private val multipleSpaceRegex = Regex("\\s+")
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     var lastError: String? = null
     private val cachedProgramsMap = java.util.concurrent.ConcurrentHashMap<String, Map<String, List<EpgProgram>>>()
@@ -149,13 +154,31 @@ object EpgHelper {
         return listOf(url)
     }
 
-    suspend fun getEpg(context: Context?, epgUrl: String): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
+    suspend fun getEpg(
+        context: Context?,
+        epgUrl: String,
+        onlyCache: Boolean = false
+    ): Pair<Map<String, List<EpgProgram>>, Map<String, String>> {
         val now = System.currentTimeMillis()
         val cachedProgs = cachedProgramsMap[epgUrl]
         val cachedNames = cachedChannelNamesMap[epgUrl]
         val lastFetch = lastFetchTimeMap[epgUrl] ?: 0L
         if (cachedProgs != null && cachedNames != null && (now - lastFetch) < cacheDurationMs) {
             return Pair(cachedProgs, cachedNames)
+        }
+
+        if (onlyCache) {
+            val mutex = getMutexForEpgUrl(epgUrl)
+            if (!mutex.isLocked) {
+                scope.launch {
+                    try {
+                        getEpg(context, epgUrl, onlyCache = false)
+                    } catch (e: Exception) {
+                        android.util.Log.e("EpgHelper", "Background EPG fetch failed", e)
+                    }
+                }
+            }
+            return Pair(cachedProgs ?: emptyMap(), cachedNames ?: emptyMap())
         }
 
         val mutex = getMutexForEpgUrl(epgUrl)
@@ -176,7 +199,7 @@ object EpgHelper {
                     val response = app.get(
                         url,
                         headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"),
-                        timeout = 25
+                        timeout = 8
                     )
                     
                     val rawStream = response.body.byteStream()
@@ -320,10 +343,15 @@ object EpgHelper {
                                     val desc = currentProgDesc ?: ""
                                     val startMs = parseXmltvDate(currentProgStart)
                                     val stopMs = parseXmltvDate(currentProgStop)
-                                    val epgProg = EpgProgram(title, desc, startMs, stopMs)
                                     
-                                    val lowerChannel = currentProgChannel.lowercase()
-                                    programMap.getOrPut(lowerChannel) { mutableListOf() }.add(epgProg)
+                                    val now = System.currentTimeMillis()
+                                    val limitTime = now + 24 * 60 * 60 * 1000L // 24 jam ke depan
+                                    
+                                    if (stopMs >= now && startMs <= limitTime) {
+                                        val epgProg = EpgProgram(title, desc, startMs, stopMs)
+                                        val lowerChannel = currentProgChannel.lowercase()
+                                        programMap.getOrPut(lowerChannel) { mutableListOf() }.add(epgProg)
+                                    }
                                 }
                                 currentProgChannel = null
                                 currentProgStart = null

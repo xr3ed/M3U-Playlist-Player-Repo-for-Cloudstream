@@ -33,7 +33,7 @@ class xr3edFlixProvider : MainAPI() {
         private val titleSearchCache = java.util.concurrent.ConcurrentHashMap<String, SearchResponse>()
         private val listCache = java.util.concurrent.ConcurrentHashMap<String, Pair<Long, List<SearchResponse>>>()
         private const val CACHE_EXPIRY_MS = 60 * 60 * 1000L // 1 jam
-        private val cleanClient = okhttp3.OkHttpClient.Builder()
+        private val cleanClient = com.lagradost.cloudstream3.app.baseClient.newBuilder()
             .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .followRedirects(true)
@@ -133,25 +133,7 @@ class xr3edFlixProvider : MainAPI() {
     override val hasMainPage = true
 
     override val mainPage = listOf(
-        MainPageData("Film Trending", "Film Trending"),
-        MainPageData("Film Populer", "Film Populer"),
-        MainPageData("Seri Trending", "Seri Trending"),
-        MainPageData("Seri Populer", "Seri Populer"),
-        MainPageData("Netflix Movies", "Netflix Movies"),
-        MainPageData("Netflix Series", "Netflix Series"),
-        MainPageData("Disney+ Movies", "Disney+ Movies"),
-        MainPageData("Disney+ Series", "Disney+ Series"),
-        MainPageData("Prime Video Movies", "Prime Video Movies"),
-        MainPageData("Prime Video Series", "Prime Video Series"),
-        MainPageData("Apple TV+ Movies", "Apple TV+ Movies"),
-        MainPageData("Apple TV+ Series", "Apple TV+ Series"),
-        MainPageData("Viu Series", "Viu Series"),
-        MainPageData("HBO GO Movies", "HBO GO Movies"),
-        MainPageData("HBO GO Series", "HBO GO Series"),
-        MainPageData("Catchplay+ Movies", "Catchplay+ Movies"),
-        MainPageData("Crunchyroll Series", "Crunchyroll Series"),
-        MainPageData("Lionsgate Play Movies", "Lionsgate Play Movies"),
-        MainPageData("Lionsgate Play Series", "Lionsgate Play Series")
+        MainPageData("Beranda", "beranda")
     )
 
     private suspend fun fetchTmdbList(path: String, params: Map<String, String>): List<SearchResponse> {
@@ -196,23 +178,37 @@ class xr3edFlixProvider : MainAPI() {
         }
         val result = try {
             val html = app.get(providerUrl, timeout = 8).text
-            val heading = if (isMovie) "TOP 10 Movies" else "TOP 10 TV Shows"
-            val idx = html.indexOf(heading)
-            if (idx == -1) {
-                return fetchRecentRegionalList(fallbackProviderId, isMovie)
+            
+            val movieIdx = html.indexOf("TOP 10 Movies")
+            val tvIdx = html.indexOf("TOP 10 TV Shows")
+            val section = if (isMovie) {
+                if (movieIdx != -1) {
+                    if (tvIdx != -1 && tvIdx > movieIdx) html.substring(movieIdx, tvIdx) else html.substring(movieIdx)
+                } else html
+            } else {
+                if (tvIdx != -1) html.substring(tvIdx) else html
             }
-            val nextIdx = html.indexOf("by day", idx)
-            val section = if (nextIdx != -1) html.substring(idx, nextIdx) else html.substring(idx)
             
             val regex = Regex("""<a href="/title/([^"]+)/" class="hover:underline">([^<]+)</a>""")
-            val titles = regex.findAll(section).map { it.groupValues[2].trim() }.toList().take(10)
+            val rawTitles = regex.findAll(section).map { it.groupValues[2].trim() }.toList()
             
-            if (titles.isEmpty()) {
+            val seen = mutableSetOf<String>()
+            val titles = mutableListOf<String>()
+            for (title in rawTitles) {
+                val clean = title.replace("&amp;", "&")
+                if (clean.isNotBlank() && seen.add(clean.lowercase())) {
+                    titles.add(clean)
+                }
+            }
+            
+            val finalTitles = titles.take(10)
+            
+            if (finalTitles.isEmpty()) {
                 return fetchRecentRegionalList(fallbackProviderId, isMovie)
             }
             
             coroutineScope {
-                titles.map { title ->
+                finalTitles.map { title ->
                     async {
                         val searchCacheKey = "${title}_${if (isMovie) "movie" else "tv"}"
                         titleSearchCache[searchCacheKey]?.let { return@async it }
@@ -621,8 +617,8 @@ class xr3edFlixProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        if (page > 1 || request.data != "beranda") return null
         val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
-        if (page > 1) return null
 
         val lists = coroutineScope {
             val trendingMovies = async { HomePageList("Film Trending", fetchTmdbList("trending/movie/day", emptyMap())) }

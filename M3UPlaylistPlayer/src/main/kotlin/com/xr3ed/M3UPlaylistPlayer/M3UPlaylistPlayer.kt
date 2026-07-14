@@ -40,6 +40,20 @@ class M3UPlaylistPlayer(
         var context: Context? = null
         var lastWorkingUserAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 
+        fun getLastWorkingUa(ctx: Context?): String {
+            if (ctx == null) return lastWorkingUserAgent
+            val saved = ctx.getKey<String>("last_working_ua")
+            if (!saved.isNullOrBlank()) {
+                lastWorkingUserAgent = saved
+            }
+            return lastWorkingUserAgent
+        }
+
+        fun saveLastWorkingUa(ctx: Context?, ua: String) {
+            lastWorkingUserAgent = ua
+            ctx?.setKey("last_working_ua", ua)
+        }
+
         private val cachedPlaylists = mutableMapOf<String, Playlist>()
         private val lastFetchTimes = mutableMapOf<String, Long>()
         private val playlistMutexes = mutableMapOf<String, Mutex>()
@@ -124,13 +138,16 @@ class M3UPlaylistPlayer(
             }
             
             withContext(Dispatchers.IO) {
-                val userAgents = listOf(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-                    "OTTNavigator/1.6.8.2 (Linux;Android 11)",
-                    "TiviMate/4.7.0 (Linux;Android 11)",
-                    "VLC/3.0.18",
-                    "okhttp/4.9.2"
-                )
+                val savedUa = getLastWorkingUa(context)
+                val userAgents = mutableListOf(savedUa).apply {
+                    addAll(listOf(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
+                        "OTTNavigator/1.6.8.2 (Linux;Android 11)",
+                        "TiviMate/4.7.0 (Linux;Android 11)",
+                        "VLC/3.0.18",
+                        "okhttp/4.9.2"
+                    ).filter { it != savedUa })
+                }
                 
                 val urlsToTry = EpgHelper.getGithubMirrors(playlistUrl)
                 var content = ""
@@ -159,7 +176,7 @@ class M3UPlaylistPlayer(
                                 if (trimmed.startsWith("#EXTM3U", ignoreCase = true) || trimmed.contains("#EXTINF", ignoreCase = true)) {
                                     content = clean
                                     success = true
-                                    lastWorkingUserAgent = ua
+                                    saveLastWorkingUa(context, ua)
                                     android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
                                     break
                                 } else if (fallbackContent.isBlank()) {
@@ -250,7 +267,7 @@ class M3UPlaylistPlayer(
         return withContext(Dispatchers.IO) {
             // Fetch EPG data
             val epgUrl = getEpgUrlToUse()
-            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
+            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl, onlyCache = true)
 
             val homePageList = HomePageList(
                 groupName,
@@ -277,7 +294,7 @@ class M3UPlaylistPlayer(
         val playlist = fetchPlaylist()
         return withContext(Dispatchers.IO) {
             val epgUrl = getEpgUrlToUse()
-            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl)
+            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl, onlyCache = true)
             playlist.items
                 .filter { it.title.contains(query, ignoreCase = true) }
                 .map { item ->

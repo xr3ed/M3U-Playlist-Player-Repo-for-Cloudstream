@@ -20,6 +20,9 @@ import kotlin.concurrent.thread
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object LocalManifestServer {
     private var serverSocket: ServerSocket? = null
@@ -647,13 +650,14 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         val channelStatusCache = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
         @Volatile var cacheTimestamp = 0L
         @Volatile var dynamicMainPageTitle = "World Cup 2026"
+        private val scope = CoroutineScope(Dispatchers.IO)
 
         // URL dari BuildConfig — diisi via GitHub Secrets (CI) atau local.properties (lokal)
         val API_BASE get() = BuildConfig.XR3EV_API_URL
         val PLAYER_BASE get() = BuildConfig.XR3EV_PLAYER_URL
         val STREAM_BASE get() = BuildConfig.XR3EV_STREAM_URL
         val cleanClient: okhttp3.OkHttpClient by lazy {
-            okhttp3.OkHttpClient.Builder()
+            com.lagradost.cloudstream3.app.baseClient.newBuilder()
                 .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
                 .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
                 .build()
@@ -963,7 +967,12 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     val streamUrl = "${mainUrl}/?id=jadwal#go:$chId"
                     Triple(chId, chName, streamUrl)
                 }
-                checkAllChannelsParallel(channelsListToCheck, chIdToHref)
+                val now = System.currentTimeMillis()
+                if (now - cacheTimestamp >= CACHE_TTL_MS || channelStatusCache.isEmpty()) {
+                    scope.launch {
+                        checkAllChannelsParallel(channelsListToCheck, chIdToHref)
+                    }
+                }
 
                 val sortedGroupChannels = thisGroupChannels.sortedWith(compareBy<Triple<String, String, String>> { ch ->
                     // 1. Online first (0), offline last (1)

@@ -48,7 +48,7 @@ class DracinAIOProvider : MainAPI() {
             "Referer" to "$BASE_URL/"
         )
 
-        private val cleanClient = OkHttpClient.Builder()
+        private val cleanClient = com.lagradost.cloudstream3.app.baseClient.newBuilder()
             .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .build()
@@ -62,7 +62,7 @@ class DracinAIOProvider : MainAPI() {
                 })
                 val sslContext = javax.net.ssl.SSLContext.getInstance("SSL")
                 sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-                OkHttpClient.Builder()
+                com.lagradost.cloudstream3.app.baseClient.newBuilder()
                     .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
                     .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
                     .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as javax.net.ssl.X509TrustManager)
@@ -526,39 +526,7 @@ class DracinAIOProvider : MainAPI() {
                             
                             suspend fun buildList(items: List<AioItem>, titleName: String) {
                                 val pageItems = items.take(24)
-                                val pageItemsWithCovers = pageItems.mapIndexed { index, item ->
-                                    if (item.cover.isEmpty() && index < 10) {
-                                        try {
-                                            val detailUrl = if (prov.code == "freereels") "$API_URL/${prov.code}?action=detail&seriesKey=${item.id}" else "$API_URL/${prov.code}?action=detail&id=${item.id}"
-                                            val detailText = httpGet(detailUrl)
-                                            if (detailText.isNotEmpty()) {
-                                                val root = JSONObject(detailText)
-                                                val targetJson = if (root.has("data")) {
-                                                    val dataVal = root.opt("data")
-                                                    if (dataVal is JSONObject && !dataVal.has("chapters") && !dataVal.has("chapterList")) dataVal else root
-                                                } else if (root.has("drama")) {
-                                                    root.optJSONObject("drama") ?: root
-                                                } else {
-                                                    root
-                                                }
-                                                
-                                                val fetchedCover = if (targetJson.has("bookInfo")) {
-                                                    targetJson.getJSONObject("bookInfo").optString("cover").ifEmpty { targetJson.getJSONObject("bookInfo").optString("poster") }
-                                                } else {
-                                                    targetJson.optString("cover").ifEmpty { targetJson.optString("poster").ifEmpty { targetJson.optString("icon") } }
-                                                }
-                                                
-                                                if (fetchedCover.isNotEmpty()) {
-                                                    return@mapIndexed item.copy(cover = fetchedCover)
-                                                }
-                                            }
-                                        } catch (e: Exception) {
-                                            // Ignore
-                                        }
-                                    }
-                                    item
-                                }
-                                val searchResponses = pageItemsWithCovers.map {
+                                val searchResponses = pageItems.map {
                                     val coverUrl = getDirectImageUrl(it.cover)
                                     newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
                                         this.posterUrl = coverUrl

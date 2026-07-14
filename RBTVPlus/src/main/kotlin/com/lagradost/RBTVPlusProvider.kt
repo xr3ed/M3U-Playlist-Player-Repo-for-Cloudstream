@@ -6,6 +6,8 @@ import com.lagradost.RBTVPlus.BuildConfig
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.net.URI
 import java.net.URL
@@ -71,6 +73,11 @@ class ProtoParser(val data: ByteArray) {
 class RBTVPlusProvider : MainAPI() {
     companion object {
         val posterCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+        
+        private var cachedLiveMatches: List<LiveMatchInfo>? = null
+        private var lastLiveMatchesFetchTime = 0L
+        private val liveMatchesMutex = Mutex()
+        private const val LIVE_MATCHES_CACHE_TTL = 2 * 60 * 1000L // 2 menit
     }
     // Domain dari BuildConfig — diisi via GitHub Secrets (CI) atau local.properties (lokal)
     override var mainUrl = BuildConfig.RBTV_MAIN_URL
@@ -717,17 +724,33 @@ class RBTVPlusProvider : MainAPI() {
 
 
     private suspend fun fetchAllLiveMatches(apiHost: String): List<LiveMatchInfo> {
-        return coroutineScope {
-            sportTypes.map { sportType ->
-                async {
-                    try {
-                        val bytes = fetchLiveMatchesRaw(apiHost, sportType)
-                        if (bytes != null) parseLiveMatches(bytes, sportType) else emptyList()
-                    } catch (e: Exception) {
-                        emptyList()
+        val now = System.currentTimeMillis()
+        val cached = cachedLiveMatches
+        if (cached != null && (now - lastLiveMatchesFetchTime) < LIVE_MATCHES_CACHE_TTL) {
+            return cached
+        }
+        return liveMatchesMutex.withLock {
+            val cachedSecond = cachedLiveMatches
+            if (cachedSecond != null && (System.currentTimeMillis() - lastLiveMatchesFetchTime) < LIVE_MATCHES_CACHE_TTL) {
+                return@withLock cachedSecond
+            }
+            val matches = coroutineScope {
+                sportTypes.map { sportType ->
+                    async {
+                        try {
+                            val bytes = fetchLiveMatchesRaw(apiHost, sportType)
+                            if (bytes != null) parseLiveMatches(bytes, sportType) else emptyList()
+                        } catch (e: Exception) {
+                            emptyList()
+                        }
                     }
-                }
-            }.awaitAll().flatten().distinctBy { it.matchId }
+                }.awaitAll().flatten().distinctBy { it.matchId }
+            }
+            if (matches.isNotEmpty()) {
+                cachedLiveMatches = matches
+                lastLiveMatchesFetchTime = System.currentTimeMillis()
+            }
+            matches
         }
     }
 

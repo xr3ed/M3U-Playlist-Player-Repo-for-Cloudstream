@@ -33,7 +33,7 @@ class DramaBoxProvider : MainAPI() {
         private var cutadRankCache: List<SearchResponse>? = null
         private var cutadRankCacheTime = 0L
 
-        private val cleanClient = OkHttpClient.Builder()
+        private val cleanClient = com.lagradost.cloudstream3.app.baseClient.newBuilder()
             .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .build()
