@@ -657,7 +657,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         val PLAYER_BASE get() = BuildConfig.XR3EV_PLAYER_URL
         val STREAM_BASE get() = BuildConfig.XR3EV_STREAM_URL
         val cleanClient: okhttp3.OkHttpClient by lazy {
-            com.lagradost.cloudstream3.app.baseClient.newBuilder()
+            okhttp3.OkHttpClient.Builder()
                 .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
                 .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
                 .build()

@@ -3,6 +3,6 @@
   "displayName": "xr3ed event test",
   "description": "Plugin Uji Coba live stream Event Piala Dunia 2026",
   "author": "xr3ed",
-  "version": 3,
+  "version": 4,
   "tvTypes": ["Live"]
 }
