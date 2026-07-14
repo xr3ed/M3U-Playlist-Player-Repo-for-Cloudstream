@@ -31,6 +31,8 @@ class xr3edFlixProvider : MainAPI() {
     companion object {
         val addedUrls = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
         private val titleSearchCache = java.util.concurrent.ConcurrentHashMap<String, SearchResponse>()
+        private val listCache = java.util.concurrent.ConcurrentHashMap<String, Pair<Long, List<SearchResponse>>>()
+        private const val CACHE_EXPIRY_MS = 60 * 60 * 1000L // 1 jam
         private val cleanClient = okhttp3.OkHttpClient.Builder()
             .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
             .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
@@ -143,9 +145,15 @@ class xr3edFlixProvider : MainAPI() {
     private suspend fun fetchTmdbList(path: String, params: Map<String, String>): List<SearchResponse> {
         val mapWithLang = params + mapOf("language" to "en-US")
         val queryParams = mapWithLang.entries.joinToString("&") { "${it.key}=${it.value}" }
+        val cacheKey = "$path?$queryParams"
+        listCache[cacheKey]?.let { (timestamp, list) ->
+            if (System.currentTimeMillis() - timestamp < CACHE_EXPIRY_MS) {
+                return list
+            }
+        }
         val url = "$TMDB_API_BASE/$path?api_key=${getTmdbKey()}&$queryParams"
         val res = parsedGet<TMDBDiscoverResponse>(url)
-        return res?.results?.map { media ->
+        val result = res?.results?.map { media ->
             val title = if (media.originalLanguage == "id") {
                 media.originalTitle ?: media.originalName ?: media.title ?: media.name ?: "Unknown"
             } else {
@@ -161,10 +169,20 @@ class xr3edFlixProvider : MainAPI() {
                 this.posterUrl = poster
             }
         } ?: emptyList()
+        if (result.isNotEmpty()) {
+            listCache[cacheKey] = Pair(System.currentTimeMillis(), result)
+        }
+        return result
     }
 
     private suspend fun fetchFlixPatrolList(providerUrl: String, isMovie: Boolean, fallbackProviderId: String, fallbackPath: String): List<SearchResponse> {
-        return try {
+        val cacheKey = "flixpatrol_${providerUrl}_${isMovie}"
+        listCache[cacheKey]?.let { (timestamp, list) ->
+            if (System.currentTimeMillis() - timestamp < CACHE_EXPIRY_MS) {
+                return list
+            }
+        }
+        val result = try {
             val html = app.get(providerUrl, timeout = 8).text
             val heading = if (isMovie) "TOP 10 Movies" else "TOP 10 TV Shows"
             val idx = html.indexOf(heading)
@@ -184,8 +202,8 @@ class xr3edFlixProvider : MainAPI() {
             coroutineScope {
                 titles.map { title ->
                     async {
-                        val cacheKey = "${title}_${if (isMovie) "movie" else "tv"}"
-                        titleSearchCache[cacheKey]?.let { return@async it }
+                        val searchCacheKey = "${title}_${if (isMovie) "movie" else "tv"}"
+                        titleSearchCache[searchCacheKey]?.let { return@async it }
 
                         val encoded = java.net.URLEncoder.encode(title, "UTF-8")
                         val searchUrl = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=en-US"
@@ -208,7 +226,7 @@ class xr3edFlixProvider : MainAPI() {
                             ) {
                                 this.posterUrl = poster
                             }
-                            titleSearchCache[cacheKey] = res
+                            titleSearchCache[searchCacheKey] = res
                             res
                         } else {
                             null
@@ -220,6 +238,10 @@ class xr3edFlixProvider : MainAPI() {
             e.printStackTrace()
             fetchRecentRegionalList(fallbackProviderId, isMovie)
         }
+        if (result.isNotEmpty()) {
+            listCache[cacheKey] = Pair(System.currentTimeMillis(), result)
+        }
+        return result
     }
 
 
