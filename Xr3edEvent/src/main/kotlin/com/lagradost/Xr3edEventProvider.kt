@@ -1141,19 +1141,27 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         var title = "Live Stream World Cup"
         try {
-            if (url.contains("#match:")) {
-                val groupId = url.substringAfter("#match:")
+            var targetUrl = url
+            if (targetUrl.contains("lynk.id")) {
+                targetUrl = targetUrl.substringAfterLast("#", "")
+            }
+
+            if (targetUrl.contains("match:")) {
+                val groupId = targetUrl.substringAfter("match:")
                 title = "Live Match - $groupId"
+                val linkUrl = "https://lynk.id/xr3ed#match:$groupId"
                 return newLiveStreamLoadResponse(
                     title,
-                    url,
-                    url
+                    linkUrl,
+                    linkUrl
                 ) {
                     this.posterUrl = defaultLogo
                     this.plot = "Pilih server saluran streaming di bawah untuk menonton pertandingan ini secara langsung."
                 }
             } else {
-                var code = if (url.contains("#go:")) url.substringAfter("#go:") else url.substringAfter("#")
+                var code = if (targetUrl.contains("go:")) targetUrl.substringAfter("go:") else {
+                    if (targetUrl.contains("#")) targetUrl.substringAfter("#") else targetUrl
+                }
                 if (code.contains("?")) {
                     code = code.substringBefore("?")
                 }
@@ -1177,7 +1185,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                 }
 
                 title = chName
-                val linkUrl = "${mainUrl}/?id=jadwal#go:$code"
+                val linkUrl = "https://lynk.id/xr3ed#go:$code"
                 return newLiveStreamLoadResponse(
                     title,
                     linkUrl,
@@ -1193,8 +1201,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         
         return newLiveStreamLoadResponse(
             title,
-            url,
-            url
+            "https://lynk.id/xr3ed#none",
+            "https://lynk.id/xr3ed#none"
         ) {
             this.posterUrl = defaultLogo
         }
