@@ -789,7 +789,10 @@ class GudangFilmXR : MainAPI() {
     }
 
     private fun cleanImageUrl(value: String): String = value.replace(Regex("""-\d+x\d+(?=\.)"""), "")
-    private fun contentKey(url: String): String = url.substringBefore("#").substringBefore("?").trimEnd('/').lowercase(Locale.ROOT)
+    private fun contentKey(url: String): String {
+        val clean = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
+        return clean.substringBefore("#").substringBefore("?").trimEnd('/').lowercase(Locale.ROOT)
+    }
 
     private fun String.isImageLike(): Boolean {
         val lower = lowercase(Locale.ROOT)
