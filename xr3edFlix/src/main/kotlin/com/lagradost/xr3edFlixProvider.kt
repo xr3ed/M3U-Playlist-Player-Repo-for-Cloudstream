@@ -712,35 +712,35 @@ class xr3edFlixProvider : MainAPI() {
         
         if (targetData.isNotEmpty() && targetData != "beranda") {
             val single = fetchCategory(targetData)
-            return if (single != null) newHomePageResponse(listOf(single), false) else null
+            return if (single != null && single.list.isNotEmpty()) newHomePageResponse(listOf(single), false) else null
         }
         
         val lists = coroutineScope {
-            val trendingMovies = async { fetchCategory("Film Trending")!! }
-            val popularMovies = async { fetchCategory("Film Populer")!! }
-            val trendingSeries = async { fetchCategory("Seri Trending")!! }
-            val popularSeries = async { fetchCategory("Seri Populer")!! }
-            val netflixMovies = async { fetchCategory("Netflix Movies")!! }
-            val netflixSeries = async { fetchCategory("Netflix Series")!! }
-            val disneyMovies = async { fetchCategory("Disney+ Movies")!! }
-            val disneySeries = async { fetchCategory("Disney+ Series")!! }
-            val primeMovies = async { fetchCategory("Prime Video Movies")!! }
-            val primeSeries = async { fetchCategory("Prime Video Series")!! }
-            val appleMovies = async { fetchCategory("Apple TV+ Movies")!! }
-            val appleSeries = async { fetchCategory("Apple TV+ Series")!! }
-            val itunesMovies = async { fetchCategory("iTunes Store Movies")!! }
-            val viuSeries = async { fetchCategory("Viu Series")!! }
-            val vidioMovies = async { fetchCategory("Vidio Movies")!! }
-            val vidioSeries = async { fetchCategory("Vidio Series")!! }
-            val hboMovies = async { fetchCategory("HBO GO Movies")!! }
-            val hboSeries = async { fetchCategory("HBO GO Series")!! }
-            val catchplayMovies = async { fetchCategory("Catchplay+ Movies")!! }
-            val catchplaySeries = async { fetchCategory("Catchplay+ Series")!! }
-            val crunchyrollSeries = async { fetchCategory("Crunchyroll Series")!! }
-            val lionsgateMovies = async { fetchCategory("Lionsgate Play Movies")!! }
-            val lionsgateSeries = async { fetchCategory("Lionsgate Play Series")!! }
+            val trendingMovies = async { fetchCategory("Film Trending") }
+            val popularMovies = async { fetchCategory("Film Populer") }
+            val trendingSeries = async { fetchCategory("Seri Trending") }
+            val popularSeries = async { fetchCategory("Seri Populer") }
+            val netflixMovies = async { fetchCategory("Netflix Movies") }
+            val netflixSeries = async { fetchCategory("Netflix Series") }
+            val disneyMovies = async { fetchCategory("Disney+ Movies") }
+            val disneySeries = async { fetchCategory("Disney+ Series") }
+            val primeMovies = async { fetchCategory("Prime Video Movies") }
+            val primeSeries = async { fetchCategory("Prime Video Series") }
+            val appleMovies = async { fetchCategory("Apple TV+ Movies") }
+            val appleSeries = async { fetchCategory("Apple TV+ Series") }
+            val itunesMovies = async { fetchCategory("iTunes Store Movies") }
+            val viuSeries = async { fetchCategory("Viu Series") }
+            val vidioMovies = async { fetchCategory("Vidio Movies") }
+            val vidioSeries = async { fetchCategory("Vidio Series") }
+            val hboMovies = async { fetchCategory("HBO GO Movies") }
+            val hboSeries = async { fetchCategory("HBO GO Series") }
+            val catchplayMovies = async { fetchCategory("Catchplay+ Movies") }
+            val catchplaySeries = async { fetchCategory("Catchplay+ Series") }
+            val crunchyrollSeries = async { fetchCategory("Crunchyroll Series") }
+            val lionsgateMovies = async { fetchCategory("Lionsgate Play Movies") }
+            val lionsgateSeries = async { fetchCategory("Lionsgate Play Series") }
  
-            listOf(
+            listOfNotNull(
                 trendingMovies.await(), popularMovies.await(),
                 trendingSeries.await(), popularSeries.await(),
                 netflixMovies.await(), netflixSeries.await(),
@@ -754,7 +754,7 @@ class xr3edFlixProvider : MainAPI() {
                 catchplayMovies.await(), catchplaySeries.await(),
                 crunchyrollSeries.await(),
                 lionsgateMovies.await(), lionsgateSeries.await()
-            )
+            ).filter { it.list.isNotEmpty() }
         }
         
         return newHomePageResponse(lists, false)
