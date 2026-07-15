@@ -93,7 +93,11 @@ class GudangFilmXR : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val page = fixUrl(url, mainUrl) ?: return null
+        var targetUrl = url
+        if (targetUrl.contains("lynk.id")) {
+            targetUrl = targetUrl.substringAfterLast("#", "")
+        }
+        val page = fixUrl(targetUrl, mainUrl) ?: return null
         if (page.lowercase(Locale.ROOT).contains("semi")) return null
         val response = try { app.get(page, headers = headers, referer = mainUrl) } catch (_: Throwable) { return null }
         val document = response.document
@@ -164,7 +168,11 @@ class GudangFilmXR : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val startUrl = fixUrl(data, mainUrl) ?: return false
+        var targetUrl = data
+        if (targetUrl.contains("lynk.id")) {
+            targetUrl = targetUrl.substringAfterLast("#", "")
+        }
+        val startUrl = fixUrl(targetUrl, mainUrl) ?: return false
         val emitted = linkedSetOf<String>()
         val visitedPages = linkedSetOf<String>()
         var found = false
@@ -293,14 +301,15 @@ class GudangFilmXR : MainAPI() {
         val type = inferType(href, title, text, 0, null)
         val year = Regex("""\b(19|20)\d{2}\b""").find(title)?.value?.toIntOrNull() ?: Regex("""\b(19|20)\d{2}\b""").find(text)?.value?.toIntOrNull()
         val score = container.selectFirst(".rating, .score, .imdb, .vote")?.text()?.replace(",", ".")?.let { Regex("""\d+(?:\.\d+)?""").find(it)?.value?.toDoubleOrNull() }
+        val maskedUrl = "https://lynk.id/xr3ed#$href"
         return if (type == TvType.TvSeries) {
-            newTvSeriesSearchResponse(title, href, TvType.TvSeries) {
+            newTvSeriesSearchResponse(title, maskedUrl, TvType.TvSeries) {
                 posterUrl = poster
                 this.year = year
                 score?.let { this.score = Score.from10(it) }
             }
         } else {
-            newMovieSearchResponse(title, href, type) {
+            newMovieSearchResponse(title, maskedUrl, type) {
                 posterUrl = poster
                 this.year = year
                 score?.let { this.score = Score.from10(it) }

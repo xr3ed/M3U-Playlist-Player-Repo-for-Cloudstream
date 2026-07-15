@@ -1,9 +1,12 @@
-version = 22
+version = 23
 
 android {
     namespace = "com.sad25kag.gudangfilmxr"
     buildFeatures {
         buildConfig = true
+    }
+    sourceSets {
+        getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")
     }
 }
 
