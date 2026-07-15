@@ -265,19 +265,11 @@ class M3UPlaylistPlayer(
         }
 
         return withContext(Dispatchers.IO) {
-            // Fetch EPG data
-            val epgUrl = getEpgUrlToUse()
-            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl, onlyCache = true)
-
             val homePageList = HomePageList(
                 groupName,
                 items.map { item ->
-                    val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
-                    val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                    val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
-                    
                     newLiveSearchResponse(
-                        displayName,
+                        item.title,
                         item.url,
                         TvType.Live
                     ) {
@@ -293,17 +285,11 @@ class M3UPlaylistPlayer(
     override suspend fun search(query: String): List<SearchResponse> {
         val playlist = fetchPlaylist()
         return withContext(Dispatchers.IO) {
-            val epgUrl = getEpgUrlToUse()
-            val (epgData, nameToIdMap) = EpgHelper.getEpg(context, epgUrl, onlyCache = true)
             playlist.items
                 .filter { it.title.contains(query, ignoreCase = true) }
                 .map { item ->
-                    val progs = EpgHelper.getProgramsForChannel(item, epgData, nameToIdMap)
-                    val currentAndUpcoming = EpgHelper.getCurrentAndUpcomingText(progs)
-                    val displayName = currentAndUpcoming.first?.let { "${item.title} ($it)" } ?: item.title
-                    
                     newLiveSearchResponse(
-                        displayName,
+                        item.title,
                         item.url,
                         TvType.Live
                     ) {
