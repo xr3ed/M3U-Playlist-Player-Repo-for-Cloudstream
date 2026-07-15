@@ -153,7 +153,7 @@ jobs:
           echo "Purging ALL files from jsDelivr cache..."
           
           # Purge semua file cs3 plugin
-          for plugin in DramaBox ShortMax Melolo RBTVPlus Xr3edEvent M3UPlaylistPlayer DracinAIO GudangFilmXR Xr3edEventTest xr3edFlix; do
+          for plugin in DramaBox ShortMax Melolo RBTVPlus Xr3edEvent M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix; do
             echo "Purging $plugin.cs3..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$plugin.cs3"
             echo ""

@@ -1,8 +1,0 @@
-{
-  "pluginClassName": "com.lagradost.Xr3edEventTestPlugin",
-  "displayName": "xr3ed event test",
-  "description": "Plugin Uji Coba live stream Event Piala Dunia 2026",
-  "author": "xr3ed",
-  "version": 5,
-  "tvTypes": ["Live"]
-}

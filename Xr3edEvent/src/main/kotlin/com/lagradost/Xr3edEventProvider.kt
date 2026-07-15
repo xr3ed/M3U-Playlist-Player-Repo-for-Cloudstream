@@ -30,9 +30,10 @@ object LocalManifestServer {
     private var serverPort: Int = 0
     
     class ManifestMetadata(
-        val originalUrl: String,
+        var originalUrl: String,
         val drmLicenseParam: String,
-        val headers: Map<String, String>
+        val headers: Map<String, String>,
+        val workerChannelId: String? = null
     )
     private val manifestMetadatas = java.util.concurrent.ConcurrentHashMap<String, ManifestMetadata>()
 
@@ -380,9 +381,21 @@ object LocalManifestServer {
                                                        if (get("Origin").isNullOrBlank()) remove("Origin")
                                                    }
                                                }
-                                                val manifestUrl = meta.originalUrl
-                                                 val response = kotlinx.coroutines.runBlocking {
+                                                 var manifestUrl = meta.originalUrl
+                                                 var response = kotlinx.coroutines.runBlocking {
                                                      app.get(manifestUrl, headers = manifestHeaders.toMap(), timeout = 25)
+                                                 }
+                                                 if (response.code != 200 && !meta.workerChannelId.isNullOrEmpty()) {
+                                                     android.util.Log.d("EventProvider", "LocalManifestServer: Token expired (HTTP ${response.code}). Re-fetching fresh URL for: ${meta.workerChannelId}")
+                                                     val freshUrl = fetchFreshWorkerUrl(meta.workerChannelId)
+                                                     if (freshUrl != null) {
+                                                         android.util.Log.d("EventProvider", "LocalManifestServer: Successfully obtained fresh URL: $freshUrl")
+                                                         meta.originalUrl = freshUrl
+                                                         manifestUrl = freshUrl
+                                                         response = kotlinx.coroutines.runBlocking {
+                                                             app.get(freshUrl, headers = manifestHeaders.toMap(), timeout = 25)
+                                                         }
+                                                     }
                                                  }
                                                  if (response.code != 200) {
                                                      android.util.Log.e("EventProvider", "LocalManifestServer: manifest fetch returned HTTP ${response.code} for URL: $manifestUrl")
@@ -595,10 +608,55 @@ object LocalManifestServer {
             return 0
         }
     }
+
+    private val freshClient = okhttp3.OkHttpClient()
+
+    private fun decryptWorkerPayload(responseText: String): JSONObject? {
+        return try {
+            val responseJson = JSONObject(responseText.trim())
+            val ivB64 = responseJson.optString("iv")
+            val dataB64 = responseJson.optString("data")
+            if (ivB64.isNullOrEmpty() || dataB64.isNullOrEmpty()) return null
+            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val spec = javax.crypto.spec.PBEKeySpec("xys1-gh".toCharArray(), "salt123".toByteArray(), 1000, 256)
+            val secretKey = javax.crypto.spec.SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+            val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
+            val combined = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
+            val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(javax.crypto.Cipher.DECRYPT_MODE, secretKey, javax.crypto.spec.GCMParameterSpec(128, iv))
+            JSONObject(String(cipher.doFinal(combined), Charsets.UTF_8))
+        } catch (e: Exception) { null }
+    }
+
+    private fun fetchFreshWorkerUrl(workerChannelId: String): String? {
+        try {
+            val workerUrl = "${Xr3edEventProvider.WORKER_BASE}/?id=$workerChannelId&t=${System.currentTimeMillis()}"
+            val req = okhttp3.Request.Builder()
+                .url(workerUrl)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .build()
+            val responseText = freshClient.newCall(req).execute().body?.string() ?: return null
+            if (responseText.trim().equals("CHANNEL_NOT_FOUND", ignoreCase = true)) return null
+            
+            val decrypted = decryptWorkerPayload(responseText) ?: return null
+            var newUrl = if (decrypted.has("dash")) decrypted.optString("dash") else decrypted.optString("hls")
+            if (newUrl.isNullOrBlank()) return null
+            
+            val aivRegex = Regex("""https://[^/]+\.(?:workers\.dev|pages\.dev)/[^/]+/((?:pdx-nitro|lhr-nitro)/.*)""", RegexOption.IGNORE_CASE)
+            val aivMatch = aivRegex.find(newUrl)
+            if (aivMatch != null) {
+                newUrl = "https://otte.cache.aiv-cdn.net/" + aivMatch.groupValues[1]
+            }
+            return newUrl.split("|")[0].trim()
+        } catch (e: Exception) {
+            android.util.Log.e("EventProvider", "LocalManifestServer: fetchFreshWorkerUrl error", e)
+            return null
+        }
+    }
     
-    fun registerManifest(id: String, originalUrl: String, drmLicenseParam: String, headers: Map<String, String>): String {
+    fun registerManifest(id: String, originalUrl: String, drmLicenseParam: String, headers: Map<String, String>, workerChannelId: String? = null): String {
         val port = start()
-        manifestMetadatas[id] = ManifestMetadata(originalUrl, drmLicenseParam, headers)
+        manifestMetadatas[id] = ManifestMetadata(originalUrl, drmLicenseParam, headers, workerChannelId)
         return "http://127.0.0.1:$port/manifest_$id.mpd"
     }
 }
@@ -841,11 +899,11 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         return defaultUa
     }
 
-    private suspend fun getDrmDashManifestUrl(originalUrl: String, drmLicenseParam: String, headers: Map<String, String>): String {
+    private suspend fun getDrmDashManifestUrl(originalUrl: String, drmLicenseParam: String, headers: Map<String, String>, workerChannelId: String? = null): String {
         android.util.Log.d("EventProvider", "getDrmDashManifestUrl start: url=$originalUrl, drmLicenseParam=$drmLicenseParam")
         try {
             val cleanId = drmLicenseParam.replace("-", "").replace(":", "").replace(",", "").trim()
-            val resultUrl = LocalManifestServer.registerManifest(cleanId, originalUrl, drmLicenseParam, headers)
+            val resultUrl = LocalManifestServer.registerManifest(cleanId, originalUrl, drmLicenseParam, headers, workerChannelId)
             android.util.Log.d("EventProvider", "getDrmDashManifestUrl registered dynamic metadata! Local URL: $resultUrl")
             return resultUrl
         } catch (e: Exception) {
@@ -1686,7 +1744,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         }
                                         
                                         val finalStreamUrl = if (cleanDashUrl.contains(".mpd", ignoreCase = true) || cleanDashUrl.contains("mpd", ignoreCase = true)) {
-                                            getDrmDashManifestUrl(cleanDashUrl, finalDrmParam, headers)
+                                            getDrmDashManifestUrl(cleanDashUrl, finalDrmParam, headers, cleanId)
                                         } else {
                                             cleanDashUrl
                                         }
@@ -1868,7 +1926,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                        }
                                        
                                        val streamUrl = if (isDash) {
-                                            getDrmDashManifestUrl(cleanUrl, finalDrmParam, headers)
+                                            getDrmDashManifestUrl(cleanUrl, finalDrmParam, headers, idVal)
                                        } else {
                                             cleanUrl
                                        }
