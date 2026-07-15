@@ -227,7 +227,7 @@ class GudangFilmXR : MainAPI() {
             val html = normalize(response.text.ifBlank { document.html() })
             collectSubtitles(document, fixed, subtitleCallback)
             val links = linkedSetOf<String>()
-            collectAjaxPlayers(document, html, fixed).forEach { links.add(it) }
+            collectAjaxPlayers(document, html, fixed, subtitleCallback).forEach { links.add(it) }
             collectElementLinks(document, fixed).forEach { links.add(it) }
             collectLinksFromHtml(html, fixed).forEach { links.add(it) }
             return links.filterNot { it.isNoiseUrl() }
@@ -336,7 +336,12 @@ class GudangFilmXR : MainAPI() {
             .filterNot { contentKey(it.url) == contentKey(currentUrl) }
             .take(16)
 
-    private suspend fun collectAjaxPlayers(document: Document, html: String, pageUrl: String): List<String> {
+    private suspend fun collectAjaxPlayers(
+        document: Document,
+        html: String,
+        pageUrl: String,
+        subtitleCallback: (SubtitleFile) -> Unit
+    ): List<String> {
         val links = linkedSetOf<String>()
         val ajaxUrl = "$mainUrl/wp-admin/admin-ajax.php"
         val playerOptions = document.select("li.dooplay_player_option, .dooplay_player_option, .dooplay_player, [data-post][data-nume][data-type], [data-post][data-type], [data-id][data-nume]")
@@ -345,10 +350,27 @@ class GudangFilmXR : MainAPI() {
             val nume = option.attr("data-nume").ifBlank { option.attr("data-index").ifBlank { "1" } }
             val type = option.attr("data-type").ifBlank { sourceType(document, html) ?: "movie" }
             if (post.isBlank()) return@forEach
+
+            // Cek subtitle pada atribut opsi pemutar
+            listOf("data-subtitle", "data-sub", "data-tracks").forEach { attr ->
+                val subUrl = option.attr(attr).trim()
+                if (subUrl.isNotEmpty()) {
+                    fixUrl(subUrl, pageUrl)?.let { fixedSub ->
+                        subtitleCallback(SubtitleFile("Indonesian", fixedSub))
+                    }
+                }
+            }
+
             listOf("doo_player_ajax", "doo_ajax_player", "player_ajax", "muvipro_player_content").forEach { action ->
                 val body = try {
                     app.post(ajaxUrl, data = mapOf("action" to action, "post" to post, "nume" to nume, "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
                 } catch (_: Throwable) { "" }
+                if (body.isNotEmpty()) {
+                    try {
+                        val parsed = Jsoup.parse(body, pageUrl)
+                        collectSubtitles(parsed, pageUrl, subtitleCallback)
+                    } catch (_: Throwable) {}
+                }
                 collectLinksFromHtml(body, pageUrl).forEach { links.add(it) }
             }
         }
@@ -358,6 +380,12 @@ class GudangFilmXR : MainAPI() {
                     val body = try {
                         app.post(ajaxUrl, data = mapOf("action" to "doo_player_ajax", "post" to post, "nume" to nume.toString(), "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
                     } catch (_: Throwable) { "" }
+                    if (body.isNotEmpty()) {
+                        try {
+                            val parsed = Jsoup.parse(body, pageUrl)
+                            collectSubtitles(parsed, pageUrl, subtitleCallback)
+                        } catch (_: Throwable) {}
+                    }
                     collectLinksFromHtml(body, pageUrl).forEach { links.add(it) }
                 }
             }
@@ -397,10 +425,46 @@ class GudangFilmXR : MainAPI() {
     }
 
     private fun collectSubtitles(document: Document, baseUrl: String, subtitleCallback: (SubtitleFile) -> Unit) {
-        document.select("track[src], a[href$=.srt], a[href$=.vtt]").forEach { element ->
-            val url = fixUrl(element.attr("src").ifBlank { element.attr("href") }, baseUrl) ?: return@forEach
-            val label = cleanText(element.attr("label").ifBlank { element.attr("srclang").ifBlank { element.text().ifBlank { "Subtitle" } } })
-            subtitleCallback(SubtitleFile(label, url))
+        // 1. Tag standar track, link srt/vtt, dan source track
+        document.select("track[src], a[href*='.srt'], a[href*='.vtt'], a[href*='subtitle'], source[src*='.srt'], source[src*='.vtt']").forEach { element ->
+            val url = fixUrl(element.attr("src").ifBlank { element.attr("href").ifBlank { element.attr("data-src") } }, baseUrl) ?: return@forEach
+            if (url.contains(".srt", true) || url.contains(".vtt", true)) {
+                val label = cleanText(
+                    element.attr("label").ifBlank {
+                        element.attr("srclang").ifBlank {
+                            element.text().ifBlank {
+                                if (url.contains("ind", true) || url.contains("indonesia", true)) "Indonesian" else "Subtitle"
+                            }
+                        }
+                    }
+                )
+                subtitleCallback(SubtitleFile(label, url))
+            }
+        }
+
+        // 2. Pemindaian atribut kustom elemen HTML secara mendalam
+        document.select("*").forEach { element ->
+            element.attributes().forEach { attr ->
+                val value = attr.value.trim()
+                if (value.startsWith("http") && (value.contains(".srt", true) || value.contains(".vtt", true))) {
+                    val label = if (value.contains("ind", true) || value.contains("indonesia", true)) "Indonesian" else "Subtitle"
+                    subtitleCallback(SubtitleFile(label, value))
+                }
+            }
+        }
+
+        // 3. Pemindaian script JavaScript untuk menemukan URL srt atau vtt
+        document.select("script").forEach { element ->
+            val scriptContent = element.data()
+            if (scriptContent.isNotEmpty()) {
+                Regex("""(https?://[^\s'"\\<>]+?\.(?:srt|vtt)[^\s'"\\<>]*)""", RegexOption.IGNORE_CASE)
+                    .findAll(scriptContent).forEach { match ->
+                        val rawUrl = match.value
+                        val cleanUrl = rawUrl.replace("\\/", "/")
+                        val label = if (cleanUrl.contains("ind", true) || cleanUrl.contains("indonesia", true)) "Indonesian" else "Subtitle"
+                        subtitleCallback(SubtitleFile(label, cleanUrl))
+                    }
+            }
         }
     }
 
