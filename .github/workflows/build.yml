@@ -80,6 +80,8 @@ jobs:
           SHORTMAX_KEY: ${{ secrets.SHORTMAX_KEY }}
           MELOLO_URL: ${{ secrets.MELOLO_URL }}
           MELOLO_API_PATH: ${{ secrets.MELOLO_API_PATH }}
+          XR3EDTV_WORKER_URL: ${{ secrets.XR3EDTV_WORKER_URL }}
+          XR3EDTV_WORKER_TOKEN: ${{ secrets.XR3EDTV_WORKER_TOKEN }}
 
       - name: Collect Build Artifacts
         run: |
@@ -153,7 +155,7 @@ jobs:
           echo "Purging ALL files from jsDelivr cache..."
           
           # Purge semua file cs3 plugin
-          for plugin in DramaBox ShortMax Melolo RBTVPlus Xr3edEvent M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix; do
+          for plugin in DramaBox ShortMax Melolo RBTVPlus Xr3edEvent M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV; do
             echo "Purging $plugin.cs3..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$plugin.cs3"
             echo ""
