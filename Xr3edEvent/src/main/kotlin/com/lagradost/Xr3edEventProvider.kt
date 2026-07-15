@@ -1750,22 +1750,36 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                         }
                                          
                                         android.util.Log.d("EventProvider", "Invoking CallSite 1: URL=$finalStreamUrl, DRM_PAIRS=$finalDrmParam, HEADERS=$headers")
-                                        callback.invoke(
-                                            newDrmExtractorLink(
-                                                "$serverName (Bitmovin)",
-                                                "$serverName (Bitmovin)",
-                                                finalStreamUrl,
-                                                if (isM3u8Stream) ExtractorLinkType.M3U8 else ExtractorLinkType.DASH,
-                                                CLEARKEY_UUID
-                                            ) {
-                                                quality = Qualities.Unknown.value
-                                                this.headers = headers
-                                                val clearkeyPair = buildClearKeyInjection(finalDrmParam)
-                                                kty = "oct"
-                                                kid = clearkeyPair.first
-                                                this.key = clearkeyPair.second
-                                            }
-                                        )
+                                        if (isM3u8Stream) {
+                                             callback.invoke(
+                                                 ExtractorLink(
+                                                     source = "Bitmovin",
+                                                     name = "$serverName (HLS)",
+                                                     url = finalStreamUrl,
+                                                     referer = headers["Referer"] ?: "",
+                                                     quality = Qualities.Unknown.value,
+                                                     type = ExtractorLinkType.M3U8,
+                                                     headers = headers
+                                                 )
+                                             )
+                                         } else {
+                                             callback.invoke(
+                                                 newDrmExtractorLink(
+                                                     "$serverName (Bitmovin)",
+                                                     "$serverName (Bitmovin)",
+                                                     finalStreamUrl,
+                                                     ExtractorLinkType.DASH,
+                                                     CLEARKEY_UUID
+                                                 ) {
+                                                     quality = Qualities.Unknown.value
+                                                     this.headers = headers
+                                                     val clearkeyPair = buildClearKeyInjection(finalDrmParam)
+                                                     kty = "oct"
+                                                     kid = clearkeyPair.first
+                                                     this.key = clearkeyPair.second
+                                                 }
+                                             )
+                                         }
                                         successDrm = true
                                     } else {
                                         android.util.Log.e("EventProvider", "DRM string format tidak valid (tidak ada ':' separator): $drmStr")
@@ -1932,22 +1946,36 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                        }
                                        
                                        android.util.Log.d("EventProvider", "Invoking CallSite 2: URL=$streamUrl, ALL_PAIRS=$finalDrmParam, HEADERS=$headers")
-                                       callback.invoke(
-                                            newDrmExtractorLink(
-                                                "$serverName (NS Player)",
-                                                "$serverName (NS Player)",
-                                                streamUrl,
-                                                streamType,
-                                                CLEARKEY_UUID
-                                            ) {
-                                                quality = Qualities.Unknown.value
-                                                this.headers = headers
-                                                val clearkeyPair = buildClearKeyInjection(finalDrmParam)
-                                                kty = "oct"
-                                                kid = clearkeyPair.first
-                                                this.key = clearkeyPair.second
-                                            }
-                                        )
+                                       if (streamType == ExtractorLinkType.M3U8) {
+                                            callback.invoke(
+                                                ExtractorLink(
+                                                    source = "NS Player",
+                                                    name = "$serverName (HLS)",
+                                                    url = streamUrl,
+                                                    referer = headers["Referer"] ?: "",
+                                                    quality = Qualities.Unknown.value,
+                                                    type = ExtractorLinkType.M3U8,
+                                                    headers = headers
+                                                )
+                                            )
+                                        } else {
+                                            callback.invoke(
+                                                newDrmExtractorLink(
+                                                    "$serverName (NS Player)",
+                                                    "$serverName (NS Player)",
+                                                    streamUrl,
+                                                    ExtractorLinkType.DASH,
+                                                    CLEARKEY_UUID
+                                                ) {
+                                                    quality = Qualities.Unknown.value
+                                                    this.headers = headers
+                                                    val clearkeyPair = buildClearKeyInjection(finalDrmParam)
+                                                    kty = "oct"
+                                                    kid = clearkeyPair.first
+                                                    this.key = clearkeyPair.second
+                                                }
+                                            )
+                                        }
                                         successDrm = true
                                   }
                                   currentTargetUrl = decryptedUrl
