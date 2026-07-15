@@ -1063,6 +1063,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     chIdLower.contains("astro") || chIdLower.contains("hub") ||
                                     chIdLower.contains("premier") || chIdLower.contains("wctv") ||
                                     chIdLower.contains("ppv") || chIdLower.contains("sbs") ||
+                                    chIdLower.contains("itv") ||
                                     chNameLower.contains("eng") || chNameLower.contains("english") ||
                                     chNameLower.contains("dazn") || chNameLower.contains("bein") ||
                                     chNameLower.contains("sky") || chNameLower.contains("optus") ||
@@ -1070,7 +1071,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                     chNameLower.contains("espn") || chNameLower.contains("fox") ||
                                     chNameLower.contains("astro") || chNameLower.contains("hub") ||
                                     chNameLower.contains("premier") || chNameLower.contains("wctv") ||
-                                    chNameLower.contains("ppv") || chNameLower.contains("sbs")
+                                    chNameLower.contains("ppv") || chNameLower.contains("sbs") ||
+                                    chNameLower.contains("itv")
                                     
                     val isLokal = chIdLower.contains("tvri") || chIdLower.contains("vidio") ||
                                   chIdLower.contains("sctv") || chIdLower.contains("indosiar") ||
