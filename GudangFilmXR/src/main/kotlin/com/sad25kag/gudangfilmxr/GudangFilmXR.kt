@@ -51,8 +51,6 @@ class GudangFilmXR : MainAPI() {
     override val mainPage = mainPageOf(
         "$mainUrl/" to "Beranda",
         "$mainUrl/genre/action/" to "Action",
-        "$mainUrl/genre/semi-jepang/" to "Semi Jepang",
-        "$mainUrl/genre/semi-philippines/" to "Semi Philippines",
         "$mainUrl/genre/adventure/" to "Adventure",
         "$mainUrl/genre/romance/" to "Romance",
         "$mainUrl/genre/thriller/" to "Thriller",
@@ -96,13 +94,14 @@ class GudangFilmXR : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         val page = fixUrl(url, mainUrl) ?: return null
+        if (page.lowercase(Locale.ROOT).contains("semi")) return null
         val response = try { app.get(page, headers = headers, referer = mainUrl) } catch (_: Throwable) { return null }
         val document = response.document
         val html = normalize(response.text.ifBlank { document.html() })
         val rawTitle = document.selectFirst("h1.entry-title, h1, .entry-title, meta[property=og:title], title")
             ?.let { if (it.tagName().equals("meta", true)) it.attr("content") else it.text() }
         val title = cleanTitle(rawTitle).ifBlank { titleFromUrl(page) }
-        if (title.isBlank()) return null
+        if (title.isBlank() || isNsfw(title, page)) return null
 
         val poster = findPoster(document, page)
         val text = cleanText(document.text())
@@ -277,7 +276,7 @@ class GudangFilmXR : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse? {
         val anchor = if (`is`("a[href]")) this else selectFirst("h1 a[href], h2 a[href], h3 a[href], .entry-title a[href], .title a[href], a[href][title], a[href]") ?: return null
         val href = fixUrl(anchor.attr("href"), mainUrl) ?: return null
-        if (!isContentUrl(href)) return null
+        if (!isContentUrl(href) || href.lowercase(Locale.ROOT).contains("semi")) return null
         val container = anchor.bestContainer()
         val image = container.selectFirst("img[data-src], img[data-original], img[data-lazy-src], img[data-wpfc-original-src], img[src], img[srcset]") ?: anchor.selectFirst("img")
         val title = listOf(
@@ -288,6 +287,7 @@ class GudangFilmXR : MainAPI() {
             anchor.text(),
             titleFromUrl(href)
         ).firstOrNull { isUsefulTitle(it) }?.let { cleanTitle(it) } ?: return null
+        if (isNsfw(title, href)) return null
         val poster = image?.imageUrl(mainUrl) ?: container.styleImage(mainUrl) ?: anchor.findNearbyImage(mainUrl) ?: return null
         val text = cleanText(container.text())
         val type = inferType(href, title, text, 0, null)
@@ -759,6 +759,12 @@ class GudangFilmXR : MainAPI() {
 
     private val sf21Key = "kiemtienmua911ca".toByteArray()
     private val sf21Iv = "1234567890oiuytr".toByteArray()
+
+    private fun isNsfw(title: String, url: String): Boolean {
+        val titleLower = title.lowercase(Locale.ROOT)
+        val urlLower = url.lowercase(Locale.ROOT)
+        return titleLower.contains("semi") || urlLower.contains("/semi") || urlLower.contains("semi-")
+    }
 
     private val cardSelector = listOf(
         "article", ".post", ".item", ".movie", ".film", ".ml-item", ".result-item", ".owl-item", ".swiper-slide", ".poster", ".thumbnail", ".box", ".col"
