@@ -562,6 +562,7 @@ fun checkForUpdates(context: Context) {
 
     Thread {
         try {
+            try { Thread.sleep(6000) } catch (_: Exception) {}
             android.util.Log.d("SecurityHelper", "checkForUpdates: started. Raw URL = $rawUrl, jsd URL = $jsdUrl, localBuildTime = $finalLocalBuildTime")
             var json: String? = null
             if (rawUrl.isNotEmpty()) {

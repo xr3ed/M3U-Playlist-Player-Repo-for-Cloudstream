@@ -264,10 +264,19 @@ class M3UPlaylistPlayer(
             return newHomePageResponse(emptyList(), hasNext = false)
         }
 
+        val pageSize = 60
+        val startIndex = (page - 1) * pageSize
+        if (startIndex >= items.size) {
+            return newHomePageResponse(emptyList(), hasNext = false)
+        }
+        val endIndex = kotlin.math.min(startIndex + pageSize, items.size)
+        val pageItems = items.subList(startIndex, endIndex)
+        val hasNext = endIndex < items.size
+
         return withContext(Dispatchers.IO) {
             val homePageList = HomePageList(
                 groupName,
-                items.map { item ->
+                pageItems.map { item ->
                     newLiveSearchResponse(
                         item.title,
                         item.url,
@@ -278,7 +287,7 @@ class M3UPlaylistPlayer(
                 }
             )
 
-            newHomePageResponse(request, homePageList.list, hasNext = false)
+            newHomePageResponse(request, homePageList.list, hasNext)
         }
     }
 

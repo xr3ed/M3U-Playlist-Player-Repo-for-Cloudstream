@@ -459,6 +459,7 @@ fun checkForUpdatesTest(context: Context) {
 
     Thread {
         try {
+            try { Thread.sleep(6000) } catch (_: Exception) {}
             android.util.Log.d("SecurityHelperTest", "checkForUpdatesTest: started with URL = $finalUrl, localBuildTime = $finalLocalBuildTime")
             val conn = URL(finalUrl).openConnection() as HttpURLConnection
             conn.connectTimeout = 8000
