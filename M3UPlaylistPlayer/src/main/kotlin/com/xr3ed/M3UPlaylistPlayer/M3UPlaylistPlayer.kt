@@ -60,6 +60,8 @@ class M3UPlaylistPlayer(
         private val globalMutex = Mutex()
         private const val CACHE_DURATION_MS = 5 * 60 * 1000L // Cache 5 menit
 
+        val cachedGroupedPlaylists = java.util.concurrent.ConcurrentHashMap<String, Map<String, List<PlaylistItem>>>()
+
         suspend fun getMutexForUrl(url: String): Mutex {
             return globalMutex.withLock {
                 playlistMutexes.getOrPut(url) { Mutex() }
@@ -70,6 +72,7 @@ class M3UPlaylistPlayer(
             synchronized(cachedPlaylists) {
                 cachedPlaylists.clear()
                 lastFetchTimes.clear()
+                cachedGroupedPlaylists.clear()
             }
         }
     }
@@ -236,6 +239,7 @@ class M3UPlaylistPlayer(
                     synchronized(cachedPlaylists) {
                         cachedPlaylists[playlistUrl] = result
                         lastFetchTimes[playlistUrl] = System.currentTimeMillis()
+                        cachedGroupedPlaylists.remove(playlistUrl)
                     }
                 }
                 
@@ -255,7 +259,9 @@ class M3UPlaylistPlayer(
             )
         }
 
-        val grouped = playlist.items.groupBy { it.attributes["group-title"] ?: "Live Channels" }
+        val grouped = cachedGroupedPlaylists.getOrPut(playlistUrl) {
+            playlist.items.groupBy { it.attributes["group-title"] ?: "Live Channels" }
+        }
         
         val groupName = request.data
         val items = grouped[groupName] ?: emptyList()
