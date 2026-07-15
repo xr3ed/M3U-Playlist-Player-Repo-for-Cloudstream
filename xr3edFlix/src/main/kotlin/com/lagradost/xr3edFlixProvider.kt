@@ -141,7 +141,30 @@ class xr3edFlixProvider : MainAPI() {
     override val hasMainPage = true
 
     override val mainPage = listOf(
-        MainPageData("Beranda", "beranda")
+        MainPageData("Beranda", "beranda"),
+        MainPageData("Film Trending", "Film Trending"),
+        MainPageData("Film Populer", "Film Populer"),
+        MainPageData("Seri Trending", "Seri Trending"),
+        MainPageData("Seri Populer", "Seri Populer"),
+        MainPageData("Netflix Movies", "Netflix Movies"),
+        MainPageData("Netflix Series", "Netflix Series"),
+        MainPageData("Disney+ Movies", "Disney+ Movies"),
+        MainPageData("Disney+ Series", "Disney+ Series"),
+        MainPageData("Prime Video Movies", "Prime Video Movies"),
+        MainPageData("Prime Video Series", "Prime Video Series"),
+        MainPageData("Apple TV+ Movies", "Apple TV+ Movies"),
+        MainPageData("Apple TV+ Series", "Apple TV+ Series"),
+        MainPageData("iTunes Store Movies", "iTunes Store Movies"),
+        MainPageData("Viu Series", "Viu Series"),
+        MainPageData("Vidio Movies", "Vidio Movies"),
+        MainPageData("Vidio Series", "Vidio Series"),
+        MainPageData("HBO GO Movies", "HBO GO Movies"),
+        MainPageData("HBO GO Series", "HBO GO Series"),
+        MainPageData("Catchplay+ Movies", "Catchplay+ Movies"),
+        MainPageData("Catchplay+ Series", "Catchplay+ Series"),
+        MainPageData("Crunchyroll Series", "Crunchyroll Series"),
+        MainPageData("Lionsgate Play Movies", "Lionsgate Play Movies"),
+        MainPageData("Lionsgate Play Series", "Lionsgate Play Series")
     )
 
     private suspend fun fetchTmdbList(path: String, params: Map<String, String>): List<SearchResponse> {
@@ -644,32 +667,22 @@ class xr3edFlixProvider : MainAPI() {
         }
     }
 
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
-        if (page > 1) return null
-        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
-
-        val lists = coroutineScope {
-            val trendingMovies = async { HomePageList("Film Trending", fetchTmdbList("trending/movie/day", emptyMap())) }
-            val popularMovies = async { HomePageList("Film Populer", fetchTmdbList("discover/movie", mapOf("sort_by" to "popularity.desc"))) }
-            
-            val trendingSeries = async { HomePageList("Seri Trending", fetchTmdbList("trending/tv/day", emptyMap())) }
-            val popularSeries = async { HomePageList("Seri Populer", fetchTmdbList("discover/tv", mapOf("sort_by" to "popularity.desc"))) }
-
-            // Providers - Movies & Series (watch_region=ID)
-            val netflixMovies = async { HomePageList("Netflix Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", true, "8", "discover/movie")) }
-            val netflixSeries = async { HomePageList("Netflix Series", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", false, "8", "discover/tv")) }
-            
-            val disneyMovies = async { HomePageList("Disney+ Movies", fetchRecentRegionalList("122", true)) }
-            val disneySeries = async { HomePageList("Disney+ Series", fetchRecentRegionalList("122", false)) }
-            
-            val primeMovies = async { HomePageList("Prime Video Movies", fetchRecentRegionalList("119", true)) }
-            val primeSeries = async { HomePageList("Prime Video Series", fetchRecentRegionalList("119", false)) }
-            
-            val appleMovies = async { HomePageList("Apple TV+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", true, "350", "discover/movie")) }
-            val appleSeries = async { HomePageList("Apple TV+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", false, "350", "discover/tv")) }
-            val itunesMovies = async { HomePageList("iTunes Store Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/itunes/indonesia/", true, "350", "discover/movie")) }
-            
-            val viuSeries = async {
+    private suspend fun fetchCategory(data: String): HomePageList? {
+        return when (data) {
+            "Film Trending" -> HomePageList("Film Trending", fetchTmdbList("trending/movie/day", emptyMap()))
+            "Film Populer" -> HomePageList("Film Populer", fetchTmdbList("discover/movie", mapOf("sort_by" to "popularity.desc")))
+            "Seri Trending" -> HomePageList("Seri Trending", fetchTmdbList("trending/tv/day", emptyMap()))
+            "Seri Populer" -> HomePageList("Seri Populer", fetchTmdbList("discover/tv", mapOf("sort_by" to "popularity.desc")))
+            "Netflix Movies" -> HomePageList("Netflix Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", true, "8", "discover/movie"))
+            "Netflix Series" -> HomePageList("Netflix Series", fetchFlixPatrolList("https://flixpatrol.com/top10/netflix/indonesia/", false, "8", "discover/tv"))
+            "Disney+ Movies" -> HomePageList("Disney+ Movies", fetchRecentRegionalList("122", true))
+            "Disney+ Series" -> HomePageList("Disney+ Series", fetchRecentRegionalList("122", false))
+            "Prime Video Movies" -> HomePageList("Prime Video Movies", fetchRecentRegionalList("119", true))
+            "Prime Video Series" -> HomePageList("Prime Video Series", fetchRecentRegionalList("119", false))
+            "Apple TV+ Movies" -> HomePageList("Apple TV+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", true, "350", "discover/movie"))
+            "Apple TV+ Series" -> HomePageList("Apple TV+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/apple-tv/indonesia/", false, "350", "discover/tv"))
+            "iTunes Store Movies" -> HomePageList("iTunes Store Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/itunes/indonesia/", true, "350", "discover/movie"))
+            "Viu Series" -> {
                 val viuKo = fetchRecentRegionalList("158", false, "ko")
                 val viuId = fetchRecentRegionalList("158", false, "id")
                 val combined = mutableListOf<SearchResponse>()
@@ -680,20 +693,52 @@ class xr3edFlixProvider : MainAPI() {
                 }
                 HomePageList("Viu Series", combined)
             }
+            "Vidio Movies" -> HomePageList("Vidio Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/vidio/indonesia/", true, "489", "discover/movie"))
+            "Vidio Series" -> HomePageList("Vidio Series", fetchFlixPatrolList("https://flixpatrol.com/top10/vidio/indonesia/", false, "489", "discover/tv"))
+            "HBO GO Movies" -> HomePageList("HBO GO Movies", fetchRecentRegionalList("1899", true))
+            "HBO GO Series" -> HomePageList("HBO GO Series", fetchRecentRegionalList("1899", false))
+            "Catchplay+ Movies" -> HomePageList("Catchplay+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", true, "159", "discover/movie"))
+            "Catchplay+ Series" -> HomePageList("Catchplay+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", false, "159", "discover/tv"))
+            "Crunchyroll Series" -> HomePageList("Crunchyroll Series", fetchRecentRegionalList("283", false))
+            "Lionsgate Play Movies" -> HomePageList("Lionsgate Play Movies", fetchRecentRegionalList("561", true))
+            "Lionsgate Play Series" -> HomePageList("Lionsgate Play Series", fetchRecentRegionalList("561", false))
+            else -> null
+        }
+    }
 
-            val vidioMovies = async { HomePageList("Vidio Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/vidio/indonesia/", true, "489", "discover/movie")) }
-            val vidioSeries = async { HomePageList("Vidio Series", fetchFlixPatrolList("https://flixpatrol.com/top10/vidio/indonesia/", false, "489", "discover/tv")) }
-            
-            val hboMovies = async { HomePageList("HBO GO Movies", fetchRecentRegionalList("1899", true)) }
-            val hboSeries = async { HomePageList("HBO GO Series", fetchRecentRegionalList("1899", false)) }
-            
-            val catchplayMovies = async { HomePageList("Catchplay+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", true, "159", "discover/movie")) }
-            val catchplaySeries = async { HomePageList("Catchplay+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", false, "159", "discover/tv")) }
-            
-            val crunchyrollSeries = async { HomePageList("Crunchyroll Series", fetchRecentRegionalList("283", false)) }
-            
-            val lionsgateMovies = async { HomePageList("Lionsgate Play Movies", fetchRecentRegionalList("561", true)) }
-            val lionsgateSeries = async { HomePageList("Lionsgate Play Series", fetchRecentRegionalList("561", false)) }
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        if (page > 1) return null
+        val targetData = request.data
+        
+        if (targetData.isNotEmpty() && targetData != "beranda") {
+            val single = fetchCategory(targetData)
+            return if (single != null) newHomePageResponse(listOf(single), false) else null
+        }
+        
+        val lists = coroutineScope {
+            val trendingMovies = async { fetchCategory("Film Trending")!! }
+            val popularMovies = async { fetchCategory("Film Populer")!! }
+            val trendingSeries = async { fetchCategory("Seri Trending")!! }
+            val popularSeries = async { fetchCategory("Seri Populer")!! }
+            val netflixMovies = async { fetchCategory("Netflix Movies")!! }
+            val netflixSeries = async { fetchCategory("Netflix Series")!! }
+            val disneyMovies = async { fetchCategory("Disney+ Movies")!! }
+            val disneySeries = async { fetchCategory("Disney+ Series")!! }
+            val primeMovies = async { fetchCategory("Prime Video Movies")!! }
+            val primeSeries = async { fetchCategory("Prime Video Series")!! }
+            val appleMovies = async { fetchCategory("Apple TV+ Movies")!! }
+            val appleSeries = async { fetchCategory("Apple TV+ Series")!! }
+            val itunesMovies = async { fetchCategory("iTunes Store Movies")!! }
+            val viuSeries = async { fetchCategory("Viu Series")!! }
+            val vidioMovies = async { fetchCategory("Vidio Movies")!! }
+            val vidioSeries = async { fetchCategory("Vidio Series")!! }
+            val hboMovies = async { fetchCategory("HBO GO Movies")!! }
+            val hboSeries = async { fetchCategory("HBO GO Series")!! }
+            val catchplayMovies = async { fetchCategory("Catchplay+ Movies")!! }
+            val catchplaySeries = async { fetchCategory("Catchplay+ Series")!! }
+            val crunchyrollSeries = async { fetchCategory("Crunchyroll Series")!! }
+            val lionsgateMovies = async { fetchCategory("Lionsgate Play Movies")!! }
+            val lionsgateSeries = async { fetchCategory("Lionsgate Play Series")!! }
  
             listOf(
                 trendingMovies.await(), popularMovies.await(),
@@ -711,15 +756,7 @@ class xr3edFlixProvider : MainAPI() {
                 lionsgateMovies.await(), lionsgateSeries.await()
             )
         }
-
-        val targetData = request.data
-        if (targetData.isNotEmpty() && targetData != "beranda") {
-            val matchedList = lists.firstOrNull { it.name.equals(targetData, ignoreCase = true) }
-            if (matchedList != null) {
-                return newHomePageResponse(listOf(matchedList), false)
-            }
-        }
-
+        
         return newHomePageResponse(lists, false)
     }
 
