@@ -1651,7 +1651,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                 val headers = headersMap
                                 val isM3u8Stream = cleanDashUrl.contains(".m3u8", ignoreCase = true) || cleanDashUrl.contains("m3u8", ignoreCase = true)
 
-                                if (!drmStr.isNullOrBlank() && !isM3u8Stream) {
+                                if (!drmStr.isNullOrBlank()) {
                                     val drmPairs = drmStr.split(";")
                                     val firstPairRaw = drmPairs.firstOrNull { it.contains(":") } ?: ""
                                     val colonIdx = firstPairRaw.indexOf(':')
@@ -1697,7 +1697,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                                 "$serverName (Bitmovin)",
                                                 "$serverName (Bitmovin)",
                                                 finalStreamUrl,
-                                                ExtractorLinkType.DASH,
+                                                if (isM3u8Stream) ExtractorLinkType.M3U8 else ExtractorLinkType.DASH,
                                                 CLEARKEY_UUID
                                             ) {
                                                 quality = Qualities.Unknown.value
