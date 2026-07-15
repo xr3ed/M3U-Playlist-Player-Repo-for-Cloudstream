@@ -16,6 +16,14 @@ import com.lagradost.xr3edFlix.BuildConfig
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import com.lagradost.cloudstream3.extractors.Filesim
+import com.lagradost.cloudstream3.extractors.StreamSB
+import com.lagradost.cloudstream3.extractors.StreamWishExtractor
+import com.lagradost.cloudstream3.extractors.VidhideExtractor
+import com.lagradost.cloudstream3.utils.ExtractorApi
+import com.lagradost.cloudstream3.utils.getPacked
+import com.lagradost.cloudstream3.utils.getAndUnpack
+import com.lagradost.cloudstream3.utils.INFER_TYPE
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -617,7 +625,7 @@ class xr3edFlixProvider : MainAPI() {
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
-        if (page > 1 || request.data != "beranda") return null
+        if (page > 1) return null
         val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
 
         val lists = coroutineScope {
@@ -678,6 +686,15 @@ class xr3edFlixProvider : MainAPI() {
                 lionsgateMovies.await(), lionsgateSeries.await()
             ).filter { it.list.isNotEmpty() }
         }
+
+        val targetData = request.data
+        if (targetData.isNotEmpty() && targetData != "beranda") {
+            val matchedList = lists.firstOrNull { it.name.equals(targetData, ignoreCase = true) }
+            if (matchedList != null) {
+                return newHomePageResponse(listOf(matchedList), false)
+            }
+        }
+
         return newHomePageResponse(lists, false)
     }
 
@@ -771,7 +788,7 @@ class xr3edFlixProvider : MainAPI() {
             }
 
             val imdbId = res.imdbId ?: ""
-            val cleanTitle = (res.title ?: "Unknown").replace("::", ":")
+            val cleanTitle = (res.originalTitle ?: res.title ?: "Unknown").replace("::", ":")
 
             return newMovieLoadResponse(
                 name = res.title ?: "Unknown",
@@ -819,7 +836,7 @@ class xr3edFlixProvider : MainAPI() {
             }
 
             val imdbId = res.imdbId ?: res.externalIds?.imdbId ?: ""
-            val cleanTitle = (res.name ?: "Unknown").replace("::", ":")
+            val cleanTitle = (res.originalName ?: res.name ?: "Unknown").replace("::", ":")
 
             val episodes = coroutineScope {
                 res.seasons?.map { season ->
@@ -871,14 +888,54 @@ class xr3edFlixProvider : MainAPI() {
         val imdbId = if (type == "movie") parts.getOrNull(2) else parts.getOrNull(4)
         val title = if (type == "movie") parts.getOrNull(3) else parts.getOrNull(5)
 
+        val indonesianCount = java.util.concurrent.atomic.AtomicInteger(0)
         val hasIndonesian = java.util.concurrent.atomic.AtomicBoolean(false)
         val subCallback = { subFile: SubtitleFile ->
-            val lang = subFile.lang.lowercase()
-            if (lang.contains("indonesia") || lang.contains("indo") || lang == "id" || lang == "in") {
+            val lang = subFile.lang.lowercase().trim()
+            if (lang.contains("indonesia") || lang.contains("indo") || lang == "ind" || lang == "id" || lang == "in" || lang.startsWith("ind-") || lang.startsWith("id-") || lang.startsWith("in-")) {
                 hasIndonesian.set(true)
-                subtitleCallback.invoke(subFile)
+                val count = indonesianCount.getAndIncrement()
+                val label = if (count == 0) "Indonesia" else "Indonesia ${count + 1}"
+                subtitleCallback.invoke(subFile.copy(lang = label))
             }
         }
+        val wrappedCallback = { link: ExtractorLink ->
+            val updatedLink = if (link.quality == Qualities.Unknown.value || link.quality == 0) {
+                val inferredQuality = when {
+                    link.name.contains("1080") || link.url.contains("1080") -> Qualities.P1080.value
+                    link.name.contains("720") || link.url.contains("720") -> Qualities.P720.value
+                    link.name.contains("480") || link.url.contains("480") -> Qualities.P480.value
+                    link.name.contains("360") || link.url.contains("360") -> Qualities.P360.value
+                    else -> Qualities.P1080.value
+                }
+                
+                val qualityLabel = when (inferredQuality) {
+                    Qualities.P1080.value -> "1080p"
+                    Qualities.P720.value -> "720p"
+                    Qualities.P480.value -> "480p"
+                    Qualities.P360.value -> "360p"
+                    else -> "1080p"
+                }
+                val newName = if (!link.name.contains("p", ignoreCase = true) && !link.name.contains("1080") && !link.name.contains("720")) {
+                    "${link.name} - $qualityLabel"
+                } else {
+                    link.name
+                }
+                ExtractorLink(
+                    source = link.source,
+                    name = newName,
+                    url = link.url,
+                    referer = link.referer,
+                    quality = inferredQuality,
+                    type = link.type,
+                    headers = link.headers
+                )
+            } else {
+                link
+            }
+            callback.invoke(updatedLink)
+        }
+
 
         val subpath = if (type == "movie") {
             "movie/$id"
@@ -982,7 +1039,7 @@ class xr3edFlixProvider : MainAPI() {
                                                  if (!customHeaders.isNullOrEmpty()) customHeaders else defaultHeaders
                                              }
                                         }
-                                        callback.invoke(link)
+                                        wrappedCallback.invoke(link)
                                         foundAny = true
                                     }
 
@@ -1105,7 +1162,7 @@ class xr3edFlixProvider : MainAPI() {
                         var resolved = false
                         var hops = 0
                         while (hops < 3 && !resolved) {
-                            resolved = loadExtractor(currentUrl, subCallback, callback)
+                            resolved = loadExtractor(currentUrl, subCallback, wrappedCallback)
                             if (resolved) break
                             
                             // Fetch HTML to find next iframe
@@ -1219,7 +1276,7 @@ class xr3edFlixProvider : MainAPI() {
                                                                          this.quality = q
                                                                          this.headers = emptyMap()
                                                                      }
-                                                                     callback.invoke(link)
+                                                                     wrappedCallback.invoke(link)
                                                                      parsedAny = true
                                                                  }
                                                                  currentRes = ""
@@ -1247,18 +1304,22 @@ class xr3edFlixProvider : MainAPI() {
                     try {
                         val seasonNum = if (type == "movie") null else (season.toIntOrNull() ?: 1)
                         val episodeNum = if (type == "movie") null else (episode.toIntOrNull() ?: 1)
-                        invokeMovieBox(title, seasonNum, episodeNum, subCallback, callback)
+                        invokeMovieBox(title, seasonNum, episodeNum, subCallback, wrappedCallback)
                     } catch (e: Exception) {
                         Log.e("xr3edFlix", "MovieBox query failed", e)
                     }
                 },
                 async {
                     try {
-                        kotlinx.coroutines.delay(2000)
-                        if (hasIndonesian.get()) {
-                            Log.d("xr3edFlix", "Indonesian subtitle already loaded, skipping OpenSubtitles search.")
-                            return@async
-                        }
+                        val seasonNum = if (type == "movie") null else (season.toIntOrNull() ?: 1)
+                        val episodeNum = if (type == "movie") null else (episode.toIntOrNull() ?: 1)
+                        invokeMultimovies(title, seasonNum, episodeNum, subCallback, wrappedCallback)
+                    } catch (e: Exception) {
+                        Log.e("xr3edFlix", "Multimovies query failed", e)
+                    }
+                },
+                async {
+                    try {
                         val cleanImdb = imdbId?.removePrefix("tt") ?: ""
                         val subHeaders = mapOf("User-Agent" to "TemporaryUserAgent")
                         
@@ -1306,7 +1367,9 @@ class xr3edFlixProvider : MainAPI() {
                                 val fileName = item?.get("SubFileName")?.asText() ?: "Indonesian ${subCount + 1}"
                                 if (!downloadLink.isNullOrEmpty()) {
                                     val srtUrl = downloadLink.replace(".gz", ".srt")
-                                    subtitleCallback.invoke(newSubtitleFile("Indonesia ${subCount + 1}", srtUrl))
+                                    val count = indonesianCount.getAndIncrement()
+                                    val label = if (count == 0) "Indonesia" else "Indonesia ${count + 1}"
+                                    subtitleCallback.invoke(newSubtitleFile(label, srtUrl))
                                     subCount++
                                 }
                             }
@@ -1319,13 +1382,13 @@ class xr3edFlixProvider : MainAPI() {
                     val tmdbId = id.toIntOrNull()
                     val s = if (type == "movie") null else parts.getOrNull(2)?.toIntOrNull()
                     val e = if (type == "movie") null else parts.getOrNull(3)?.toIntOrNull()
-                    invokeXpass(tmdbId, s, e, callback)
+                    invokeXpass(tmdbId, s, e, wrappedCallback)
                 },
                 async {
                     val tmdbId = id.toIntOrNull()
                     val s = if (type == "movie") null else parts.getOrNull(2)?.toIntOrNull()
                     val e = if (type == "movie") null else parts.getOrNull(3)?.toIntOrNull()
-                    invokeMapple(tmdbId, s, e, callback)
+                    invokeMapple(tmdbId, s, e, wrappedCallback)
                 }
             )
             jobs.awaitAll()
@@ -1769,6 +1832,227 @@ class xr3edFlixProvider : MainAPI() {
         } catch (e: Exception) {
             Log.e("xr3edFlix", "MovieBox Hybrid main error", e)
             return false
+        }
+    }
+
+    private fun String.createSlug(): String {
+        return this.filter { it.isWhitespace() || it.isLetterOrDigit() }
+            .trim()
+            .replace("\\s+".toRegex(), "-")
+            .lowercase()
+    }
+
+    suspend fun invokeMultimovies(
+        title: String? = null,
+        season: Int? = null,
+        episode: Int? = null,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        val multimoviesApi = "https://multimovies.study"
+        if (title.isNullOrBlank()) return
+
+        val fixTitle = title.createSlug()
+
+        val url = if (season == null) {
+            "$multimoviesApi/movies/$fixTitle/"
+        } else {
+            "$multimoviesApi/episodes/$fixTitle-${season}x${episode}/"
+        }
+
+        android.util.Log.d("xr3edFlix", "Multimovies requesting: $url")
+        var actualBaseUrl = multimoviesApi
+        try {
+            val response = app.get(url, timeout = 10)
+            android.util.Log.d("xr3edFlix", "Multimovies response code: ${response.code} (final url: ${response.url})")
+            if (response.code != 200) return
+            val finalUrl = response.url
+            val uri = java.net.URI(finalUrl)
+            actualBaseUrl = "${uri.scheme}://${uri.host}"
+
+            val html = response.text
+            if (html.contains("Just a moment", ignoreCase = true)) {
+                android.util.Log.w("xr3edFlix", "Multimovies CF block detected")
+                return
+            }
+            val document = org.jsoup.Jsoup.parse(html)
+
+            val playerOptions = document.select("ul#playeroptionsul li").map {
+                Triple(
+                    it.attr("data-post"),
+                    it.attr("data-nume"),
+                    it.attr("data-type")
+                )
+            }
+            android.util.Log.d("xr3edFlix", "Multimovies found player options: ${playerOptions.size}")
+
+            coroutineScope {
+                playerOptions.map { (postId, nume, type) ->
+                    async {
+                        if (nume.contains("trailer", ignoreCase = true)) return@async
+
+                        try {
+                            android.util.Log.d("xr3edFlix", "Multimovies option $nume posting to: $actualBaseUrl/wp-admin/admin-ajax.php (post=$postId, type=$type)")
+                            val postResponse = app.post(
+                                url = "$actualBaseUrl/wp-admin/admin-ajax.php",
+                                data = mapOf(
+                                    "action" to "doo_player_ajax",
+                                    "post" to postId,
+                                    "nume" to nume,
+                                    "type" to type
+                                ),
+                                referer = finalUrl,
+                                headers = mapOf("X-Requested-With" to "XMLHttpRequest")
+                            )
+                            android.util.Log.d("xr3edFlix", "Multimovies option $nume response code: ${postResponse.code}")
+                            if (postResponse.code != 200) return@async
+
+                            val responseText = postResponse.text
+                            val rootJson = org.json.JSONObject(responseText)
+                            val embedUrl = rootJson.optString("embed_url")
+
+                            val link = embedUrl
+                                .trim()
+                                .removeSurrounding("\"")
+                                .takeIf { it.startsWith("http") }
+                                ?: return@async
+
+                            android.util.Log.d("xr3edFlix", "Multimovies option $nume embedUrl parsed: $link")
+                            if (!link.contains("youtube", ignoreCase = true)) {
+                                android.util.Log.d("xr3edFlix", "Multimovies option $nume loading extractor for $link")
+                                loadExtractor(link, "$actualBaseUrl/", subtitleCallback, callback)
+                            }
+                        } catch (e: Exception) {
+                            Log.e("xr3edFlix", "doo_player_ajax request failed for nume $nume", e)
+                        }
+                    }
+                }.awaitAll()
+            }
+        } catch (e: Exception) {
+            Log.e("xr3edFlix", "Multimovies invocation failed", e)
+        }
+    }
+}
+
+class AllinoneDownloader : Filesim() {
+    override var name = "MultiMovies API"
+    override var mainUrl = "https://allinonedownloader.fun"
+}
+
+open class Ridoo : ExtractorApi() {
+    override val name = "Ridoo"
+    override var mainUrl = "https://ridoo.net"
+    override val requiresReferer = true
+    open val defaulQuality = Qualities.P1080.value
+
+    override suspend fun getUrl(
+        url: String,
+        referer: String?,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        val response = app.get(url, referer = referer)
+        val script = if (!getPacked(response.text).isNullOrEmpty()) {
+            getAndUnpack(response.text)
+        } else {
+            response.document.selectFirst("script:containsData(sources:)")?.data()
+        }
+        val m3u8 = Regex("file:\\s*\"(.*?m3u8.*?)\"").find(script ?: return)?.groupValues?.getOrNull(1)
+        val quality = "qualityLabels.*\"(\\d{3,4})[pP]\"".toRegex().find(script)?.groupValues?.get(1)
+        callback.invoke(
+            newExtractorLink(
+                this.name,
+                this.name,
+                url = m3u8 ?: return,
+                INFER_TYPE
+            ) {
+                this.referer = mainUrl
+                this.quality = quality?.toIntOrNull() ?: defaulQuality
+            }
+        )
+    }
+}
+
+class Multimovies : Ridoo() {
+    override val name = "Multimovies"
+    override var mainUrl = "https://multimovies.cloud"
+}
+
+class MultimoviesSB : StreamSB() {
+    override var name = "Multimovies"
+    override var mainUrl = "https://multimovies.website"
+}
+
+class MultimoviesAIO : StreamWishExtractor() {
+    override var name = "Multimovies Cloud AIO"
+    override var mainUrl = "https://allinonedownloader.fun"
+}
+
+class Animezia : VidhideExtractor() {
+    override var name = "MultiMovies API"
+    override var mainUrl = "https://animezia.cloud"
+}
+
+class Servertwo : VidhideExtractor() {
+    override var name = "MultiMovies Vidhide"
+    override var mainUrl = "https://server2.shop"
+}
+
+class Cinemaos : ExtractorApi() {
+    override val name = "CinemaOS"
+    override var mainUrl = "https://cinemaos.tech"
+    override val requiresReferer = false
+
+    override suspend fun getUrl(
+        url: String,
+        referer: String?,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        val uri = java.net.URI(url)
+        val path = uri.path
+        val parts = path.split("/").filter { it.isNotEmpty() }
+        
+        val tmdbId = parts.getOrNull(1) ?: return
+        val season = parts.getOrNull(2)
+        val episode = parts.getOrNull(3)
+
+        val embedUrls = if (season != null && episode != null) {
+            listOf(
+                "https://player.autoembed.cc/embed/tv/$tmdbId/$season/$episode",
+                "https://vidlink.pro/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.in/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.cc/v3/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.to/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.rip/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.su/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.xyz/embed/tv/$tmdbId/$season-$episode",
+                "https://vidsrc.vip/embed/tv/$tmdbId/$season/$episode"
+            )
+        } else {
+            listOf(
+                "https://player.autoembed.cc/embed/movie/$tmdbId",
+                "https://vidlink.pro/movie/$tmdbId",
+                "https://vidsrc.in/embed/movie/$tmdbId",
+                "https://vidsrc.cc/v3/embed/movie/$tmdbId",
+                "https://vidsrc.to/embed/movie/$tmdbId",
+                "https://vidsrc.rip/embed/movie/$tmdbId",
+                "https://vidsrc.su/embed/movie/$tmdbId",
+                "https://vidsrc.xyz/embed/movie/$tmdbId",
+                "https://vidsrc.vip/embed/movie/$tmdbId"
+            )
+        }
+
+        coroutineScope {
+            embedUrls.map { embedUrl ->
+                async {
+                    try {
+                        loadExtractor(embedUrl, "https://cinemaos.tech/", subtitleCallback, callback)
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
+            }.awaitAll()
         }
     }
 }

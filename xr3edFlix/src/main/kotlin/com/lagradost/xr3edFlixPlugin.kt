@@ -9,7 +9,14 @@ import com.lagradost.xr3edFlix.BuildConfig
 class xr3edFlixPlugin: Plugin() {
     override fun load(context: Context) {
         verifyApp(context, BuildConfig.CLONER_SIGNATURE)
-        // Register provider kita ke Cloudstream
         registerMainAPI(xr3edFlixProvider())
+        registerExtractorAPI(AllinoneDownloader())
+        registerExtractorAPI(Ridoo())
+        registerExtractorAPI(Multimovies())
+        registerExtractorAPI(MultimoviesSB())
+        registerExtractorAPI(MultimoviesAIO())
+        registerExtractorAPI(Animezia())
+        registerExtractorAPI(Servertwo())
+        registerExtractorAPI(Cinemaos())
     }
 }
