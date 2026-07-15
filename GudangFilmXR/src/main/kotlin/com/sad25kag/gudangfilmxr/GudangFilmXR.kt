@@ -136,7 +136,7 @@ class GudangFilmXR : MainAPI() {
         val type = inferType(page, title, text, episodes.size, sourceType)
 
         return if (type == TvType.TvSeries && episodes.isNotEmpty()) {
-            newTvSeriesLoadResponse(title, page, TvType.TvSeries, episodes) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 posterUrl = poster
                 this.year = year
                 plot = description
@@ -148,7 +148,7 @@ class GudangFilmXR : MainAPI() {
                 rating?.let { this.score = Score.from10(it) }
             }
         } else {
-            newMovieLoadResponse(title, page, type, page) {
+            newMovieLoadResponse(title, url, type, url) {
                 posterUrl = poster
                 this.year = year
                 plot = description
