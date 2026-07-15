@@ -154,14 +154,17 @@ class DracinAIOProvider : MainAPI() {
                                             try {
                                                 val request = Request.Builder().url(decodedUrl).build()
                                                 val response = unsafeClient.newCall(request).execute()
-                                                val bytes = response.body.bytes()
                                                 val mime = response.header("Content-Type", "image/jpeg")
+                                                val body = response.body
+                                                val contentLength = body.contentLength()
                                                 val responseHeaders = "HTTP/1.1 200 OK\r\n" +
                                                         "Content-Type: $mime\r\n" +
-                                                        "Content-Length: ${bytes.size}\r\n" +
+                                                        "Content-Length: $contentLength\r\n" +
                                                         "Connection: close\r\n\r\n"
                                                 os.write(responseHeaders.toByteArray(Charsets.UTF_8))
-                                                os.write(bytes)
+                                                body.byteStream().use { input ->
+                                                    input.copyTo(os)
+                                                }
                                             } catch (e: Exception) {
                                                 val response = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
                                                 os.write(response.toByteArray(Charsets.UTF_8))

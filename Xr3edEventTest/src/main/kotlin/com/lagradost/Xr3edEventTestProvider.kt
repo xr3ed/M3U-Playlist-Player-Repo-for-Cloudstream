@@ -20,6 +20,7 @@ import kotlin.concurrent.thread
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -882,24 +883,27 @@ class Xr3edEventTestProvider(val context: Context) : MainAPI() {
         val homePageLists = ArrayList<HomePageList>()
         var categoryTitle = "WORLD CUP 2026"
         try {
-            // 1. Ambil channel.js dan menu.js dari Pages server
             val jsUrl = "${Xr3edEventTestProvider.API_BASE}/netxtv/channel.js?t=${System.currentTimeMillis()}"
-            val responseChannel = app.get(jsUrl, timeout = 15).text
+            val menuUrl = "${Xr3edEventTestProvider.API_BASE}/netxtv/menu.js?t=${System.currentTimeMillis()}"
+            val jadwalUrl = "${Xr3edEventTestProvider.API_BASE}/netxtv/jadwal.js?t=${System.currentTimeMillis()}"
+
+            val (responseChannel, responseMenu, response) = coroutineScope {
+                val deferredChannel = async { app.get(jsUrl, timeout = 15).text }
+                val deferredMenu = async { app.get(menuUrl, timeout = 15).text }
+                val deferredJadwal = async { app.get(jadwalUrl, timeout = 15).text }
+                Triple(deferredChannel.await(), deferredMenu.await(), deferredJadwal.await())
+            }
+
             val jsonChannelStr = if (responseChannel.contains("---")) responseChannel.substringAfter("---").trim() else responseChannel.trim()
             val rootChannel = JSONObject(jsonChannelStr)
             val channelsObj = rootChannel.optJSONObject("channels") ?: JSONObject()
             val groupsObj = rootChannel.optJSONObject("groups") ?: JSONObject()
 
-            val menuUrl = "${Xr3edEventTestProvider.API_BASE}/netxtv/menu.js?t=${System.currentTimeMillis()}"
-            val responseMenu = app.get(menuUrl, timeout = 15).text
             val jsonMenuStr = if (responseMenu.contains("---")) responseMenu.substringAfter("---").trim() else responseMenu.trim()
             val rootMenu = JSONObject(jsonMenuStr)
             val menuChannelsObj = rootMenu.optJSONObject("channels") ?: JSONObject()
             val menuGroupsObj = rootMenu.optJSONObject("groups") ?: JSONObject()
 
-            // 2. Ambil jadwal.js untuk live/upcoming matches
-            val jadwalUrl = "${Xr3edEventTestProvider.API_BASE}/netxtv/jadwal.js?t=${System.currentTimeMillis()}"
-            val response = app.get(jadwalUrl, timeout = 15).text
             val jsonStr = if (response.contains("---")) response.substringAfter("---").trim() else response.trim()
             val root = JSONObject(jsonStr)
             val scheduleArray = root.optJSONArray("schedule")
