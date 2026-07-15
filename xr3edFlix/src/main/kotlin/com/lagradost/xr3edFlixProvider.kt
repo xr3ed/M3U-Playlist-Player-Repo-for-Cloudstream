@@ -684,7 +684,7 @@ class xr3edFlixProvider : MainAPI() {
                 catchplayMovies.await(),
                 crunchyrollSeries.await(),
                 lionsgateMovies.await(), lionsgateSeries.await()
-            ).filter { it.list.isNotEmpty() }
+            )
         }
 
         val targetData = request.data
