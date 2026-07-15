@@ -665,6 +665,7 @@ class xr3edFlixProvider : MainAPI() {
             val hboSeries = async { HomePageList("HBO GO Series", fetchRecentRegionalList("1899", false)) }
             
             val catchplayMovies = async { HomePageList("Catchplay+ Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", true, "159", "discover/movie")) }
+            val catchplaySeries = async { HomePageList("Catchplay+ Series", fetchFlixPatrolList("https://flixpatrol.com/top10/catchplay/indonesia/", false, "159", "discover/tv")) }
             
             val crunchyrollSeries = async { HomePageList("Crunchyroll Series", fetchRecentRegionalList("283", false)) }
             
@@ -681,7 +682,7 @@ class xr3edFlixProvider : MainAPI() {
                 itunesMovies.await(),
                 viuSeries.await(),
                 hboMovies.await(), hboSeries.await(),
-                catchplayMovies.await(),
+                catchplayMovies.await(), catchplaySeries.await(),
                 crunchyrollSeries.await(),
                 lionsgateMovies.await(), lionsgateSeries.await()
             )
