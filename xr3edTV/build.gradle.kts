@@ -1,6 +1,6 @@
 import java.util.Properties
 
-version = 1
+version = 5
 
 // Baca secrets dari local.properties atau environment variable
 val localProps = Properties().also { p ->
