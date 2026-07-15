@@ -191,8 +191,20 @@ class xr3edFlixProvider : MainAPI() {
                 timeout = 8
             ).text
             
-            val movieIdx = html.indexOf("TOP 10 Movies")
-            val tvIdx = html.indexOf("TOP 10 TV Shows")
+            val movieIdx = if (providerUrl.contains("vidio")) {
+                val idx = html.indexOf("TOP 10 Movies (in Indonesian)")
+                if (idx != -1) idx else html.indexOf("TOP 10 Movies")
+            } else {
+                html.indexOf("TOP 10 Movies")
+            }
+            
+            val tvIdx = if (providerUrl.contains("vidio")) {
+                val idx = html.indexOf("TOP 10 TV Shows (in Indonesian)")
+                if (idx != -1) idx else html.indexOf("TOP 10 TV Shows")
+            } else {
+                html.indexOf("TOP 10 TV Shows")
+            }
+            
             val section = if (isMovie) {
                 if (movieIdx != -1) {
                     if (tvIdx != -1 && tvIdx > movieIdx) html.substring(movieIdx, tvIdx) else html.substring(movieIdx)
