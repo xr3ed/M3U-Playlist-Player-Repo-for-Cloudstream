@@ -185,7 +185,11 @@ class xr3edFlixProvider : MainAPI() {
             }
         }
         val result = try {
-            val html = app.get(providerUrl, timeout = 8).text
+            val html = app.get(
+                providerUrl,
+                headers = mapOf("User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"),
+                timeout = 8
+            ).text
             
             val movieIdx = html.indexOf("TOP 10 Movies")
             val tvIdx = html.indexOf("TOP 10 TV Shows")
