@@ -191,7 +191,12 @@ class xr3edFlixProvider : MainAPI() {
                 timeout = 8
             ).text
             
-            val movieIdx = html.indexOf("TOP 10 Movies")
+            val movieIdx = if (providerUrl.contains("vidio") && isMovie) {
+                val idx = html.indexOf("TOP 10 Movies (in Indonesian)")
+                if (idx != -1) idx else html.indexOf("TOP 10 Movies")
+            } else {
+                html.indexOf("TOP 10 Movies")
+            }
             val tvIdx = html.indexOf("TOP 10 TV Shows")
             
             val section = if (isMovie) {
