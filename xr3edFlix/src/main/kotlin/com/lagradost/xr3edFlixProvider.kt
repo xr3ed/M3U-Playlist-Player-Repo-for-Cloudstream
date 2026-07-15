@@ -271,21 +271,7 @@ class xr3edFlixProvider : MainAPI() {
                             titleSearchCache[searchCacheKey] = res
                             res
                         } else {
-                            val res = if (isMovie) {
-                                newMovieSearchResponse(
-                                    name = title,
-                                    url = "https://lynk.id/xr3ed#fake-movie::0::$title",
-                                    type = TvType.Movie
-                                )
-                            } else {
-                                newTvSeriesSearchResponse(
-                                    name = title,
-                                    url = "https://lynk.id/xr3ed#fake-tv::0::$title",
-                                    type = TvType.TvSeries
-                                )
-                            }
-                            titleSearchCache[searchCacheKey] = res
-                            res
+                            null
                         }
                     }
                 }.awaitAll().filterNotNull()
