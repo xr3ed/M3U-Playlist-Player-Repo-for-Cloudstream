@@ -251,17 +251,41 @@ class xr3edFlixProvider : MainAPI() {
                                 media.title ?: media.name ?: title
                             }
                             val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
-                            val res = newMovieSearchResponse(
-                                name = titleName,
-                                url = if (isMovie) "https://lynk.id/xr3ed#movie::${media.id}" else "https://lynk.id/xr3ed#tv::${media.id}",
-                                type = if (isMovie) TvType.Movie else TvType.TvSeries
-                            ) {
-                                this.posterUrl = poster
+                            val res = if (isMovie) {
+                                newMovieSearchResponse(
+                                    name = titleName,
+                                    url = "https://lynk.id/xr3ed#movie::${media.id}",
+                                    type = TvType.Movie
+                                ) {
+                                    this.posterUrl = poster
+                                }
+                            } else {
+                                newTvSeriesSearchResponse(
+                                    name = titleName,
+                                    url = "https://lynk.id/xr3ed#tv::${media.id}",
+                                    type = TvType.TvSeries
+                                ) {
+                                    this.posterUrl = poster
+                                }
                             }
                             titleSearchCache[searchCacheKey] = res
                             res
                         } else {
-                            null
+                            val res = if (isMovie) {
+                                newMovieSearchResponse(
+                                    name = title,
+                                    url = "https://lynk.id/xr3ed#fake-movie::0::$title",
+                                    type = TvType.Movie
+                                )
+                            } else {
+                                newTvSeriesSearchResponse(
+                                    name = title,
+                                    url = "https://lynk.id/xr3ed#fake-tv::0::$title",
+                                    type = TvType.TvSeries
+                                )
+                            }
+                            titleSearchCache[searchCacheKey] = res
+                            res
                         }
                     }
                 }.awaitAll().filterNotNull()
@@ -773,6 +797,36 @@ class xr3edFlixProvider : MainAPI() {
         val id = parts[1]
         Log.d("xr3edFlix", "load() url=$url cleanUrl=$cleanUrl type=$type id=$id")
 
+        if (type == "fake-movie" || type == "fake-tv") {
+            val title = parts.getOrNull(2) ?: "Unknown"
+            return if (type == "fake-movie") {
+                newMovieLoadResponse(
+                    name = title,
+                    url = url,
+                    type = TvType.Movie,
+                    dataUrl = url
+                ) {
+                    this.plot = "Konten tidak terdaftar di database TMDB."
+                }
+            } else {
+                val dummyEpisodes = listOf(
+                    newEpisode("fake-tv::0::$title::1::1") {
+                        this.name = "Episode 1"
+                        this.episode = 1
+                        this.season = 1
+                    }
+                )
+                newTvSeriesLoadResponse(
+                    name = title,
+                    url = url,
+                    type = TvType.TvSeries,
+                    episodes = dummyEpisodes
+                ) {
+                    this.plot = "Konten tidak terdaftar di database TMDB."
+                }
+            }
+        }
+
         if (type == "movie") {
             // Fetch dengan credits sekaligus
             val detailUrlId = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits"
@@ -905,6 +959,7 @@ class xr3edFlixProvider : MainAPI() {
         val parts = data.split("::")
         if (parts.size < 2) return false
         val type = parts[0]
+        if (type.startsWith("fake-")) return false
         val id = parts[1]
         val imdbId = if (type == "movie") parts.getOrNull(2) else parts.getOrNull(4)
         val title = if (type == "movie") parts.getOrNull(3) else parts.getOrNull(5)
