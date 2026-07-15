@@ -3,6 +3,6 @@
   "displayName": "xr3edFlix",
   "description": "Ekstensi Cloudstream untuk menonton Film dan TV Series gratis dari autoembed",
   "author": "xr3ed",
-  "version": 52,
+  "version": 53,
   "tvTypes": ["Movie", "TvSeries"]
 }
