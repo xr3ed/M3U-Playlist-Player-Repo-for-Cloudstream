@@ -219,7 +219,7 @@ class xr3edFlixProvider : MainAPI() {
                 }
             }
             
-            val finalTitles = titles.take(10)
+            val finalTitles = titles
             
             if (finalTitles.isEmpty()) {
                 return fetchRecentRegionalList(fallbackProviderId, isMovie)
@@ -235,16 +235,16 @@ class xr3edFlixProvider : MainAPI() {
                         val searchUrl = "$TMDB_API_BASE/search/multi?api_key=${getTmdbKey()}&query=$encoded&language=en-US"
                         val searchRes = parsedGet<TMDBDiscoverResponse>(searchUrl)
                         val media = searchRes?.results?.firstOrNull {
-                            if (isMovie) it.mediaType == "movie" || it.title != null
-                            else it.mediaType == "tv" || it.name != null
+                            if (isMovie) it.mediaType == "movie"
+                            else it.mediaType == "tv"
                         }
-                        if (media != null) {
+                        if (media != null && !media.posterPath.isNullOrEmpty()) {
                             val titleName = if (media.originalLanguage == "id") {
                                 media.originalTitle ?: media.originalName ?: media.title ?: media.name ?: title
                             } else {
                                 media.title ?: media.name ?: title
                             }
-                            val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
+                            val poster = "https://image.tmdb.org/t/p/w500${media.posterPath}"
                             val res = if (isMovie) {
                                 newMovieSearchResponse(
                                     name = titleName,
