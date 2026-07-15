@@ -660,6 +660,9 @@ class xr3edFlixProvider : MainAPI() {
                 }
                 HomePageList("Viu Series", combined)
             }
+
+            val vidioMovies = async { HomePageList("Vidio Movies", fetchFlixPatrolList("https://flixpatrol.com/top10/vidio/indonesia/", true, "489", "discover/movie")) }
+            val vidioSeries = async { HomePageList("Vidio Series", fetchFlixPatrolList("https://flixpatrol.com/top10/vidio/indonesia/", false, "489", "discover/tv")) }
             
             val hboMovies = async { HomePageList("HBO GO Movies", fetchRecentRegionalList("1899", true)) }
             val hboSeries = async { HomePageList("HBO GO Series", fetchRecentRegionalList("1899", false)) }
@@ -681,6 +684,7 @@ class xr3edFlixProvider : MainAPI() {
                 appleMovies.await(), appleSeries.await(),
                 itunesMovies.await(),
                 viuSeries.await(),
+                vidioMovies.await(), vidioSeries.await(),
                 hboMovies.await(), hboSeries.await(),
                 catchplayMovies.await(), catchplaySeries.await(),
                 crunchyrollSeries.await(),
