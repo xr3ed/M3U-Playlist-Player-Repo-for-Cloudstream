@@ -174,6 +174,7 @@ open class Odnoklassniki : ExtractorApi() {
         return this
             .replace("\\&quot;", "\"")
             .replace("&quot;", "\"")
+            .replace("\\\"", "\"")
             .replace("\\u0026", "&")
             .replace("\\u003d", "=")
             .replace("\\u003D", "=")

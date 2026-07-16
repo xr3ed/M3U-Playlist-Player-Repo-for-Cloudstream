@@ -19,5 +19,7 @@ class AnichinXRPlugin: Plugin() {
         registerExtractorAPI(Rumble())
         registerExtractorAPI(StreamRuby())
         registerExtractorAPI(Vidguardto())
+        registerExtractorAPI(Morencius())
+        registerExtractorAPI(TurboVIP())
     }
 }

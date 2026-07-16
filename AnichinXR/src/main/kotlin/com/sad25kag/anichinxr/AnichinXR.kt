@@ -3,13 +3,25 @@ package com.sad25kag.anichinxr
 import android.util.Log
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.net.URI
 import java.net.URLDecoder
 import java.net.URLEncoder
 import com.lagradost.cloudstream3.toNewSearchResponseList
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import android.util.Base64
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import java.security.MessageDigest
+import java.nio.charset.StandardCharsets
+
 
 class AnichinXR : MainAPI() {
     companion object {
@@ -21,10 +33,17 @@ class AnichinXR : MainAPI() {
         private const val MAX_RESOLVE_DEPTH = 1
         private const val MAX_VISITED_LINKS = 28
         private const val MAX_NESTED_TEXT_BYTES = 1_000_000L
+
+        val cleanClient: OkHttpClient by lazy {
+            OkHttpClient.Builder()
+                .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+        }
     }
 
     override var mainUrl = "https://anichin.moe"
-    override var name = "AnichinXR"
+    override var name = "#Donghua AnichinXR"
     override val hasMainPage = true
     override var lang = "id"
     override val hasDownloadSupport = true
@@ -34,19 +53,17 @@ class AnichinXR : MainAPI() {
         "home-popular" to "Populer Hari Ini",
         "home-latest" to "Rilisan Terbaru",
         "home-movie" to "Movie",
-        "home-upcoming" to "Upcoming",
         "home-dropped" to "Dropped Project",
         "home-recom" to "Rekomendasi"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val (url, selector) = if (page == 1) {
+        val isLazyCategory = request.data == "home-latest" || request.data == "home-dropped"
+
+        val (url, selector) = if (page == 1 && !isLazyCategory) {
             val sel = when (request.data) {
                 "home-popular" -> "div.bixbox:has(h2:contains(Terpopuler Hari Ini)) article"
-                "home-latest" -> "div.bixbox:has(h3:contains(Rilisan Terbaru)) article"
                 "home-movie" -> "div.bixbox:has(h3:contains(Movie)) article"
-                "home-upcoming" -> "div.bixbox:has(h3:contains(Upcoming Donghua)) article"
-                "home-dropped" -> "div.bixbox:has(h3:contains(Dropped Project)) article"
                 "home-recom" -> "div.bixbox:has(h3:contains(Rekomendasi)) article"
                 else -> "div.listupd > article"
             }
@@ -56,7 +73,6 @@ class AnichinXR : MainAPI() {
                 "home-popular" -> "${mainUrl}/anime/page/$page/?order=popular"
                 "home-latest" -> "${mainUrl}/anime/page/$page/?order=update"
                 "home-movie" -> "${mainUrl}/anime/page/$page/?type=movie&order=update"
-                "home-upcoming" -> "${mainUrl}/upcoming-donghua/page/$page/"
                 "home-dropped" -> "${mainUrl}/drop/page/$page/"
                 else -> null
             }
@@ -144,7 +160,13 @@ class AnichinXR : MainAPI() {
             .map { it.text().trim() }
             .filter { it.isNotBlank() }
 
-        val tvType = if (type.contains("Movie", true)) TvType.Movie else TvType.TvSeries
+        val tvType = if (document.selectFirst(".eplister") == null) {
+            TvType.Movie
+        } else if (type.contains("Movie", true)) {
+            TvType.Movie
+        } else {
+            TvType.TvSeries
+        }
 
         if (poster.isEmpty()) {
             poster = document.selectFirst("meta[property=og:image]")?.attr("content").orEmpty()
@@ -231,8 +253,36 @@ class AnichinXR : MainAPI() {
 
         extractKnownVideoUrls(document.html()).forEach { candidates.add(it to "Anichin") }
 
+        val emittedAutoSources = java.util.Collections.synchronizedSet(mutableSetOf<String>())
         val countedCallback: (ExtractorLink) -> Unit = { link ->
-            if (emitted.add(link.url)) callback(link)
+            if (emitted.add(link.url)) {
+                val sourceKey = if (link.source.contains("rumble", ignoreCase = true)) "rumble" else link.source.lowercase().trim()
+                val isNew = emittedAutoSources.add(sourceKey)
+                if (isNew) {
+                    val cleanSource = if (link.source.contains("rumble", ignoreCase = true)) "Rumble" else link.source
+                    val cleanName = if (link.name.contains("Auto", ignoreCase = true)) {
+                        if (link.name.contains("rumble", ignoreCase = true)) "Rumble Auto" else link.name
+                    } else {
+                        val base = link.name.replace(Regex("\\s*\\d+p", RegexOption.IGNORE_CASE), "")
+                        val cleanBase = if (base.contains("rumble", ignoreCase = true)) "Rumble" else base
+                        "$cleanBase Auto"
+                    }
+                    
+                    val finalLink = kotlinx.coroutines.runBlocking {
+                        newExtractorLink(
+                            source = cleanSource,
+                            name = cleanName,
+                            url = link.url,
+                            type = link.type,
+                        ) {
+                            this.referer = link.referer
+                            this.quality = Qualities.Unknown.value
+                            this.headers = link.headers
+                        }
+                    }
+                    callback(finalLink)
+                }
+            }
         }
 
         val topLevelCandidates = candidates
@@ -247,24 +297,24 @@ class AnichinXR : MainAPI() {
             )
             .take(MAX_TOP_LEVEL_CANDIDATES)
 
-        for ((url, label) in topLevelCandidates) {
-            try {
-                val before = emitted.size
-                resolveVideoCandidate(
-                    url = url,
-                    label = label,
-                    referer = episodeUrl,
-                    visited = visited,
-                    subtitleCallback = subtitleCallback,
-                    callback = countedCallback,
-                )
-                if (emitted.size == before) {
-                    Log.d("Anichin", "Server produced no links, trying next: $label -> $url")
+        coroutineScope {
+            topLevelCandidates.map { (url, label) ->
+                async {
+                    try {
+                        resolveVideoCandidate(
+                            url = url,
+                            label = label,
+                            referer = episodeUrl,
+                            visited = visited,
+                            subtitleCallback = subtitleCallback,
+                            callback = countedCallback,
+                        )
+                    } catch (error: Throwable) {
+                        if (error is CancellationException) throw error
+                        Log.w("Anichin", "Failed resolving server: $label -> $url", error)
+                    }
                 }
-            } catch (error: Throwable) {
-                if (error is CancellationException) throw error
-                Log.w("Anichin", "Failed resolving server, trying next: $label -> $url", error)
-            }
+            }.awaitAll()
         }
 
         if (emitted.isEmpty()) {
@@ -280,22 +330,28 @@ class AnichinXR : MainAPI() {
                 .sortedBy { candidatePriority(it, "Download") }
                 .take(MAX_DOWNLOAD_CANDIDATES)
 
-            for (url in downloadCandidates) {
-                try {
-                    resolveVideoCandidate(
-                        url = url,
-                        label = "Download",
-                        referer = episodeUrl,
-                        visited = visited,
-                        subtitleCallback = subtitleCallback,
-                        callback = countedCallback,
-                    )
-                } catch (error: Throwable) {
-                    if (error is CancellationException) throw error
-                    Log.w("Anichin", "Failed resolving download: $url", error)
-                }
+            coroutineScope {
+                downloadCandidates.map { url ->
+                    async {
+                        try {
+                            resolveVideoCandidate(
+                                url = url,
+                                label = "Download",
+                                referer = episodeUrl,
+                                visited = visited,
+                                subtitleCallback = subtitleCallback,
+                                callback = countedCallback,
+                            )
+                        } catch (error: Throwable) {
+                            if (error is CancellationException) throw error
+                            Log.w("Anichin", "Failed resolving download: $url", error)
+                        }
+                    }
+                }.awaitAll()
             }
         }
+
+        // Emitted streamingly in countedCallback
 
         return emitted.isNotEmpty()
     }
@@ -312,6 +368,50 @@ class AnichinXR : MainAPI() {
         val fixed = normalizeAnyUrl(url, referer)
             ?.replace(".txt", ".m3u8")
             ?: return
+
+        if (fixed.contains("pixeldrain.com/u/", true)) {
+            val fileId = fixed.substringAfter("pixeldrain.com/u/").substringBefore("?").substringBefore("/")
+            if (fileId.isNotBlank()) {
+                val directUrl = "https://pixeldrain.com/api/file/$fileId"
+                callback(
+                    newExtractorLink(
+                        source = label.ifBlank { "Pixeldrain" },
+                        name = label.ifBlank { "Pixeldrain" },
+                        url = directUrl,
+                        type = ExtractorLinkType.VIDEO,
+                    ) {
+                        this.referer = fixed
+                        this.quality = getQualityFromName(label)
+                        this.headers = mapOf("User-Agent" to USER_AGENT, "Referer" to fixed)
+                    }
+                )
+                return
+            }
+        }
+
+        if (fixed.contains("d.tube", true)) {
+            val fileId = fixed.substringAfter("?v=").substringBefore("&").substringBefore("/")
+            if (fileId.isNotBlank()) {
+                val streamUrl = "https://nas1.d.tube/videos/$fileId/master.m3u8"
+                callback(
+                    newExtractorLink(
+                        source = label.ifBlank { "D-Tube" },
+                        name = label.ifBlank { "D-Tube" },
+                        url = streamUrl,
+                        type = ExtractorLinkType.M3U8,
+                    ) {
+                        this.referer = fixed
+                        this.quality = getQualityFromName(label)
+                    }
+                )
+                return
+            }
+        }
+
+        if (fixed.contains("abyssplayer.com", true) || fixed.contains("abyss.to", true)) {
+            val success = resolveAbyssPlayer(fixed, callback)
+            if (success) return
+        }
 
         if (visited.size >= MAX_VISITED_LINKS || !visited.add(fixed) || isNoiseFrame(fixed)) return
 
@@ -363,7 +463,23 @@ class AnichinXR : MainAPI() {
 
         if (shouldUseExtractor(fixed)) {
             try {
-                loadExtractor(fixed, referer, subtitleCallback, callback)
+                val collectedLinks = mutableListOf<ExtractorLink>()
+                val loaded = loadExtractor(fixed, referer, subtitleCallback) { link ->
+                    collectedLinks.add(link)
+                }
+                if (loaded) {
+                    val m3u8Links = collectedLinks.filter { it.type == ExtractorLinkType.M3U8 }
+                    val progressiveLinks = collectedLinks.filter { it.type == ExtractorLinkType.VIDEO }
+                    
+                    m3u8Links.forEach { callback(it) }
+                    progressiveLinks.groupBy { it.source }
+                        .forEach { (_, links) ->
+                            val highestLink = links.maxByOrNull { it.quality }
+                            if (highestLink != null) {
+                                callback(highestLink)
+                            }
+                        }
+                }
             } catch (error: Throwable) {
                 if (error is CancellationException) throw error
             }
@@ -371,27 +487,46 @@ class AnichinXR : MainAPI() {
 
         if (depth >= MAX_RESOLVE_DEPTH || !shouldReadNestedPage(fixed)) return
 
-        val response = runCatching {
-            app.get(
-                fixed,
-                referer = referer,
-                headers = mapOf(
-                    "User-Agent" to USER_AGENT,
-                    "Referer" to referer,
-                    "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        val isWrapperHost = fixed.contains("anichin-player.web.id", true)
+        val body = if (isWrapperHost) {
+            runCatching {
+                val req = okhttp3.Request.Builder()
+                    .url(fixed)
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                    .header("Referer", referer)
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                    .build()
+                cleanClient.newCall(req).execute().body?.string() ?: ""
+            }.onFailure { error ->
+                android.util.Log.e("AnichinXR", "Failed to fetch nested page via cleanClient: $fixed", error)
+            }.getOrNull() ?: return
+        } else {
+            val response = runCatching {
+                app.get(
+                    fixed,
+                    referer = referer,
+                    headers = mapOf(
+                        "User-Agent" to USER_AGENT,
+                        "Referer" to referer,
+                        "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    )
                 )
-            )
-        }.getOrNull() ?: return
+            }.onFailure { error ->
+                android.util.Log.e("AnichinXR", "Failed to fetch nested page: $fixed", error)
+            }.getOrNull() ?: return
 
-        val contentType = response.headers["Content-Type"].orEmpty().lowercase()
-        val contentLength = response.headers["Content-Length"]?.toLongOrNull()
-        if (shouldSkipBodyRead(contentType, contentLength)) return
+            val contentType = response.headers["Content-Type"].orEmpty().lowercase()
+            val contentLength = response.headers["Content-Length"]?.toLongOrNull()
+            if (shouldSkipBodyRead(contentType, contentLength)) return
 
-        val body = runCatching { response.text.cleanEscaped() }.getOrNull() ?: return
+            runCatching { response.text }.getOrNull() ?: return
+        }
+
+        val cleanedBody = body.cleanEscaped()
         val nested = linkedSetOf<String>()
-        nested.addAll(extractKnownVideoUrls(body))
+        nested.addAll(extractKnownVideoUrls(cleanedBody))
 
-        val nestedDocument = Jsoup.parse(body, fixed)
+        val nestedDocument = Jsoup.parse(cleanedBody, fixed)
         nestedDocument.select("iframe[src], iframe[data-src], embed[src], source[src], video[src], a[href]").forEach { element ->
             element.attr("data-src")
                 .ifBlank { element.attr("abs:src") }
@@ -556,7 +691,17 @@ class AnichinXR : MainAPI() {
             value.contains("vidguard") ||
             value.contains("vidhide") ||
             value.contains("streamruby") ||
-            value.contains("streamruby.com")
+            value.contains("streamruby.com") ||
+            value.contains("anichin-player.web.id") ||
+            value.contains("rpmvid.com") ||
+            value.contains("abyssplayer.com") ||
+            value.contains("abyss.to") ||
+            value.contains("pixeldrain.com") ||
+            value.contains("morencius.com") ||
+            value.contains("rubyvidhub.com") ||
+            value.contains("turbovip.site") ||
+            value.contains("turbovip") ||
+            value.contains("d.tube")
     }
 
     private fun candidatePriority(url: String, label: String): Int {
@@ -564,9 +709,11 @@ class AnichinXR : MainAPI() {
         return when {
             value.contains("dailymotion.com") || value.contains("geo.dailymotion.com") || value.contains("dai.ly") -> 0
             value.contains("ok.ru") || value.contains("odnoklassniki.ru") -> 1
-            value.contains("streamruby") -> 2
-            value.contains("vidguard") || value.contains("vidhide") -> 3
-            value.contains("rumble.com") -> 4
+            value.contains("streamruby") || value.contains("rubyvidhub.com") -> 2
+            value.contains("vidguard") || value.contains("vidhide") || value.contains("morencius.com") || value.contains("turbovip.site") -> 3
+            value.contains("rumble.com") || value.contains("d.tube") || value.contains("abyssplayer.com") || value.contains("abyss.to") -> 4
+            value.contains("pixeldrain.com") -> 5
+            value.contains("anichin-player.web.id") -> 6
             else -> 99
         }
     }
@@ -579,7 +726,14 @@ class AnichinXR : MainAPI() {
             value.contains("/video", true) ||
             value.contains("/v/", true) ||
             value.contains("mirrored.to", true) ||
-            value.contains("apk.miuiku.com", true)
+            value.contains("apk.miuiku.com", true) ||
+            value.contains("anichin-player.web.id", true) ||
+            value.contains("rpmvid.com", true) ||
+            value.contains("abyssplayer.com", true) ||
+            value.contains("abyss.to", true) ||
+            value.contains("morencius.com", true) ||
+            value.contains("rubyvidhub.com", true) ||
+            value.contains("turbovip.site", true)
     }
 
     private fun shouldSkipBodyRead(contentType: String, contentLength: Long?): Boolean {
@@ -658,5 +812,147 @@ class AnichinXR : MainAPI() {
             .replace("&apos;", "'")
             .replace("&lt;", "<")
             .replace("&gt;", ">")
+    }
+
+    // Jackson JSON models for AbyssPlayer
+    private data class AbyssPayload(
+        @JsonProperty("slug") val slug: String,
+        @JsonProperty("md5_id") val md5_id: Long,
+        @JsonProperty("user_id") val user_id: Long,
+        @JsonProperty("media") val media: String
+    )
+
+    private data class AbyssMediaContainer(
+        @JsonProperty("mp4") val mp4: AbyssMp4Data? = null
+    )
+
+    private data class AbyssMp4Data(
+        @JsonProperty("sources") val sources: List<AbyssSource>? = null,
+        @JsonProperty("domains") val domains: List<String>? = null
+    )
+
+    private data class AbyssSource(
+        @JsonProperty("label") val label: String,
+        @JsonProperty("res_id") val res_id: Int,
+        @JsonProperty("size") val size: Long,
+        @JsonProperty("codec") val codec: String,
+        @JsonProperty("sub") val sub: String
+    )
+
+    private fun getMd5HexBytes(input: String): ByteArray {
+        val md = MessageDigest.getInstance("MD5")
+        val digest = md.digest(input.toByteArray(StandardCharsets.UTF_8))
+        val hexString = digest.joinToString("") { "%02x".format(it) }
+        return hexString.toByteArray(StandardCharsets.UTF_8)
+    }
+
+    private fun getAbyssSizeMd5HexBytes(sizeStr: String): ByteArray {
+        val bytes = ByteArray(sizeStr.length) { i ->
+            (sizeStr[i] - '0').toByte()
+        }
+        val md = MessageDigest.getInstance("MD5")
+        val digest = md.digest(bytes)
+        val hexString = digest.joinToString("") { "%02x".format(it) }
+        return hexString.toByteArray(StandardCharsets.UTF_8)
+    }
+
+    private fun decryptAesCtr(ciphertext: ByteArray, keyBytes: ByteArray, ivBytes: ByteArray): ByteArray {
+        val keySpec = SecretKeySpec(keyBytes, "AES")
+        val ivSpec = IvParameterSpec(ivBytes)
+        val cipher = Cipher.getInstance("AES/CTR/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+        return cipher.doFinal(ciphertext)
+    }
+
+    private fun encryptAesCtr(plaintext: ByteArray, keyBytes: ByteArray, ivBytes: ByteArray): ByteArray {
+        val keySpec = SecretKeySpec(keyBytes, "AES")
+        val ivSpec = IvParameterSpec(ivBytes)
+        val cipher = Cipher.getInstance("AES/CTR/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
+        return cipher.doFinal(plaintext)
+    }
+
+    private fun doubleBase64Encode(data: ByteArray): String {
+        val b1 = Base64.encodeToString(data, Base64.NO_WRAP).replace("=", "")
+        val b2 = Base64.encodeToString(b1.toByteArray(StandardCharsets.US_ASCII), Base64.NO_WRAP).replace("=", "")
+        return b2
+    }
+
+    private suspend fun resolveAbyssPlayer(url: String, callback: (ExtractorLink) -> Unit): Boolean {
+        try {
+            val response = cleanClient.newCall(
+                Request.Builder()
+                    .url(url)
+                    .header("User-Agent", USER_AGENT)
+                    .header("Referer", "https://anichin.moe/")
+                    .build()
+            ).execute()
+            
+            val html = response.body?.string() ?: return false
+            if (html.isBlank()) return false
+            
+            val datasBase64 = html.substringAfter("const datas = \"").substringBefore("\"")
+            if (datasBase64 == html || datasBase64.isBlank()) return false
+            
+            val decodedPayloadBytes = Base64.decode(datasBase64, Base64.DEFAULT)
+            val decodedPayloadJson = String(decodedPayloadBytes, StandardCharsets.ISO_8859_1)
+            
+            val mapper = jacksonObjectMapper().configure(
+                com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false
+            )
+            val payload = mapper.readValue<AbyssPayload>(decodedPayloadJson)
+            
+            val keyString = "${payload.user_id}:${payload.slug}:${payload.md5_id}"
+            val md5Bytes = getMd5HexBytes(keyString)
+            val key = md5Bytes
+            val iv = md5Bytes.sliceArray(0 until 16)
+            
+            val ciphertext = ByteArray(payload.media.length) { i -> payload.media[i].code.toByte() }
+            val decryptedBytes = decryptAesCtr(ciphertext, key, iv)
+            val decryptedJson = String(decryptedBytes, StandardCharsets.UTF_8)
+            
+            val mediaContainer = mapper.readValue<AbyssMediaContainer>(decryptedJson)
+            val mp4Data = mediaContainer.mp4 ?: return false
+            val sources = mp4Data.sources ?: return false
+            val domains = mp4Data.domains ?: return false
+            
+            val highestSource = sources.maxByOrNull { source ->
+                source.label.filter { it.isDigit() }.toIntOrNull() ?: 0
+            }
+            val sourcesToProcess = if (highestSource != null) listOf(highestSource) else sources
+            
+            for (source in sourcesToProcess) {
+                Log.d("AnichinXR", "AbyssPlayer processing source: ${source.label}, res_id: ${source.res_id}, size: ${source.size}, sub: ${source.sub}")
+                val domain = domains.firstOrNull { it.contains(source.sub) }
+                Log.d("AnichinXR", "AbyssPlayer domain: $domain")
+                if (domain == null) continue
+                val path = "/mp4/${payload.md5_id}/${source.res_id}/${source.size}?v=${payload.slug}"
+                
+                val sizeKeyBytes = getAbyssSizeMd5HexBytes(source.size.toString())
+                val sizeIvBytes = sizeKeyBytes.sliceArray(0 until 16)
+                
+                val encryptedPathBytes = encryptAesCtr(path.toByteArray(StandardCharsets.UTF_8), sizeKeyBytes, sizeIvBytes)
+                val token = doubleBase64Encode(encryptedPathBytes)
+                
+                val finalUrl = "https://$domain/sora/${source.size}/$token"
+                
+                callback(
+                    newExtractorLink(
+                        source = "Source Auto",
+                        name = "Source Auto",
+                        url = finalUrl,
+                        type = ExtractorLinkType.VIDEO,
+                    ) {
+                        this.referer = url
+                        this.quality = getQualityFromName(source.label)
+                        this.headers = mapOf("User-Agent" to USER_AGENT, "Referer" to url)
+                    }
+                )
+            }
+            return true
+        } catch (e: Exception) {
+            Log.e("AnichinXR", "Error resolving AbyssPlayer: ${e.message}", e)
+            return false
+        }
     }
 }
