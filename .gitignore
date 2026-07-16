@@ -17,3 +17,10 @@ test.jar
 test.kt
 .agents/
 /dev_mode_scripts/
+
+# Python compiled files
+__pycache__/
+*.pyc
+
+# Decompiled folders and analysis scrap
+/bittv_extracted/
