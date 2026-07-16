@@ -715,7 +715,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         // Cache SecretKey PBKDF2 — password & salt konstan, tidak perlu derivasi ulang tiap channel
         val cachedWorkerSecretKey: javax.crypto.SecretKey by lazy {
             val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            val spec = javax.crypto.spec.PBEKeySpec("xys1-gh".toCharArray(), "salt123".toByteArray(), 1000, 256)
+            val spec = javax.crypto.spec.PBEKeySpec(BuildConfig.XR3EV_PASSWORD.toCharArray(), BuildConfig.XR3EV_SALT.toByteArray(), 1000, 256)
             javax.crypto.spec.SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
         }
 
@@ -1600,8 +1600,8 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                         val dataB64 = responseJson.optString("data")
                         
                         if (!ivB64.isNullOrEmpty() && !dataB64.isNullOrEmpty()) {
-                            val password = "xys1-gh"
-                            val salt = "salt123"
+                            val password = BuildConfig.XR3EV_PASSWORD
+                            val salt = BuildConfig.XR3EV_SALT
                             val iterations = 1000
                             val keySize = 256
                             
@@ -1869,7 +1869,7 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                                 }
                             }
                             if (!encryptedPayload.isNullOrEmpty()) {
-                                val key = "xys1-gh"
+                                val key = BuildConfig.XR3EV_PASSWORD
                                 val decodedBytes = android.util.Base64.decode(encryptedPayload, android.util.Base64.DEFAULT)
                                 val decryptedBytes = ByteArray(decodedBytes.size)
                                 for (i in decodedBytes.indices) {

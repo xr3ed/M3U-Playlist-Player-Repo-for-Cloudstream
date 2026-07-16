@@ -119,6 +119,8 @@ subprojects {
             buildConfigField("String", "XR3EV_API_URL", "\"${getSecret("XR3EV_API_URL")}\"")
             buildConfigField("String", "XR3EV_PLAYER_URL", "\"${getSecret("XR3EV_PLAYER_URL")}\"")
             buildConfigField("String", "XR3EV_STREAM_URL", "\"${getSecret("XR3EV_STREAM_URL")}\"")
+            buildConfigField("String", "XR3EV_PASSWORD", "\"${getSecret("XR3EV_PASSWORD", "xys1-gh")}\"")
+            buildConfigField("String", "XR3EV_SALT", "\"${getSecret("XR3EV_SALT", "salt123")}\"")
             // xr3edXstream secrets — TMDB API key untuk akses listing film/TV
             buildConfigField("String", "XSTREAM_TMDB_API", "\"${getSecret("XSTREAM_TMDB_API")}\"")
         }
