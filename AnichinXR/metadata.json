@@ -1,0 +1,8 @@
+{
+  "pluginClassName": "com.sad25kag.anichinxr.AnichinXRPlugin",
+  "displayName": "AnichinXR",
+  "description": "Anichin Moe modifikasi oleh XR3ED.",
+  "author": "sad25kag, XR3ED",
+  "version": 45,
+  "tvTypes": ["AnimeMovie", "Anime", "Cartoon"]
+}
