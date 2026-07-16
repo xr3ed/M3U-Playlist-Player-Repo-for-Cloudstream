@@ -619,9 +619,7 @@ object LocalManifestServer {
             val ivB64 = responseJson.optString("iv")
             val dataB64 = responseJson.optString("data")
             if (ivB64.isNullOrEmpty() || dataB64.isNullOrEmpty()) return null
-            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            val spec = javax.crypto.spec.PBEKeySpec("xys1-gh".toCharArray(), "salt123".toByteArray(), 1000, 256)
-            val secretKey = javax.crypto.spec.SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+            val secretKey = Xr3edEventProvider.cachedWorkerSecretKey
             val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
             val combined = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
             val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
