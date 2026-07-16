@@ -24,6 +24,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 
 object LocalManifestServer {
     private var serverSocket: ServerSocket? = null
@@ -710,6 +712,14 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
         @Volatile var cacheTimestamp = 0L
         @Volatile var dynamicMainPageTitle = "World Cup 2026"
         private val scope = CoroutineScope(Dispatchers.IO)
+        // Semaphore untuk batasi parallel HTTP request agar tidak OOM di STB RAM 2GB
+        private val channelCheckSemaphore = Semaphore(8)
+        // Cache SecretKey PBKDF2 — password & salt konstan, tidak perlu derivasi ulang tiap channel
+        val cachedWorkerSecretKey: javax.crypto.SecretKey by lazy {
+            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val spec = javax.crypto.spec.PBEKeySpec("xys1-gh".toCharArray(), "salt123".toByteArray(), 1000, 256)
+            javax.crypto.spec.SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+        }
 
         // URL dari BuildConfig — diisi via GitHub Secrets (CI) atau local.properties (lokal)
         val API_BASE get() = BuildConfig.XR3EV_API_URL
@@ -750,15 +760,14 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
     }
 
     // Dekripsi response dari bitmovin worker (AES-GCM)
+    // SecretKey di-cache di companion object — tidak diderivasi ulang tiap channel check
     private fun decryptWorkerPayload(responseText: String): JSONObject? {
         return try {
             val responseJson = JSONObject(responseText.trim())
             val ivB64 = responseJson.optString("iv")
             val dataB64 = responseJson.optString("data")
             if (ivB64.isNullOrEmpty() || dataB64.isNullOrEmpty()) return null
-            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            val spec = javax.crypto.spec.PBEKeySpec("xys1-gh".toCharArray(), "salt123".toByteArray(), 1000, 256)
-            val secretKey = javax.crypto.spec.SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+            val secretKey = Xr3edEventProvider.cachedWorkerSecretKey
             val iv = android.util.Base64.decode(ivB64, android.util.Base64.NO_WRAP)
             val combined = android.util.Base64.decode(dataB64, android.util.Base64.NO_WRAP)
             val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding")
@@ -857,10 +866,15 @@ class Xr3edEventProvider(val context: Context) : MainAPI() {
                     async {
                         // Gunakan href ASLI dari channel.js, bukan dari streamUrl!
                         // Contoh: fusball -> "go:bein1my", bukan "go:fusball"
-                        val href = chIdToHref[chId] ?: ""
-                        val alive = isChannelAlive(chId, chName, href)
-                        channelStatusCache[chId] = alive
-                        android.util.Log.d("EventProvider", "Channel $chId href=$href (${if (alive) "ALIVE" else "DEAD"})")
+                        // Semaphore(8) batasi maks 8 HTTP request paralel agar tidak OOM di STB RAM 2GB
+                        channelCheckSemaphore.withPermit {
+                            val href = chIdToHref[chId] ?: ""
+                            val alive = isChannelAlive(chId, chName, href)
+                            channelStatusCache[chId] = alive
+                            if (android.util.Log.isLoggable("EventProvider", android.util.Log.DEBUG)) {
+                                android.util.Log.d("EventProvider", "Channel $chId href=$href (${if (alive) "ALIVE" else "DEAD"})")
+                            }
+                        }
                     }
                 }
                 jobs.awaitAll()

@@ -61,6 +61,8 @@ class M3UPlaylistPlayer(
         private const val CACHE_DURATION_MS = 5 * 60 * 1000L // Cache 5 menit
 
         val cachedGroupedPlaylists = java.util.concurrent.ConcurrentHashMap<String, Map<String, List<PlaylistItem>>>()
+        // Cache O(1) lookup PlaylistItem berdasarkan URL — menggantikan firstOrNull O(n) di loadLinks
+        val cachedItemsByUrl = java.util.concurrent.ConcurrentHashMap<String, Map<String, PlaylistItem>>()
 
         suspend fun getMutexForUrl(url: String): Mutex {
             return globalMutex.withLock {
@@ -73,6 +75,7 @@ class M3UPlaylistPlayer(
                 cachedPlaylists.clear()
                 lastFetchTimes.clear()
                 cachedGroupedPlaylists.clear()
+                cachedItemsByUrl.clear()
             }
         }
     }
@@ -127,7 +130,8 @@ class M3UPlaylistPlayer(
         val lastFetch = synchronized(lastFetchTimes) { lastFetchTimes[playlistUrl] ?: 0L }
         
         if (cached != null && (now - lastFetch) < CACHE_DURATION_MS) {
-            android.util.Log.d("M3UPlayer", "Using cached playlist for $playlistUrl")
+            if (android.util.Log.isLoggable("M3UPlayer", android.util.Log.DEBUG))
+                android.util.Log.d("M3UPlayer", "Using cached playlist for $playlistUrl")
             return cached
         }
         
@@ -136,7 +140,8 @@ class M3UPlaylistPlayer(
             val cachedSecond = synchronized(cachedPlaylists) { cachedPlaylists[playlistUrl] }
             val lastFetchSecond = synchronized(lastFetchTimes) { lastFetchTimes[playlistUrl] ?: 0L }
             if (cachedSecond != null && (now - lastFetchSecond) < CACHE_DURATION_MS) {
-                android.util.Log.d("M3UPlayer", "Using cached playlist for $playlistUrl (after lock)")
+                if (android.util.Log.isLoggable("M3UPlayer", android.util.Log.DEBUG))
+                    android.util.Log.d("M3UPlayer", "Using cached playlist for $playlistUrl (after lock)")
                 return@withLock cachedSecond
             }
             
@@ -180,7 +185,8 @@ class M3UPlaylistPlayer(
                                     content = clean
                                     success = true
                                     saveLastWorkingUa(context, ua)
-                                    android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
+                                    if (android.util.Log.isLoggable("M3UPlayer", android.util.Log.DEBUG))
+                                        android.util.Log.d("M3UPlayer", "Successfully fetched playlist from $url using User-Agent: $ua")
                                     break
                                 } else if (fallbackContent.isBlank()) {
                                     fallbackContent = clean
@@ -240,6 +246,8 @@ class M3UPlaylistPlayer(
                         cachedPlaylists[playlistUrl] = result
                         lastFetchTimes[playlistUrl] = System.currentTimeMillis()
                         cachedGroupedPlaylists.remove(playlistUrl)
+                        // Bangun Map URL->Item untuk O(1) lookup di loadLinks
+                        cachedItemsByUrl[playlistUrl] = result.items.associateBy { it.url }
                     }
                 }
                 
@@ -321,8 +329,10 @@ class M3UPlaylistPlayer(
             else -> url
         }
         return withContext(Dispatchers.IO) {
+            // Gunakan Map lookup O(1) daripada linear search O(n)
+            val itemMap = cachedItemsByUrl[playlistUrl]
             val playlist = fetchPlaylist()
-            val item = playlist.items.firstOrNull { it.url == cleanUrl }
+            val item = itemMap?.get(cleanUrl) ?: playlist.items.firstOrNull { it.url == cleanUrl }
             val title = item?.title ?: "Live Channel"
             val logoUrl = item?.attributes["tvg-logo"]
 
@@ -459,7 +469,9 @@ class M3UPlaylistPlayer(
             data
         }
         val playlist = fetchPlaylist()
-        val item = playlist.items.firstOrNull { it.url == cleanData }
+        // Gunakan Map lookup O(1) daripada linear search O(n) di 5000+ item
+        val itemMap = cachedItemsByUrl[playlistUrl]
+        val item = itemMap?.get(cleanData) ?: playlist.items.firstOrNull { it.url == cleanData }
         val rawUrl = item?.url ?: cleanData
 
         val isFlv = rawUrl.contains(".flv", ignoreCase = true) || rawUrl.contains("flv", ignoreCase = true)

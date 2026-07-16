@@ -1,0 +1,125 @@
+Disassembling bittv_extracted/classes2.dex at offset 2895248...
+[0000] const-string v0, 'eksM30'
+[0004] const-string v1, '4390 - classes.dexcrc='
+[0008] const-string v2, '4387 - classes.dexcrc='
+[000c] const-string v3, 'cAlpha: '
+[0010] invoke-virtual {args:16}, Landroid/content/Context;->getApplicationContext
+[0016] move-result-object v4
+[0018] invoke-virtual {args:16}, Landroid/content/Context;->getPackageCodePath
+[001e] move-result-object v4
+[0020] const-string v5, 'getPackageCodePath(...)'
+[0024] invoke-static {args:32}, Lkotlin/jvm/internal/k;->d
+[002a] new-instance v5, Ljava/util/zip/ZipFile;
+[002e] invoke-direct {args:32}, Ljava/util/zip/ZipFile;-><init>
+[0034] iget-object v4, v8, Lcom/live_streaming_tv/online_tv/BitTVActivity;->U1
+[0038] new-instance v6, Ljava/lang/StringBuffer;
+[003c] invoke-direct {args:32}, Ljava/lang/StringBuffer;-><init>
+[0042] invoke-virtual {args:16}, Ljava/lang/StringBuffer;->reverse
+[0048] move-result-object v4
+[004a] invoke-virtual {args:16}, Ljava/lang/StringBuffer;->toString
+[0050] move-result-object v4
+[0052] invoke-virtual {args:16}, Ljava/lang/String;->getBytes
+[0058] move-result-object v4
+[005a] const/4 v6, 0
+[005c] invoke-static {args:32}, Landroid/util/Base64;->decode
+[0062] move-result-object v4
+[0064] new-instance v7, Ljava/lang/String;
+[0068] invoke-direct {args:32}, Ljava/lang/String;-><init>
+[006e] new-instance v4, Ljava/lang/StringBuffer;
+[0072] invoke-direct {args:32}, Ljava/lang/StringBuffer;-><init>
+[0078] invoke-virtual {args:16}, Ljava/lang/StringBuffer;->reverse
+[007e] move-result-object v4
+[0080] invoke-virtual {args:16}, Ljava/lang/StringBuffer;->toString
+[0086] move-result-object v4
+[0088] invoke-virtual {args:16}, Ljava/lang/String;->getBytes
+[008e] move-result-object v4
+[0090] invoke-static {args:32}, Landroid/util/Base64;->decode
+[0096] move-result-object v4
+[0098] new-instance v6, Ljava/lang/String;
+[009c] invoke-direct {args:32}, Ljava/lang/String;-><init>
+[00a2] new-instance v4, Ljava/lang/StringBuffer;
+[00a6] invoke-direct {args:32}, Ljava/lang/StringBuffer;-><init>
+[00ac] invoke-virtual {args:16}, Ljava/lang/StringBuffer;->reverse
+[00b2] move-result-object v4
+[00b4] invoke-virtual {args:16}, Ljava/lang/StringBuffer;->toString
+[00ba] move-result-object v4
+[00bc] invoke-virtual {args:32}, Ljava/util/zip/ZipFile;->getEntry
+[00c2] move-result-object v4
+[00c4] const-string v5, 'getEntry(...)'
+[00c8] invoke-static {args:32}, Lkotlin/jvm/internal/k;->d
+[00ce] db 5585
+[00d0] db 7447
+[00d2] if-eq v5, v0, +104 (target: 01a2)
+[00d6] invoke-static {args:0}, Ljava/util/Locale;->getDefault
+[00dc] move-result-object v5
+[00de] invoke-virtual {args:16}, Ljava/util/Locale;->getCountry
+[00e4] move-result-object v5
+[00e6] invoke-static {args:16}, Lkotlin/jvm/internal/k;->b
+[00ec] invoke-virtual {args:32}, Ljava/lang/String;->concat
+[00f2] move-result-object v3
+[00f4] invoke-static {args:32}, Landroid/util/Log;->i
+[00fa] new-instance v3, Ljava/lang/StringBuilder;
+[00fe] invoke-direct {args:32}, Ljava/lang/StringBuilder;-><init>
+[0104] invoke-virtual {args:16}, Ljava/util/zip/ZipEntry;->getCrc
+[010a] db 0b05
+[010c] invoke-virtual {args:48}, Ljava/lang/StringBuilder;->append
+[0112] invoke-virtual {args:16}, Ljava/lang/StringBuilder;->toString
+[0118] move-result-object v2
+[011a] invoke-static {args:32}, Landroid/util/Log;->i
+[0120] new-instance v2, Ljava/lang/StringBuilder;
+[0124] invoke-direct {args:32}, Ljava/lang/StringBuilder;-><init>
+[012a] new-instance v1, Ljava/lang/StringBuilder;
+[012e] invoke-direct {args:16}, Ljava/lang/StringBuilder;-><init>
+[0134] new-instance v3, Ljava/io/File;
+[0138] invoke-virtual {args:16}, Landroid/content/Context;->getApplicationInfo
+[013e] move-result-object v5
+[0140] iget-object v5, v5, Landroid/content/pm/ApplicationInfo;->sourceDir
+[0144] invoke-direct {args:32}, Ljava/io/File;-><init>
+[014a] invoke-virtual {args:16}, Ljava/io/File;->length
+[0150] db 0b05
+[0152] invoke-virtual {args:48}, Ljava/lang/StringBuilder;->append
+[0158] invoke-virtual {args:16}, Ljava/util/zip/ZipEntry;->getCrc
+[015e] db 0b05
+[0160] invoke-virtual {args:48}, Ljava/lang/StringBuilder;->append
+[0166] iget-object v3, v8, Lcom/live_streaming_tv/online_tv/BitTVActivity;->T1
+[016a] invoke-virtual {args:32}, Ljava/lang/StringBuilder;->append
+[0170] invoke-virtual {args:16}, Ljava/lang/StringBuilder;->toString
+[0176] move-result-object v1
+[0178] invoke-static {args:16}, Lf4/g;->T
+[017e] move-result-object v1
+[0180] invoke-static {args:16}, Lf4/g;->b
+[0186] move-result-object v1
+[0188] invoke-virtual {args:32}, Ljava/lang/StringBuilder;->append
+[018e] invoke-virtual {args:16}, Ljava/lang/StringBuilder;->toString
+[0194] move-result-object v1
+[0196] invoke-static {args:32}, Landroid/util/Log;->i
+[019c] goto +3 (target: 01a2)
+[019e] db 0d09
+[01a0] goto +54 (target: 020c)
+[01a2] new-instance v0, Ljava/lang/StringBuilder;
+[01a6] invoke-direct {args:16}, Ljava/lang/StringBuilder;-><init>
+[01ac] new-instance v1, Ljava/io/File;
+[01b0] invoke-virtual {args:16}, Landroid/content/Context;->getApplicationInfo
+[01b6] move-result-object v9
+[01b8] iget-object v9, v9, Landroid/content/pm/ApplicationInfo;->sourceDir
+[01bc] invoke-direct {args:32}, Ljava/io/File;-><init>
+[01c2] invoke-virtual {args:16}, Ljava/io/File;->length
+[01c8] db 0b01
+[01ca] invoke-virtual {args:48}, Ljava/lang/StringBuilder;->append
+[01d0] invoke-virtual {args:16}, Ljava/util/zip/ZipEntry;->getCrc
+[01d6] db 0b01
+[01d8] invoke-virtual {args:48}, Ljava/lang/StringBuilder;->append
+[01de] iget-object v9, v8, Lcom/live_streaming_tv/online_tv/BitTVActivity;->T1
+[01e2] invoke-virtual {args:32}, Ljava/lang/StringBuilder;->append
+[01e8] invoke-virtual {args:16}, Ljava/lang/StringBuilder;->toString
+[01ee] move-result-object v9
+[01f0] invoke-static {args:16}, Lf4/g;->T
+[01f6] move-result-object v9
+[01f8] invoke-static {args:16}, Lf4/g;->b
+[01fe] move-result-object v9
+[0200] const-string v0, 'SHA1(...)'
+[0204] invoke-static {args:32}, Lkotlin/jvm/internal/k;->d
+[020a] db 1109
+[020c] invoke-virtual {args:16}, Ljava/lang/Throwable;->printStackTrace
+[0212] const-string v9, 'none'
+[0216] db 1109

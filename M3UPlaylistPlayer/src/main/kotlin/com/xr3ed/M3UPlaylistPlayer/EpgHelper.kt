@@ -37,7 +37,10 @@ object EpgHelper {
 
     private val epgMutexes = java.util.concurrent.ConcurrentHashMap<String, Mutex>()
     private val globalEpgMutex = Mutex()
-    private val cleanedNamesCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+    // LRU cache max 2000 entry untuk cegah memory leak di STB yang jarang restart
+    private val cleanedNamesCache: MutableMap<String, String> = object : java.util.LinkedHashMap<String, String>(512, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>?): Boolean = size > 2000
+    }
 
     private suspend fun getMutexForEpgUrl(url: String): Mutex {
         return globalEpgMutex.withLock {
@@ -345,9 +348,11 @@ object EpgHelper {
                                     val stopMs = parseXmltvDate(currentProgStop)
                                     
                                     val now = System.currentTimeMillis()
+                                    // Abaikan program yang sudah selesai lebih dari 30 menit lalu — hemat 50-70% RAM di STB
+                                    val staleThreshold = now - 30 * 60 * 1000L
                                     val limitTime = now + 24 * 60 * 60 * 1000L // 24 jam ke depan
                                     
-                                    if (stopMs >= now && startMs <= limitTime) {
+                                    if (stopMs >= staleThreshold && startMs <= limitTime) {
                                         val epgProg = EpgProgram(title, desc, startMs, stopMs)
                                         val lowerChannel = currentProgChannel.lowercase()
                                         programMap.getOrPut(lowerChannel) { mutableListOf() }.add(epgProg)

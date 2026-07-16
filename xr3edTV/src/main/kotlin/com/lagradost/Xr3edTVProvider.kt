@@ -5,8 +5,31 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.xr3edTV.BuildConfig
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 class Xr3edTVProvider : MainAPI() {
+
+    companion object {
+        private const val CHANNEL_CACHE_TTL_MS = 5 * 60 * 1000L // 5 menit
+        // Cache per country: Map<country, Pair<fetchTimeMs, List<Channel>>>
+        private val channelCache = java.util.concurrent.ConcurrentHashMap<String, Pair<Long, List<Any>>>()
+
+        @Suppress("UNCHECKED_CAST")
+        fun getCachedChannels(country: String): List<Any>? {
+            val entry = channelCache[country] ?: return null
+            if (System.currentTimeMillis() - entry.first > CHANNEL_CACHE_TTL_MS) {
+                channelCache.remove(country)
+                return null
+            }
+            return entry.second
+        }
+
+        fun putCachedChannels(country: String, channels: List<Any>) {
+            channelCache[country] = System.currentTimeMillis() to channels
+        }
+    }
 
     override var name = "xr3ed TV"
     override var lang = "id"
@@ -54,9 +77,15 @@ class Xr3edTVProvider : MainAPI() {
         } catch (e: Exception) { emptyMap() }
     }
 
-    // ── Fetch & parse playlist dari Worker ────────────────────────
+    // Fetch & parse playlist dari Worker dengan cache TTL 5 menit
+    // Cache mencegah 2 HTTP request per klik channel (load + loadLinks)
+    @Suppress("UNCHECKED_CAST")
     private suspend fun fetchChannels(country: String): List<Channel> {
         val cleanCountry = if (country == "all" || country.isBlank()) "SP" else country
+        // Cek cache dulu
+        val cached = getCachedChannels(cleanCountry)
+        if (cached != null) return cached as List<Channel>
+
         val url = workerUrl(cleanCountry)
         val raw = try {
             app.get(url).text
@@ -68,7 +97,7 @@ class Xr3edTVProvider : MainAPI() {
             val obj = JSONObject(raw)
             val info: JSONArray = obj.getJSONArray("info")
 
-            return (0 until info.length()).mapNotNull { i ->
+            val result = (0 until info.length()).mapNotNull { i ->
                 try {
                     val ch = info.getJSONObject(i)
                     val hls = ch.optString("hls", "")
@@ -90,6 +119,8 @@ class Xr3edTVProvider : MainAPI() {
                     )
                 } catch (e: Exception) { null }
             }
+            putCachedChannels(cleanCountry, result)
+            return result
         } catch (e: Exception) {
             val preview = if (raw.length > 200) raw.substring(0, 200) else raw
             throw ErrorLoadingException("JSON error: ${e.message}. Raw: $preview")
@@ -129,17 +160,22 @@ class Xr3edTVProvider : MainAPI() {
         )
     }
 
-    // ── Search ────────────────────────────────────────────────────
+    // ── Search ──────────────────────────────────────────────
     override suspend fun search(query: String): List<SearchResponse> {
-        // Search SP and ID in parallel to find matching channels
+        // Search 4 negara secara PARALLEL — bukan sequential flatMap
+        // Dari 4×2 detik = 8 detik menjadi ~2 detik di STB
         val searchCountries = listOf("SP", "ID", "MY", "SG")
-        val allChannels = searchCountries.flatMap { country ->
-            try {
-                fetchChannels(country).map { country to it }
-            } catch (e: Exception) {
-                emptyList()
-            }
-        }.distinctBy { it.second.id }
+        val allChannels = coroutineScope {
+            searchCountries.map { country ->
+                async {
+                    try {
+                        fetchChannels(country).map { country to it }
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                }
+            }.awaitAll()
+        }.flatten().distinctBy { it.second.id }
 
         return allChannels
             .filter { it.second.name.contains(query, ignoreCase = true) }
