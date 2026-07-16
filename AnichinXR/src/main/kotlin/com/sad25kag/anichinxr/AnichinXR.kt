@@ -96,7 +96,7 @@ class AnichinXR : MainAPI() {
         val hasNext = if (page == 1 && request.data == "home-recom") {
             false
         } else {
-            document.selectFirst("a.next, a.next.page-numbers, .nav-links a.next, .pagination .next") != null
+            document.selectFirst("a.next, a.next.page-numbers, .nav-links a.next, .pagination .next, .hpage a.r, .pagination a.r") != null
         }
 
         return newHomePageResponse(
@@ -136,7 +136,7 @@ class AnichinXR : MainAPI() {
             .mapNotNull { it.toSearchResult() }
 
         val hasNext = document.selectFirst(
-            "a.next, a.next.page-numbers, .nav-links a.next, .pagination .next"
+            "a.next, a.next.page-numbers, .nav-links a.next, .pagination .next, .hpage a.r, .pagination a.r"
         ) != null
 
         return results.toNewSearchResponseList(
