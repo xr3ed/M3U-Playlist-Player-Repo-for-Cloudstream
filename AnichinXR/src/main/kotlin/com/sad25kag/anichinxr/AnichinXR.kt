@@ -31,17 +31,57 @@ class AnichinXR : MainAPI() {
     override val supportedTypes = setOf(TvType.Movie, TvType.Anime)
 
     override val mainPage = mainPageOf(
-        "anime/?status=ongoing&type=donghua&order=update" to "Donghua Terbaru",
-        "anime/?status=completed&type=donghua&sub=&order=update" to "Donghua Udah Tamat",
-        "anime/?status=hiatus&type=donghua&order=update" to "Donghua Tidak Dilanjutkan",
-        "anime/?type=live+action&order=update" to "Live Action",
-        "anime/?type=donghua&order=title" to "Semua Donghua",
-        "anime/?status=&type=movie&sub=&order=update" to "Donghua Movie"
+        "home-popular" to "Populer Hari Ini",
+        "home-latest" to "Rilisan Terbaru",
+        "home-movie" to "Movie",
+        "home-upcoming" to "Upcoming",
+        "home-dropped" to "Dropped Project",
+        "home-recom" to "Rekomendasi"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${mainUrl}/${request.data}&page=$page").document
-        val home = document.select("div.listupd > article").mapNotNull { it.toSearchResult() }
+        val (url, selector) = if (page == 1) {
+            val sel = when (request.data) {
+                "home-popular" -> "div.bixbox:has(h2:contains(Terpopuler Hari Ini)) article"
+                "home-latest" -> "div.bixbox:has(h3:contains(Rilisan Terbaru)) article"
+                "home-movie" -> "div.bixbox:has(h3:contains(Movie)) article"
+                "home-upcoming" -> "div.bixbox:has(h3:contains(Upcoming Donghua)) article"
+                "home-dropped" -> "div.bixbox:has(h3:contains(Dropped Project)) article"
+                "home-recom" -> "div.bixbox:has(h3:contains(Rekomendasi)) article"
+                else -> "div.listupd > article"
+            }
+            Pair(mainUrl, sel)
+        } else {
+            val targetUrl = when (request.data) {
+                "home-popular" -> "${mainUrl}/anime/page/$page/?order=popular"
+                "home-latest" -> "${mainUrl}/anime/page/$page/?order=update"
+                "home-movie" -> "${mainUrl}/anime/page/$page/?type=movie&order=update"
+                "home-upcoming" -> "${mainUrl}/upcoming-donghua/page/$page/"
+                "home-dropped" -> "${mainUrl}/drop/page/$page/"
+                else -> null
+            }
+            Pair(targetUrl, "div.listupd > article")
+        }
+
+        if (url == null) {
+            return newHomePageResponse(
+                list = HomePageList(
+                    name = request.name,
+                    list = emptyList(),
+                    isHorizontalImages = false,
+                ),
+                hasNext = false,
+            )
+        }
+
+        val document = app.get(url).document
+        val home = document.select(selector).mapNotNull { it.toSearchResult() }
+
+        val hasNext = if (page == 1 && request.data == "home-recom") {
+            false
+        } else {
+            document.selectFirst("a.next, a.next.page-numbers, .nav-links a.next, .pagination .next") != null
+        }
 
         return newHomePageResponse(
             list = HomePageList(
@@ -49,7 +89,7 @@ class AnichinXR : MainAPI() {
                 list = home,
                 isHorizontalImages = false,
             ),
-            hasNext = true,
+            hasNext = hasNext,
         )
     }
 
