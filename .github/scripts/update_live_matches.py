@@ -315,8 +315,8 @@ async def main():
 
     # Step 1: Ambil semua match dari API
     print("\n[1] Fetch semua match dari API...")
-    api_host = get_api_host()
-    all_matches = fetch_all_matches_from_api(api_host)
+    api_host = await asyncio.to_thread(get_api_host)
+    all_matches = await asyncio.to_thread(fetch_all_matches_from_api, api_host)
     print(f"  Total API matches: {len(all_matches)}")
 
     # Step 2: Buka website & ekstrak visible matchIds
@@ -364,7 +364,8 @@ async def main():
     # Update Gist
     if GIST_TOKEN and GIST_ID:
         print(f"\nUpdate Gist...")
-        resp = requests.patch(
+        resp = await asyncio.to_thread(
+            requests.patch,
             f"https://api.github.com/gists/{GIST_ID}",
             headers={"Authorization": f"token {GIST_TOKEN}", "Accept": "application/vnd.github.v3+json"},
             json={"files": {"live_matches.json": {"content": json_content}}}
