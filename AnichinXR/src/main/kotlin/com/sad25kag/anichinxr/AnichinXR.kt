@@ -70,10 +70,10 @@ class AnichinXR : MainAPI() {
             Pair(mainUrl, sel)
         } else {
             val targetUrl = when (request.data) {
-                "home-popular" -> "${mainUrl}/anime/page/$page/?order=popular"
-                "home-latest" -> "${mainUrl}/anime/page/$page/?order=update"
-                "home-movie" -> "${mainUrl}/anime/page/$page/?type=movie&order=update"
-                "home-dropped" -> "${mainUrl}/drop/page/$page/"
+                "home-popular" -> "${mainUrl}/anime/?page=$page&order=popular"
+                "home-latest" -> "${mainUrl}/anime/?page=$page&order=update"
+                "home-movie" -> "${mainUrl}/anime/?page=$page&type=movie&order=update"
+                "home-dropped" -> "${mainUrl}/drop/?page=$page"
                 else -> null
             }
             Pair(targetUrl, "div.listupd > article")
