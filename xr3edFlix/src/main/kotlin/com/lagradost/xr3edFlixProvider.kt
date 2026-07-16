@@ -620,7 +620,7 @@ class xr3edFlixProvider : MainAPI() {
 
             // 5. GET streams for each source
             val sources = listOf(
-                "mapple", "willow", "cherry", "pines", "oak", "sequoia", "sakura", "magnolia"
+                "mapple", "willow", "cherry", "pines", "sequoia", "sakura", "magnolia"
             )
 
             coroutineScope {
