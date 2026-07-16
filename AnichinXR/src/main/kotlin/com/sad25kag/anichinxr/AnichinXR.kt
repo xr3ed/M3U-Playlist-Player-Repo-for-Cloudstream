@@ -58,25 +58,29 @@ class AnichinXR : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val isLazyCategory = request.data == "home-latest" || request.data == "home-dropped"
-
-        val (url, selector) = if (page == 1 && !isLazyCategory) {
+        val (url, selector) = if (page == 1) {
+            val targetUrl = when (request.data) {
+                "home-popular" -> mainUrl
+                "home-movie" -> mainUrl
+                "home-recom" -> mainUrl
+                "home-dropped" -> "${mainUrl}/drop/"
+                else -> "${mainUrl}/anime/?page=1&order=update"
+            }
             val sel = when (request.data) {
-                "home-popular" -> "div.bixbox:has(h2:contains(Terpopuler Hari Ini)) article"
+                "home-popular" -> "div.popularslider article"
                 "home-movie" -> "div.bixbox:has(h3:contains(Movie)) article"
                 "home-recom" -> "div.bixbox:has(h3:contains(Rekomendasi)) article"
-                else -> "div.listupd > article"
+                else -> "div.listupd article"
             }
-            Pair(mainUrl, sel)
+            Pair(targetUrl, sel)
         } else {
             val targetUrl = when (request.data) {
                 "home-popular" -> "${mainUrl}/anime/?page=$page&order=popular"
                 "home-latest" -> "${mainUrl}/anime/?page=$page&order=update"
                 "home-movie" -> "${mainUrl}/anime/?page=$page&type=movie&order=update"
-                "home-dropped" -> "${mainUrl}/drop/?page=$page"
                 else -> null
             }
-            Pair(targetUrl, "div.listupd > article")
+            Pair(targetUrl, "div.listupd article")
         }
 
         if (url == null) {
@@ -262,14 +266,19 @@ class AnichinXR : MainAPI() {
         val emittedAutoSources = java.util.Collections.synchronizedSet(mutableSetOf<String>())
         val countedCallback: (ExtractorLink) -> Unit = { link ->
             if (emitted.add(link.url)) {
-                val sourceKey = if (link.source.contains("rumble", ignoreCase = true)) "rumble" else link.source.lowercase().trim()
+                val cleanLinkSource = if (link.source.equals("Morencius", ignoreCase = true)) "Vidhide" else link.source
+                val cleanLinkName = if (link.name.contains("Morencius", ignoreCase = true)) {
+                    link.name.replace("Morencius", "Vidhide", ignoreCase = true)
+                } else link.name
+
+                val sourceKey = if (cleanLinkSource.contains("rumble", ignoreCase = true)) "rumble" else cleanLinkSource.lowercase().trim()
                 val isNew = emittedAutoSources.add(sourceKey)
                 if (isNew) {
-                    val cleanSource = if (link.source.contains("rumble", ignoreCase = true)) "Rumble" else link.source
-                    val cleanName = if (link.name.contains("Auto", ignoreCase = true)) {
-                        if (link.name.contains("rumble", ignoreCase = true)) "Rumble Auto" else link.name
+                    val cleanSource = if (cleanLinkSource.contains("rumble", ignoreCase = true)) "Rumble" else cleanLinkSource
+                    val cleanName = if (cleanLinkName.contains("Auto", ignoreCase = true)) {
+                        if (cleanLinkName.contains("rumble", ignoreCase = true)) "Rumble Auto" else cleanLinkName
                     } else {
-                        val base = link.name.replace(Regex("\\s*\\d+p", RegexOption.IGNORE_CASE), "")
+                        val base = cleanLinkName.replace(Regex("\\s*\\d+p", RegexOption.IGNORE_CASE), "")
                         val cleanBase = if (base.contains("rumble", ignoreCase = true)) "Rumble" else base
                         "$cleanBase Auto"
                     }
@@ -529,6 +538,20 @@ class AnichinXR : MainAPI() {
         }
 
         val cleanedBody = body.cleanEscaped()
+
+        val urlPlayMatch = Regex("urlPlay\\s*=\\s*'([^']*)'").find(cleanedBody)?.groupValues?.getOrNull(1)
+        if (!urlPlayMatch.isNullOrBlank()) {
+            resolveVideoCandidate(
+                url = urlPlayMatch,
+                label = label,
+                referer = fixed,
+                visited = visited,
+                subtitleCallback = subtitleCallback,
+                callback = callback,
+                depth = depth + 1
+            )
+        }
+
         val nested = linkedSetOf<String>()
         nested.addAll(extractKnownVideoUrls(cleanedBody))
 
@@ -705,8 +728,6 @@ class AnichinXR : MainAPI() {
             value.contains("pixeldrain.com") ||
             value.contains("morencius.com") ||
             value.contains("rubyvidhub.com") ||
-            value.contains("turbovip.site") ||
-            value.contains("turbovip") ||
             value.contains("d.tube")
     }
 
@@ -739,7 +760,8 @@ class AnichinXR : MainAPI() {
             value.contains("abyss.to", true) ||
             value.contains("morencius.com", true) ||
             value.contains("rubyvidhub.com", true) ||
-            value.contains("turbovip.site", true)
+            value.contains("turbovip.site", true) ||
+            value.contains("turbovidhls.com", true)
     }
 
     private fun shouldSkipBodyRead(contentType: String, contentLength: Long?): Boolean {

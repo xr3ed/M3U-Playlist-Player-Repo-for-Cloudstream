@@ -21,5 +21,7 @@ class AnichinXRPlugin: Plugin() {
         registerExtractorAPI(Vidguardto())
         registerExtractorAPI(Morencius())
         registerExtractorAPI(TurboVIP())
+        registerExtractorAPI(TurboVidHls())
+        registerExtractorAPI(RPMShare())
     }
 }

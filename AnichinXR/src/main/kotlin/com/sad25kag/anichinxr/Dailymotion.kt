@@ -50,15 +50,15 @@ open class Dailymotion : ExtractorApi() {
         callback: (ExtractorLink) -> Unit,
     ): Boolean {
         val accessId = getGeoAccessId(embedUrl) ?: return false
-        val embedder = URLEncoder.encode(referer ?: "https://anichin.moe/", "UTF-8")
+        val embedder = URLEncoder.encode("https://anichin.moe/", "UTF-8")
         val metadataUrl = "$geoBaseUrl/video/$accessId.json?legacy=true&embedder=$embedder"
         val response = runCatching {
             app.get(
                 metadataUrl,
-                referer = embedUrl,
+                referer = "https://anichin.moe/",
                 headers = mapOf(
                     "User-Agent" to USER_AGENT,
-                    "Referer" to embedUrl,
+                    "Referer" to "https://anichin.moe/",
                     "Accept" to "application/json,text/plain,*/*",
                 )
             ).text
@@ -89,10 +89,10 @@ open class Dailymotion : ExtractorApi() {
         val response = runCatching {
             app.get(
                 metaDataUrl,
-                referer = referer,
+                referer = "https://anichin.moe/",
                 headers = mapOf(
                     "User-Agent" to USER_AGENT,
-                    "Referer" to referer,
+                    "Referer" to "https://anichin.moe/",
                     "Accept" to "application/json,text/plain,*/*",
                 )
             ).text
