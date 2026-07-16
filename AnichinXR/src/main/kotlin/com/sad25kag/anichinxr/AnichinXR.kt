@@ -113,8 +113,9 @@ class AnichinXR : MainAPI() {
         val title = this.select("div.bsx > a").attr("title").trim()
         val href = fixUrl(this.select("div.bsx > a").attr("href"))
         val posterUrl = fixUrlNull(this.select("div.bsx > a img").attr("src"))
+        val maskedUrl = "https://lynk.id/xr3ed#$href"
 
-        return newAnimeSearchResponse(title, href, TvType.Anime) {
+        return newAnimeSearchResponse(title, maskedUrl, TvType.Anime) {
             this.posterUrl = posterUrl
         }
     }
@@ -144,7 +145,8 @@ class AnichinXR : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse {
-        val document = app.get(fixUrl(url)).document
+        val cleanUrl = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
+        val document = app.get(fixUrl(cleanUrl)).document
         val title = document.selectFirst("h1.entry-title")?.text()?.trim().orEmpty()
         var poster = document.select("div.ime > img").attr("src")
         val description = document.selectFirst("div.entry-content")?.text()?.trim()
@@ -172,6 +174,8 @@ class AnichinXR : MainAPI() {
             poster = document.selectFirst("meta[property=og:image]")?.attr("content").orEmpty()
         }
 
+        val maskedUrl = if (url.contains("lynk.id")) url else "https://lynk.id/xr3ed#$url"
+
         return if (tvType == TvType.TvSeries) {
             val episodes = document.select(".eplister li").mapNotNull { ep ->
                 val link = fixUrl(ep.selectFirst("a")?.attr("href").orEmpty()).takeIf { it.isNotBlank() }
@@ -193,16 +197,17 @@ class AnichinXR : MainAPI() {
                 }
             }.reversed()
 
-            newTvSeriesLoadResponse(title, url, TvType.Anime, episodes) {
+            newTvSeriesLoadResponse(title, maskedUrl, TvType.Anime, episodes) {
                 this.posterUrl = fixUrlNull(poster)
                 this.plot = description
                 this.year = year
                 this.tags = tags
             }
         } else {
-            val movieHref = document.selectFirst(".eplister li > a")?.attr("href")?.let { fixUrl(it) } ?: url
+            val movieHref = document.selectFirst(".eplister li > a")?.attr("href")?.let { fixUrl(it) } ?: cleanUrl
+            val maskedMovieHref = "https://lynk.id/xr3ed#$movieHref"
 
-            newMovieLoadResponse(title, movieHref, TvType.Movie, movieHref) {
+            newMovieLoadResponse(title, maskedMovieHref, TvType.Movie, maskedMovieHref) {
                 this.posterUrl = fixUrlNull(poster)
                 this.plot = description
                 this.year = year
@@ -217,7 +222,8 @@ class AnichinXR : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val episodeUrl = fixUrl(data)
+        val cleanData = if (data.contains("lynk.id")) data.substringAfterLast("#", "") else data
+        val episodeUrl = fixUrl(cleanData)
         val document = app.get(episodeUrl, referer = mainUrl).document
         val candidates = linkedSetOf<Pair<String, String>>()
         val visited = linkedSetOf<String>()
