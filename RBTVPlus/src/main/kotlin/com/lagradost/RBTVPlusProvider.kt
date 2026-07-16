@@ -15,7 +15,6 @@ import java.net.URLEncoder
 import java.security.MessageDigest
 
 // Helper data class untuk data pertandingan live
-// Helper data class untuk data pertandingan live
 data class LiveMatchInfo(
     val matchId: Long,
     val streamId: String,
