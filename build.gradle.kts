@@ -112,6 +112,8 @@ subprojects {
             // RBTV+ secrets — disembunyikan agar tidak bisa dicari di GitHub
             buildConfigField("String", "RBTV_MAIN_URL", "\"${getSecret("RBTV_MAIN_URL")}\"")
             buildConfigField("String", "RBTV_API_HOST", "\"${getSecret("RBTV_API_HOST")}\"")
+            buildConfigField("String", "RBTV_AES_KEY", "\"${getSecret("RBTV_AES_KEY", "a7981cc9eb2f4d19dcfea57b101ecd89")}\"")
+            buildConfigField("String", "RBTV_AES_IV", "\"${getSecret("RBTV_AES_IV", "8017d3a8f1400d2f")}\"")
             // Xr3edEvent secrets — disembunyikan agar tidak bisa dicari di GitHub
             buildConfigField("String", "XR3EV_MAIN_URL", "\"${getSecret("XR3EV_MAIN_URL")}\"")
             buildConfigField("String", "XR3EV_API_URL", "\"${getSecret("XR3EV_API_URL")}\"")

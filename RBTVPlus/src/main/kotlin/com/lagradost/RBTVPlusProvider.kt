@@ -391,8 +391,8 @@ class RBTVPlusProvider : MainAPI() {
     }
 
     private fun encryptAesCtr(token: String): String {
-        val keyStr = "a7981cc9eb2f4d19dcfea57b101ecd89"
-        val ivStr = "8017d3a8f1400d2f"
+        val keyStr = BuildConfig.RBTV_AES_KEY
+        val ivStr = BuildConfig.RBTV_AES_IV
         
         val keySpec = javax.crypto.spec.SecretKeySpec(keyStr.toByteArray(Charsets.UTF_8), "AES")
         val ivSpec = javax.crypto.spec.IvParameterSpec(ivStr.toByteArray(Charsets.UTF_8))
