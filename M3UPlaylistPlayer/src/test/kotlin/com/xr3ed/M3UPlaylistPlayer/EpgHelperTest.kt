@@ -14,13 +14,18 @@ import java.io.InputStream
 class EpgHelperTest {
     @Test
     fun testParseEpgXml_valid() {
+        val sdf = java.text.SimpleDateFormat("yyyyMMddHHmmss Z", java.util.Locale.US)
+        val now = System.currentTimeMillis()
+        val startStr = sdf.format(java.util.Date(now - 10 * 60 * 1000L)) // 10 menit lalu
+        val stopStr = sdf.format(java.util.Date(now + 50 * 60 * 1000L)) // 50 menit ke depan
+
         val xml = """
             <?xml version="1.0" encoding="UTF-8"?>
             <tv>
                 <channel id="TestChannel">
                     <display-name>Test Channel</display-name>
                 </channel>
-                <programme start="20230101000000 +0000" stop="20230101010000 +0000" channel="TestChannel">
+                <programme start="$startStr" stop="$stopStr" channel="TestChannel">
                     <title>Test Title</title>
                     <desc>Test Description</desc>
                 </programme>
