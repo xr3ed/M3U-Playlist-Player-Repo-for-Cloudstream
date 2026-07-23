@@ -263,41 +263,9 @@ class AnichinXR : MainAPI() {
 
         extractKnownVideoUrls(document.html()).forEach { candidates.add(it to "Anichin") }
 
-        val emittedAutoSources = java.util.Collections.synchronizedSet(mutableSetOf<String>())
+        val allLinks = java.util.Collections.synchronizedList(mutableListOf<ExtractorLink>())
         val countedCallback: (ExtractorLink) -> Unit = { link ->
-            if (emitted.add(link.url)) {
-                val cleanLinkSource = if (link.source.equals("Morencius", ignoreCase = true)) "Vidhide" else link.source
-                val cleanLinkName = if (link.name.contains("Morencius", ignoreCase = true)) {
-                    link.name.replace("Morencius", "Vidhide", ignoreCase = true)
-                } else link.name
-
-                val sourceKey = if (cleanLinkSource.contains("rumble", ignoreCase = true)) "rumble" else cleanLinkSource.lowercase().trim()
-                val isNew = emittedAutoSources.add(sourceKey)
-                if (isNew) {
-                    val cleanSource = if (cleanLinkSource.contains("rumble", ignoreCase = true)) "Rumble" else cleanLinkSource
-                    val cleanName = if (cleanLinkName.contains("Auto", ignoreCase = true)) {
-                        if (cleanLinkName.contains("rumble", ignoreCase = true)) "Rumble Auto" else cleanLinkName
-                    } else {
-                        val base = cleanLinkName.replace(Regex("\\s*\\d+p", RegexOption.IGNORE_CASE), "")
-                        val cleanBase = if (base.contains("rumble", ignoreCase = true)) "Rumble" else base
-                        "$cleanBase Auto"
-                    }
-                    
-                    val finalLink = kotlinx.coroutines.runBlocking {
-                        newExtractorLink(
-                            source = cleanSource,
-                            name = cleanName,
-                            url = link.url,
-                            type = link.type,
-                        ) {
-                            this.referer = link.referer
-                            this.quality = Qualities.Unknown.value
-                            this.headers = link.headers
-                        }
-                    }
-                    callback(finalLink)
-                }
-            }
+            allLinks.add(link)
         }
 
         val topLevelCandidates = candidates
@@ -332,7 +300,7 @@ class AnichinXR : MainAPI() {
             }.awaitAll()
         }
 
-        if (emitted.isEmpty()) {
+        if (allLinks.isEmpty()) {
             val downloadCandidates = document.select(".soraddlx a[href], .dlbox a[href], .download a[href], .entry-content a[href], a[href*='mirrored.to'], a[href*='apk.miuiku.com']")
                 .mapNotNull { element ->
                     element.attr("abs:href").ifBlank { element.attr("href") }
@@ -366,7 +334,48 @@ class AnichinXR : MainAPI() {
             }
         }
 
-        // Emitted streamingly in countedCallback
+        // Process all accumulated links
+        val grouped = allLinks.groupBy { link ->
+            when {
+                link.source.equals("Morencius", ignoreCase = true) -> "VidHide [ADS]"
+                link.source.equals("Vidhide", ignoreCase = true) -> "VidHide [ADS]"
+                link.source.equals("StreamRuby", ignoreCase = true) -> "Streamruby [ADS]"
+                link.source.equals("OK.ru", ignoreCase = true) -> "Okru"
+                link.source.equals("Odnoklassniki", ignoreCase = true) -> "Okru"
+                link.source.equals("Rumble", ignoreCase = true) -> "Rumble [Setting DNS]"
+                link.source.equals("RPMShare", ignoreCase = true) -> "RPM Share [ADS]"
+                link.source.equals("Dailymotion", ignoreCase = true) -> "Dailymotion [ADS]"
+                link.source.equals("Geodailymotion", ignoreCase = true) -> "Dailymotion [ADS]"
+                link.source.equals("D-Tube", ignoreCase = true) -> "DTube"
+                link.source.equals("Source Auto", ignoreCase = true) -> "New Player [ADS]"
+                link.source.equals("New Player [ADS]", ignoreCase = true) -> "New Player [ADS]"
+                link.source.equals("TurboVIP", ignoreCase = true) -> "New Player"
+                else -> link.source
+            }
+        }
+
+        grouped.forEach { (cleanSource, links) ->
+            // For each server/source group, we only want to emit 1 link.
+            // If there are multiple links, we pick the one with the highest quality.
+            val bestLink = links.maxByOrNull { it.quality }
+            if (bestLink != null) {
+                val cleanName = "$cleanSource Auto"
+                val finalLink = kotlinx.coroutines.runBlocking {
+                    newExtractorLink(
+                        source = cleanSource,
+                        name = cleanName,
+                        url = bestLink.url,
+                        type = bestLink.type,
+                    ) {
+                        this.referer = bestLink.referer
+                        this.quality = Qualities.Unknown.value // Force Auto in UI
+                        this.headers = bestLink.headers
+                    }
+                }
+                callback(finalLink)
+                emitted.add(bestLink.url)
+            }
+        }
 
         return emitted.isNotEmpty()
     }
@@ -380,9 +389,14 @@ class AnichinXR : MainAPI() {
         callback: (ExtractorLink) -> Unit,
         depth: Int = 0,
     ) {
-        val fixed = normalizeAnyUrl(url, referer)
+        var fixed = normalizeAnyUrl(url, referer)
             ?.replace(".txt", ".m3u8")
             ?: return
+
+        if (fixed.contains("rpmvid.com", true) && fixed.contains("#")) {
+            val id = fixed.substringAfter("#").substringBefore("&")
+            fixed = "https://anichin.rpmvid.com/embed/$id"
+        }
 
         if (fixed.contains("pixeldrain.com/u/", true)) {
             val fileId = fixed.substringAfter("pixeldrain.com/u/").substringBefore("?").substringBefore("/")
@@ -483,17 +497,7 @@ class AnichinXR : MainAPI() {
                     collectedLinks.add(link)
                 }
                 if (loaded) {
-                    val m3u8Links = collectedLinks.filter { it.type == ExtractorLinkType.M3U8 }
-                    val progressiveLinks = collectedLinks.filter { it.type == ExtractorLinkType.VIDEO }
-                    
-                    m3u8Links.forEach { callback(it) }
-                    progressiveLinks.groupBy { it.source }
-                        .forEach { (_, links) ->
-                            val highestLink = links.maxByOrNull { it.quality }
-                            if (highestLink != null) {
-                                callback(highestLink)
-                            }
-                        }
+                    collectedLinks.forEach { callback(it) }
                 }
             } catch (error: Throwable) {
                 if (error is CancellationException) throw error
@@ -944,12 +948,10 @@ class AnichinXR : MainAPI() {
             val sources = mp4Data.sources ?: return false
             val domains = mp4Data.domains ?: return false
             
-            val highestSource = sources.maxByOrNull { source ->
-                source.label.filter { it.isDigit() }.toIntOrNull() ?: 0
-            }
-            val sourcesToProcess = if (highestSource != null) listOf(highestSource) else sources
+            val sourcesToProcess = sources
             
             for (source in sourcesToProcess) {
+                if (source.codec.equals("av1", ignoreCase = true)) continue
                 Log.d("AnichinXR", "AbyssPlayer processing source: ${source.label}, res_id: ${source.res_id}, size: ${source.size}, sub: ${source.sub}")
                 val domain = domains.firstOrNull { it.contains(source.sub) }
                 Log.d("AnichinXR", "AbyssPlayer domain: $domain")
@@ -966,8 +968,8 @@ class AnichinXR : MainAPI() {
                 
                 callback(
                     newExtractorLink(
-                        source = "Source Auto",
-                        name = "Source Auto",
+                        source = "New Player [ADS]",
+                        name = "New Player [ADS]",
                         url = finalUrl,
                         type = ExtractorLinkType.VIDEO,
                     ) {

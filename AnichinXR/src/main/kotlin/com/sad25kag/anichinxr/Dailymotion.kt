@@ -5,6 +5,9 @@ import com.lagradost.cloudstream3.app
 import com.lagradost.cloudstream3.USER_AGENT
 import com.lagradost.cloudstream3.utils.ExtractorApi
 import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
+import com.lagradost.cloudstream3.utils.Qualities
+import com.lagradost.cloudstream3.utils.newExtractorLink
 import com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8
 import org.json.JSONArray
 import org.json.JSONObject
@@ -202,14 +205,20 @@ open class Dailymotion : ExtractorApi() {
         referer: String,
         callback: (ExtractorLink) -> Unit
     ) {
-        return generateM3u8(
-            source = name,
-            streamUrl = streamLink,
-            referer = referer,
-            headers = mapOf(
-                "User-Agent" to USER_AGENT,
-                "Referer" to referer,
-            )
-        ).forEach(callback)
+        callback(
+            newExtractorLink(
+                source = name,
+                name = "$name Auto",
+                url = streamLink,
+                type = ExtractorLinkType.M3U8,
+            ) {
+                this.referer = referer
+                this.quality = Qualities.Unknown.value
+                this.headers = mapOf(
+                    "User-Agent" to USER_AGENT,
+                    "Referer" to referer,
+                )
+            }
+        )
     }
 }

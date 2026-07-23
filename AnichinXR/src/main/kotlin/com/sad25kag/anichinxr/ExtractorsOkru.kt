@@ -8,6 +8,7 @@ import com.lagradost.cloudstream3.app
 import com.lagradost.cloudstream3.newSubtitleFile
 import com.lagradost.cloudstream3.utils.ExtractorApi
 import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.M3u8Helper
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.INFER_TYPE
@@ -30,6 +31,16 @@ open class Odnoklassniki : ExtractorApi() {
     override val mainUrl = "https://odnoklassniki.ru"
     override val requiresReferer = false
 
+    private val cleanClient = app.baseClient.newBuilder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .build()
+            chain.proceed(request)
+        }
+        .build()
+    private val DESKTOP_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
     override suspend fun getUrl(
         url: String,
         referer: String?,
@@ -38,44 +49,38 @@ open class Odnoklassniki : ExtractorApi() {
     ) {
         val embedUrl = normalizeEmbedUrl(url)
         val embedReferer = referer ?: "https://anichin.moe/"
-        val embedHeaders = mapOf(
-            "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Connection" to "keep-alive",
-            "User-Agent" to USER_AGENT,
-            "Referer" to embedReferer,
-        )
         val mediaHeaders = mapOf(
             "Accept" to "*/*",
             "Connection" to "keep-alive",
             "Origin" to "https://ok.ru",
-            "User-Agent" to USER_AGENT,
+            "User-Agent" to DESKTOP_USER_AGENT,
             "Referer" to embedUrl,
         )
 
-        val videoReq = app.get(
-            embedUrl,
-            referer = embedReferer,
-            headers = embedHeaders,
-        ).text.cleanOkRuPayload()
+        val request = okhttp3.Request.Builder()
+            .url(embedUrl)
+            .header("User-Agent", DESKTOP_USER_AGENT)
+            .header("Referer", embedReferer)
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+            .build()
+
+        val videoReq = cleanClient.newCall(request).execute().body?.string()?.cleanOkRuPayload() ?: ""
 
         val hlsManifest = extractOkRuField(videoReq, "hlsManifestUrl")
         if (!hlsManifest.isNullOrBlank()) {
-            val hlsLinks = runCatching {
-                M3u8Helper.generateM3u8(
+            callback.invoke(
+                newExtractorLink(
                     source = this.name,
-                    streamUrl = hlsManifest,
-                    referer = embedUrl,
-                    headers = mediaHeaders,
-                )
-            }.getOrElse { error ->
-                Log.w("AnichinOkRu", "Failed to resolve OK.ru HLS manifest", error)
-                emptyList()
-            }
-
-            if (hlsLinks.isNotEmpty()) {
-                hlsLinks.forEach(callback)
-                return
-            }
+                    name = "${this.name} Auto",
+                    url = hlsManifest,
+                    type = ExtractorLinkType.M3U8,
+                ) {
+                    this.referer = embedUrl
+                    this.quality = Qualities.Unknown.value
+                    this.headers = mediaHeaders
+                }
+            )
+            return
         }
 
         val metadataWebm = extractOkRuField(videoReq, "metadataWebmUrl")

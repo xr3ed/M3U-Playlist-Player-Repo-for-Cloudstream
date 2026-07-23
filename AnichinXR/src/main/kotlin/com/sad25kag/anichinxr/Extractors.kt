@@ -20,13 +20,28 @@ open class TurboVIP : ExtractorApi() {
     override val mainUrl = "https://turbovip.site"
     override val requiresReferer = true
 
+    private val cleanClient = app.baseClient.newBuilder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .build()
+            chain.proceed(request)
+        }
+        .build()
+
     override suspend fun getUrl(
         url: String,
         referer: String?,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        val document = app.get(url, referer = referer).document
+        val request = okhttp3.Request.Builder()
+            .url(url)
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .header("Referer", referer ?: url)
+            .build()
+        val responseBody = cleanClient.newCall(request).execute().body?.string() ?: ""
+        val document = org.jsoup.Jsoup.parse(responseBody)
         val script = document.select("script").map { it.html() }.firstOrNull { it.contains("urlPlay") } ?: return
         val videoUrl = Regex("urlPlay\\s*=\\s*'([^']*)'").find(script)?.groupValues?.getOrNull(1) ?: return
         if (videoUrl.isNotBlank()) {
@@ -38,6 +53,10 @@ open class TurboVIP : ExtractorApi() {
             ) {
                 this.referer = url
                 this.quality = Qualities.Unknown.value
+                this.headers = mapOf(
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer" to url
+                )
             })
         }
     }
@@ -48,13 +67,28 @@ class TurboVidHls : ExtractorApi() {
     override val mainUrl = "https://turbovidhls.com"
     override val requiresReferer = true
 
+    private val cleanClient = app.baseClient.newBuilder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .build()
+            chain.proceed(request)
+        }
+        .build()
+
     override suspend fun getUrl(
         url: String,
         referer: String?,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        val document = app.get(url, referer = referer).document
+        val request = okhttp3.Request.Builder()
+            .url(url)
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .header("Referer", referer ?: url)
+            .build()
+        val responseBody = cleanClient.newCall(request).execute().body?.string() ?: ""
+        val document = org.jsoup.Jsoup.parse(responseBody)
         val script = document.select("script").map { it.html() }.firstOrNull { it.contains("urlPlay") } ?: return
         val videoUrl = Regex("urlPlay\\s*=\\s*'([^']*)'").find(script)?.groupValues?.getOrNull(1) ?: return
         if (videoUrl.isNotBlank()) {
@@ -66,6 +100,10 @@ class TurboVidHls : ExtractorApi() {
             ) {
                 this.referer = url
                 this.quality = Qualities.Unknown.value
+                this.headers = mapOf(
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer" to url
+                )
             })
         }
     }
@@ -76,25 +114,38 @@ class RPMShare : ExtractorApi() {
     override val mainUrl = "https://anichin.rpmvid.com"
     override val requiresReferer = true
 
+    private val cleanClient = app.baseClient.newBuilder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .build()
+            chain.proceed(request)
+        }
+        .build()
+    private val DESKTOP_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
     override suspend fun getUrl(
         url: String,
         referer: String?,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        val id = url.substringAfter("#", "").substringBefore("&")
+        val id = if (url.contains("/embed/")) {
+            url.substringAfter("/embed/").substringBefore("?").substringBefore("/")
+        } else {
+            url.substringAfter("#", "").substringBefore("&")
+        }
         if (id.isBlank()) return
 
         val apiUrl = "https://anichin.rpmvid.com/api/v1/video?id=$id"
-        val response = app.get(
-            apiUrl,
-            referer = "https://anichin.rpmvid.com/",
-            headers = mapOf(
-                "User-Agent" to USER_AGENT,
-                "Referer" to "https://anichin.rpmvid.com/",
-                "Accept" to "application/json,text/plain,*/*"
-            )
-        ).text
+        val request = okhttp3.Request.Builder()
+            .url(apiUrl)
+            .header("User-Agent", DESKTOP_USER_AGENT)
+            .header("Referer", "https://anichin.rpmvid.com/")
+            .header("Accept", "application/json,text/plain,*/*")
+            .build()
+
+        val response = cleanClient.newCall(request).execute().body?.string() ?: ""
 
         val decrypted = runCatching {
             decryptAesCbc(response, "kiemtienmua911ca", "1234567890oiuytr")
@@ -113,6 +164,10 @@ class RPMShare : ExtractorApi() {
             ) {
                 this.referer = url
                 this.quality = Qualities.Unknown.value
+                this.headers = mapOf(
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer" to url
+                )
             })
         }
         if (source.isNotBlank()) {
@@ -124,6 +179,10 @@ class RPMShare : ExtractorApi() {
             ) {
                 this.referer = url
                 this.quality = Qualities.Unknown.value
+                this.headers = mapOf(
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Referer" to url
+                )
             })
         }
     }
