@@ -42,3 +42,6 @@ __pycache__/
 !/package-lock.json
 !/tsconfig.json
 !/vite.config.ts
+
+# Node modules
+node_modules/
