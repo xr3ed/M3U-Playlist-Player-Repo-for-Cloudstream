@@ -24,3 +24,21 @@ __pycache__/
 
 # Decompiled folders and analysis scrap
 /bittv_extracted/
+/*.apk
+/*.xml
+/*.json
+/*.txt
+/*.html
+/*.js
+/*.py
+/test.zip
+/test_unzip/
+
+# Exceptions to allow important build/configuration files
+!/build.gradle.kts
+!/settings.gradle.kts
+!/gradle.properties
+!/package.json
+!/package-lock.json
+!/tsconfig.json
+!/vite.config.ts
