@@ -3,6 +3,6 @@
   "displayName": "GudangFilmXR",
   "description": "GudangFilmXR provider modifikasi oleh XR3ED dengan resolver player Morencius dan Turbovidhls.",
   "author": "sad25kag, XR3ED",
-  "version": 20,
+  "version": 21,
   "tvTypes": ["Movie", "TvSeries", "AsianDrama"]
 }

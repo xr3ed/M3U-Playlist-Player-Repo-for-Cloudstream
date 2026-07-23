@@ -133,10 +133,11 @@ class GudangFilmXR : MainAPI() {
         val episodes = parseEpisodes(document, page)
         val recommendations = parseRecommendations(document, page)
         val sourceType = sourceType(document, html)
-        val type = inferType(page, title, text, episodes.size, sourceType)
+        val type = inferType(page, title, text, episodes.size, sourceType, tags)
 
-        return if (type == TvType.TvSeries && episodes.isNotEmpty()) {
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+        val isSeries = (type == TvType.TvSeries || type == TvType.AsianDrama) && episodes.isNotEmpty()
+        return if (isSeries) {
+            newTvSeriesLoadResponse(title, url, type, episodes) {
                 posterUrl = poster
                 this.year = year
                 plot = description
@@ -302,8 +303,9 @@ class GudangFilmXR : MainAPI() {
         val year = Regex("""\b(19|20)\d{2}\b""").find(title)?.value?.toIntOrNull() ?: Regex("""\b(19|20)\d{2}\b""").find(text)?.value?.toIntOrNull()
         val score = container.selectFirst(".rating, .score, .imdb, .vote")?.text()?.replace(",", ".")?.let { Regex("""\d+(?:\.\d+)?""").find(it)?.value?.toDoubleOrNull() }
         val maskedUrl = "https://lynk.id/xr3ed#$href"
-        return if (type == TvType.TvSeries) {
-            newTvSeriesSearchResponse(title, maskedUrl, TvType.TvSeries) {
+        val isSeries = type == TvType.TvSeries || type == TvType.AsianDrama
+        return if (isSeries) {
+            newTvSeriesSearchResponse(title, maskedUrl, type) {
                 posterUrl = poster
                 this.year = year
                 score?.let { this.score = Score.from10(it) }
@@ -610,13 +612,27 @@ class GudangFilmXR : MainAPI() {
         return Regex("""(?i)['"]type['"]\s*:\s*['"](movie|tv|episode)['"]""").find(html)?.groupValues?.getOrNull(1)?.lowercase(Locale.ROOT)
     }
 
-    private fun inferType(url: String, title: String, text: String, episodeCount: Int, sourceType: String?): TvType {
-        val clean = cleanText("$title $text").lowercase(Locale.ROOT)
+    private fun inferType(url: String, title: String, text: String, episodeCount: Int, sourceType: String?, tags: List<String> = emptyList()): TvType {
+        val cleanTitle = cleanText(title).lowercase(Locale.ROOT)
         val path = try { URI(url).path.orEmpty().lowercase(Locale.ROOT) } catch (_: Throwable) { "" }
-        return when {
-            episodeCount > 0 || sourceType == "tv" || sourceType == "episode" || path.contains("/episode/") -> TvType.TvSeries
-            clean.contains("korea") || clean.contains("japan") || clean.contains("china") || clean.contains("thailand") -> TvType.AsianDrama
-            else -> TvType.Movie
+        val isSeries = episodeCount > 0 ||
+                sourceType == "tv" ||
+                sourceType == "episode" ||
+                path.contains("/tv/") ||
+                path.contains("/episode/") ||
+                path.contains("/tvshows/") ||
+                path.contains("/seasons/")
+
+        return if (isSeries) {
+            val cleanTags = tags.map { it.lowercase(Locale.ROOT) }
+            val cleanText = text.lowercase(Locale.ROOT)
+            val isAsian = cleanTitle.contains("korea") || cleanTitle.contains("japan") || cleanTitle.contains("china") || cleanTitle.contains("thailand") ||
+                    cleanTags.any { it.contains("korea") || it.contains("japan") || it.contains("china") || it.contains("thailand") } ||
+                    (text.length < 1000 && (cleanText.contains("korea") || cleanText.contains("japan") || cleanText.contains("china") || cleanText.contains("thailand")))
+
+            if (isAsian) TvType.AsianDrama else TvType.TvSeries
+        } else {
+            TvType.Movie
         }
     }
 
