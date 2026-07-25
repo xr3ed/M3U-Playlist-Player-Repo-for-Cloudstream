@@ -75,6 +75,16 @@ jobs:
           XR3EV_STREAM_URL: ${{ secrets.XR3EV_STREAM_URL }}
           RBTV_MAIN_URL: ${{ secrets.RBTV_MAIN_URL }}
           RBTV_API_HOST: ${{ secrets.RBTV_API_HOST }}
+          RBTV_GIST_URL: ${{ secrets.RBTV_GIST_URL }}
+          RBTV_PATH_BS: ${{ secrets.RBTV_PATH_BS }}
+          RBTV_PATH_LIVE: ${{ secrets.RBTV_PATH_LIVE }}
+          RBTV_PATH_DETAIL: ${{ secrets.RBTV_PATH_DETAIL }}
+          RBTV_PATH_STREAM_DETAIL: ${{ secrets.RBTV_PATH_STREAM_DETAIL }}
+          RBTV_USER_AGENT: ${{ secrets.RBTV_USER_AGENT }}
+          RBTV_AES_KEY: ${{ secrets.RBTV_AES_KEY }}
+          RBTV_AES_IV: ${{ secrets.RBTV_AES_IV }}
+          XR3EV_PASSWORD: ${{ secrets.XR3EV_PASSWORD }}
+          XR3EV_SALT: ${{ secrets.XR3EV_SALT }}
           XSTREAM_TMDB_API: ${{ secrets.XSTREAM_TMDB_API }}
           SHORTMAX_URL: ${{ secrets.SHORTMAX_URL }}
           SHORTMAX_KEY: ${{ secrets.SHORTMAX_KEY }}
@@ -155,7 +165,7 @@ jobs:
           echo "Purging ALL files from jsDelivr cache..."
           
           # Purge semua file cs3 plugin
-          for plugin in DramaBox ShortMax Melolo RBTVPlus Xr3edEvent M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV AnichinXR; do
+          for plugin in DramaBox ShortMax Melolo RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV AnichinXR; do
             echo "Purging $plugin.cs3..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$plugin.cs3"
             echo ""

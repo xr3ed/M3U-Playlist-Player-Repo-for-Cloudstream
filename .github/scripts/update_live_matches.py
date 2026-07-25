@@ -18,12 +18,16 @@ from datetime import datetime, timezone, timedelta
 from playwright.async_api import async_playwright
 
 WIB = timezone(timedelta(hours=7))
-GIST_ID = os.environ.get("GIST_ID", "bea11b35c556c7acc73fcd2ef3014c7d")
+GIST_ID = os.environ.get("GIST_ID")
 GIST_TOKEN = os.environ.get("GIST_TOKEN", "")
 
-# Domain situs RBTV+ — diambil dari GitHub Secrets agar tidak terekspos di source code
-RBTV_SITE_URL = os.environ.get("RBTV_SITE_URL", "https://www.rbtvplus18.hair/id/")
-RBTV_FALLBACK_URL = os.environ.get("RBTV_FALLBACK_URL", "https://www.rbtvplus18.hair/id/")
+RBTV_SITE_URL = os.environ.get("RBTV_SITE_URL", "")
+RBTV_FALLBACK_URL = os.environ.get("RBTV_FALLBACK_URL", "")
+RBTV_REFERER = RBTV_SITE_URL.replace("/id/", "") + "/" if RBTV_SITE_URL else ""
+
+RBTV_PATH_BS = os.environ.get("RBTV_PATH_BS", "")
+RBTV_PATH_LIVE = os.environ.get("RBTV_PATH_LIVE", "")
+RBTV_USER_AGENT = os.environ.get("RBTV_USER_AGENT", "")
 
 # =========================================================
 # BAGIAN 1: Protobuf helpers & API calls (Pure Python)
@@ -154,11 +158,11 @@ def get_api_host():
     for domain in domains:
         try:
             resp = requests.get(domain, timeout=15, allow_redirects=True,
-                               headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
+                               headers={"User-Agent": RBTV_USER_AGENT})
             js_urls = list(set(re.findall(r"https://statics1\.[a-zA-Z0-9.-]+\.cfd/statics/[a-f0-9]+\.js", resp.text)))
             for js_url in js_urls:
                 try:
-                    js = requests.get(js_url, timeout=8, headers={"User-Agent": "Mozilla/5.0"}).text
+                    js = requests.get(js_url, timeout=8, headers={"User-Agent": RBTV_USER_AGENT}).text
                     m = re.search(r"CF_DA_API['\"]?\s*:\s*['\"]?(https://apis-data[0-9]*\.[a-zA-Z0-9.-]+\.[a-zA-Z]+)", js)
                     if m:
                         print(f"  API host: {m.group(1)} (dari {resp.url})")
@@ -166,7 +170,7 @@ def get_api_host():
                 except: pass
         except Exception as e:
             print(f"  Gagal {domain}: {e}")
-    return "https://apis-data10.tccdc64dgee.cfd"
+    return os.environ.get("RBTV_API_HOST", "")
 
 def fetch_all_matches_from_api(api_host):
     """Ambil semua match dari API RBTV+ langsung (Python requests)"""
@@ -174,8 +178,8 @@ def fetch_all_matches_from_api(api_host):
     all_matches = {}
     for sport_type in sport_types:
         try:
-            bs_url = f"{api_host}/api/common/bs?code=100&code=101&stream=true&sportType={sport_type}&language=34"
-            r = requests.get(bs_url, timeout=10, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.rbtvplus18.hair/"})
+            bs_url = f"{api_host}{RBTV_PATH_BS}?code=100&code=101&stream=true&sportType={sport_type}&language=34"
+            r = requests.get(bs_url, timeout=10, headers={"User-Agent": RBTV_USER_AGENT, "Referer": RBTV_REFERER})
             token = None
             data = r.content
             marker = bytes([8, 100, 18, 32])
@@ -185,8 +189,8 @@ def fetch_all_matches_from_api(api_host):
             if not token: continue
             jp = f'{{"sportType":{sport_type},"language":34,"stream":true}}'
             sfver = f"sfver{md5(jp)[:6]}{token}"
-            url = f"{api_host}/{sfver}/api/match/live?sportType={sport_type}&language=34&stream=true"
-            r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.rbtvplus18.hair/"})
+            url = f"{api_host}/{sfver}{RBTV_PATH_LIVE}?sportType={sport_type}&language=34&stream=true"
+            r = requests.get(url, timeout=15, headers={"User-Agent": RBTV_USER_AGENT, "Referer": RBTV_REFERER})
             if r.status_code == 200:
                 matches = parse_api_response(r.content, sport_type)
                 for m in matches:
@@ -200,12 +204,14 @@ def fetch_all_matches_from_api(api_host):
 # =========================================================
 # BAGIAN 2: Playwright DOM Scraping
 # =========================================================
-async def get_visible_match_ids_via_playwright():
+async def get_visible_match_ids_via_playwright(entry_url):
     """
     Buka website RBTV+ dengan Playwright + stealth settings,
     ekstrak matchId yang benar-benar tampil di halaman Live.
     """
     visible_ids = set()
+    captured_api_host = [None]
+    resolved_active_domain = entry_url
     STEALTH_JS = """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
         Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3]});
@@ -220,12 +226,12 @@ async def get_visible_match_ids_via_playwright():
                     '--no-sandbox', '--disable-dev-shm-usage',
                     '--disable-blink-features=AutomationControlled',
                     '--disable-web-security',
-                    '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+                    f'--user-agent={RBTV_USER_AGENT}'
                 ]
             )
             context = await browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+                user_agent=RBTV_USER_AGENT,
                 locale='id-ID',
                 timezone_id='Asia/Jakarta',
                 java_script_enabled=True,
@@ -235,14 +241,29 @@ async def get_visible_match_ids_via_playwright():
             await context.add_init_script(STEALTH_JS)
             page = await context.new_page()
 
-            print("Membuka RBTV+ website...")
+            def handle_request(request):
+                url = request.url
+                if "/api/" in url and "apis-data" in url:
+                    m = re.match(r"(https?://apis-data[0-9]*\.[a-zA-Z0-9.-]+\.[a-zA-Z]+)", url)
+                    if m:
+                        captured_api_host[0] = m.group(1)
+
+            page.on("request", handle_request)
+
+            print(f"Membuka RBTV+ website: {entry_url} ...")
             try:
-                await page.goto("https://www.rbtvplus18.hair/id/",
+                 await page.goto(entry_url,
                                wait_until='domcontentloaded', timeout=30000)
-                print("Halaman dimuat, menunggu konten...")
-                await asyncio.sleep(8)
+                 print("Halaman dimuat, menunggu konten...")
+                 await asyncio.sleep(8)
+                 # Deteksi active domain dari URL akhir pasca redirect browser
+                 final_url = page.url
+                 m = re.match(r"(https?://[^/]+)", final_url)
+                 if m:
+                     resolved_active_domain = m.group(1) + "/id/"
+                     print(f"  Final active domain resolved: {resolved_active_domain}")
             except Exception as e:
-                print(f"Timeout saat goto: {e}")
+                 print(f"Timeout/Error saat goto: {e}")
 
             # Coba scroll untuk trigger lazy loading
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
@@ -302,27 +323,48 @@ async def get_visible_match_ids_via_playwright():
             await browser.close()
     except Exception as e:
         print(f"Playwright error: {e}")
-    return visible_ids
+    return visible_ids, resolved_active_domain, captured_api_host[0]
 
 # =========================================================
 # BAGIAN 3: Main Logic
 # =========================================================
 async def main():
+    global RBTV_SITE_URL, RBTV_REFERER
     print("=" * 60)
     print("RBTV+ Live Match Hybrid Scraper")
     print("=" * 60)
     now_ms = int(time.time() * 1000)
 
-    # Step 1: Ambil semua match dari API
-    print("\n[1] Fetch semua match dari API...")
-    api_host = await asyncio.to_thread(get_api_host)
-    all_matches = await asyncio.to_thread(fetch_all_matches_from_api, api_host)
-    print(f"  Total API matches: {len(all_matches)}")
+    entry_url = os.environ.get("RBTV_SITE_URL", "")
 
-    # Step 2: Buka website & ekstrak visible matchIds
-    print("\n[2] Playwright DOM extraction...")
-    visible_ids = await get_visible_match_ids_via_playwright()
+    # Step 1: Buka website & ekstrak visible matchIds + API host via Playwright
+    print("\n[1] Playwright DOM & API Host extraction...")
+    visible_ids, resolved_active_domain, playwright_api_host = await get_visible_match_ids_via_playwright(entry_url)
     print(f"  Visible matchIds dari DOM: {len(visible_ids)}")
+    
+    if resolved_active_domain:
+        RBTV_SITE_URL = resolved_active_domain
+        RBTV_REFERER = resolved_active_domain.replace("/id/", "") + "/"
+        print(f"  Dynamic Site URL set to: {RBTV_SITE_URL}")
+        print(f"  Dynamic Referer set to: {RBTV_REFERER}")
+
+    if playwright_api_host:
+        print(f"  Resolved API Host via Playwright: {playwright_api_host}")
+        api_host = playwright_api_host
+    else:
+        print("  Gagal mendapatkan API host via Playwright. Fallback ke request...")
+        api_host = await asyncio.to_thread(get_api_host)
+        
+    if not api_host:
+        api_host = os.environ.get("RBTV_API_HOST", "")
+        print(f"  Menggunakan fallback API Host dari env: {api_host}")
+
+    # Step 2: Ambil semua match dari API
+    print("\n[2] Fetch semua match dari API...")
+    all_matches = {}
+    if api_host:
+        all_matches = await asyncio.to_thread(fetch_all_matches_from_api, api_host)
+    print(f"  Total API matches: {len(all_matches)}")
 
     # Step 3: Tentukan hasil akhir
     if len(visible_ids) > 3:
@@ -344,6 +386,7 @@ async def main():
     output = {
         "updated_at": datetime.now(WIB).strftime("%Y-%m-%dT%H:%M:%S+07:00"),
         "source": source,
+        "active_domain": RBTV_SITE_URL,
         "total": len(live_matches),
         "matches": []
     }

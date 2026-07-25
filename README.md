@@ -17,14 +17,35 @@ Repositori resmi untuk memasang ekstensi pemutar M3U dan live streaming olahraga
 
 ## 🧩 Ekstensi yang Tersedia
 
-1. **`Xr3edEvent`**  
-   Menyediakan akses siaran langsung pertandingan olahraga (UCL, Bundesliga, MotoGP, F1, dll.), jadwal pertandingan ter-update, saluran TV Nasional, TV Movies, dan hiburan lainnya.
-   
-2. **`RBTVPlus`**  
-   Ekstensi pemutar streaming olahraga multi-event yang dioptimalkan untuk menyaksikan siaran langsung berbagai pertandingan olahraga populer seperti sepak bola, bulu tangkis (badminton), bola basket, tenis, dan event olahraga dunia lainnya yang disiarkan di platform olahraga **RBTV+** (Superabbit77).
+1. **`RBTVPlus`**  
+   Ekstensi pemutar streaming olahraga multi-event yang dioptimalkan untuk menyaksikan siaran langsung berbagai pertandingan olahraga populer seperti sepak bola, bulu tangkis (badminton), bola basket, tenis, dan event olahraga dunia lainnya yang disiarkan di platform olahraga **RBTV+** (Superabbit77). Menggunakan resolusi domain aktif dan API host dinamis serta aman.
 
-3. **`M3UPlaylistPlayer`**  
+2. **`M3UPlaylistPlayer`**  
    Pemutar playlist M3U bawaan untuk memutar daftar saluran kustom Anda sendiri di dalam Cloudstream.
+
+3. **`AnichinXR`**  
+   Ekstensi khusus untuk streaming serial Donghua (Anime China) dengan subtitle Indonesia.
+
+4. **`DracinAIO`**  
+   Ekstensi all-in-one untuk menonton serial Drama China (Dracin) terlengkap.
+
+5. **`DramaBox`**  
+   Ekstensi pemutar serial drama pendek (mini-series) populer.
+
+6. **`GudangFilmXR`**  
+   Ekstensi streaming film layar lebar dan serial barat/Asia terjemahan Indonesia.
+
+7. **`Melolo`**  
+   Ekstensi streaming drama Asia dan serial anime terpopuler.
+
+8. **`ShortMax`**  
+   Ekstensi pemutar konten video drama pendek dari platform ShortMax.
+
+9. **`xr3edFlix`**  
+   Ekstensi premium untuk menyaksikan berbagai film dan serial box office secara gratis.
+
+10. **`xr3edTV`**  
+    Ekstensi saluran siaran langsung televisi (Live TV) nasional maupun mancanegara.
 
 ---
 
@@ -54,7 +75,15 @@ Jalur langsung ke GitHub. Gunakan jalur ini hanya jika koneksi Anda ke CDN terha
 3. Masuk ke menu **Settings** > **Extensions**.
 4. Ketuk tombol **Add Repository** di pojok kanan bawah.
 5. Tempel tautan repositori yang sudah disalin, beri nama (misal: `xr3ed Repo`), lalu ketuk **Add**.
-6. Cari ekstensi yang Anda butuhkan (seperti **Xr3edEvent**, **RBTVPlus**, atau **#Dracin Melolo**) pada daftar repositori baru tersebut, lalu ketuk **Install**.
+6. Cari ekstensi yang Anda butuhkan (seperti **RBTVPlus** atau **M3UPlaylistPlayer**) pada daftar repositori baru tersebut, lalu ketuk **Install**.
+
+---
+
+## 🔒 Keamanan & Arsitektur Dinamis
+
+Repositori ini menggunakan sistem perlindungan tingkat lanjut untuk mengamankan data dan menghindari pemblokiran:
+- **Zero Exposed URLs**: Tidak ada satupun domain, Gist ID, atau endpoint API streaming yang di-hardcode di dalam kode sumber repositori ini. Semua URL rahasia disuntikkan secara dinamis saat proses kompilasi via GitHub Secrets & `BuildConfig`.
+- **Dynamic Redirection**: Ekstensi `RBTVPlus` mendeteksi perubahan domain aktif dan host API secara otomatis secara runtime melalui navigasi aman dan intercept lalu lintas data jaringan browser (Playwright pada GitHub Actions Scraper, dan OKHttp client pada Android device).
 
 ---
 
@@ -66,8 +95,14 @@ Jika Anda ingin memodifikasi atau mengompilasi ekstensi ini secara lokal:
    ```bash
    git clone https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream.git
    ```
-2. Jalankan kompilasi menggunakan Gradle wrapper:
+2. Buat berkas `local.properties` di root direktori untuk menyuntikkan secrets lokal:
+   ```properties
+   RBTV_MAIN_URL=https://...
+   RBTV_API_HOST=https://...
+   RBTV_GIST_URL=https://...
+   ```
+3. Jalankan kompilasi menggunakan Gradle wrapper:
    ```bash
    ./gradlew make
    ```
-3. File ekstensi `.cs3` yang siap pasang akan dibuat di dalam direktori `build/` masing-masing sub-project.
+4. File ekstensi `.cs3` yang siap pasang akan dibuat di dalam direktori `build/` masing-masing sub-project.

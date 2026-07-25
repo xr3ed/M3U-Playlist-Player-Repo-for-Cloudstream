@@ -27,7 +27,11 @@ jobs:
       - name: Scrape live matches dan update Gist
         env:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-          GIST_ID: bea11b35c556c7acc73fcd2ef3014c7d
+          GIST_ID: ${{ secrets.GIST_ID }}
           RBTV_SITE_URL: ${{ secrets.RBTV_SITE_URL }}
           RBTV_FALLBACK_URL: ${{ secrets.RBTV_FALLBACK_URL }}
+          RBTV_API_HOST: ${{ secrets.RBTV_API_HOST }}
+          RBTV_PATH_BS: ${{ secrets.RBTV_PATH_BS }}
+          RBTV_PATH_LIVE: ${{ secrets.RBTV_PATH_LIVE }}
+          RBTV_USER_AGENT: ${{ secrets.RBTV_USER_AGENT }}
         run: python .github/scripts/update_live_matches.py

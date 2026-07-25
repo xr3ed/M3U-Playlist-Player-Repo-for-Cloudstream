@@ -1,5 +1,12 @@
-version = 49
+import java.util.Properties
 
+version = 57
+
+val localProps = Properties().also { p ->
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { p.load(it) }
+}
+fun secret(key: String): String = System.getenv(key) ?: localProps.getProperty(key) ?: ""
 
 android {
     namespace = "com.lagradost.RBTVPlus"
@@ -8,10 +15,16 @@ android {
     }
     defaultConfig {
         // Secrets RBTV+ — tidak terekspos di source code, diisi via GitHub Secrets
-        buildConfigField("String", "RBTV_MAIN_URL", "\"${System.getenv("RBTV_MAIN_URL") ?: ""}\"")
-        buildConfigField("String", "RBTV_API_HOST", "\"${System.getenv("RBTV_API_HOST") ?: ""}\"")
-        buildConfigField("String", "RBTV_AES_KEY", "\"${System.getenv("RBTV_AES_KEY") ?: "a7981cc9eb2f4d19dcfea57b101ecd89"}\"")
-        buildConfigField("String", "RBTV_AES_IV", "\"${System.getenv("RBTV_AES_IV") ?: "8017d3a8f1400d2f"}\"")
+        buildConfigField("String", "RBTV_MAIN_URL", "\"${secret("RBTV_MAIN_URL")}\"")
+        buildConfigField("String", "RBTV_API_HOST", "\"${secret("RBTV_API_HOST")}\"")
+        buildConfigField("String", "RBTV_GIST_URL", "\"${secret("RBTV_GIST_URL")}\"")
+        buildConfigField("String", "RBTV_PATH_BS", "\"${secret("RBTV_PATH_BS")}\"")
+        buildConfigField("String", "RBTV_PATH_LIVE", "\"${secret("RBTV_PATH_LIVE")}\"")
+        buildConfigField("String", "RBTV_PATH_DETAIL", "\"${secret("RBTV_PATH_DETAIL")}\"")
+        buildConfigField("String", "RBTV_PATH_STREAM_DETAIL", "\"${secret("RBTV_PATH_STREAM_DETAIL")}\"")
+        buildConfigField("String", "RBTV_USER_AGENT", "\"${secret("RBTV_USER_AGENT")}\"")
+        buildConfigField("String", "RBTV_AES_KEY", "\"${secret("RBTV_AES_KEY")}\"")
+        buildConfigField("String", "RBTV_AES_IV", "\"${secret("RBTV_AES_IV")}\"")
     }
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")

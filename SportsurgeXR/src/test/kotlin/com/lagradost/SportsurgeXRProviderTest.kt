@@ -10,20 +10,19 @@ import com.lagradost.cloudstream3.MainPageRequest
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [32])
-class RBTVPlusProviderTest {
+class SportsurgeXRProviderTest {
 
     @Test
     fun testGetMainPage() = runBlocking {
-        val provider = RBTVPlusProvider()
+        val provider = SportsurgeXRProvider()
         val result = provider.getMainPage(1, MainPageRequest("Live Event", "Live Event", true))
         assertNotNull(result)
-        println("Main page search results count: ${result?.items?.size}")
+        println("SportsurgeXR main page results count: ${result?.items?.size}")
     }
 
     @Test
     fun testLoadAndLoadLinks() = runBlocking {
-        val provider = RBTVPlusProvider()
-        // Let's get the main page first to find a real match
+        val provider = SportsurgeXRProvider()
         val mainPage = provider.getMainPage(1, MainPageRequest("Live Event", "Live Event", true))
         assertNotNull(mainPage)
         var detailUrl: String? = null
@@ -42,7 +41,6 @@ class RBTVPlusProviderTest {
             val loadResult = provider.load(detailUrl)
             assertNotNull(loadResult)
             
-            // Now load links
             val links = mutableListOf<String>()
             val success = provider.loadLinks((loadResult as com.lagradost.cloudstream3.LiveStreamLoadResponse).dataUrl, false, {}, { link ->
                 println("Extracted link: ${link.url}")

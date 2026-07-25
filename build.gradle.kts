@@ -112,15 +112,21 @@ subprojects {
             // RBTV+ secrets — disembunyikan agar tidak bisa dicari di GitHub
             buildConfigField("String", "RBTV_MAIN_URL", "\"${getSecret("RBTV_MAIN_URL")}\"")
             buildConfigField("String", "RBTV_API_HOST", "\"${getSecret("RBTV_API_HOST")}\"")
-            buildConfigField("String", "RBTV_AES_KEY", "\"${getSecret("RBTV_AES_KEY", "a7981cc9eb2f4d19dcfea57b101ecd89")}\"")
-            buildConfigField("String", "RBTV_AES_IV", "\"${getSecret("RBTV_AES_IV", "8017d3a8f1400d2f")}\"")
+            buildConfigField("String", "RBTV_GIST_URL", "\"${getSecret("RBTV_GIST_URL")}\"")
+            buildConfigField("String", "RBTV_PATH_BS", "\"${getSecret("RBTV_PATH_BS")}\"")
+            buildConfigField("String", "RBTV_PATH_LIVE", "\"${getSecret("RBTV_PATH_LIVE")}\"")
+            buildConfigField("String", "RBTV_PATH_DETAIL", "\"${getSecret("RBTV_PATH_DETAIL")}\"")
+            buildConfigField("String", "RBTV_PATH_STREAM_DETAIL", "\"${getSecret("RBTV_PATH_STREAM_DETAIL")}\"")
+            buildConfigField("String", "RBTV_USER_AGENT", "\"${getSecret("RBTV_USER_AGENT")}\"")
+            buildConfigField("String", "RBTV_AES_KEY", "\"${getSecret("RBTV_AES_KEY")}\"")
+            buildConfigField("String", "RBTV_AES_IV", "\"${getSecret("RBTV_AES_IV")}\"")
             // Xr3edEvent secrets — disembunyikan agar tidak bisa dicari di GitHub
             buildConfigField("String", "XR3EV_MAIN_URL", "\"${getSecret("XR3EV_MAIN_URL")}\"")
             buildConfigField("String", "XR3EV_API_URL", "\"${getSecret("XR3EV_API_URL")}\"")
             buildConfigField("String", "XR3EV_PLAYER_URL", "\"${getSecret("XR3EV_PLAYER_URL")}\"")
             buildConfigField("String", "XR3EV_STREAM_URL", "\"${getSecret("XR3EV_STREAM_URL")}\"")
-            buildConfigField("String", "XR3EV_PASSWORD", "\"${getSecret("XR3EV_PASSWORD", "xys1-gh")}\"")
-            buildConfigField("String", "XR3EV_SALT", "\"${getSecret("XR3EV_SALT", "salt123")}\"")
+            buildConfigField("String", "XR3EV_PASSWORD", "\"${getSecret("XR3EV_PASSWORD")}\"")
+            buildConfigField("String", "XR3EV_SALT", "\"${getSecret("XR3EV_SALT")}\"")
             // xr3edXstream secrets — TMDB API key untuk akses listing film/TV
             buildConfigField("String", "XSTREAM_TMDB_API", "\"${getSecret("XSTREAM_TMDB_API")}\"")
         }
