@@ -72,6 +72,8 @@ class ProtoParser(val data: ByteArray) {
 class RBTVPlusProvider : MainAPI() {
     companion object {
         val posterCache = java.util.concurrent.ConcurrentHashMap<String, String>()
+        val logoCache = java.util.concurrent.ConcurrentHashMap<String, android.graphics.Bitmap>()
+        val cleanClient = okhttp3.OkHttpClient()
         
         private var cachedLiveMatches: List<LiveMatchInfo>? = null
         private var lastLiveMatchesFetchTime = 0L
@@ -79,6 +81,25 @@ class RBTVPlusProvider : MainAPI() {
         private const val LIVE_MATCHES_CACHE_TTL = 2 * 60 * 1000L // 2 menit
         private var resolvedMainUrl: String? = null
         private val urlMutex = Mutex()
+
+        private fun downloadBitmap(url: String): android.graphics.Bitmap? {
+            return try {
+                val request = okhttp3.Request.Builder()
+                    .url(url)
+                    .header("User-Agent", BuildConfig.RBTV_USER_AGENT)
+                    .build()
+                cleanClient.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        val bytes = response.body?.bytes()
+                        if (bytes != null) {
+                            android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        } else null
+                    } else null
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
     // Domain dari BuildConfig — diisi via GitHub Secrets (CI) atau local.properties (lokal)
     override var mainUrl = BuildConfig.RBTV_MAIN_URL
@@ -196,9 +217,12 @@ class RBTVPlusProvider : MainAPI() {
         team2: String?,
         timeStr: String,
         sportType: Int,
-        isLive: Boolean
+        isLive: Boolean,
+        logoUrl1: String? = null,
+        logoUrl2: String? = null,
+        preloadedLogos: Map<String, android.graphics.Bitmap?> = emptyMap()
     ): String {
-        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}"
+        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}_${logoUrl1 ?: ""}_${logoUrl2 ?: ""}"
         val cached = posterCache[cacheKey]
         if (cached != null) return cached
         return try {
@@ -307,17 +331,70 @@ class RBTVPlusProvider : MainAPI() {
             paint.strokeWidth = 1.5f
             canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
 
+            var team1TextLeft = 65f
+            if (!logoUrl1.isNullOrEmpty()) {
+                val logoBmp = preloadedLogos[logoUrl1] ?: logoCache[logoUrl1]
+                if (logoBmp != null) {
+                    logoCache[logoUrl1] = logoBmp
+                    val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
+                    val path = android.graphics.Path().apply {
+                        addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
+                    }
+                    canvas.save()
+                    canvas.clipPath(path)
+                    canvas.drawBitmap(logoBmp, null, destRect, paint)
+                    canvas.restore()
+                    team1TextLeft = 155f
+                } else {
+                    val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
+                    paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                    paint.style = android.graphics.Paint.Style.FILL
+                    canvas.drawRoundRect(destRect, 12f, 12f, paint)
+                    
+                    paint.color = android.graphics.Color.WHITE
+                    paint.textSize = 32f
+                    paint.textAlign = android.graphics.Paint.Align.CENTER
+                    paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                    val letter = team1?.firstOrNull()?.toString()?.uppercase() ?: "A"
+                    canvas.drawText(letter, 100f, 245f, paint)
+                    team1TextLeft = 155f
+                }
+            } else {
+                val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
+                paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawRoundRect(destRect, 12f, 12f, paint)
+                
+                paint.color = android.graphics.Color.WHITE
+                paint.textSize = 32f
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                val letter = team1?.firstOrNull()?.toString()?.uppercase() ?: "A"
+                canvas.drawText(letter, 100f, 245f, paint)
+                team1TextLeft = 155f
+            }
+
             // Teks Team 1
             paint.color = android.graphics.Color.WHITE
             paint.style = android.graphics.Paint.Style.FILL
             paint.textSize = 36f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t1 = team1 ?: "Team A"
-            val t1Lines = wrapText(t1, 14)
-            var currentY = if (t1Lines.size > 1) 225f else 245f
-            for (line in t1Lines) {
-                canvas.drawText(line, 200f, currentY, paint)
-                currentY += 42f
+            val t1Lines = wrapText(t1, 11)
+            if (team1TextLeft == 65f) {
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+                var currentY = if (t1Lines.size > 1) 225f else 245f
+                for (line in t1Lines) {
+                    canvas.drawText(line, 200f, currentY, paint)
+                    currentY += 42f
+                }
+            } else {
+                paint.textAlign = android.graphics.Paint.Align.LEFT
+                var currentY = if (t1Lines.size > 1) 225f else 245f
+                for (line in t1Lines) {
+                    canvas.drawText(line, team1TextLeft, currentY, paint)
+                    currentY += 42f
+                }
             }
 
             // 8. Draw Glow Divider & VS Text
@@ -331,6 +408,7 @@ class RBTVPlusProvider : MainAPI() {
             // Teks VS
             paint.color = android.graphics.Color.parseColor(accentColor)
             paint.textSize = 34f
+            paint.textAlign = android.graphics.Paint.Align.CENTER
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD_ITALIC)
             canvas.drawText("VS", 200f, 326f, paint)
 
@@ -345,17 +423,70 @@ class RBTVPlusProvider : MainAPI() {
             paint.strokeWidth = 1.5f
             canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
 
+            var team2TextLeft = 65f
+            if (!logoUrl2.isNullOrEmpty()) {
+                val logoBmp = preloadedLogos[logoUrl2] ?: logoCache[logoUrl2]
+                if (logoBmp != null) {
+                    logoCache[logoUrl2] = logoBmp
+                    val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
+                    val path = android.graphics.Path().apply {
+                        addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
+                    }
+                    canvas.save()
+                    canvas.clipPath(path)
+                    canvas.drawBitmap(logoBmp, null, destRect, paint)
+                    canvas.restore()
+                    team2TextLeft = 155f
+                } else {
+                    val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
+                    paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                    paint.style = android.graphics.Paint.Style.FILL
+                    canvas.drawRoundRect(destRect, 12f, 12f, paint)
+                    
+                    paint.color = android.graphics.Color.WHITE
+                    paint.textSize = 32f
+                    paint.textAlign = android.graphics.Paint.Align.CENTER
+                    paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                    val letter = team2?.firstOrNull()?.toString()?.uppercase() ?: "B"
+                    canvas.drawText(letter, 100f, 405f, paint)
+                    team2TextLeft = 155f
+                }
+            } else {
+                val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
+                paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawRoundRect(destRect, 12f, 12f, paint)
+                
+                paint.color = android.graphics.Color.WHITE
+                paint.textSize = 32f
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                val letter = team2?.firstOrNull()?.toString()?.uppercase() ?: "B"
+                canvas.drawText(letter, 100f, 405f, paint)
+                team2TextLeft = 155f
+            }
+
             // Teks Team 2
             paint.color = android.graphics.Color.WHITE
             paint.style = android.graphics.Paint.Style.FILL
             paint.textSize = 36f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t2 = team2 ?: "Team B"
-            val t2Lines = wrapText(t2, 14)
-            currentY = if (t2Lines.size > 1) 385f else 405f
-            for (line in t2Lines) {
-                canvas.drawText(line, 200f, currentY, paint)
-                currentY += 42f
+            val t2Lines = wrapText(t2, 11)
+            if (team2TextLeft == 65f) {
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+                var currentY = if (t2Lines.size > 1) 385f else 405f
+                for (line in t2Lines) {
+                    canvas.drawText(line, 200f, currentY, paint)
+                    currentY += 42f
+                }
+            } else {
+                paint.textAlign = android.graphics.Paint.Align.LEFT
+                var currentY = if (t2Lines.size > 1) 385f else 405f
+                for (line in t2Lines) {
+                    canvas.drawText(line, team2TextLeft, currentY, paint)
+                    currentY += 42f
+                }
             }
 
             // 10. Draw Status Badge (LIVE NOW / UPCOMING)
@@ -614,8 +745,32 @@ class RBTVPlusProvider : MainAPI() {
         return logo
     }
 
-    private fun parseLiveMatches(data: ByteArray, sportType: Int): List<LiveMatchInfo> {
+    private data class ParsedMatchRaw(
+        val matchId: Long,
+        val finalStreamId: String,
+        val finalTitle: String,
+        val homeName: String?,
+        val awayName: String?,
+        val leagueName: String?,
+        val matchSportType: Int,
+        val matchTime: Long,
+        val matchStatus: Long,
+        val logoUrl1: String?,
+        val logoUrl2: String?
+    )
+
+    private fun getFullLogoUrl(logo: String, apiHost: String): String {
+        return when {
+            logo.startsWith("http") -> logo
+            logo.startsWith("//") -> "https:$logo"
+            logo.startsWith("/") -> "https://www.rbtvplus.com$logo"
+            else -> "https://www.rbtvplus.com/$logo"
+        }
+    }
+
+    private suspend fun parseLiveMatches(data: ByteArray, sportType: Int, apiHost: String): List<LiveMatchInfo> {
         val parser = ProtoParser(data)
+        val rawItems = ArrayList<ParsedMatchRaw>()
         val matches = ArrayList<LiveMatchInfo>()
 
         while (parser.idx < data.size) {
@@ -730,37 +885,22 @@ class RBTVPlusProvider : MainAPI() {
                                     "$base ($timeStrShort WIB)"
                                 }
 
-                                // Generate dynamic SVG poster untuk match
-                                val sportName = sportNames[matchSportType] ?: "Olahraga"
-                                val timeSdf = java.text.SimpleDateFormat("dd MMM, HH:mm 'WIB'", java.util.Locale("id", "ID"))
-                                timeSdf.timeZone = java.util.TimeZone.getTimeZone("GMT+7")
-                                val timeStr = timeSdf.format(java.util.Date(matchTime))
-                                
-                                val now = System.currentTimeMillis() + serverTimeOffset
-                                val isLive = (matchStatus in ongoingStatuses) || (now >= matchTime && matchStatus < 10000L)
-                                
-                                val finalPosterUrl = generateDynamicJpegPoster(
-                                    sport = sportName,
-                                    league = leagueName,
-                                    team1 = homeName,
-                                    team2 = awayName,
-                                    timeStr = timeStr,
-                                    sportType = matchSportType,
-                                    isLive = isLive
-                                )
+                                val rawLogo1 = teamLogos.getOrNull(0)?.let { getFullLogoUrl(it, apiHost) }
+                                val rawLogo2 = teamLogos.getOrNull(1)?.let { getFullLogoUrl(it, apiHost) }
 
-                                matches.add(
-                                    LiveMatchInfo(
+                                rawItems.add(
+                                    ParsedMatchRaw(
                                         matchId = matchId,
-                                        streamId = finalStreamId,
-                                        matchTitle = finalTitle,
+                                        finalStreamId = finalStreamId,
+                                        finalTitle = finalTitle,
                                         homeName = homeName,
                                         awayName = awayName,
                                         leagueName = leagueName,
-                                        sportType = matchSportType,
-                                        posterUrl = finalPosterUrl,
+                                        matchSportType = matchSportType,
                                         matchTime = matchTime,
-                                        matchStatus = matchStatus
+                                        matchStatus = matchStatus,
+                                        logoUrl1 = rawLogo1,
+                                        logoUrl2 = rawLogo2
                                     )
                                 )
                             }
@@ -774,6 +914,55 @@ class RBTVPlusProvider : MainAPI() {
                 parser.skipField(wire)
             }
         }
+
+        // Unduh semua logo unik secara paralel terlebih dahulu di Dispatchers.IO
+        val logoUrls = rawItems.flatMap { listOf(it.logoUrl1, it.logoUrl2) }.filterNotNull().filter { it.isNotEmpty() }.distinct()
+        val logoBitmaps = coroutineScope {
+            logoUrls.map { url ->
+                async(kotlinx.coroutines.Dispatchers.IO) {
+                    url to downloadBitmap(url)
+                }
+            }.awaitAll().toMap()
+        }
+
+        for (item in rawItems) {
+            val sportName = sportNames[item.matchSportType] ?: "Olahraga"
+            val timeSdf = java.text.SimpleDateFormat("dd MMM, HH:mm 'WIB'", java.util.Locale("id", "ID"))
+            timeSdf.timeZone = java.util.TimeZone.getTimeZone("GMT+7")
+            val timeStr = timeSdf.format(java.util.Date(item.matchTime))
+            
+            val now = System.currentTimeMillis() + serverTimeOffset
+            val isLive = (item.matchStatus in ongoingStatuses) || (now >= item.matchTime && item.matchStatus < 10000L)
+            
+            val finalPosterUrl = generateDynamicJpegPoster(
+                sport = sportName,
+                league = item.leagueName,
+                team1 = item.homeName,
+                team2 = item.awayName,
+                timeStr = timeStr,
+                sportType = item.matchSportType,
+                isLive = isLive,
+                logoUrl1 = item.logoUrl1,
+                logoUrl2 = item.logoUrl2,
+                preloadedLogos = logoBitmaps
+            )
+
+            matches.add(
+                LiveMatchInfo(
+                    matchId = item.matchId,
+                    streamId = item.finalStreamId,
+                    matchTitle = item.finalTitle,
+                    homeName = item.homeName,
+                    awayName = item.awayName,
+                    leagueName = item.leagueName,
+                    sportType = item.matchSportType,
+                    posterUrl = finalPosterUrl,
+                    matchTime = item.matchTime,
+                    matchStatus = item.matchStatus
+                )
+            )
+        }
+
         return matches
     }
 
@@ -794,7 +983,7 @@ class RBTVPlusProvider : MainAPI() {
                     async {
                         try {
                             val bytes = fetchLiveMatchesRaw(apiHost, sportType)
-                            if (bytes != null) parseLiveMatches(bytes, sportType) else emptyList()
+                            if (bytes != null) parseLiveMatches(bytes, sportType, apiHost) else emptyList()
                         } catch (e: Exception) {
                             emptyList()
                         }
@@ -809,11 +998,6 @@ class RBTVPlusProvider : MainAPI() {
         }
     }
 
-    /**
-     * Ambil daftar matchId yang sedang live dari GitHub Gist.
-     * Gist diupdate setiap 5 menit oleh GitHub Actions.
-     * Return null jika gagal (akan fallback ke heuristik waktu).
-     */
     private suspend fun fetchGistLiveMatchIds(): Set<Long>? {
         return try {
             val gistUrl = BuildConfig.RBTV_GIST_URL + "?t=${System.currentTimeMillis()}"
@@ -1213,19 +1397,19 @@ class RBTVPlusProvider : MainAPI() {
                                             }
 
                                             callback.invoke(
-                                                newExtractorLink(
-                                                    name = sourceName,
+                                                ExtractorLink(
                                                     source = "RBTV+",
+                                                    name = sourceName,
                                                     url = finalUrl,
-                                                    type = linkType
-                                                ) {
-                                                    this.quality = qualityVal
-                                                    this.headers = mapOf(
+                                                    referer = "https://lola30es.mpipzni2naturally32kistomach.ru/",
+                                                    quality = qualityVal,
+                                                    type = linkType,
+                                                    headers = mapOf(
                                                         "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
                                                         "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
-                                                         "User-Agent" to BuildConfig.RBTV_USER_AGENT
-                                                     )
-                                                }
+                                                        "User-Agent" to BuildConfig.RBTV_USER_AGENT
+                                                    )
+                                                )
                                             )
                                         }
                                     }
