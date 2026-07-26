@@ -3,6 +3,6 @@
   "displayName": "SportsurgeXR",
   "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari SportsurgeXR",
   "author": "xr3ed",
-  "version": 1,
+  "version": 2,
   "tvTypes": ["Live"]
 }
