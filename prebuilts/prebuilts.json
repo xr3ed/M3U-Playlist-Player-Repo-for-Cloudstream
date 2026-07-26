@@ -1,9 +1,9 @@
 [
   {
-    "name": "[PREMIUM] filmboxoffice.web.id",
+    "name": "FilmBoxOffice",
     "internalName": "FilmBoxOffice",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/FilmBoxOffice.cs3",
-    "version": 10,
+    "version": 11,
     "description": "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
     "authors": [
       "xr3ed"
