@@ -47,5 +47,5 @@ __pycache__/
 # Node modules
 node_modules/
 
-# Ignore FilmBoxOffice source code folder locally to prevent pushing to GitHub
-FilmBoxOffice/
+# Ignore FilmBoxOffice source code
+/FilmBoxOffice/
