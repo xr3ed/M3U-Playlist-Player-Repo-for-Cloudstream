@@ -1,3 +1,12 @@
-[]
-
-
+[
+  {
+    "name": "[PREMIUM] filmboxoffice.web.id",
+    "internalName": "FilmBoxOffice",
+    "version": 2,
+    "description": "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
+    "author": "xr3ed",
+    "tvTypes": [
+      "Movie"
+    ]
+  }
+]

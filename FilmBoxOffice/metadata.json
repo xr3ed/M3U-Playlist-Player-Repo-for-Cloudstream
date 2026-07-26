@@ -1,8 +1,0 @@
-{
-  "pluginClassName": "com.sad25kag.filmboxoffice.FilmBoxOfficePlugin",
-  "displayName": "FilmBoxOffice",
-  "description": "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
-  "author": "sad25kag, XR3ED",
-  "version": 1,
-  "tvTypes": ["Movie"]
-}

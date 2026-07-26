@@ -129,6 +129,9 @@ subprojects {
             buildConfigField("String", "XR3EV_SALT", "\"${getSecret("XR3EV_SALT")}\"")
             // xr3edXstream secrets — TMDB API key untuk akses listing film/TV
             buildConfigField("String", "XSTREAM_TMDB_API", "\"${getSecret("XSTREAM_TMDB_API")}\"")
+            // FilmBoxOffice secrets — disembunyikan agar tidak bisa dicari di GitHub
+            buildConfigField("String", "FBOX_OAUTH_CLIENT_ID", "\"${getSecret("FBOX_OAUTH_CLIENT_ID")}\"")
+            buildConfigField("String", "FBOX_OAUTH_CLIENT_SECRET", "\"${getSecret("FBOX_OAUTH_CLIENT_SECRET")}\"")
         }
 
         testOptions {
