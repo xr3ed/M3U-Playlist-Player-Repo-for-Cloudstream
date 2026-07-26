@@ -175,13 +175,26 @@ class SportsurgeXRProvider : MainAPI() {
         val lines = ArrayList<String>()
         var currentLine = ""
         for (word in words) {
-            if (currentLine.isEmpty()) {
-                currentLine = word
-            } else if (currentLine.length + 1 + word.length <= maxChars) {
-                currentLine += " $word"
+            if (word.length > maxChars) {
+                if (currentLine.isNotEmpty()) {
+                    lines.add(currentLine)
+                    currentLine = ""
+                }
+                var tempWord = word
+                while (tempWord.length > maxChars) {
+                    lines.add(tempWord.substring(0, maxChars))
+                    tempWord = tempWord.substring(maxChars)
+                }
+                currentLine = tempWord
             } else {
-                lines.add(currentLine)
-                currentLine = word
+                if (currentLine.isEmpty()) {
+                    currentLine = word
+                } else if (currentLine.length + 1 + word.length <= maxChars) {
+                    currentLine += " $word"
+                } else {
+                    lines.add(currentLine)
+                    currentLine = word
+                }
             }
         }
         if (currentLine.isNotEmpty()) {
