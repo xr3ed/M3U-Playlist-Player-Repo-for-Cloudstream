@@ -70,6 +70,25 @@ class FilmBoxOfficeProvider(val plugin: Plugin) : MainAPI() {
         val list = ArrayList<SearchResponse>()
         val activity = getResumedActivity()
 
+        // Trigger startup dialog only when entering the provider main page
+        if (activity != null) {
+            val isLoggedIn = activity.getKey<Boolean>("FBOX_IS_LOGGED_IN") ?: false
+            if (!isLoggedIn && !isIgnored) {
+                LoginDialogHelper.showMainDialog(
+                    activity,
+                    onLoginClick = {
+                        LoginDialogHelper.showGoogleLoginWebView(activity) {
+                            activity.setKey("FBOX_IS_LOGGED_IN", true)
+                            isIgnored = false
+                        }
+                    },
+                    onIgnoreClick = {
+                        isIgnored = true
+                    }
+                )
+            }
+        }
+
         if (request.data == "premium_status") {
             val isLoggedIn = activity?.getKey<Boolean>("FBOX_IS_LOGGED_IN") ?: false
             if (isLoggedIn) {
@@ -192,7 +211,7 @@ class FilmBoxOfficeProvider(val plugin: Plugin) : MainAPI() {
                     )
                 }
             }
-            return newMovieLoadResponse("Status Premium", url, TvType.Movie, "")
+            return null
         }
 
         val doc = app.get(url).document
@@ -278,8 +297,19 @@ class FilmBoxOfficeProvider(val plugin: Plugin) : MainAPI() {
 
             val downloadUrl = "https://drive.google.com/uc?export=download&id=$fileId"
             
-            // Check large file confirmation screen
+            // Check large file confirmation screen & check premium authorization status
             val res = app.get(downloadUrl, headers = headers)
+            if (res.code == 403 || res.code == 404) {
+                activity?.runOnUiThread {
+                    Toast.makeText(
+                        activity, 
+                        "Akses Ditolak: Akun Anda belum disetujui sebagai Premium oleh Admin. Hubungi WA!", 
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                return false
+            }
+
             val confirmToken = Regex("confirm=([a-zA-Z0-9_-]+)").find(res.text)?.groupValues?.get(1)
 
             val finalUrl = if (confirmToken != null) {
