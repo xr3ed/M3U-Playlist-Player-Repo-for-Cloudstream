@@ -488,6 +488,7 @@ class RBTVPlusProvider : MainAPI() {
                     currentY += 42f
                 }
             }
+            paint.textAlign = android.graphics.Paint.Align.CENTER
 
             // 10. Draw Status Badge (LIVE NOW / UPCOMING)
             val badgeColor = if (isLive) "#ff3333" else "#1a73e8"
