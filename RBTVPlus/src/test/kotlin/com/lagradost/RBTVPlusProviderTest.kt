@@ -23,36 +23,43 @@ class RBTVPlusProviderTest {
     @Test
     fun testLoadAndLoadLinks() = runBlocking {
         val provider = RBTVPlusProvider()
-        // Let's get the main page first to find a real match
         val mainPage = provider.getMainPage(1, MainPageRequest("Live Event", "Live Event", true))
         assertNotNull(mainPage)
-        var detailUrl: String? = null
+        val detailUrls = mutableListOf<String>()
         for (category in mainPage!!.items) {
             for (match in category.list) {
                 if (match.url.contains("detail.html")) {
-                    detailUrl = match.url
-                    break
+                    detailUrls.add(match.url)
                 }
             }
-            if (detailUrl != null) break
         }
 
-        if (detailUrl != null) {
-            println("Found match URL: $detailUrl")
-            val loadResult = provider.load(detailUrl)
-            assertNotNull(loadResult)
-            
-            // Now load links
-            val links = mutableListOf<String>()
-            val success = provider.loadLinks((loadResult as com.lagradost.cloudstream3.LiveStreamLoadResponse).dataUrl, false, {}, { link ->
-                println("Extracted link: ${link.url}")
-                links.add(link.url)
-            })
-            println("Load links status: $success")
-            assertTrue("Should succeed loading links", success)
-            assertTrue("Should have loaded at least one link", links.isNotEmpty())
+        var anyMatchSucceeded = false
+        for (detailUrl in detailUrls) {
+            println("Trying match URL: $detailUrl")
+            try {
+                val loadResult = provider.load(detailUrl)
+                if (loadResult is com.lagradost.cloudstream3.LiveStreamLoadResponse) {
+                    val links = mutableListOf<String>()
+                    val success = provider.loadLinks(loadResult.dataUrl, false, {}, { link ->
+                        println("Extracted link: ${link.url}")
+                        links.add(link.url)
+                    })
+                    if (success && links.isNotEmpty()) {
+                        anyMatchSucceeded = true
+                        println("Successfully verified link extraction for match: $detailUrl")
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        if (detailUrls.isNotEmpty()) {
+            assertTrue("Should have loaded at least one link from any of the available matches", anyMatchSucceeded)
         } else {
-            println("No live matches found to test link extraction")
+            println("No matches found to test link extraction")
         }
     }
 }

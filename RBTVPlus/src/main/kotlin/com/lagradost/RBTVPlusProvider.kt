@@ -220,9 +220,10 @@ class RBTVPlusProvider : MainAPI() {
         isLive: Boolean,
         logoUrl1: String? = null,
         logoUrl2: String? = null,
-        preloadedLogos: Map<String, android.graphics.Bitmap?> = emptyMap()
+        preloadedLogos: Map<String, android.graphics.Bitmap?> = emptyMap(),
+        isIndonesia: Boolean = false
     ): String {
-        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}_${logoUrl1 ?: ""}_${logoUrl2 ?: ""}"
+        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}_${logoUrl1 ?: ""}_${logoUrl2 ?: ""}_$isIndonesia"
         val cached = posterCache[cacheKey]
         if (cached != null) return cached
         return try {
@@ -233,13 +234,17 @@ class RBTVPlusProvider : MainAPI() {
             val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
 
             // Tema warna dinamis berdasarkan sportType
-            val (baseColor, accentColor) = when (sportType) {
-                1 -> Pair("#041c0e", "#00ff87") // Football (Dark Green -> Neon Green)
-                2 -> Pair("#241105", "#ff5e00") // Basketball (Dark Orange -> Neon Orange)
-                3, 12 -> Pair("#1a2007", "#ccff00") // Tennis / Badminton (Dark Lime -> Neon Lime)
-                14 -> Pair("#260d0d", "#ff3333") // Fighting (Dark Crimson -> Neon Red)
-                7, 15 -> Pair("#0d1e26", "#00d2ff") // Motorsport / Cycling (Dark Blue -> Neon Blue)
-                else -> Pair("#16082c", "#00f2fe") // Default (Dark Purple -> Neon Cyan)
+            val (baseColor, accentColor) = if (isIndonesia) {
+                Pair("#560202", "#ffffff") // Merah Gelap & Putih
+            } else {
+                when (sportType) {
+                    1 -> Pair("#041c0e", "#00ff87") // Football (Dark Green -> Neon Green)
+                    2 -> Pair("#241105", "#ff5e00") // Basketball (Dark Orange -> Neon Orange)
+                    3, 12 -> Pair("#1a2007", "#ccff00") // Tennis / Badminton (Dark Lime -> Neon Lime)
+                    14 -> Pair("#260d0d", "#ff3333") // Fighting (Dark Crimson -> Neon Red)
+                    7, 15 -> Pair("#0d1e26", "#00d2ff") // Motorsport / Cycling (Dark Blue -> Neon Blue)
+                    else -> Pair("#16082c", "#00f2fe") // Default (Dark Purple -> Neon Cyan)
+                }
             }
 
             // 1. Draw Background Gradient (LinearGradient dari hitam pekat ke warna dasar tema gelap)
@@ -285,6 +290,40 @@ class RBTVPlusProvider : MainAPI() {
             paint.strokeWidth = 3f
             canvas.drawRoundRect(25f, 40f, 375f, 560f, 24f, 24f, paint)
             paint.shader = null // Reset shader
+
+            if (isIndonesia) {
+                val cardRect = android.graphics.RectF(25f, 40f, 375f, 560f)
+                val cardPath = android.graphics.Path().apply {
+                    addRoundRect(cardRect, 24f, 24f, android.graphics.Path.Direction.CW)
+                }
+                canvas.save()
+                canvas.clipPath(cardPath)
+
+                // Ribbon Merah (paling ujung)
+                val redPath = android.graphics.Path().apply {
+                    moveTo(335f, 40f)
+                    lineTo(375f, 40f)
+                    lineTo(375f, 80f)
+                    close()
+                }
+                paint.color = android.graphics.Color.parseColor("#ff0000")
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawPath(redPath, paint)
+
+                // Ribbon Putih (sejajar di bawah merah)
+                val whitePath = android.graphics.Path().apply {
+                    moveTo(295f, 40f)
+                    lineTo(335f, 40f)
+                    lineTo(375f, 80f)
+                    lineTo(375f, 120f)
+                    close()
+                }
+                paint.color = android.graphics.Color.WHITE
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawPath(whitePath, paint)
+
+                canvas.restore()
+            }
 
             // 4. Draw HUD Corners (Ornamen siku antarmuka)
             paint.color = android.graphics.Color.parseColor(accentColor)
@@ -757,7 +796,8 @@ class RBTVPlusProvider : MainAPI() {
         val matchTime: Long,
         val matchStatus: Long,
         val logoUrl1: String?,
-        val logoUrl2: String?
+        val logoUrl2: String?,
+        val isIndonesia: Boolean
     )
 
     private fun getFullLogoUrl(logo: String, apiHost: String): String {
@@ -767,6 +807,15 @@ class RBTVPlusProvider : MainAPI() {
             logo.startsWith("/") -> "https://www.rbtvplus.com$logo"
             else -> "https://www.rbtvplus.com/$logo"
         }
+    }
+
+    private fun isIndonesiaMatch(title: String?, league: String?, team1: String?, team2: String?): Boolean {
+        val keywords = listOf("indonesia", "piala presiden", "piala aff", "aff cup", "persija", "persib", "persebaya", "bali united", "timnas")
+        val t = (title ?: "").lowercase()
+        val l = (league ?: "").lowercase()
+        val t1 = (team1 ?: "").lowercase()
+        val t2 = (team2 ?: "").lowercase()
+        return keywords.any { kw -> t.contains(kw) || l.contains(kw) || t1.contains(kw) || t2.contains(kw) }
     }
 
     private suspend fun parseLiveMatches(data: ByteArray, sportType: Int, apiHost: String): List<LiveMatchInfo> {
@@ -888,6 +937,7 @@ class RBTVPlusProvider : MainAPI() {
 
                                 val rawLogo1 = teamLogos.getOrNull(0)?.let { getFullLogoUrl(it, apiHost) }
                                 val rawLogo2 = teamLogos.getOrNull(1)?.let { getFullLogoUrl(it, apiHost) }
+                                val isIndo = isIndonesiaMatch(finalTitle, leagueName, homeName, awayName)
 
                                 rawItems.add(
                                     ParsedMatchRaw(
@@ -901,7 +951,8 @@ class RBTVPlusProvider : MainAPI() {
                                         matchTime = matchTime,
                                         matchStatus = matchStatus,
                                         logoUrl1 = rawLogo1,
-                                        logoUrl2 = rawLogo2
+                                        logoUrl2 = rawLogo2,
+                                        isIndonesia = isIndo
                                     )
                                 )
                             }
@@ -945,7 +996,8 @@ class RBTVPlusProvider : MainAPI() {
                 isLive = isLive,
                 logoUrl1 = item.logoUrl1,
                 logoUrl2 = item.logoUrl2,
-                preloadedLogos = logoBitmaps
+                preloadedLogos = logoBitmaps,
+                isIndonesia = item.isIndonesia
             )
 
             matches.add(
@@ -1032,6 +1084,12 @@ class RBTVPlusProvider : MainAPI() {
         val liveMatches = allMatches.filter { m ->
             // Sembunyikan yang sudah FINISH / CANCEL / POSTPONE (status >= 10000)
             if (m.matchStatus >= 10000L) return@filter false
+            
+            // Pertandingan Indonesia selalu tampilkan di halaman utama, walaupun masih upcoming
+            if (isIndonesiaMatch(m.matchTitle, m.leagueName, m.homeName, m.awayName)) {
+                return@filter true
+            }
+
             // Tampilkan yang jelas sedang live (matchStatus aktif dari server)
             if (m.matchStatus in ongoingStatuses) return@filter true
             // Untuk status=0: gunakan Gist sebagai acuan utama
@@ -1064,8 +1122,11 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        // Sort matches: Sepak Bola (sportType == 1) first, all other sports after
-        val sortedLiveMatches = liveMatches.sortedWith(compareBy { if (it.sportType == 1) 0 else 1 })
+        // Sort matches: Pertandingan Indonesia paling depan, lalu sepak bola, lalu lainnya
+        val sortedLiveMatches = liveMatches.sortedWith(
+            compareByDescending<LiveMatchInfo> { isIndonesiaMatch(it.matchTitle, it.leagueName, it.homeName, it.awayName) }
+                .thenBy { if (it.sportType == 1) 0 else 1 }
+        )
         addCategory("Live Event", sortedLiveMatches)
 
         // Hapus poster lama yang tidak aktif di cache
