@@ -345,7 +345,7 @@ class SportsurgeXRProvider : MainAPI() {
             paint.textSize = 36f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t1 = team1 ?: "Team A"
-            val t1Lines = wrapText(t1, if (team1TextLeft == 200f) 14 else 10)
+            val t1Lines = wrapText(t1, if (team1TextLeft == 200f) 14 else 8)
             if (team1TextLeft == 200f) {
                 paint.textAlign = android.graphics.Paint.Align.CENTER
                 var currentY = if (t1Lines.size > 1) 225f else 245f
@@ -418,7 +418,7 @@ class SportsurgeXRProvider : MainAPI() {
             paint.textSize = 36f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t2 = team2 ?: "Team B"
-            val t2Lines = wrapText(t2, if (team2TextLeft == 200f) 14 else 10)
+            val t2Lines = wrapText(t2, if (team2TextLeft == 200f) 14 else 8)
             if (team2TextLeft == 200f) {
                 paint.textAlign = android.graphics.Paint.Align.CENTER
                 var currentY = if (t2Lines.size > 1) 385f else 405f

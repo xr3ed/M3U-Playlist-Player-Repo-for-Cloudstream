@@ -432,7 +432,8 @@ class RBTVPlusProvider : MainAPI() {
             paint.textSize = 36f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t1 = team1 ?: "Team A"
-            val t1Lines = wrapText(t1, 11)
+            val t1Limit = if (team1TextLeft == 155f) 8 else 14
+            val t1Lines = wrapText(t1, t1Limit)
             if (team1TextLeft == 65f) {
                 paint.textAlign = android.graphics.Paint.Align.CENTER
                 var currentY = if (t1Lines.size > 1) 225f else 245f
@@ -524,7 +525,8 @@ class RBTVPlusProvider : MainAPI() {
             paint.textSize = 36f
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
             val t2 = team2 ?: "Team B"
-            val t2Lines = wrapText(t2, 11)
+            val t2Limit = if (team2TextLeft == 155f) 8 else 14
+            val t2Lines = wrapText(t2, t2Limit)
             if (team2TextLeft == 65f) {
                 paint.textAlign = android.graphics.Paint.Align.CENTER
                 var currentY = if (t2Lines.size > 1) 385f else 405f
