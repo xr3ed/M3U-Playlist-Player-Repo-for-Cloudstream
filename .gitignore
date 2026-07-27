@@ -48,3 +48,5 @@ __pycache__/
 node_modules/
 # Ignore FilmBoxOffice source code
 /FilmBoxOffice/
+# Ignore MovieBoXR source code
+/MovieBoXR/
