@@ -37,6 +37,7 @@ jobs:
         env:
           # Opsional: Jika user ingin menyuntikkan secrets dari GitHub Repo Secrets
           CLONER_SIGNATURE: ${{ secrets.CLONER_SIGNATURE }}
+          BYPASS_PASSWORD: ${{ secrets.BYPASS_PASSWORD }}
           UPDATE_JSON_URL: ${{ secrets.UPDATE_JSON_URL }}
           FALLBACK_RELEASE_URL: ${{ secrets.FALLBACK_RELEASE_URL }}
           MOVIEBOX_SECRET_KEY_DEFAULT: ${{ secrets.MOVIEBOX_SECRET_KEY_DEFAULT }}
