@@ -67,6 +67,7 @@ subprojects {
 
             // Inject secrets into BuildConfig
             buildConfigField("String", "CLONER_SIGNATURE", "\"${getSecret("CLONER_SIGNATURE", "dummy")}\"")
+            buildConfigField("String", "BYPASS_PASSWORD", "\"${getSecret("BYPASS_PASSWORD")}\"")
             buildConfigField("String", "UPDATE_JSON_URL", "\"${getSecret("UPDATE_JSON_URL", "https://raw.githubusercontent.com/xr3ed/CloudStreamXR/main/update.json")}\"")
             buildConfigField("String", "FALLBACK_RELEASE_URL", "\"${getSecret("FALLBACK_RELEASE_URL", "https://github.com/xr3ed/CloudStreamXR")}\"")
             buildConfigField("String", "MOVIEBOX_SECRET_KEY_DEFAULT", "\"${getSecret("MOVIEBOX_SECRET_KEY_DEFAULT")}\"")

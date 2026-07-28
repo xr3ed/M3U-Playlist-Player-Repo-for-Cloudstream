@@ -10,7 +10,7 @@ import com.lagradost.cloudstream3.utils.DataStore.setKey
 @CloudstreamPlugin
 class xr3edFlixPlugin: Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         registerMainAPI(xr3edFlixProvider())
         registerExtractorAPI(AllinoneDownloader())
         registerExtractorAPI(Ridoo())

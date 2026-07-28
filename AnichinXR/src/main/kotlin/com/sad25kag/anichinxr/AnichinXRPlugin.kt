@@ -8,7 +8,7 @@ import com.lagradost.verifyApp
 @CloudstreamPlugin
 class AnichinXRPlugin: Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         AnichinXR.context = context
         registerMainAPI(AnichinXR())
         registerExtractorAPI(Dailymotion())

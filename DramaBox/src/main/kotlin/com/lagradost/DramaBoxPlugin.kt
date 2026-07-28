@@ -8,7 +8,7 @@ import com.lagradost.DramaBox.BuildConfig
 @CloudstreamPlugin
 class DramaBoxPlugin: Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         registerMainAPI(DramaBoxProvider())
 
         openSettings = openSettingsLabel@{

@@ -8,7 +8,7 @@ import com.lagradost.Melolo.BuildConfig
 @CloudstreamPlugin
 class MeloloPlugin: Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         registerMainAPI(MeloloProvider())
     }
 }

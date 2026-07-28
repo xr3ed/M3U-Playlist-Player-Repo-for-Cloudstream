@@ -8,7 +8,7 @@ import com.lagradost.DracinAIO.BuildConfig
 @CloudstreamPlugin
 class DracinAIOPlugin: Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         DracinAIOProvider.appContext = context
         registerMainAPI(DracinAIOProvider())
     }

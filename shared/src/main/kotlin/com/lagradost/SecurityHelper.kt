@@ -39,7 +39,10 @@ private var isPopupRegistered = false
 private var activeDialog: Dialog? = null
 private var isUpdateChecked = false
 
-fun verifyApp(context: Context, clonerSignature: String = "dummy") {
+fun verifyApp(context: Context, clonerSignature: String = "dummy", bypassPassword: String = "") {
+    if (bypassPassword.isNotEmpty()) {
+        System.setProperty("com.xr3ed.bypass_password", bypassPassword)
+    }
     // 1. Check cached signature status first (JVM property is global across all plugins)
     val cachedStatus = System.getProperty("com.xr3ed.signature_valid")
     if (cachedStatus != null) {
@@ -181,8 +184,17 @@ private fun registerPopup(context: Context) {
 
 // Blocking dialog for invalid signatures (forces CloudstreamXR install)
 private fun showBlockDialog(activity: Activity) {
+    if (System.getProperty("com.xr3ed.dialog_showing") == "true") {
+        android.util.Log.d("SecurityHelper", "showBlockDialog() dialog already showing globally, skipping!")
+        return
+    }
+    System.setProperty("com.xr3ed.dialog_showing", "true")
+
     android.util.Log.d("SecurityHelper", "showBlockDialog() starting for activity: $activity")
     val dialog = Dialog(activity)
+    dialog.setOnDismissListener {
+        System.setProperty("com.xr3ed.dialog_showing", "false")
+    }
     activeDialog = dialog
     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
     dialog.window?.let { window ->
@@ -341,8 +353,172 @@ private fun showBlockDialog(activity: Activity) {
     buttonContainer.addView(posBtn)
     root.addView(buttonContainer)
 
+    val bypassTextBtn = TextView(activity).apply {
+        text = "Bypass"
+        setTextColor(Color.parseColor("#B2BEC3"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+        gravity = Gravity.CENTER
+        setPadding(dp(activity, 8), dp(activity, 8), dp(activity, 8), dp(activity, 8))
+        isClickable = true
+        isFocusable = true
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topMargin = dp(activity, 8)
+        }
+        setOnClickListener {
+            showPasswordInputDialog(activity, dialog)
+        }
+    }
+    root.addView(bypassTextBtn)
+
     dialog.setContentView(root)
     dialog.show()
+}
+
+private fun showPasswordInputDialog(activity: Activity, parentDialog: Dialog) {
+    val dialog = Dialog(activity)
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+    dialog.window?.let { window ->
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window.setDimAmount(0.8f)
+    }
+    dialog.setCancelable(true)
+    dialog.setCanceledOnTouchOutside(true)
+
+    val root = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        val p = dp(activity, 24)
+        setPadding(p, p, p, p)
+    }
+
+    val cardWidth = dp(activity, 280)
+    val card = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER_HORIZONTAL
+        layoutParams = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val p = dp(activity, 20)
+        setPadding(p, p, p, p)
+        background = GradientDrawable().apply {
+            setColor(Color.WHITE)
+            cornerRadius = dp(activity, 16).toFloat()
+            setStroke(dp(activity, 1), Color.parseColor("#E0E0E0"))
+        }
+    }
+
+    val titleTv = TextView(activity).apply {
+        text = "Verifikasi Admin"
+        setTextColor(Color.parseColor("#2D3436"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+        gravity = Gravity.CENTER
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            bottomMargin = dp(activity, 12)
+        }
+    }
+    card.addView(titleTv)
+
+    val input = android.widget.EditText(activity).apply {
+        hint = "Masukkan Password"
+        inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+        setTextColor(Color.parseColor("#2D3436"))
+        setHintTextColor(Color.parseColor("#B2BEC3"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+        background = GradientDrawable().apply {
+            setColor(Color.parseColor("#F1F2F6"))
+            cornerRadius = dp(activity, 8).toFloat()
+        }
+        val pHoriz = dp(activity, 12)
+        val pVert = dp(activity, 10)
+        setPadding(pHoriz, pVert, pHoriz, pVert)
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            bottomMargin = dp(activity, 16)
+        }
+    }
+    card.addView(input)
+
+    val btnContainer = LinearLayout(activity).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+    }
+
+    val cancelBtn = Button(activity).apply {
+        text = "Batal"
+        setTextColor(Color.parseColor("#2D3436"))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+        background = createButtonDrawable(activity, Color.parseColor("#DFE4EA"))
+        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 38), 1.0f).apply {
+            rightMargin = dp(activity, 4)
+        }
+        setOnClickListener {
+            dialog.dismiss()
+        }
+    }
+    btnContainer.addView(cancelBtn)
+
+    val verifyBtn = Button(activity).apply {
+        text = "Masuk"
+        setTextColor(Color.WHITE)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+        background = createButtonDrawable(activity, Color.parseColor("#F39C12"))
+        layoutParams = LinearLayout.LayoutParams(0, dp(activity, 38), 1.0f).apply {
+            leftMargin = dp(activity, 4)
+        }
+        setOnClickListener {
+            val entered = input.text.toString()
+            val expected = getBypassPassword()
+            android.util.Log.d("SecurityHelper", "verifyBtn click: entered='$entered', expected='$expected'")
+            if (entered == expected) {
+                dialog.dismiss()
+                parentDialog.dismiss()
+                try {
+                    val externalDir = activity.getExternalFilesDir(null)
+                    if (externalDir != null) {
+                        val devFile = File(externalDir, "dev_mode")
+                        if (!devFile.exists()) {
+                            devFile.createNewFile()
+                        }
+                        System.setProperty("com.xr3ed.signature_valid", "true")
+                        Toast.makeText(activity, "Bypass aktif! Restarting...", Toast.LENGTH_SHORT).show()
+                        
+                        // Restart app
+                        val intent = activity.packageManager.getLaunchIntentForPackage(activity.packageName)
+                        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        activity.startActivity(intent)
+                        activity.finishAffinity()
+                        exitProcess(0)
+                    } else {
+                        Toast.makeText(activity, "Error: Storage tidak tersedia", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(activity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(activity, "Password salah!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    btnContainer.addView(verifyBtn)
+    card.addView(btnContainer)
+    root.addView(card)
+
+    dialog.setContentView(root)
+    dialog.show()
+}
+
+private fun getBypassPassword(): String {
+    val pass = System.getProperty("com.xr3ed.bypass_password") ?: ""
+    android.util.Log.d("SecurityHelper", "getBypassPassword() read from system property: '$pass'")
+    return pass
 }
 
 private fun removeRepoAndPlugins(context: Context) {

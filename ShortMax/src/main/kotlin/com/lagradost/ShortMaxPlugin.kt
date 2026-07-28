@@ -8,7 +8,7 @@ import com.lagradost.ShortMax.BuildConfig
 @CloudstreamPlugin
 class ShortMaxPlugin: Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         registerMainAPI(ShortMaxProvider())
     }
 }

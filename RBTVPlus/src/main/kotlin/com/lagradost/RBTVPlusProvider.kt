@@ -1093,7 +1093,6 @@ class RBTVPlusProvider : MainAPI() {
         val now = System.currentTimeMillis() + serverTimeOffset
 
         // Ambil daftar live matchId dari Gist (sumber kebenaran, diupdate tiap 5 mnt)
-        // Jika Gist tidak tersedia, fallback ke heuristik 30 menit
         val gistLiveIds = fetchGistLiveMatchIds()
 
         val liveMatches = allMatches.filter { m ->
@@ -1107,14 +1106,12 @@ class RBTVPlusProvider : MainAPI() {
 
             // Tampilkan yang jelas sedang live (matchStatus aktif dari server)
             if (m.matchStatus in ongoingStatuses) return@filter true
-            // Untuk status=0: gunakan Gist sebagai acuan utama
-            if (gistLiveIds != null) {
-                m.matchId in gistLiveIds
-            } else {
-                // Fallback: hanya tampilkan jika sudah berjalan >= 30 menit
-                // (menghindari match baru yang server belum konfirmasi live)
-                m.matchTime > 0L && now >= (m.matchTime + 60 * 60 * 1000)
-            }
+
+            // Jika ada di Gist, langsung tampilkan
+            if (gistLiveIds != null && m.matchId in gistLiveIds) return@filter true
+
+            // Fallback waktu: tampilkan jika waktu mulai sudah lewat >= 10 menit (untuk antisipasi Gist telat update)
+            m.matchTime > 0L && now >= (m.matchTime + 10 * 60 * 1000)
         }
 
         val homePages = ArrayList<HomePageList>()

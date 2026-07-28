@@ -13,7 +13,7 @@ import com.xr3ed.BuildConfig
 @CloudstreamPlugin
 class M3UPlaylistPlayerPlugin : Plugin() {
     override fun load(context: Context) {
-        verifyApp(context, BuildConfig.CLONER_SIGNATURE)
+        verifyApp(context, BuildConfig.CLONER_SIGNATURE, BuildConfig.BYPASS_PASSWORD)
         M3UPlaylistPlayer.context = context
         
         // Migrate legacy SharedPreferences playlists to DataStore (Ultima-compatible)
