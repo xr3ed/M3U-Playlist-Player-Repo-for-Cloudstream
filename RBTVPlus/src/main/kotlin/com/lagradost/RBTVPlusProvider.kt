@@ -156,7 +156,7 @@ class RBTVPlusProvider : MainAPI() {
             initialUrl
         }
     }
-    override var name = "RBTV+"
+    override var name = "🏆 RBTV+"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
     override val hasMainPage = true

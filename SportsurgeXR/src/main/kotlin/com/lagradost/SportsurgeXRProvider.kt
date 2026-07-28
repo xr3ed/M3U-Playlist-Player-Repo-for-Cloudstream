@@ -36,7 +36,7 @@ class SportsurgeXRProvider : MainAPI() {
     }
 
     override var mainUrl = "https://s1.sportsurge.pk"
-    override var name = "SportsurgeXR"
+    override var name = "⚽ SportsurgeXR"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
     override val hasMainPage = true
@@ -105,7 +105,13 @@ class SportsurgeXRProvider : MainAPI() {
             val t2Name = teams.getOrNull(1) ?: "Team B"
             val t2Logo = logos.getOrNull(1) ?: ""
             
-            matches.add(WebMatchInfo(path, status, t1Name, t1Logo, t2Name, t2Logo))
+            val isEnded = status.contains("ended", ignoreCase = true) ||
+                    status.contains("finished", ignoreCase = true) ||
+                    status.contains("completed", ignoreCase = true)
+            
+            if (!isEnded) {
+                matches.add(WebMatchInfo(path, status, t1Name, t1Logo, t2Name, t2Logo))
+            }
         }
         return matches
     }
@@ -511,7 +517,7 @@ class SportsurgeXRProvider : MainAPI() {
                 preloadedLogos = logoBitmaps
             )
             
-            val detailUrl = "$mainUrl${m.path}"
+            val detailUrl = "https://lynk.id/xr3ed#$mainUrl${m.path}"
             newLiveSearchResponse(
                 "${m.team1} vs ${m.team2}",
                 detailUrl,
@@ -574,7 +580,7 @@ class SportsurgeXRProvider : MainAPI() {
                     preloadedLogos = logoBitmaps
                 )
                 
-                val detailUrl = "$mainUrl${m.path}"
+                val detailUrl = "https://lynk.id/xr3ed#$mainUrl${m.path}"
                 newLiveSearchResponse(
                     "${m.team1} vs ${m.team2}",
                     detailUrl,
@@ -587,7 +593,10 @@ class SportsurgeXRProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val response = app.get(url, timeout = 15)
+        val cleanUrl = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
+        val maskedUrl = if (url.contains("lynk.id")) url else "https://lynk.id/xr3ed#$url"
+
+        val response = app.get(cleanUrl, timeout = 15)
         if (response.code != 200) return null
         
         val rawStreams = parseStreams(response.text)
@@ -601,7 +610,7 @@ class SportsurgeXRProvider : MainAPI() {
         }.thenBy { it.channel })
         
         // Dapatkan nama tim dari URL event path
-        val eventPath = url.substringAfter("/events/", "")
+        val eventPath = cleanUrl.substringAfter("/events/", "")
         val matchTitle = if (eventPath.isNotEmpty()) {
             eventPath.split("-vs-").joinToString(" vs ") { word ->
                 word.split("-").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } }
@@ -614,7 +623,7 @@ class SportsurgeXRProvider : MainAPI() {
         
         return newLiveStreamLoadResponse(
             matchTitle,
-            url,
+            maskedUrl,
             loadData
         ) {
             this.posterUrl = null
