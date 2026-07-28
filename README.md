@@ -8,10 +8,17 @@ Repositori resmi untuk memasang ekstensi pemutar M3U dan live streaming olahraga
 
 ---
 
-## 📢 PENGUMUMAN PENTING
+## 📢 PENGUMUMAN PENTING & DISCLAIMER
 
 > [!WARNING]
 > Seluruh ekstensi dan saluran streaming di dalam repositori ini **100% GRATIS**. Jika Anda membeli atau membayar seseorang untuk mendapatkan akses ini, maka **Anda telah DITIPU!**
+
+> [!CAUTION]
+> **KHUSUS UNTUK CLOUDSTREAMXR**
+> - Seluruh ekstensi di repositori ini **HANYA** dirancang dan ditujukan untuk digunakan pada aplikasi [CloudstreamXR](https://github.com/xr3ed/CloudStreamXR).
+> - Jika Anda memasang ekstensi ini pada aplikasi **Cloudstream resmi / orisinal**, sistem pengaman repositori (`SecurityHelper`) akan mendeteksi tanda tangan tidak cocok dan **memblokir aplikasi**.
+> - **RISIKO PENTING:** Menekan tombol keluar atau tindakan tertentu pada dialog blokir saat dijalankan di aplikasi resmi berisiko **menghapus secara otomatis seluruh preferensi, data, repositori, dan ekstensi** yang terpasang di Cloudstream Anda!
+> - Selalu gunakan aplikasi [CloudstreamXR](https://github.com/xr3ed/CloudStreamXR) untuk kompatibilitas penuh dan menghindari risiko kehilangan data Anda.
 
 ---
 
@@ -81,9 +88,11 @@ Jalur langsung ke GitHub. Gunakan jalur ini hanya jika koneksi Anda ke CDN terha
 
 ## 🔒 Keamanan & Arsitektur Dinamis
 
-Repositori ini menggunakan sistem perlindungan tingkat lanjut untuk mengamankan data dan menghindari pemblokiran:
-- **Zero Exposed URLs**: Tidak ada satupun domain, Gist ID, atau endpoint API streaming yang di-hardcode di dalam kode sumber repositori ini. Semua URL rahasia disuntikkan secara dinamis saat proses kompilasi via GitHub Secrets & `BuildConfig`.
-- **Dynamic Redirection**: Ekstensi `RBTVPlus` mendeteksi perubahan domain aktif dan host API secara otomatis secara runtime melalui navigasi aman dan intercept lalu lintas data jaringan browser (Playwright pada GitHub Actions Scraper, dan OKHttp client pada Android device).
+Repositori ini menggunakan sistem perlindungan tingkat lanjut untuk mengamankan data dan menghindari penyalahgunaan:
+- **Zero Exposed URLs**: Tidak ada domain, Gist ID, atau endpoint API streaming yang di-hardcode di kode sumber. Semua URL rahasia disuntikkan secara dinamis saat kompilasi via GitHub Secrets & `BuildConfig`.
+- **Dynamic Redirection**: Ekstensi `RBTVPlus` mendeteksi perubahan domain aktif dan host API secara otomatis secara runtime melalui navigasi aman dan intercept lalu lintas data jaringan browser.
+- **Cloner & Signature Protection**: Sistem secara ketat memverifikasi keabsahan tanda tangan aplikasi induk. Jika dijalankan di luar [CloudstreamXR](https://github.com/xr3ed/CloudStreamXR), dialog blokir akan muncul untuk mencegah modifikasi liar.
+- **Simplified Admin Bypass**: Administrator atau developer dapat melewati dialog blokir dengan mengetuk tombol **Bypass**, memasukkan password bypass yang dikonfigurasi (`BYPASS_PASSWORD`), yang akan langsung mengaktifkan bypass secara instan dan merestart aplikasi secara otomatis tanpa hambatan.
 
 ---
 
