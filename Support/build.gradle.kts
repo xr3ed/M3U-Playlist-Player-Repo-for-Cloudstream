@@ -17,7 +17,7 @@ cloudstream {
     status = 1
 
     tvTypes = listOf(
-        "Others"
+        "Torrent"
     )
 
     iconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_icon.png"

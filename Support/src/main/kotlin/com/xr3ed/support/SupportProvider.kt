@@ -49,7 +49,7 @@ class SupportProvider(val plugin: Plugin) : MainAPI() {
 
     override var name = "💻 Support Cloudstream XR"
     override var mainUrl = "https://t.me/CloudstreamXR"
-    override val supportedTypes = setOf(TvType.Others)
+    override val supportedTypes = setOf(TvType.Torrent)
     override var lang = "id"
     override val hasMainPage = true
 
@@ -70,7 +70,7 @@ class SupportProvider(val plugin: Plugin) : MainAPI() {
             newMovieSearchResponse(
                 name = "Grup Telegram Cloudstream XR",
                 url = "https://t.me/CloudstreamXR",
-                type = TvType.Others
+                type = TvType.Torrent
             ) {
                 this.posterUrl = telegramPoster
             }
@@ -80,7 +80,7 @@ class SupportProvider(val plugin: Plugin) : MainAPI() {
             newMovieSearchResponse(
                 name = "Donasi & Support Pengembang",
                 url = "https://lynk.id/xr3ed",
-                type = TvType.Others
+                type = TvType.Torrent
             ) {
                 this.posterUrl = donasiPoster
             }
@@ -96,7 +96,7 @@ class SupportProvider(val plugin: Plugin) : MainAPI() {
         return newMovieLoadResponse(
             name = if (url.contains("telegram") || url.contains("t.me")) "Grup Telegram" else "Donasi & Support",
             url = url,
-            type = TvType.Others,
+            type = TvType.Torrent,
             dataUrl = url
         ) {
             this.posterUrl = if (url.contains("telegram") || url.contains("t.me")) {
