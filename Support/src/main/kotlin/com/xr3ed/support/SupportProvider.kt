@@ -47,7 +47,7 @@ class SupportProvider(val plugin: Plugin) : MainAPI() {
         }
     }
 
-    override var name = "Support Cloudstream XR"
+    override var name = "💻 Support Cloudstream XR"
     override var mainUrl = "https://t.me/CloudstreamXR"
     override val supportedTypes = setOf(TvType.Others)
     override var lang = "id"
