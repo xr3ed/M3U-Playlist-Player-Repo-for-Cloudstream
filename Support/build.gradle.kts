@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 android {
     namespace = "com.xr3ed.support"
@@ -13,11 +13,11 @@ android {
 cloudstream {
     authors = listOf("xr3ed")
     language = "id"
-    description = "Plugin Support untuk grup Telegram dan Donasi Cloudstream XR."
+    description = "Plugin Support untuk grup Telegram dan Donasi CloudstreamXR."
     status = 1
 
     tvTypes = listOf(
-        "Torrent"
+        "Others"
     )
 
     iconUrl = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_icon.png"

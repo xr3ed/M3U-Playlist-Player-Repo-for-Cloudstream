@@ -2,15 +2,16 @@ package com.xr3ed.support
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.plugins.Plugin
+import com.lagradost.cloudstream3.utils.ExtractorLink
 
 class SupportProvider(val plugin: Plugin) : MainAPI() {
 
     companion object {
         var context: Context? = null
+        @Volatile var isDialogShowing = false
+        @Volatile var getMainPageFinishedAt = 0L
 
         private fun getResumedActivity(): Activity? {
             try {
@@ -31,80 +32,92 @@ class SupportProvider(val plugin: Plugin) : MainAPI() {
             }
             return null
         }
-
-        fun openUrlDirectly(url: String) {
-            val act = getResumedActivity()
-            val ctx = act ?: Companion.context
-            if (ctx != null) {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    ctx.startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
     }
 
-    override var name = "💻 Support Cloudstream XR"
-    override var mainUrl = "https://t.me/CloudstreamXR"
+    override var name = "💻 Support CloudstreamXR"
+    override var mainUrl = "https://cloudstream.xr/support"
     override val supportedTypes = setOf(TvType.Others)
     override var lang = "id"
     override val hasMainPage = true
 
     override val mainPage = listOf(
-        MainPageData("📢 KOMUNITAS & DUKUNGAN", "support_page")
+        MainPageData("📢 KOMUNITAS & DUKUNGAN", "support_page"),
+        MainPageData("", "support_hero")
     )
 
-    override suspend fun getMainPage(
-        page: Int,
-        request: MainPageRequest
-    ): HomePageResponse? {
-        val list = ArrayList<SearchResponse>()
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
+        isDialogShowing = false
+        getMainPageFinishedAt = System.currentTimeMillis()
 
         val telegramPoster = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_telegram.webp"
         val donasiPoster = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_donasi.webp"
 
-        list.add(
-            newMovieSearchResponse(
-                name = "Grup Telegram Cloudstream XR",
-                url = "https://t.me/CloudstreamXR",
-                type = TvType.Others
-            ) {
-                this.posterUrl = telegramPoster
-            }
-        )
+        if (request.data == "support_hero") {
+            val blank = "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/blank.png"
+            val heroList = listOf(
+                newMovieSearchResponse("", "$mainUrl/#hero_telegram", TvType.Others) { this.posterUrl = blank },
+                newMovieSearchResponse("", "$mainUrl/#hero_donasi", TvType.Others) { this.posterUrl = blank }
+            )
+            return newHomePageResponse(request.name, heroList, hasNext = false)
+        }
 
-        list.add(
-            newMovieSearchResponse(
-                name = "Donasi & Support Pengembang",
-                url = "https://lynk.id/xr3ed",
-                type = TvType.Others
-            ) {
-                this.posterUrl = donasiPoster
-            }
+        val list = listOf(
+            newMovieSearchResponse("Grup Telegram CloudstreamXR", "$mainUrl/#telegram", TvType.Others) { this.posterUrl = telegramPoster },
+            newMovieSearchResponse("Donasi & Support Pengembang", "$mainUrl/#donasi", TvType.Others) { this.posterUrl = donasiPoster }
         )
-
         return newHomePageResponse(request.name, list, hasNext = false)
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        // Direct intent trigger to open link in browser or Telegram app
-        openUrlDirectly(url)
+        val isTelegram = url.contains("telegram") || url.contains("t.me")
+        val isDonasi = url.contains("donasi") || url.contains("lynk.id")
 
-        return newMovieLoadResponse(
-            name = if (url.contains("telegram") || url.contains("t.me")) "Grup Telegram" else "Donasi & Support",
-            url = url,
-            type = TvType.Others,
-            dataUrl = url
-        ) {
-            this.posterUrl = if (url.contains("telegram") || url.contains("t.me")) {
-                "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_telegram.webp"
-            } else {
-                "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_donasi.webp"
-            }
-            this.plot = "Membuka link $url..."
+        val title = if (isTelegram) "Grup Telegram CloudstreamXR" else "Donasi & Support Pengembang"
+        val poster = if (isTelegram) {
+            "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_telegram.webp"
+        } else {
+            "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_donasi.webp"
         }
+
+        // URL #hero_* → return LoadResponse (di-cache Cloudstream, untuk hero banner)
+        // URL #telegram/#donasi → return null (tidak di-cache, load() dipanggil ulang saat klik)
+        if (url.contains("#hero_")) {
+            return newMovieLoadResponse(title, url, TvType.Others, url) {
+                this.posterUrl = poster
+                this.plot = "Klik untuk membuka link."
+            }
+        }
+
+        // Poster baris kedua: tampilkan dialog lalu return null
+        val isStartupPrefetch = (System.currentTimeMillis() - getMainPageFinishedAt) < 500
+        if (!isStartupPrefetch && !isDialogShowing && (isTelegram || isDonasi)) {
+            val act = getResumedActivity()
+            if (act != null) {
+                isDialogShowing = true
+                act.runOnUiThread {
+                    try {
+                        act.window?.decorView?.clearAnimation()
+                        act.overridePendingTransition(0, 0)
+                        act.onBackPressed()
+                    } catch (e: Exception) {}
+                }
+                if (isTelegram) {
+                    SupportDialogHelper.showTelegramDialog(act) { isDialogShowing = false }
+                } else {
+                    SupportDialogHelper.showDonasiDialog(act) { isDialogShowing = false }
+                }
+            }
+        }
+
+        return null
+    }
+
+    override suspend fun loadLinks(
+        data: String,
+        isCasting: Boolean,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        return false
     }
 }
