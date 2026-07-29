@@ -1,0 +1,289 @@
+[
+    {
+        "iconUrl": "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://anichin.club&size=%size%",
+        "fileHash": "sha256-477cb37d59aecb52d381e74b26516be8ab53690e9e0afa2f89957b4f16e0db2f",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 107627,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "sad25kag",
+            "XR3ED"
+        ],
+        "tvTypes": [
+            "AnimeMovie",
+            "Anime",
+            "Cartoon"
+        ],
+        "version": 48,
+        "internalName": "AnichinXR",
+        "description": "Anichin Moe modifikasi oleh XR3ED",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnichinXR.cs3",
+        "name": "AnichinXR"
+    },
+    {
+        "fileHash": "sha256-cc7d02cca6cba07949e8be8a2c916a91be6b591ec369f5554e7731705f5353d3",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 76485,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "version": 6,
+        "internalName": "DracinAIO",
+        "description": "Ekstensi Cloudstream untuk menonton drama pendek dari berbagai provider",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAIO.cs3",
+        "name": "DracinAIO"
+    },
+    {
+        "iconUrl": "https://play-lh.googleusercontent.com/GGi0g65ySR86svFuxny2J2FgfkTZuFlJcftmeAZ_bZ7sM86XfwUNL1h9omSyoRKha1c1-_BoFkUbyJz2VSXI=w240-h240-rw",
+        "fileHash": "sha256-0519c97245b1c41187efbcb519c705298a2f1e5e5c67c4ccd6fd8b85cbf3b1b7",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 56445,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "version": 37,
+        "internalName": "DramaBox",
+        "description": "Ekstensi Cloudstream untuk menonton drama pendek DramaBox",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DramaBox.cs3",
+        "name": "DramaBox"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/icon.png",
+        "fileHash": "sha256-6ed318e11778ddb1471d6aa22022b8dd395e85b72305cc8a33fe080562b51740",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 132127,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Movie"
+        ],
+        "version": 36,
+        "internalName": "FilmBoxOffice",
+        "description": "Plugin untuk Film Box Office Baru dengan dukungan login akun Google Drive Premium.",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/FilmBoxOffice.cs3",
+        "name": "FilmBoxOffice"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/icon.png",
+        "fileHash": "sha256-75a5a392239a47b778649f0ecf3d3741c144f473bff96aedd3ff2691d0a13ec1",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 84058,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "sad25kag",
+            "XR3ED"
+        ],
+        "tvTypes": [
+            "Movie",
+            "TvSeries",
+            "AsianDrama"
+        ],
+        "version": 27,
+        "internalName": "GudangFilmXR",
+        "description": "GudangFilmXR provider modifikasi oleh XR3ED untuk domain aktif huazai6.com dengan dukungan resolver media player Morencius dan Turbovidhls.",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/GudangFilmXR.cs3",
+        "name": "GudangFilmXR"
+    },
+    {
+        "iconUrl": "https://play-lh.googleusercontent.com/V4t4JeQV2Cu9u72hKuqOW5c0IfwcZuuVS1d9PF2uJsW3rlIq-aOMTrT5bABVGaAFTcM=w480-h960-rw",
+        "fileHash": "sha256-f77ce1cc7a358164600b83ea9cef9bb7c00682cc0bff40ea87bc77777d7d9f80",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 99321,
+        "status": 1,
+        "language": "en",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 53,
+        "internalName": "M3UPlaylistPlayer",
+        "description": "Add your own m3u playlists",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/M3UPlaylistPlayer.cs3",
+        "name": "M3UPlaylistPlayer"
+    },
+    {
+        "iconUrl": "https://play-lh.googleusercontent.com/pE_o4iwh3TLbIfoiEZsnUggStQFH2Vemw6B37Ql9swvZWmFPIGLJEaTbqECs4GlvEXvp7hr7speou3MDen5Reg=w240-h240-rw",
+        "fileHash": "sha256-f34c4b65bf9df9b8c30b70b98f7e392a69a257e95b4f65f677c6cd6fd585fe92",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 52767,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "version": 10,
+        "internalName": "Melolo",
+        "description": "Ekstensi Cloudstream untuk menonton drama pendek Melolo",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/Melolo.cs3",
+        "name": "Melolo"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/MovieBoXR.png",
+        "fileHash": "sha256-6c62da2e27a95d71f1baa507665b694b6c78df77c62aec8f0a3d1961450bd1d7",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 95351,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "version": 29,
+        "internalName": "MovieBoXR",
+        "description": "Multi Language Movies and Series Provider",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
+        "name": "MovieBoXR"
+    },
+    {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
+        "fileHash": "sha256-37cbb2f2dcb920e2fc958005c69af1788e4f50e61a82f79ffc659dab9f7787d2",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 78304,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 62,
+        "internalName": "RBTVPlus",
+        "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/RBTVPlus.cs3",
+        "name": "RBTVPlus"
+    },
+    {
+        "iconUrl": "https://play-lh.googleusercontent.com/NOT1CZ461en8dArwro-Nz0UCyD6aJ3tLm3WkPArTDTh-8ApKbBlTSi8mpObdK48SKw7Ve2RgVNOIU1U4nTEAw8U=w240-h240-rw",
+        "fileHash": "sha256-83b0c23544735b0e869f145f7b909bd2bd75042d26c6d06e772fbc775ad36af2",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 53287,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "version": 26,
+        "internalName": "ShortMax",
+        "description": "Ekstensi Cloudstream untuk menonton drama pendek ShortMax",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/ShortMax.cs3",
+        "name": "ShortMax"
+    },
+    {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
+        "fileHash": "sha256-9b826c4f7524028e7b6e4e62fa6a72ad3612a5946dd1be69277a4132e2e34ed4",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 59272,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 6,
+        "internalName": "SportsurgeXR",
+        "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari SportsurgeXR",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/SportsurgeXR.cs3",
+        "name": "SportsurgeXR"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/support_icon.png",
+        "fileHash": "sha256-bd13f3f12451cbd417e7f88f8c493bfd6fcaa53564cb5660f8c286a2f940c4e6",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 39037,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Others"
+        ],
+        "version": 2,
+        "internalName": "Support",
+        "description": "Plugin Support untuk grup Telegram dan Donasi CloudstreamXR.",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/Support.cs3",
+        "name": "Support"
+    },
+    {
+        "iconUrl": "https://watch-v2.autoembed.app/apple-touch-icon.png",
+        "fileHash": "sha256-e305f782c92ede0f86960499e2aed8fe682bb027584ac633ee084854865e898f",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 154491,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "version": 56,
+        "internalName": "xr3edFlix",
+        "description": "Ekstensi Cloudstream untuk menonton Film dan TV Series gratis dari autoembed",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edFlix.cs3",
+        "name": "xr3edFlix"
+    },
+    {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
+        "fileHash": "sha256-ea5f78e2c17968b7e28db838499f7c29a5d335433870c0991dd60d0f341baf9f",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 19926,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 7,
+        "internalName": "xr3edTV",
+        "description": "Streaming TV Live \u2014 Sports & Entertainment",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
+        "name": "xr3edTV"
+    }
+]
