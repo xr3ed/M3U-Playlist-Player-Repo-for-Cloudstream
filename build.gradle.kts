@@ -72,6 +72,7 @@ subprojects {
             buildConfigField("String", "FALLBACK_RELEASE_URL", "\"${getSecret("FALLBACK_RELEASE_URL", "https://github.com/xr3ed/CloudStreamXR")}\"")
             buildConfigField("String", "MOVIEBOX_SECRET_KEY_DEFAULT", "\"${getSecret("MOVIEBOX_SECRET_KEY_DEFAULT")}\"")
             buildConfigField("String", "MOVIEBOX_SECRET_KEY_ALT", "\"${getSecret("MOVIEBOX_SECRET_KEY_ALT")}\"")
+            buildConfigField("String", "MOVIEBOX_TOKEN_B64", "\"${getSecret("MOVIEBOX_TOKEN_B64")}\"")
             buildConfigField("String", "CASTLE_SUFFIX", "\"${getSecret("CASTLE_SUFFIX")}\"")
             buildConfigField("String", "SIMKL_API", "\"${getSecret("SIMKL_API")}\"")
             buildConfigField("String", "MAL_API", "\"${getSecret("MAL_API")}\"")
