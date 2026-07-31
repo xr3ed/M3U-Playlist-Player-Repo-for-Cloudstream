@@ -911,6 +911,8 @@ class DracinAIOProvider : MainAPI() {
             else -> {
                 if (provider == "freereels") {
                     "$API_URL/$provider?action=stream&videoFakeId=$param"
+                } else if (provider == "netshort") {
+                    "$API_URL/$provider?action=watch&id=$param"
                 } else {
                     // Standard episode_video format: param = id::ep
                     val subParts = param.split("::")
@@ -928,9 +930,10 @@ class DracinAIOProvider : MainAPI() {
             val root = JSONObject(responseText)
             var streamUrl = ""
             if (root.has("data")) {
-                streamUrl = root.getJSONObject("data").optString("url")
+                val dataObj = root.getJSONObject("data")
+                streamUrl = dataObj.optString("url").ifEmpty { dataObj.optString("videoUrl") }
             } else {
-                streamUrl = root.optString("url")
+                streamUrl = root.optString("url").ifEmpty { root.optString("videoUrl") }
             }
 
             if (streamUrl.isEmpty()) return false
