@@ -490,7 +490,7 @@ class SportsurgeXRProvider : MainAPI() {
         val response = app.get(url, timeout = 15)
         if (response.code != 200) return null
         
-        val matches = parseMatches(response.text)
+        val matches = parseMatches(response.text).sortedByDescending { it.status.contains("live", ignoreCase = true) }
         
         // Unduh semua logo unik secara paralel terlebih dahulu di Dispatchers.IO
         val logoUrls = matches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
@@ -555,7 +555,7 @@ class SportsurgeXRProvider : MainAPI() {
             
             val filteredMatches = allMatches.filter { m ->
                 m.team1.contains(query, ignoreCase = true) || m.team2.contains(query, ignoreCase = true)
-            }
+            }.sortedByDescending { it.status.contains("live", ignoreCase = true) }
             
             // Unduh logo secara paralel untuk hasil pencarian
             val logoUrls = filteredMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
