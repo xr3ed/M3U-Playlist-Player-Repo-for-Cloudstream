@@ -1,4 +1,4 @@
-version = 49
+version = 50
 
 android {
     namespace = "com.xr3ed.idlix"
