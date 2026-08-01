@@ -362,6 +362,7 @@ class IdlixProvider : MainAPI() {
         val headers = mapOf(
             "Referer" to "$mainUrl/",
             "Origin" to mainUrl,
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
             "Accept" to "*/*",
             "Content-Type" to "application/json"
         )
@@ -420,12 +421,26 @@ class IdlixProvider : MainAPI() {
         iframeResponse.url
             ?.takeIf { it.isNotBlank() }
             ?.let { streamUrl ->
-
-                generateM3u8(
+                com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
                     name,
                     streamUrl,
-                    mainUrl
-                ).forEach(callback)
+                    mainUrl,
+                    headers = headers
+                ).forEach { link ->
+                    val proxyUrl = IdlixProxyServer.startAndGetProxyUrl(link.url, mainUrl)
+                    callback.invoke(
+                        com.lagradost.cloudstream3.utils.newExtractorLink(
+                            source = link.source,
+                            name = link.name,
+                            url = proxyUrl,
+                            type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+                        ) {
+                            this.quality = link.quality
+                            this.headers = link.headers
+                            this.extractorData = link.extractorData
+                        }
+                    )
+                }
             }
 
         iframeResponse.subtitles.forEach { subtitle ->
