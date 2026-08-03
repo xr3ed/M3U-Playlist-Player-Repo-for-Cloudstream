@@ -32,29 +32,19 @@ class Jeniusplay : ExtractorApi() {
             headers = mapOf("X-Requested-With" to "XMLHttpRequest")
         ).parsed<ResponseSource>().videoSource.replace(".txt",".m3u8")
 
-        com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
-            name,
-            m3uLink,
-            mainUrl,
-            headers = mapOf(
-                "Referer" to mainUrl,
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
-            )
-        ).forEach { link ->
-            val proxyUrl = IdlixProxyServer.startAndGetProxyUrl(link.url, mainUrl)
-            callback.invoke(
-                com.lagradost.cloudstream3.utils.newExtractorLink(
-                    source = link.source,
-                    name = link.name,
-                    url = proxyUrl,
-                    type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
-                ) {
-                    this.quality = link.quality
-                    this.headers = link.headers
-                    this.extractorData = link.extractorData
-                }
-            )
-        }
+        callback.invoke(
+            com.lagradost.cloudstream3.utils.newExtractorLink(
+                source = name,
+                name = "$name HLS",
+                url = m3uLink,
+                type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+            ) {
+                this.headers = mapOf(
+                    "Referer" to mainUrl,
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+                )
+            }
+        )
 
         document.select("script").forEach { script ->
             if (script.data().contains("eval(function(p,a,c,k,e,d)")) {
@@ -106,29 +96,19 @@ class Majorplay : ExtractorApi() {
         val document = app.get(url, referer = mainUrl).document
         val m3uLink = document.select("source").attr("src")
         Log.d(name, m3uLink)
-        com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
-            name,
-            m3uLink,
-            mainUrl,
-            headers = mapOf(
-                "Referer" to mainUrl,
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
-            )
-        ).forEach { link ->
-            val proxyUrl = IdlixProxyServer.startAndGetProxyUrl(link.url, mainUrl)
-            callback.invoke(
-                com.lagradost.cloudstream3.utils.newExtractorLink(
-                    source = link.source,
-                    name = link.name,
-                    url = proxyUrl,
-                    type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
-                ) {
-                    this.quality = link.quality
-                    this.headers = link.headers
-                    this.extractorData = link.extractorData
-                }
-            )
-        }
+        callback.invoke(
+            com.lagradost.cloudstream3.utils.newExtractorLink(
+                source = name,
+                name = "$name HLS",
+                url = m3uLink,
+                type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+            ) {
+                this.headers = mapOf(
+                    "Referer" to mainUrl,
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+                )
+            }
+        )
 
         val scripts = document.selectFirst("script:containsData(subtitles)")?.data() ?: return
 

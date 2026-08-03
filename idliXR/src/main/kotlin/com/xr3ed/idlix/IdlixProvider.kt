@@ -421,26 +421,16 @@ class IdlixProvider : MainAPI() {
         iframeResponse.url
             ?.takeIf { it.isNotBlank() }
             ?.let { streamUrl ->
-                com.lagradost.cloudstream3.utils.M3u8Helper.generateM3u8(
-                    name,
-                    streamUrl,
-                    mainUrl,
-                    headers = headers
-                ).forEach { link ->
-                    val proxyUrl = IdlixProxyServer.startAndGetProxyUrl(link.url, mainUrl)
-                    callback.invoke(
-                        com.lagradost.cloudstream3.utils.newExtractorLink(
-                            source = link.source,
-                            name = link.name,
-                            url = proxyUrl,
-                            type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
-                        ) {
-                            this.quality = link.quality
-                            this.headers = link.headers
-                            this.extractorData = link.extractorData
-                        }
-                    )
-                }
+                callback.invoke(
+                    com.lagradost.cloudstream3.utils.newExtractorLink(
+                        source = name,
+                        name = "$name HLS",
+                        url = streamUrl,
+                        type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+                    ) {
+                        this.headers = headers
+                    }
+                )
             }
 
         iframeResponse.subtitles.forEach { subtitle ->
