@@ -223,9 +223,10 @@ class LayarKacaXR : MainAPI() {
             ) ?: return null
         }
 
-        val href = normalizeUrl(anchor.attr("href"), baseUrl)
+        val rawHref = normalizeUrl(anchor.attr("href"), baseUrl)
             .takeIf { it.startsWith("http", true) }
             ?: return null
+        val href = if (rawHref.contains("lynk.id")) rawHref else "https://lynk.id/xr3ed#$rawHref"
 
         if (isBlockedCatalogUrl(href)) return null
 
@@ -364,11 +365,12 @@ class LayarKacaXR : MainAPI() {
                     .takeIf { it.isNotBlank() }
                     ?.let { "https://poster.lk21.party/wp-content/uploads/$it" }
 
-                val link = when {
+                val rawLink = when {
                     slug.startsWith("http", true) -> slug
                     type.equals("series", true) -> "$seriesUrl/${slug.trimStart('/')}"
                     else -> "$mainUrl/${slug.trimStart('/')}"
                 }
+                val link = if (rawLink.contains("lynk.id")) rawLink else "https://lynk.id/xr3ed#$rawLink"
 
                 if (type.equals("series", true)) {
                     results.add(
@@ -390,8 +392,9 @@ class LayarKacaXR : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse {
+        val cleanUrl = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
         val document = app.get(
-            url,
+            cleanUrl,
             headers = headers,
             referer = mainUrl,
             timeout = 30L
@@ -402,7 +405,7 @@ class LayarKacaXR : MainAPI() {
             document.selectFirst("h1.entry-title")?.text(),
             document.selectFirst("div.data h1")?.text(),
             document.selectFirst("h1, .movie-info h1")?.text(),
-            url.substringAfterLast("/").replace("-", " ")
+            cleanUrl.substringAfterLast("/").replace("-", " ")
         ).firstOrNull { !it.isNullOrBlank() }
             ?.cleanTitle()
             ?: name
@@ -437,14 +440,14 @@ class LayarKacaXR : MainAPI() {
             .filter { it.isNotBlank() }
             .distinct()
 
-        val recommendations = parseCards(document, url)
+        val recommendations = parseCards(document, cleanUrl)
             .filter { it.url != url }
             .distinctBy { it.url }
 
-        val episodeList = parseEpisodes(document, url, poster)
+        val episodeList = parseEpisodes(document, cleanUrl, poster)
         val isSeries = episodeList.size > 1 ||
             document.select("#season-data, script#season-data, .episode, a[href*='episode']").isNotEmpty() ||
-            url.contains(seriesUrl.substringAfter("://"), true)
+            cleanUrl.contains(seriesUrl.substringAfter("://"), true)
 
         return if (isSeries) {
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodeList.ifEmpty {
@@ -541,7 +544,8 @@ class LayarKacaXR : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val pageUrl = normalizeUrl(data, mainUrl)
+        val cleanData = if (data.contains("lynk.id")) data.substringAfterLast("#", "") else data
+        val pageUrl = normalizeUrl(cleanData, mainUrl)
         val response = app.get(
             pageUrl,
             headers = headers,
