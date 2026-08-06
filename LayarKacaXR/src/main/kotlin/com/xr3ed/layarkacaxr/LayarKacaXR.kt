@@ -61,8 +61,9 @@ class LayarKacaXR : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
+        "$mainUrl/top-movie-today/page/" to "KONTEN UNGGULAN",
+        "$seriesUrl/top-series-today/page/" to "SERIES UNGGULAN",
         "$mainUrl/latest/page/" to "Film Terbaru",
-        "$mainUrl/nontondrama?page=top-series-today" to "SERIES UNGGULAN",
         "$seriesUrl/latest-series/page/" to "SERIES UPDATE",
         "$mainUrl/populer/page/" to "TOP BULAN INI",
         "$mainUrl/rekomendasi-film-pintar/page/" to "Rekomendasi Untukmu",
@@ -113,12 +114,13 @@ class LayarKacaXR : MainAPI() {
     }
 
     private fun parseHomepageSection(document: Document, sectionTitle: String): List<SearchResponse> {
-        val heading = document.select("h2").firstOrNull { it.text().contains(sectionTitle, true) }
-            ?: return emptyList()
-        
-        val container = heading.parent()?.nextElementSibling() 
-            ?: heading.nextElementSibling()
-            ?: return emptyList()
+        val container = if (sectionTitle.equals("KONTEN UNGGULAN", ignoreCase = true) || sectionTitle.equals("SERIES UNGGULAN", ignoreCase = true)) {
+            document.selectFirst("section.featured, div[aria-label='Film Unggulan'], div[aria-label='Series Unggulan']")
+        } else {
+            val heading = document.select("h2").firstOrNull { it.text().contains(sectionTitle, true) }
+                ?: return emptyList()
+            heading.parent()?.nextElementSibling() ?: heading.nextElementSibling()
+        } ?: return emptyList()
 
         val results = linkedMapOf<String, SearchResponse>()
         container.select("article, li.slider, div.item, div.card").forEach { card ->
