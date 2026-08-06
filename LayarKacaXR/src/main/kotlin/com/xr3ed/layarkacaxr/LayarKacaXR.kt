@@ -741,7 +741,13 @@ class LayarKacaXR : MainAPI() {
             }
 
         synchronized(linksList) {
-            linksList.distinctBy { it.url }
+            val finalLinks = linksList.distinctBy { it.url.substringBefore("?") }
+            val hasDetailedTurbovip = finalLinks.any { it.name.startsWith("TURBOVIP", true) && it.quality != Qualities.Unknown.value }
+            
+            finalLinks
+                .filterNot { link ->
+                    hasDetailedTurbovip && link.name.equals("TURBOVIP", true) && link.quality == Qualities.Unknown.value
+                }
                 .sortedWith(
                     compareByDescending<ExtractorLink> { it.quality }
                         .thenByDescending { it.name }
@@ -1097,7 +1103,9 @@ class LayarKacaXR : MainAPI() {
             value.contains("/ads/") ||
             value.contains("banner") ||
             value.contains("tracking") ||
-            value.contains("analytics")
+            value.contains("analytics") ||
+            value.contains("turboviplay.com") ||
+            value.contains("turbosplayer.com")
     }
 
     private fun String.isDirectHls(): Boolean {

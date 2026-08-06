@@ -138,9 +138,14 @@ open class LayarKacaHtmlExtractor : ExtractorApi() {
     }
 }
 
-class EmturbovidExtractor : LayarKacaHtmlExtractor() {
+class EmturbovidExtractor : ByseExtractor() {
     override var name = "TURBOVIP"
     override var mainUrl = "https://emturbovid.com"
+}
+
+class TurbovidhlsExtractor : ByseExtractor() {
+    override var name = "TURBOVIP"
+    override var mainUrl = "https://turbovidhls.com"
 }
 
 open class P2PExtractor : LayarKacaHtmlExtractor() {
@@ -388,10 +393,47 @@ open class ByseExtractor : ExtractorApi() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        val id = url.substringAfter("/e/").substringAfterLast("/").substringBefore("?").substringBefore("&").trim()
+        val finalReferer = referer ?: "https://videonode.de/"
+        val response = runCatching {
+            app.get(
+                url,
+                headers = mapOf(
+                    "User-Agent" to USER_AGENT,
+                    "Referer" to finalReferer,
+                    "Origin" to (runCatching { java.net.URI(finalReferer).let { "${it.scheme}://${it.host}" } }.getOrNull() ?: "https://videonode.de")
+                ),
+                timeout = 15L
+            )
+        }.getOrNull() ?: return
+
+        val finalUrl = response.url
+        val html = response.text.cleanEscaped()
+
+        // 1. Try to extract direct m3u8 url from JS variable (like urlPlay = '...')
+        val directPlayUrl = Regex("""var\s+urlPlay\s*=\s*['"]([^'"]+\.m3u8[^'"]*)['"]""").find(html)
+            ?.groupValues?.getOrNull(1)
+            ?.cleanEscaped()
+
+        if (!directPlayUrl.isNullOrBlank()) {
+            val streamUrl = normalizeExtractorUrl(directPlayUrl, finalUrl)
+            generateM3u8(
+                source = name,
+                streamUrl = streamUrl,
+                referer = finalUrl,
+                headers = mapOf(
+                    "User-Agent" to USER_AGENT,
+                    "Referer" to finalUrl,
+                    "Origin" to (runCatching { java.net.URI(finalUrl).let { "${it.scheme}://${it.host}" } }.getOrNull() ?: "https://videonode.de")
+                )
+            ).forEach(callback)
+            return
+        }
+
+        // 2. Fall back to PoW solver flow using finalUrl's domain
+        val id = finalUrl.substringAfter("/e/").substringAfter("/t/").substringAfterLast("/").substringBefore("?").substringBefore("&").trim()
         if (id.isBlank()) return
 
-        val domain = java.net.URI(url).let { "${it.scheme}://${it.host}" }
+        val domain = java.net.URI(finalUrl).let { "${it.scheme}://${it.host}" }
         val captchaUrl = "$domain" + BuildConfig.BYSE_API_CAPTCHA.format(id)
         val verifyUrl = "$domain" + BuildConfig.BYSE_API_VERIFY.format(id)
         val playbackUrl = "$domain" + BuildConfig.BYSE_API_SETTINGS.format(id)
@@ -412,7 +454,7 @@ open class ByseExtractor : ExtractorApi() {
                 captchaUrl,
                 json = mapOf("fingerprint" to mapOf<String, Any>()),
                 headers = baseHeaders,
-                referer = url,
+                referer = finalUrl,
                 timeout = 15L
             ).text
         }.getOrNull() ?: return
@@ -435,7 +477,7 @@ open class ByseExtractor : ExtractorApi() {
                     "fingerprint" to mapOf<String, Any>()
                 ),
                 headers = baseHeaders,
-                referer = url,
+                referer = finalUrl,
                 timeout = 15L
             ).text
         }.getOrNull() ?: return
@@ -451,7 +493,7 @@ open class ByseExtractor : ExtractorApi() {
                 playbackUrl,
                 json = mapOf("fingerprint" to mapOf<String, Any>()),
                 headers = playbackHeaders,
-                referer = url,
+                referer = finalUrl,
                 timeout = 15L
             ).text
         }.getOrNull() ?: return
@@ -482,7 +524,7 @@ open class ByseExtractor : ExtractorApi() {
                 val srcUrl = src.optString("url")
                 val label = src.optString("label", "Source")
                 if (srcUrl.isNotBlank()) {
-                    emitExtractorLink(name, normalizeExtractorUrl(srcUrl, playbackUrl), url, callback)
+                    emitExtractorLink(name, normalizeExtractorUrl(srcUrl, playbackUrl), finalUrl, callback)
                 }
             }
         }
@@ -755,6 +797,22 @@ private suspend fun emitExtractorLink(
         else -> source
     }
 
+    if (cleanSource == "P2P") {
+        callback(
+            newExtractorLink(
+                source = "P2P",
+                name = "P2P",
+                url = fixed,
+                type = ExtractorLinkType.M3U8
+            ) {
+                this.referer = referer
+                this.quality = Qualities.P480.value
+                this.headers = defaultExtractorHeaders(referer)
+            }
+        )
+        return
+    }
+
     if (fixed.contains(".m3u8", true)) {
         generateM3u8(
             source = cleanSource,
@@ -1009,6 +1067,7 @@ fun getCustomExtractor(url: String): ExtractorApi? {
     return when {
         url.contains("abyssplayer.com", true) || url.contains("abyss.to", true) -> AbyssplayerExtractor()
         url.contains("emturbovid.com", true) -> EmturbovidExtractor()
+        url.contains("turbovidhls.com", true) -> TurbovidhlsExtractor()
         url.contains("f16px.com", true) -> F16Extractor()
         url.contains("gn1r5n.org", true) -> Gn1r5nExtractor()
         url.contains("videonode.de", true) -> VideonodeExtractor()
