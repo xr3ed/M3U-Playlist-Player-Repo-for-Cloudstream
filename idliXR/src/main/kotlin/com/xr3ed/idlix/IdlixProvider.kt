@@ -244,7 +244,9 @@ class IdlixProvider : MainAPI() {
                 episodes.add(
                     newEpisode( LoadData(
                         id = ep.id ?: return@forEach,
-                        type = "episode"
+                        type = "episode",
+                        season = data.firstSeason.seasonNumber,
+                        episode = ep.episodeNumber
                     ).toJson()) {
                         this.name = ep.name
                         this.season = data.firstSeason.seasonNumber
@@ -274,7 +276,9 @@ class IdlixProvider : MainAPI() {
                     episodes.add(
                         newEpisode( LoadData(
                             id = ep.id ?: return@forEach,
-                            type = "episode"
+                            type = "episode",
+                            season = seasonNum,
+                            episode = ep.episodeNumber
                         ).toJson()) {
                             this.name = ep.name
                             this.season = seasonNum
@@ -421,19 +425,96 @@ class IdlixProvider : MainAPI() {
         iframeResponse.url
             ?.takeIf { it.isNotBlank() }
             ?.let { streamUrl ->
-                callback.invoke(
-                    com.lagradost.cloudstream3.utils.newExtractorLink(
-                        source = name,
-                        name = "$name HLS",
-                        url = streamUrl,
-                        type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
-                    ) {
-                        this.headers = headers
+                val m3u8Text = try {
+                    app.get(streamUrl, headers = headers).text
+                } catch (e: Exception) {
+                    "Error: ${e.message}"
+                }
+                
+                var parsedM3u8Success = false
+                val lines = m3u8Text.split("\n", "\r").map { it.trim() }.filter { it.isNotEmpty() }
+                var i = 0
+                while (i < lines.size - 1) {
+                    val line = lines[i]
+                    if (line.startsWith("#EXT-X-STREAM-INF:")) {
+                        val nameMatch = Regex("""NAME="([^"]+)"""").find(line)
+                            ?: Regex("""NAME=([^,\s]+)""").find(line)
+                        val nameStr = nameMatch?.groupValues?.get(1) ?: ""
+                        
+                        val nextLine = lines[i + 1]
+                        if (nameStr.isNotBlank() && !nextLine.startsWith("#")) {
+                            val absoluteUrl = if (nextLine.startsWith("http")) {
+                                nextLine
+                            } else {
+                                val baseUrl = streamUrl.substringBeforeLast("/")
+                                "$baseUrl/$nextLine"
+                            }
+                            
+                            val qualityVal = when {
+                                nameStr.contains("1080") -> 1080
+                                nameStr.contains("720") -> 720
+                                nameStr.contains("480") -> 480
+                                nameStr.contains("360") -> 360
+                                else -> nameStr.replace("p", "").toIntOrNull() ?: 360
+                            }
+
+                            callback.invoke(
+                                com.lagradost.cloudstream3.utils.newExtractorLink(
+                                    source = name,
+                                    name = "$name ${qualityVal}p",
+                                    url = absoluteUrl,
+                                    type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+                                ) {
+                                    this.headers = headers
+                                    this.quality = qualityVal
+                                }
+                            )
+                            parsedM3u8Success = true
+                        }
                     }
-                )
+                    i++
+                }
+
+                // Fallback ke master link jika parsing gagal
+                if (!parsedM3u8Success) {
+                    callback.invoke(
+                        com.lagradost.cloudstream3.utils.newExtractorLink(
+                            source = name,
+                            name = "$name HLS",
+                            url = streamUrl,
+                            type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+                        ) {
+                            this.headers = headers
+                        }
+                    )
+                }
             }
 
-        iframeResponse.subtitles.forEach { subtitle ->
+        val s = parsed.season
+        val e = parsed.episode
+
+        val subtitlesToEmit = if (contentType == "episode" && s != null && e != null) {
+            val sFormatted = "%02d".format(s)
+            val eFormatted = "%02d".format(e)
+            val matchPatterns = listOf(
+                "S${sFormatted}E${eFormatted}",
+                "S${s}E${e}",
+                "S${sFormatted}.E${eFormatted}",
+                "E${eFormatted}",
+                "E${e}"
+            )
+
+            val filtered = iframeResponse.subtitles.filter { sub ->
+                val text = "${sub.label} ${sub.path}"
+                matchPatterns.any { pattern -> text.contains(pattern, ignoreCase = true) }
+            }
+
+            if (filtered.isNotEmpty()) filtered else iframeResponse.subtitles
+        } else {
+            iframeResponse.subtitles
+        }
+
+        subtitlesToEmit.forEach { subtitle ->
             subtitleCallback(
                 newSubtitleFile(
                     subtitle.label,

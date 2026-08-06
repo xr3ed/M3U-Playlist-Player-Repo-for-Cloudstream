@@ -172,5 +172,7 @@ data class SearchApiResult(
 
 data class LoadData(
     val id: String,
-    val type: String // "movie" or "episode"
+    val type: String, // "movie" or "episode"
+    val season: Int? = null,
+    val episode: Int? = null
 )

@@ -32,19 +32,35 @@ class Jeniusplay : ExtractorApi() {
             headers = mapOf("X-Requested-With" to "XMLHttpRequest")
         ).parsed<ResponseSource>().videoSource.replace(".txt",".m3u8")
 
-        callback.invoke(
-            com.lagradost.cloudstream3.utils.newExtractorLink(
-                source = name,
-                name = "$name HLS",
-                url = m3uLink,
-                type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
-            ) {
-                this.headers = mapOf(
-                    "Referer" to mainUrl,
-                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
-                )
-            }
+        val headersMap = mapOf(
+            "Referer" to mainUrl,
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
         )
+        val links = try {
+            generateM3u8(
+                source = name,
+                streamUrl = m3uLink,
+                referer = mainUrl,
+                headers = headersMap
+            )
+        } catch (_: Throwable) {
+            emptyList()
+        }
+
+        if (links.isNotEmpty()) {
+            links.forEach(callback)
+        } else {
+            callback.invoke(
+                com.lagradost.cloudstream3.utils.newExtractorLink(
+                    source = name,
+                    name = "$name HLS",
+                    url = m3uLink,
+                    type = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8
+                ) {
+                    this.headers = headersMap
+                }
+            )
+        }
 
         document.select("script").forEach { script ->
             if (script.data().contains("eval(function(p,a,c,k,e,d)")) {
