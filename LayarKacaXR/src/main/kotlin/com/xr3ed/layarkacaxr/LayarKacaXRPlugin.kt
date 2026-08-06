@@ -13,7 +13,11 @@ class LayarKacaXRPlugin : Plugin() {
 
         registerExtractorAPI(EmturbovidExtractor())
         registerExtractorAPI(P2PExtractor())
+        registerExtractorAPI(VideonodeExtractor())
+        registerExtractorAPI(PlayerIframeExtractor())
         registerExtractorAPI(F16Extractor())
+        registerExtractorAPI(Gn1r5nExtractor())
+        registerExtractorAPI(AbyssplayerExtractor())
         registerExtractorAPI(Jeniusplay())
         registerExtractorAPI(Majorplay())
         registerExtractorAPI(E2eMajorplay())

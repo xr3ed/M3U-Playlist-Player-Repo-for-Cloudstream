@@ -44,9 +44,9 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 class LayarKacaXR : MainAPI() {
-    override var mainUrl = "https://tv9.lk21official.cc"
-    private val seriesUrl = "https://tv3.nontondrama.my"
-    private val searchUrl = "https://gudangvape.com"
+    override var mainUrl = BuildConfig.LAYARKACA_MAIN_URL
+    private val seriesUrl = BuildConfig.LAYARKACA_SERIES_URL
+    private val searchUrl = BuildConfig.LAYARKACA_SEARCH_URL
 
     override var name = "LayarKacaXR"
     override val hasMainPage = true
@@ -393,19 +393,33 @@ class LayarKacaXR : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse {
         val cleanUrl = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
-        val document = app.get(
+        var response = app.get(
             cleanUrl,
             headers = headers,
             referer = mainUrl,
             timeout = 30L
-        ).document
+        )
+        var document = response.document
 
+        val redirectLink = document.selectFirst("a#openNow")?.attr("href")
+        if (!redirectLink.isNullOrBlank()) {
+            val resolvedRedirect = normalizeUrl(redirectLink, cleanUrl)
+            response = app.get(
+                resolvedRedirect,
+                headers = headers,
+                referer = cleanUrl,
+                timeout = 30L
+            )
+            document = response.document
+        }
+
+        val finalUrl = response.url
         val title = listOf(
             document.selectFirst("meta[property=og:title]")?.attr("content"),
             document.selectFirst("h1.entry-title")?.text(),
             document.selectFirst("div.data h1")?.text(),
             document.selectFirst("h1, .movie-info h1")?.text(),
-            cleanUrl.substringAfterLast("/").replace("-", " ")
+            finalUrl.substringAfterLast("/").replace("-", " ")
         ).firstOrNull { !it.isNullOrBlank() }
             ?.cleanTitle()
             ?: name
@@ -440,14 +454,14 @@ class LayarKacaXR : MainAPI() {
             .filter { it.isNotBlank() }
             .distinct()
 
-        val recommendations = parseCards(document, cleanUrl)
+        val recommendations = parseCards(document, finalUrl)
             .filter { it.url != url }
             .distinctBy { it.url }
 
-        val episodeList = parseEpisodes(document, cleanUrl, poster)
+        val episodeList = parseEpisodes(document, finalUrl, poster)
         val isSeries = episodeList.size > 1 ||
             document.select("#season-data, script#season-data, .episode, a[href*='episode']").isNotEmpty() ||
-            cleanUrl.contains(seriesUrl.substringAfter("://"), true)
+            finalUrl.contains(seriesUrl.substringAfter("://"), true)
 
         return if (isSeries) {
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodeList.ifEmpty {
@@ -546,14 +560,27 @@ class LayarKacaXR : MainAPI() {
     ): Boolean {
         val cleanData = if (data.contains("lynk.id")) data.substringAfterLast("#", "") else data
         val pageUrl = normalizeUrl(cleanData, mainUrl)
-        val response = app.get(
+        var response = app.get(
             pageUrl,
             headers = headers,
             referer = mainUrl,
             timeout = 30L
         )
+        var document = response.document
 
-        val document = response.document
+        val redirectLink = document.selectFirst("a#openNow")?.attr("href")
+        if (!redirectLink.isNullOrBlank()) {
+            val resolvedRedirect = normalizeUrl(redirectLink, pageUrl)
+            response = app.get(
+                resolvedRedirect,
+                headers = headers,
+                referer = pageUrl,
+                timeout = 30L
+            )
+            document = response.document
+        }
+
+        val finalPageUrl = response.url
         val html = response.text.cleanEscaped()
 
         val directLinks = linkedSetOf<String>()
@@ -561,14 +588,14 @@ class LayarKacaXR : MainAPI() {
 
         collectDooplayEmbeds(
             document = document,
-            pageUrl = pageUrl,
+            pageUrl = finalPageUrl,
             directLinks = directLinks,
             embedLinks = embedLinks
         )
 
         collectCandidatesFromDocument(
             document = document,
-            baseUrl = pageUrl,
+            baseUrl = finalPageUrl,
             directLinks = directLinks,
             embedLinks = embedLinks
         )
@@ -598,6 +625,12 @@ class LayarKacaXR : MainAPI() {
         }
 
         var found = false
+        val linksList = mutableListOf<ExtractorLink>()
+        val interceptedCallback: (ExtractorLink) -> Unit = { link ->
+            synchronized(linksList) {
+                linksList.add(link)
+            }
+        }
 
         directLinks
             .filterNot { isJunkLink(it) }
@@ -608,26 +641,32 @@ class LayarKacaXR : MainAPI() {
                     source = name,
                     streamUrl = link,
                     referer = pageUrl,
-                    callback = callback
+                    callback = interceptedCallback
                 )
                 found = true
             }
-
-        if (found) return true
 
         embedLinks
             .filterNot { isJunkLink(it) }
             .distinct()
             .take(12)
             .amap { embed ->
-                val success = runCatching {
-                    loadExtractor(
-                        embed,
-                        pageUrl,
-                        subtitleCallback,
-                        callback
-                    )
-                }.getOrDefault(false)
+                val custom = getCustomExtractor(embed)
+                val success = if (custom != null) {
+                    runCatching {
+                        custom.getUrl(embed, referer = pageUrl, subtitleCallback = subtitleCallback, callback = interceptedCallback)
+                        true
+                    }.getOrDefault(false)
+                } else {
+                    runCatching {
+                        loadExtractor(
+                            embed,
+                            pageUrl,
+                            subtitleCallback,
+                            interceptedCallback
+                        )
+                    }.getOrDefault(false)
+                }
 
                 if (success) {
                     found = true
@@ -645,25 +684,42 @@ class LayarKacaXR : MainAPI() {
                                 source = name,
                                 streamUrl = fixed,
                                 referer = embed,
-                                callback = callback
+                                callback = interceptedCallback
                             )
                             found = true
                         }
                         fixed.startsWith("http", true) -> {
-                            val nestedSuccess = runCatching {
-                                loadExtractor(
-                                    fixed,
-                                    embed,
-                                    subtitleCallback,
-                                    callback
-                                )
-                            }.getOrDefault(false)
+                            val customNested = getCustomExtractor(fixed)
+                            val nestedSuccess = if (customNested != null) {
+                                runCatching {
+                                    customNested.getUrl(fixed, referer = embed, subtitleCallback = subtitleCallback, callback = interceptedCallback)
+                                    true
+                                }.getOrDefault(false)
+                            } else {
+                                runCatching {
+                                    loadExtractor(
+                                        fixed,
+                                        embed,
+                                        subtitleCallback,
+                                        interceptedCallback
+                                    )
+                                }.getOrDefault(false)
+                            }
 
                             if (nestedSuccess) found = true
                         }
                     }
                 }
             }
+
+        synchronized(linksList) {
+            linksList.distinctBy { it.url }
+                .sortedWith(
+                    compareByDescending<ExtractorLink> { it.quality }
+                        .thenByDescending { it.name }
+                )
+                .forEach(callback)
+        }
 
         return found
     }
@@ -937,7 +993,7 @@ class LayarKacaXR : MainAPI() {
             .forEach { urls.add(it) }
 
         Regex(
-            """https?%3A%2F%2F[^"'\\\s<>]+?(?:\.m3u8|\.mp4|\.webm|\.txt|jeniusplay|majorplay|emturbovid|hownetwork|f16|p2p|streamwish|filemoon|dood|streamtape|vidhide|voe|mixdrop)[^"'\\\s<>]*""",
+            """https?%3A%2F%2F[^"'\\\s<>]+?(?:\.m3u8|\.mp4|\.webm|\.txt|jeniusplay|majorplay|emturbovid|hownetwork|f16|p2p|streamwish|filemoon|dood|streamtape|vidhide|voe|mixdrop|videonode|playcdn)[^"'\\\s<>]*""",
             RegexOption.IGNORE_CASE
         ).findAll(clean)
             .map {
@@ -987,7 +1043,9 @@ class LayarKacaXR : MainAPI() {
             "vidhide",
             "voe",
             "mixdrop",
-            "hglink"
+            "hglink",
+            "videonode",
+            "playcdn"
         ).any { value.contains(it) }
     }
 

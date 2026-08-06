@@ -129,10 +129,10 @@
     },
     {
         "iconUrl": "https://assets.lk21.party/favicons/apple-icon-144x144.png",
-        "fileHash": "sha256-48c75ed3747730961390dc2224d843100cf095338ddde08f9d3103a1ff407e87",
+        "fileHash": "sha256-b6389d1856517d55b4de82f2dfefc0b80ee9e1d58ea14fe2661b9e6f5fcb8f94",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 88719,
+        "fileSize": 90592,
         "status": 1,
         "language": "id",
         "authors": [

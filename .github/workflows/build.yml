@@ -40,6 +40,17 @@ jobs:
           BYPASS_PASSWORD: ${{ secrets.BYPASS_PASSWORD }}
           UPDATE_JSON_URL: ${{ secrets.UPDATE_JSON_URL }}
           FALLBACK_RELEASE_URL: ${{ secrets.FALLBACK_RELEASE_URL }}
+          LAYARKACA_MAIN_URL: ${{ secrets.LAYARKACA_MAIN_URL }}
+          LAYARKACA_SERIES_URL: ${{ secrets.LAYARKACA_SERIES_URL }}
+          LAYARKACA_SEARCH_URL: ${{ secrets.LAYARKACA_SEARCH_URL }}
+          BYSE_POW_LR: ${{ secrets.BYSE_POW_LR }}
+          BYSE_POW_HR: ${{ secrets.BYSE_POW_HR }}
+          BYSE_API_CAPTCHA: ${{ secrets.BYSE_API_CAPTCHA }}
+          BYSE_API_VERIFY: ${{ secrets.BYSE_API_VERIFY }}
+          BYSE_API_SETTINGS: ${{ secrets.BYSE_API_SETTINGS }}
+          ABYSS_KEY_FORMAT: ${{ secrets.ABYSS_KEY_FORMAT }}
+          ABYSS_PATH_FORMAT: ${{ secrets.ABYSS_PATH_FORMAT }}
+          ABYSS_FINAL_FORMAT: ${{ secrets.ABYSS_FINAL_FORMAT }}
           MOVIEBOX_SECRET_KEY_DEFAULT: ${{ secrets.MOVIEBOX_SECRET_KEY_DEFAULT }}
           MOVIEBOX_SECRET_KEY_ALT: ${{ secrets.MOVIEBOX_SECRET_KEY_ALT }}
           CASTLE_SUFFIX: ${{ secrets.CASTLE_SUFFIX }}
