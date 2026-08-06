@@ -1134,10 +1134,19 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        // Sort matches: Pertandingan Indonesia paling depan, lalu sepak bola, lalu lainnya
+        // Sort matches: Indonesia & Live -> Indonesia & Upcoming -> Lainnya & Live -> Lainnya & Upcoming
         val sortedLiveMatches = liveMatches.sortedWith(
-            compareByDescending<LiveMatchInfo> { isIndonesiaMatch(it.matchTitle, it.leagueName, it.homeName, it.awayName) }
-                .thenBy { if (it.sportType == 1) 0 else 1 }
+            compareByDescending<LiveMatchInfo> { 
+                val isIndo = isIndonesiaMatch(it.matchTitle, it.leagueName, it.homeName, it.awayName)
+                val isLive = (it.matchStatus in ongoingStatuses) || (it.matchTime > 0L && now >= it.matchTime && it.matchStatus < 10000L)
+                if (isIndo && isLive) 2 else if (isIndo) 1 else 0
+            }.thenByDescending { 
+                (it.matchStatus in ongoingStatuses) || (it.matchTime > 0L && now >= it.matchTime && it.matchStatus < 10000L)
+            }.thenBy { 
+                if (it.sportType == 1) 0 else 1 
+            }.thenBy { 
+                it.matchTime 
+            }
         )
         addCategory("Live Event", sortedLiveMatches)
 
