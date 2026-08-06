@@ -79,8 +79,6 @@ class DracinAIOProvider : MainAPI() {
             ProviderInfo("reelshort", "ReelShort"),
             ProviderInfo("shortmax", "ShortMax"),
             ProviderInfo("dramabox", "DramaBox"),
-            ProviderInfo("goodshort", "GoodShort"),
-            ProviderInfo("pinedrama", "PineDrama"),
             ProviderInfo("dramarush", "DramaRush"),
             ProviderInfo("dramabite", "DramaBite"),
             ProviderInfo("meloshort", "MeloShort"),
@@ -90,15 +88,18 @@ class DracinAIOProvider : MainAPI() {
             ProviderInfo("freereels", "FreeReels"),
             ProviderInfo("starshort", "StarShort"),
             ProviderInfo("stardusttv", "StardustTV"),
-            ProviderInfo("dramawave", "DramaWave"),
             ProviderInfo("dramanova", "DramaNova"),
-            ProviderInfo("moviebox", "MovieBox"),
             ProviderInfo("dotdrama", "DotDrama"),
             ProviderInfo("netshort", "NetShort"),
-            ProviderInfo("velolo", "Velolo"),
             ProviderInfo("cubetv", "CubeTV"),
-            ProviderInfo("bilitv", "BiliTV")
+            ProviderInfo("bilitv", "BiliTV"),
+            ProviderInfo("shortwave", "Shortwave"),
+            ProviderInfo("wetv", "WeTV")
         )
+
+        val htmlCategoryProviders = setOf("shortwave")
+
+        val homepageProviders = setOf("shortmax", "dramabox", "melolo", "dotdrama", "shortwave")
 
         val providersWithDub = setOf("reelshort", "shortmax", "dramabox", "dramarush", "melolo", "starshort", "netshort", "cubetv")
 
@@ -218,7 +219,10 @@ class DracinAIOProvider : MainAPI() {
         newLine = proxyRegex.replace(newLine) { matchResult ->
             val encoded = matchResult.groupValues[1]
             try {
-                String(Base64.decode(encoded, Base64.DEFAULT), Charsets.UTF_8)
+                val cleanBase64 = encoded.replace('_', '/').replace('-', '+')
+                val pad = (4 - cleanBase64.length % 4) % 4
+                val finalBase64 = if (pad > 0) cleanBase64 + "=".repeat(pad) else cleanBase64
+                String(Base64.decode(finalBase64, Base64.DEFAULT), Charsets.UTF_8)
             } catch (e: Exception) {
                 matchResult.value
             }
@@ -233,10 +237,7 @@ class DracinAIOProvider : MainAPI() {
     override val hasMainPage = true
 
     override val mainPage = listOf(
-        MainPageData("Beranda", "beranda"),
-        MainPageData("Top 10 Minggu Ini", "global|top10"),
-        MainPageData("Lagi Trending", "global|trending"),
-        MainPageData("Baru Tayang", "global|barutayang")
+        MainPageData("Beranda", "beranda")
     ) + providers.flatMap { prov ->
         val list = ArrayList<MainPageData>()
         list.add(MainPageData("[${prov.name}] - Semua", "${prov.code}|semua"))
@@ -449,8 +450,8 @@ class DracinAIOProvider : MainAPI() {
 
             val context = appContext
             if (context != null) {
-                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v4")
-                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v4") ?: 0L
+                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v7")
+                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v7") ?: 0L
                 val now = System.currentTimeMillis()
                 // Cache TTL: 10 minutes (600.000 ms)
                 if (cachedJson != null && now - cachedTime < 600000) {
@@ -469,9 +470,9 @@ class DracinAIOProvider : MainAPI() {
                 val responseText = httpGet(mainUrl)
                 if (responseText.isNotEmpty()) {
                     val sections = listOf(
-                        "Top 10 Minggu Ini" to "Top 10 Minggu Ini",
-                        "Lagi Trending" to "Lagi Trending",
-                        "Baru Tayang" to "Baru Tayang"
+                        "Top 10 Drama China" to "Top 10 Drama China",
+                        "Paling Dicari" to "Paling Dicari",
+                        "Terbaru Hari Ini" to "Terbaru Hari Ini"
                     )
                     for ((title, term) in sections) {
                         val startIndex = responseText.indexOf(term)
@@ -485,7 +486,7 @@ class DracinAIOProvider : MainAPI() {
                                 val inner = m.groupValues[2]
                                 val watchPart = href.substringAfter("/watch/")
                                 val providerCode = watchPart.substringBefore("/")
-                                val id = watchPart.substringAfter("--")
+                                val id = if (watchPart.contains("--")) watchPart.substringAfter("--") else watchPart.substringAfterLast("/")
                                 if (providerCode.isEmpty() || id.isEmpty()) continue
                                 val srcRegex = """src="([^"]+)"""".toRegex()
                                 val altRegex = """alt="([^"]+)"""".toRegex()
@@ -508,9 +509,9 @@ class DracinAIOProvider : MainAPI() {
                 e.printStackTrace()
             }
 
-            // 2. Load All Provider Lists in Parallel
+            // 2. Load Selected Provider Lists in Parallel
             val deferredLists = withContext(Dispatchers.IO) {
-                providers.map { prov ->
+                providers.filter { homepageProviders.contains(it.code) }.map { prov ->
                     async {
                         try {
                             val action = when (prov.code) {
@@ -522,27 +523,16 @@ class DracinAIOProvider : MainAPI() {
                             val responseText = httpGet(url)
                             val rawItems = parseRankItems(responseText)
                             
-                            val dubItems = rawItems.filter { isDubOrIndo(it.title) }
-                            val nonDubItems = rawItems.filter { !isDubOrIndo(it.title) }
-                            
                             val lists = ArrayList<HomePageList>()
-                            
-                            suspend fun buildList(items: List<AioItem>, titleName: String) {
-                                val pageItems = items.take(24)
-                                val searchResponses = pageItems.map {
-                                    val coverUrl = getDirectImageUrl(it.cover)
-                                    newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
-                                        this.posterUrl = coverUrl
-                                    }
-                                }
-                                if (searchResponses.isNotEmpty()) {
-                                    lists.add(HomePageList(titleName, searchResponses))
+                            val pageItems = rawItems.take(24)
+                            val searchResponses = pageItems.map {
+                                val coverUrl = getDirectImageUrl(it.cover)
+                                newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
+                                    this.posterUrl = coverUrl
                                 }
                             }
-                            
-                            buildList(nonDubItems, "[${prov.name}] - Semua")
-                            if (providersWithDub.contains(prov.code)) {
-                                buildList(dubItems, "[${prov.name}] - Dub Indo")
+                            if (searchResponses.isNotEmpty()) {
+                                lists.add(HomePageList("[${prov.name}]", searchResponses))
                             }
                             
                             lists
@@ -560,8 +550,8 @@ class DracinAIOProvider : MainAPI() {
                 try {
                     val jsonStr = serializeHomeCache(homePageLists)
                     if (jsonStr.isNotEmpty()) {
-                        context.setKey("dracin_aio_home_cache_v4", jsonStr)
-                        context.setKey("dracin_aio_home_cache_time_v4", System.currentTimeMillis())
+                        context.setKey("dracin_aio_home_cache_v7", jsonStr)
+                        context.setKey("dracin_aio_home_cache_time_v7", System.currentTimeMillis())
                         Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
                     }
                 } catch (e: Exception) {
@@ -573,9 +563,9 @@ class DracinAIOProvider : MainAPI() {
         } else if (filterData.startsWith("global|")) {
             val type = filterData.substringAfter("global|")
             val term = when (type) {
-                "top10" -> "Top 10 Minggu Ini"
-                "trending" -> "Lagi Trending"
-                else -> "Baru Tayang"
+                "top10" -> "Top 10 Drama China"
+                "trending" -> "Paling Dicari"
+                else -> "Terbaru Hari Ini"
             }
 
             val responseText = httpGet(mainUrl)
@@ -591,7 +581,7 @@ class DracinAIOProvider : MainAPI() {
                         val inner = m.groupValues[2]
                         val watchPart = href.substringAfter("/watch/")
                         val providerCode = watchPart.substringBefore("/")
-                        val id = watchPart.substringAfter("--")
+                        val id = if (watchPart.contains("--")) watchPart.substringAfter("--") else watchPart.substringAfterLast("/")
                         if (providerCode.isEmpty() || id.isEmpty()) continue
                         val srcRegex = """src="([^"]+)"""".toRegex()
                         val altRegex = """alt="([^"]+)"""".toRegex()
@@ -714,126 +704,207 @@ class DracinAIOProvider : MainAPI() {
             id = parts[1]
         }
         val provider = rawProvider.substringAfterLast("/")
+        Log.d("DracinAIO", "load: url = $url, provider = $provider, id = $id")
 
         val detailUrl = if (provider == "freereels") "$API_URL/$provider?action=detail&seriesKey=$id" else "$API_URL/$provider?action=detail&id=$id"
-        val responseText = httpGet(detailUrl)
-        if (responseText.isEmpty()) return null
+        val responseText = if (htmlCategoryProviders.contains(provider)) "" else httpGet(detailUrl)
+        Log.d("DracinAIO", "load: detailUrl = $detailUrl, responseText length = ${responseText.length}")
+
+        var title = ""
+        var cover = passedCover
+        var plot = ""
+        val episodesList = ArrayList<Episode>()
+        var isLoaded = false
 
         try {
-            val root = JSONObject(responseText)
-            var targetObj = root
-            if (root.has("data")) {
-                val dataVal = root.opt("data")
-                if (dataVal is JSONObject) {
-                    if (!dataVal.has("chapters") && !dataVal.has("chapterList")) {
-                        targetObj = dataVal
-                    }
-                }
-            }
-
-            var title = ""
-            var cover = ""
-            var plot = ""
-            val episodesList = ArrayList<Episode>()
-
-            // Format 1: Reelshort (has "data" object containing "chapters")
-            if (targetObj === root && root.has("data")) {
-                val dataObj = root.getJSONObject("data")
-                title = dataObj.optString("title").ifEmpty { dataObj.optString("bookName").ifEmpty { passedTitle.ifEmpty { id } } }
-                cover = dataObj.optString("cover").ifEmpty { dataObj.optString("poster").ifEmpty { dataObj.optString("icon").ifEmpty { passedCover } } }
-                plot = dataObj.optString("description").ifEmpty { dataObj.optString("introduction") }
-                val bookId = dataObj.optString("bookId").ifEmpty { id }
-
-                val chapters = dataObj.optJSONArray("chapters")
-                if (chapters != null) {
-                    for (i in 0 until chapters.length()) {
-                        val ch = chapters.optJSONObject(i) ?: continue
-                        val epNo = ch.optInt("episode", i + 1)
-                        val epTitle = ch.optString("chapter_name").ifEmpty { ch.optString("title").ifEmpty { "Episode $epNo" } }
-                        val chapterId = ch.optString("chapter_id")
-                        
-                        val videoFakeId = "$id::$bookId::$chapterId"
-                        episodesList.add(
-                            newEpisode("$provider|watch|$videoFakeId") {
-                                this.name = epTitle
-                                this.episode = epNo
-                                this.season = 1
-                            }
-                        )
-                    }
-                }
-            }
-            // Format 2: Dramabox (has "bookInfo" and "chapterList")
-            else if (targetObj.has("bookInfo")) {
-                val bookInfo = targetObj.getJSONObject("bookInfo")
-                title = bookInfo.optString("bookName").ifEmpty { bookInfo.optString("title").ifEmpty { passedTitle.ifEmpty { id } } }
-                cover = bookInfo.optString("cover").ifEmpty { bookInfo.optString("poster").ifEmpty { bookInfo.optString("icon").ifEmpty { passedCover } } }
-                plot = bookInfo.optString("introduction").ifEmpty { bookInfo.optString("description") }
-                val bookId = bookInfo.optString("bookId").ifEmpty { id }
-
-                val chapterList = targetObj.optJSONArray("chapterList")
-                if (chapterList != null) {
-                    for (i in 0 until chapterList.length()) {
-                        val ch = chapterList.optJSONObject(i) ?: continue
-                        val indexStr = ch.optString("indexStr")
-                        val epNo = indexStr.toIntOrNull() ?: (i + 1)
-                        val epTitle = ch.optString("title").ifEmpty { "Episode $epNo" }
-                        
-                        episodesList.add(
-                            newEpisode("$provider|stream|$bookId|$epNo") {
-                                this.name = epTitle
-                                this.episode = epNo
-                                this.season = 1
-                            }
-                        )
-                    }
-                }
-            }
-            // Format 3: Others (has keys "title", "cover", "episodes" / "list")
-            else {
-                val infoObj = if (root.has("drama")) root.getJSONObject("drama") else targetObj
-                title = infoObj.optString("title").ifEmpty { infoObj.optString("name").ifEmpty { passedTitle.ifEmpty { id } } }
-                cover = infoObj.optString("cover").ifEmpty { infoObj.optString("poster").ifEmpty { infoObj.optString("coverImgUrl").ifEmpty { infoObj.optString("icon").ifEmpty { passedCover } } } }
-                plot = infoObj.optString("description").ifEmpty { infoObj.optString("summary").ifEmpty { infoObj.optString("introduce") } }
-
-                val episodes = root.optJSONArray("episodes") ?: targetObj.optJSONArray("episodes") ?: targetObj.optJSONArray("list")
-                if (episodes != null) {
-                    for (i in 0 until episodes.length()) {
-                        val ch = episodes.optJSONObject(i) ?: continue
-                        val epNo = ch.optInt("episodeNo", 0).let { if (it > 0) it else ch.optInt("index", i + 1) }
-                        val epTitle = ch.optString("title").ifEmpty { ch.optString("name").ifEmpty { "Episode $epNo" } }
-                        
-                        val directUrl = ch.optString("_h264").ifEmpty { ch.optString("_h265").ifEmpty { ch.optString("url").ifEmpty { ch.optString("videoUrl") } } }
-                        val epData = if (directUrl.isNotEmpty()) {
-                            "$provider|direct|$directUrl"
-                        } else {
-                            val videoFakeId = ch.optString("videoFakeId").ifEmpty { "$id::$epNo" }
-                            val actionType = if (provider == "meloshort") "episode_video_melo" else "episode_video"
-                            "$provider|$actionType|$videoFakeId"
+            if (responseText.isNotEmpty() && !responseText.startsWith("<!DOCTYPE html>")) {
+                val root = JSONObject(responseText)
+                Log.d("DracinAIO", "load: parsed JSONObject, root keys = ${root.keys().asSequence().toList()}")
+                var targetObj = root
+                if (root.has("data")) {
+                    val dataVal = root.opt("data")
+                    if (dataVal is JSONObject) {
+                        if (!dataVal.has("chapters") && !dataVal.has("chapterList")) {
+                            targetObj = dataVal
                         }
-                        
-                        episodesList.add(
-                            newEpisode(epData) {
-                                this.name = epTitle
-                                this.episode = epNo
-                                this.season = 1
+                    }
+                }
+
+                // Format 1: Reelshort (has "data" object containing "chapters")
+                if (targetObj === root && root.has("data")) {
+                    val dataObj = root.getJSONObject("data")
+                    title = dataObj.optString("title").ifEmpty { dataObj.optString("bookName").ifEmpty { passedTitle.ifEmpty { id } } }
+                    cover = dataObj.optString("cover").ifEmpty { dataObj.optString("poster").ifEmpty { dataObj.optString("icon").ifEmpty { passedCover } } }
+                    plot = dataObj.optString("description").ifEmpty { dataObj.optString("introduction") }
+                    val bookId = dataObj.optString("bookId").ifEmpty { id }
+
+                    val chapters = dataObj.optJSONArray("chapters")
+                    if (chapters != null) {
+                        for (i in 0 until chapters.length()) {
+                            val ch = chapters.optJSONObject(i) ?: continue
+                            val epNo = ch.optInt("episode", i + 1)
+                            val epTitle = ch.optString("chapter_name").ifEmpty { ch.optString("title").ifEmpty { "Episode $epNo" } }
+                            val chapterId = ch.optString("chapter_id")
+                            
+                            val videoFakeId = "$id::$bookId::$chapterId"
+                            episodesList.add(
+                                newEpisode("$provider|watch|$videoFakeId") {
+                                    this.name = epTitle
+                                    this.episode = epNo
+                                    this.season = 1
+                                }
+                            )
+                        }
+                    }
+                    isLoaded = true
+                }
+                // Format 2: Dramabox (has "bookInfo" and "chapterList")
+                else if (targetObj.has("bookInfo")) {
+                    val bookInfo = targetObj.getJSONObject("bookInfo")
+                    title = bookInfo.optString("bookName").ifEmpty { bookInfo.optString("title").ifEmpty { passedTitle.ifEmpty { id } } }
+                    cover = bookInfo.optString("cover").ifEmpty { bookInfo.optString("poster").ifEmpty { bookInfo.optString("icon").ifEmpty { passedCover } } }
+                    plot = bookInfo.optString("introduction").ifEmpty { bookInfo.optString("description") }
+                    val bookId = bookInfo.optString("bookId").ifEmpty { id }
+                    Log.d("DracinAIO", "load: Dramabox format. bookId = $bookId, title = $title, cover = $cover")
+
+                    val chapterList = targetObj.optJSONArray("chapterList")
+                    Log.d("DracinAIO", "load: chapterList size = ${chapterList?.length() ?: 0}")
+                    if (chapterList != null) {
+                        for (i in 0 until chapterList.length()) {
+                            val ch = chapterList.optJSONObject(i) ?: continue
+                            val indexStr = ch.optString("indexStr")
+                            val epNo = indexStr.toIntOrNull() ?: (i + 1)
+                            val epTitle = ch.optString("title").ifEmpty { "Episode $epNo" }
+                            
+                            episodesList.add(
+                                newEpisode("$provider|stream|$bookId|$epNo") {
+                                    this.name = epTitle
+                                    this.episode = epNo
+                                    this.season = 1
+                                }
+                            )
+                        }
+                    }
+                    isLoaded = true
+                    Log.d("DracinAIO", "load: Dramabox isLoaded = true, episodesCount = ${episodesList.size}")
+                }
+                // Format 3: Others (has keys "title", "cover", "episodes" / "list")
+                else {
+                    val infoObj = if (root.has("drama")) root.getJSONObject("drama") else targetObj
+                    title = infoObj.optString("title").ifEmpty { infoObj.optString("name").ifEmpty { passedTitle.ifEmpty { id } } }
+                    cover = infoObj.optString("cover").ifEmpty { infoObj.optString("poster").ifEmpty { infoObj.optString("coverImgUrl").ifEmpty { infoObj.optString("icon").ifEmpty { passedCover } } } }
+                    plot = infoObj.optString("description").ifEmpty { infoObj.optString("summary").ifEmpty { infoObj.optString("introduce") } }
+
+                    val episodes = root.optJSONArray("episodes") ?: targetObj.optJSONArray("episodes") ?: targetObj.optJSONArray("list")
+                    if (episodes != null) {
+                        for (i in 0 until episodes.length()) {
+                            val ch = episodes.optJSONObject(i) ?: continue
+                            val epNo = ch.optInt("episodeNo", 0).let { if (it > 0) it else ch.optInt("index", i + 1) }
+                            val epTitle = ch.optString("title").ifEmpty { ch.optString("name").ifEmpty { "Episode $epNo" } }
+                            
+                            val directUrl = ch.optString("_h264").ifEmpty { ch.optString("_h265").ifEmpty { ch.optString("url").ifEmpty { ch.optString("videoUrl") } } }
+                            val epData = if (directUrl.isNotEmpty()) {
+                                "$provider|direct|$directUrl"
+                            } else {
+                                val videoFakeId = ch.optString("videoFakeId").ifEmpty { "$id::$epNo" }
+                                val actionType = if (provider == "meloshort") "episode_video_melo" else "episode_video"
+                                "$provider|$actionType|$videoFakeId"
                             }
-                        )
+                            
+                            episodesList.add(
+                                newEpisode(epData) {
+                                    this.name = epTitle
+                                    this.episode = epNo
+                                    this.season = 1
+                                }
+                            )
+                        }
+                    }
+                    isLoaded = true
+                }
+            }
+
+            if (!isLoaded) {
+                val slug = passedTitle.lowercase()
+                    .replace(Regex("[^a-z0-9\\s-]"), "")
+                    .replace(Regex("\\s+"), "-")
+                val watchUrl = "$BASE_URL/watch/$provider/${slug}--$id"
+                val html = httpGet(watchUrl)
+                if (html.isNotEmpty() && !html.contains("<title>404")) {
+                    val cleanHtml = html.replace("\\\"", "\"").replace("\\\\", "\\")
+                    val startKey = "\"initialEpisodes\""
+                    val startIdx = cleanHtml.indexOf(startKey)
+                    if (startIdx != -1) {
+                        val arrayStartIdx = cleanHtml.indexOf("[", startIdx + startKey.length)
+                        if (arrayStartIdx != -1 && arrayStartIdx < startIdx + 30) {
+                            var braceCount = 0
+                            var endIdx = -1
+                            for (i in arrayStartIdx until cleanHtml.length) {
+                                val c = cleanHtml[i]
+                                if (c == '[') braceCount++
+                                else if (c == ']') {
+                                    braceCount--
+                                    if (braceCount == 0) {
+                                        endIdx = i + 1
+                                        break
+                                    }
+                                }
+                            }
+                            if (endIdx != -1) {
+                                val arrayJson = cleanHtml.substring(arrayStartIdx, endIdx)
+                                try {
+                                    val episodesArray = JSONArray(arrayJson)
+                                    var epCount = 0
+                                    for (i in 0 until episodesArray.length()) {
+                                        val ch = episodesArray.getJSONObject(i)
+                                        val videoFakeId = ch.optString("videoFakeId")
+                                        val epNo = ch.optInt("episodeNumber", i + 1)
+                                        val epTitle = ch.optString("title").ifEmpty { "Episode $epNo" }
+                                        
+                                        if (videoFakeId.isNotEmpty()) {
+                                            episodesList.add(
+                                                newEpisode("$provider|episode_video|$videoFakeId") {
+                                                    this.name = epTitle
+                                                    this.episode = epNo
+                                                    this.season = 1
+                                                }
+                                            )
+                                            epCount++
+                                        }
+                                    }
+                                    if (epCount > 0) {
+                                        title = passedTitle.ifEmpty { id }
+                                        val descRegex = """description"\s*:\s*"([^"]+)"""".toRegex()
+                                        plot = descRegex.find(cleanHtml)?.groupValues?.get(1) ?: ""
+                                        isLoaded = true
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("DracinAIO", "Failed to parse initialEpisodes JSON", e)
+                                }
+                            }
+                        }
                     }
                 }
             }
 
-            val coverUrl = getDirectImageUrl(cover)
+            Log.d("DracinAIO", "load: final isLoaded = $isLoaded, episodesCount = ${episodesList.size}")
+            if (!isLoaded) {
+                Log.d("DracinAIO", "load: failed because isLoaded is false")
+                return null
+            }
+            
+            Log.d("DracinAIO", "load: returning newTvSeriesLoadResponse")
             return newTvSeriesLoadResponse(
                 title,
                 buildDetailUrl(provider, id, title, cover),
                 TvType.TvSeries,
                 episodesList
             ) {
-                this.posterUrl = coverUrl
+                this.posterUrl = getDirectImageUrl(cover)
                 this.plot = plot
             }
         } catch (e: Exception) {
+            Log.d("DracinAIO", "load: Exception in load method: ${e.message}")
             e.printStackTrace()
             return null
         }
@@ -862,6 +933,55 @@ class DracinAIOProvider : MainAPI() {
                         name = name,
                         source = name,
                         url = directUrl,
+                        type = linkType
+                    ) {
+                        this.quality = Qualities.P720.value
+                        this.headers = linkHeaders
+                    }
+                )
+                return true
+            }
+            "watch_page" -> {
+                val pageUrl = parts.drop(2).joinToString("|")
+                Log.d("DracinAIO", "loadLinks watch_page: pageUrl = $pageUrl")
+                val html = httpGet(pageUrl)
+                if (html.isEmpty()) return false
+                val cleanHtml = html.replace("\\\"", "\"").replace("\\\\", "\\")
+                
+                val streamUrlRegex = """initialStream"\s*:\s*\{\s*"url"\s*:\s*"([^"]+)"""".toRegex()
+                val finalUrl = streamUrlRegex.find(cleanHtml)?.groupValues?.get(1) ?: ""
+                Log.d("DracinAIO", "loadLinks watch_page: extracted finalUrl = $finalUrl")
+                if (finalUrl.isEmpty()) return false
+
+                val absoluteUrl = if (finalUrl.startsWith("/")) "$mainUrl$finalUrl" else finalUrl
+                Log.d("DracinAIO", "loadLinks watch_page: absoluteUrl = $absoluteUrl")
+
+                try {
+                    val subRegex = """\{"label":"([^"]+)","lang":"([^"]+)","url":"([^"]+)"\}""".toRegex()
+                    val subs = subRegex.findAll(cleanHtml)
+                    for (s in subs) {
+                        var label = s.groupValues[1]
+                        if (label.lowercase() == "in" || label.lowercase() == "id") {
+                            label = "Indonesia"
+                        }
+                        val subUrl = s.groupValues[3]
+                        if (subUrl.isNotEmpty()) {
+                            val finalSubUrl = if (subUrl.startsWith("/")) "$mainUrl$subUrl" else subUrl
+                            subtitleCallback.invoke(newSubtitleFile(label, finalSubUrl))
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("DracinAIO", "Failed to parse subtitles in loadLinks", e)
+                }
+
+                val linkHeaders = getHeaders()
+                val isM3u8 = absoluteUrl.substringBefore("?").contains(".m3u8", ignoreCase = true)
+                val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                callback.invoke(
+                    newExtractorLink(
+                        name = name,
+                        source = name,
+                        url = absoluteUrl,
                         type = linkType
                     ) {
                         this.quality = Qualities.P720.value
@@ -909,16 +1029,23 @@ class DracinAIOProvider : MainAPI() {
                 "$API_URL/$provider?action=episode_video&dramaId=$dramaId&chapterId=$chapterId"
             }
             else -> {
-                if (provider == "freereels") {
-                    "$API_URL/$provider?action=stream&videoFakeId=$param"
-                } else if (provider == "netshort") {
-                    "$API_URL/$provider?action=watch&id=$param"
-                } else {
-                    // Standard episode_video format: param = id::ep
+                if (htmlCategoryProviders.contains(provider)) {
                     val subParts = param.split("::")
-                    val id = subParts[0]
-                    val ep = if (subParts.size > 1) subParts[1] else "1"
-                    "$API_URL/$provider?action=episode_video&id=$id&ep=$ep"
+                    val dramaId = subParts[0]
+                    val chapterId = if (subParts.size > 1) subParts[1] else ""
+                    "$API_URL/$provider?action=stream&dramaId=$dramaId&chapterId=$chapterId"
+                } else {
+                    if (provider == "freereels") {
+                        "$API_URL/$provider?action=stream&videoFakeId=$param"
+                    } else if (provider == "netshort") {
+                        "$API_URL/$provider?action=watch&id=$param"
+                    } else {
+                        // Standard episode_video format: param = id::ep
+                        val subParts = param.split("::")
+                        val id = subParts[0]
+                        val ep = if (subParts.size > 1) subParts[1] else "1"
+                        "$API_URL/$provider?action=episode_video&id=$id&ep=$ep"
+                    }
                 }
             }
         }
