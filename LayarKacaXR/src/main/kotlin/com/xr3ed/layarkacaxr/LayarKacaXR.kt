@@ -61,62 +61,21 @@ class LayarKacaXR : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        // Kategori utama
-        "$mainUrl/populer/page/" to "Most Popular Movies",
-        "$mainUrl/rating/page/" to "IMDb Rated",
-        "$mainUrl/most-commented/page/" to "Most Commented",
-        "$seriesUrl/latest-series/page/" to "Latest Series",
-        "$mainUrl/latest/page/" to "Latest Movies",
-
-        // Genre movies LK21
-        "$mainUrl/genre/action/page/" to "Action Movie",
-        "$mainUrl/genre/adventure/page/" to "Adventure Movie",
-        "$mainUrl/genre/animation/page/" to "Animation Movie",
-        "$mainUrl/genre/biography/page/" to "Biography Movie",
-        "$mainUrl/genre/comedy/page/" to "Comedy Movie",
-        "$mainUrl/genre/crime/page/" to "Crime Movie",
-        "$mainUrl/genre/documentary/page/" to "Documentary Movie",
-        "$mainUrl/genre/drama/page/" to "Drama Movie",
-        "$mainUrl/genre/family/page/" to "Family Movie",
-        "$mainUrl/genre/fantasy/page/" to "Fantasy Movie",
-        "$mainUrl/genre/history/page/" to "History Movie",
-        "$mainUrl/genre/horror/page/" to "Horror Movie",
-        "$mainUrl/genre/mystery/page/" to "Mystery Movie",
-        "$mainUrl/genre/romance/page/" to "Romance Movie",
-        "$mainUrl/genre/sci-fi/page/" to "Sci-Fi Movie",
-        "$mainUrl/genre/sport/page/" to "Sport Movie",
-        "$mainUrl/genre/thriller/page/" to "Thriller Movie",
-        "$mainUrl/genre/war/page/" to "War Movie",
-        "$mainUrl/genre/western/page/" to "Western Movie",
-
-        // Negara movies LK21
-        "$mainUrl/country/australia/page/" to "Australia",
-        "$mainUrl/country/canada/page/" to "Canada",
-        "$mainUrl/country/china/page/" to "China",
-        "$mainUrl/country/france/page/" to "France",
-        "$mainUrl/country/germany/page/" to "Germany",
-        "$mainUrl/country/hong-kong/page/" to "Hong Kong",
-        "$mainUrl/country/india/page/" to "India",
-        "$mainUrl/country/indonesia/page/" to "Indonesia",
-        "$mainUrl/country/italy/page/" to "Italy",
-        "$mainUrl/country/japan/page/" to "Japan",
-        "$mainUrl/country/malaysia/page/" to "Malaysia",
-        "$mainUrl/country/philippines/page/" to "Philippines",
-        "$mainUrl/country/russia/page/" to "Russia",
-        "$mainUrl/country/south-korea/page/" to "South Korea",
-        "$mainUrl/country/spain/page/" to "Spain",
-        "$mainUrl/country/taiwan/page/" to "Taiwan",
-        "$mainUrl/country/thailand/page/" to "Thailand",
-
-        // Genre series NontonDrama
-        "$seriesUrl/genre/action/page/" to "Action Series",
-        "$seriesUrl/genre/animation/page/" to "Animation Series",
-        "$seriesUrl/genre/comedy/page/" to "Comedy Series",
-        "$seriesUrl/genre/crime/page/" to "Crime Series",
-        "$seriesUrl/genre/documentary/page/" to "Documentary Series",
-        "$seriesUrl/genre/drama/page/" to "Drama Series",
-        "$seriesUrl/genre/family/page/" to "Family Series",
-        "$seriesUrl/genre/mystery/page/" to "Mystery Series",
+        "$mainUrl/latest/page/" to "Film Terbaru",
+        "$mainUrl/nontondrama?page=top-series-today" to "SERIES UNGGULAN",
+        "$seriesUrl/latest-series/page/" to "SERIES UPDATE",
+        "$mainUrl/populer/page/" to "TOP BULAN INI",
+        "$mainUrl/rekomendasi-film-pintar/page/" to "Rekomendasi Untukmu",
+        "$mainUrl/nonton-bareng-keluarga/page/" to "Nonton Bareng Keluarga",
+        "$mainUrl/genre/action/page/" to "Action Terbaru",
+        "$mainUrl/maraton-drakor/page/" to "Maraton Drakor",
+        "$mainUrl/genre/horror/page/" to "Horror Terbaru",
+        "$mainUrl/genre/romance/page/" to "Romance Terbaru",
+        "$mainUrl/genre/comedy/page/" to "Comedy Terbaru",
+        "$mainUrl/country/south-korea/page/" to "Korea Terbaru",
+        "$mainUrl/country/thailand/page/" to "Thailand Terbaru",
+        "$mainUrl/country/india/page/" to "India Terbaru",
+        "$mainUrl/latest/page/" to "Daftar Lengkap Film Terbaru"
     )
 
     private val headers = mapOf(
@@ -125,12 +84,79 @@ class LayarKacaXR : MainAPI() {
         "Accept-Language" to "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7"
     )
 
+    private var cachedMainDoc: Document? = null
+    private var cachedMainTime: Long = 0L
+    private var cachedSeriesDoc: Document? = null
+    private var cachedSeriesTime: Long = 0L
+
+    private suspend fun getHomepageDocument(url: String): Document {
+        val now = System.currentTimeMillis()
+        val isSeries = url.contains("nontondrama", true) || url.contains("latest-series", true)
+        
+        if (isSeries) {
+            if (cachedSeriesDoc != null && (now - cachedSeriesTime) < 15000L) {
+                return cachedSeriesDoc!!
+            }
+            val doc = app.get(seriesUrl, headers = headers, timeout = 30L).document
+            cachedSeriesDoc = doc
+            cachedSeriesTime = now
+            return doc
+        } else {
+            if (cachedMainDoc != null && (now - cachedMainTime) < 15000L) {
+                return cachedMainDoc!!
+            }
+            val doc = app.get(mainUrl, headers = headers, timeout = 30L).document
+            cachedMainDoc = doc
+            cachedMainTime = now
+            return doc
+        }
+    }
+
+    private fun parseHomepageSection(document: Document, sectionTitle: String): List<SearchResponse> {
+        val heading = document.select("h2").firstOrNull { it.text().contains(sectionTitle, true) }
+            ?: return emptyList()
+        
+        val container = heading.parent()?.nextElementSibling() 
+            ?: heading.nextElementSibling()
+            ?: return emptyList()
+
+        val results = linkedMapOf<String, SearchResponse>()
+        container.select("article, li.slider, div.item, div.card").forEach { card ->
+            card.toSearchResult(mainUrl)?.let { item ->
+                results[item.url] = item
+            }
+        }
+        
+        if (results.isEmpty()) {
+            container.select("a[href]:has(img)").forEach { anchor ->
+                anchor.toSearchResult(mainUrl)?.let { item ->
+                    results[item.url] = item
+                }
+            }
+        }
+        
+        return results.values.toList()
+    }
+
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
-        val pageUrl = buildPagedUrl(request.data, page)
+        if (page == 1) {
+            val doc = runCatching { getHomepageDocument(request.data) }.getOrNull()
+            if (doc != null) {
+                val items = parseHomepageSection(doc, request.name)
+                if (items.isNotEmpty()) {
+                    return newHomePageResponse(
+                        request.name,
+                        items,
+                        hasNext = true
+                    )
+                }
+            }
+        }
 
+        val pageUrl = buildPagedUrl(request.data, page)
         val document = app.get(
             pageUrl,
             headers = headers,
