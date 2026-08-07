@@ -47,9 +47,6 @@ import javax.crypto.spec.SecretKeySpec
 class KlikXXiXR : MainAPI() {
     override var mainUrl = BuildConfig.KLIKXXI_MAIN_URL
     override var name = "KlikXXiXR"
-
-    private val categoryCache = java.util.concurrent.ConcurrentHashMap<String, List<String>>()
-    private val fetchSemaphore = Semaphore(6)
     override val hasMainPage = true
     override val hasQuickSearch = true
     override val hasDownloadSupport = true
@@ -98,44 +95,7 @@ class KlikXXiXR : MainAPI() {
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
         val results = parseListing(document)
-
-        val deferred = results.map { item ->
-            val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
-            kotlinx.coroutines.coroutineScope {
-                async(kotlinx.coroutines.Dispatchers.IO) {
-                    try {
-                        val cached = categoryCache[originalUrl]
-                        val categories = if (cached != null) {
-                            cached
-                        } else {
-                            fetchSemaphore.withPermit {
-                                categoryCache[originalUrl] ?: run {
-                                    val detailResponse = app.get(originalUrl, headers = headers, referer = mainUrl)
-                                    val detailDoc = detailResponse.document
-                                    val parsed = detailDoc.select("a[href*='/genre/'], a[href*='/category/']")
-                                        .map { it.text().trim().lowercase(Locale.ROOT) }
-                                    categoryCache[originalUrl] = parsed
-                                    parsed
-                                }
-                            }
-                        }
-
-                        val isVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
-                        val isDracin = categories.any { it == "dracin" || it.contains("dracin") }
-                        if (isVivaGroup || isDracin) {
-                            null
-                        } else {
-                            item
-                        }
-                    } catch (e: Throwable) {
-                        item
-                    }
-                }
-            }
-        }
-        val filteredResults = deferred.awaitAll().filterNotNull()
-
-        return newHomePageResponse(request.name, filteredResults, hasNextPage(document, page))
+        return newHomePageResponse(request.name, results, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -343,7 +303,10 @@ class KlikXXiXR : MainAPI() {
         if (!isContentUrl(href) || href.lowercase(Locale.ROOT).contains("semi")) return null
         val container = anchor.bestContainer()
         val genres = container.select("a[href*='/category/'], a[href*='/genre/']").map { it.text().trim().lowercase(Locale.ROOT) }
-        if (genres.any { it.contains("viva group") || it.contains("viva-group") || it == "dracin" || it.contains("dracin") }) return null
+        val slugLower = href.lowercase(Locale.ROOT)
+        if (genres.any { it.contains("viva group") || it.contains("viva-group") || it == "dracin" || it.contains("dracin") } ||
+            slugLower.contains("viva-group") || slugLower.contains("vivamax") || slugLower.contains("dracin")
+        ) return null
         val image = container.selectFirst("img[data-src], img[data-original], img[data-lazy-src], img[data-wpfc-original-src], img[src], img[srcset]") ?: anchor.selectFirst("img")
         val title = listOf(
             container.selectFirst("h1, h2, h3, .entry-title, .title, .name")?.text(),
@@ -353,7 +316,8 @@ class KlikXXiXR : MainAPI() {
             anchor.text(),
             titleFromUrl(href)
         ).firstOrNull { isUsefulTitle(it) }?.let { cleanTitle(it) } ?: return null
-        if (isNsfw(title, href)) return null
+        val titleLower = title.lowercase(Locale.ROOT)
+        if (titleLower.contains("vivamax") || titleLower.contains("viva group") || titleLower.contains("dracin") || isNsfw(title, href)) return null
         val poster = image?.imageUrl(mainUrl) ?: container.styleImage(mainUrl) ?: anchor.findNearbyImage(mainUrl) ?: return null
         val text = cleanText(container.text())
         val type = inferType(href, title, text, 0, null)
