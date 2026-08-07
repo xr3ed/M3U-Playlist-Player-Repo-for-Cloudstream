@@ -94,41 +94,7 @@ class KlikXXiXR : MainAPI() {
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
         val results = parseListing(document)
-
-        val isAsiaCategory = request.data.contains("/category/asia/", ignoreCase = true) || request.data.contains("category/asia", ignoreCase = true)
-        val filteredResults = if (isAsiaCategory) {
-            val deferred = results.map { item ->
-                val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
-                kotlinx.coroutines.coroutineScope {
-                    async(kotlinx.coroutines.Dispatchers.IO) {
-                        try {
-                            val detailResponse = app.get(originalUrl, headers = headers, referer = mainUrl)
-                            val detailDoc = detailResponse.document
-                            val categories = detailDoc.select("a[href*='/genre/'], a[href*='/category/']")
-                                .map { it.text().trim().lowercase(Locale.ROOT) }
-                            
-                            val hasAsia = categories.any { it == "asia" }
-                            val hasDrama = categories.any { it == "drama" }
-                            val hasVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
-                            val hasPhilippines = categories.any { it.contains("philippine") }
-                            
-                            if (hasAsia && hasDrama && hasVivaGroup && hasPhilippines) {
-                                null
-                            } else {
-                                item
-                            }
-                        } catch (e: Throwable) {
-                            item
-                        }
-                    }
-                }
-            }
-            deferred.awaitAll().filterNotNull()
-        } else {
-            results
-        }
-
-        return newHomePageResponse(request.name, filteredResults, hasNextPage(document, page))
+        return newHomePageResponse(request.name, results, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
