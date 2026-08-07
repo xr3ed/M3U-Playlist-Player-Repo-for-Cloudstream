@@ -199,12 +199,13 @@ object KlikXXiExtractors {
                 m.value
             }
         }
-        val streamUrl = Regex("""https?://[a-zA-Z0-9.-]+/[^"']*?\.urlset/master\.(?:txt|m3u8)""").find(unpacked)?.value
-            ?: Regex("""https?://[a-zA-Z0-9.-]+/[^"']*?/master\.(?:txt|m3u8)""").find(unpacked)?.value
+        val streamUrl = Regex("""https?://[a-zA-Z0-9.-]+/[^"']*?\.urlset/master\.(?:txt|m3u8)[^"']*""").find(unpacked)?.value
+            ?: Regex("""https?://[a-zA-Z0-9.-]+/[^"']*?/master\.(?:txt|m3u8)[^"']*""").find(unpacked)?.value
             ?: Regex("""["'](https?://[^"']*?\.m3u8[^"']*?)["']""").find(unpacked)?.groupValues?.getOrNull(1)
             ?: return emptyList()
+        val fixedUrl = streamUrl.replace(".txt", ".m3u8")
         val finalSource = if (sourceName.isNotEmpty()) sourceName else if (finalHost.contains("vibuxer")) "Vibuxer" else if (finalHost.contains("hgcloud")) "Hgcloud" else "Streamwish"
-        return listOf(ResolvedPlayerLink(streamUrl, "https://$finalHost/", finalSource))
+        return listOf(ResolvedPlayerLink(fixedUrl, "https://$finalHost/", finalSource))
     }
 
     private suspend fun resolveUpnsInfoPlayer(url: String, sourceName: String, mainUrl: String, headers: Map<String, String>): List<ResolvedPlayerLink> {

@@ -638,7 +638,7 @@ class KlikXXiXR : MainAPI() {
                 lower.contains("vidhide") || lower.contains("vidguard") || lower.contains("voe") || lower.contains("mp4upload") || lower.contains("uqload") ||
                 lower.contains("hubcloud") || lower.contains("gdplayer") || lower.contains("gdriveplayer") || lower.contains("krakenfiles") || lower.contains("filelions") ||
                 lower.contains("sf21.vidplayer.live") || lower.contains("minochinos.com") || lower.contains("earnvidjav.online") || lower.contains("upload18.org") || lower.contains("upload18.cc") || lower.contains("321watch.workers.dev") ||
-                lower.contains("morencius.com") || lower.contains("turbovidhls.com")
+                lower.contains("morencius.com") || lower.contains("turbovidhls.com") || lower.contains("hgcloud") || lower.contains("audinifer") || lower.contains("vibuxer") || lower.contains("streamhg")
             )
     }
 
@@ -655,6 +655,7 @@ class KlikXXiXR : MainAPI() {
         return when {
             mediaHost.contains("upload18.org") || mediaHost.contains("upload18.cc") -> "${origin(url)}/"
             mediaHost.contains("321watch.workers.dev") -> upload18Origin(referer)
+            referer.contains("hgcloud") || referer.contains("audinifer") || referer.contains("vibuxer") -> "${origin(referer)}/"
             else -> referer
         }
     }
@@ -666,7 +667,7 @@ class KlikXXiXR : MainAPI() {
             "Accept" to "*/*",
             "Referer" to mediaReferer
         )
-        return if (mediaHost.contains("upload18.org") || mediaHost.contains("upload18.cc") || mediaHost.contains("321watch.workers.dev")) {
+        return if (mediaHost.contains("upload18.org") || mediaHost.contains("upload18.cc") || mediaHost.contains("321watch.workers.dev") || referer.contains("hgcloud") || referer.contains("audinifer") || referer.contains("vibuxer")) {
             base + mapOf("Origin" to origin(mediaReferer))
         } else {
             base
