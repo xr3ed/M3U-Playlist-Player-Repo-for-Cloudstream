@@ -47,6 +47,9 @@ import javax.crypto.spec.SecretKeySpec
 class KlikXXiXR : MainAPI() {
     override var mainUrl = BuildConfig.KLIKXXI_MAIN_URL
     override var name = "KlikXXiXR"
+
+    private val categoryCache = java.util.concurrent.ConcurrentHashMap<String, List<String>>()
+    private val fetchSemaphore = Semaphore(5)
     override val hasMainPage = true
     override val hasQuickSearch = true
     override val hasDownloadSupport = true
@@ -95,7 +98,48 @@ class KlikXXiXR : MainAPI() {
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
         val results = parseListing(document)
-        return newHomePageResponse(request.name, results, hasNextPage(document, page))
+
+        val filteredResults = if (request.name == "Latest Movies") {
+            val deferred = results.map { item ->
+                val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
+                kotlinx.coroutines.coroutineScope {
+                    async(kotlinx.coroutines.Dispatchers.IO) {
+                        try {
+                            val cached = categoryCache[originalUrl]
+                            val categories = if (cached != null) {
+                                cached
+                            } else {
+                                fetchSemaphore.withPermit {
+                                    categoryCache[originalUrl] ?: run {
+                                        val detailResponse = app.get(originalUrl, headers = headers, referer = mainUrl)
+                                        val detailDoc = detailResponse.document
+                                        val parsed = detailDoc.select("a[href*='/genre/'], a[href*='/category/']")
+                                            .map { it.text().trim().lowercase(Locale.ROOT) }
+                                        categoryCache[originalUrl] = parsed
+                                        parsed
+                                    }
+                                }
+                            }
+
+                            val isVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
+                            val isDracin = categories.any { it == "dracin" || it.contains("dracin") }
+                            if (isVivaGroup || isDracin) {
+                                null
+                            } else {
+                                item
+                            }
+                        } catch (e: Throwable) {
+                            item
+                        }
+                    }
+                }
+            }
+            deferred.awaitAll().filterNotNull()
+        } else {
+            results
+        }
+
+        return newHomePageResponse(request.name, filteredResults, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
