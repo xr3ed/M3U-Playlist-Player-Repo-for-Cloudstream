@@ -100,6 +100,7 @@ class AnimeSailTurnstileDialog(
             com.google.android.material.R.id.design_bottom_sheet
         )
         bottomSheet?.layoutParams?.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT
+        bottomSheet?.setBackgroundColor(Color.parseColor("#151624"))
         bottomSheet?.requestLayout()
     }
 
@@ -161,6 +162,7 @@ class AnimeSailTurnstileDialog(
             requireContext(), null, android.R.attr.progressBarStyleHorizontal
         ).apply {
             isIndeterminate = true
+            indeterminateTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#4C5070"))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -241,8 +243,7 @@ class AnimeSailTurnstileDialog(
                         style = document.createElement('style');
                         style.id = 'cf-custom-style';
                         style.innerHTML = ' \
-                            html, body { background-color: #151624 !important; color: #151624 !important; } \
-                            h1, h2, h3, p, div, span, a { color: #151624 !important; text-shadow: none !important; } \
+                            * { background: #151624 !important; background-color: #151624 !important; color: #151624 !important; text-shadow: none !important; } \
                             #logo, .logo, #zone-name, .zone-name, img { display: none !important; } \
                         ';
                         document.head.appendChild(style);
