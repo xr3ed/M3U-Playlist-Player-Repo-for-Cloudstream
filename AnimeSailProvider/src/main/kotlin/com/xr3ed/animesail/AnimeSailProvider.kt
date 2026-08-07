@@ -163,7 +163,13 @@ class AnimeSailProvider : MainAPI() {
         val tagsList = document.select("tbody th:contains(Genre)").next().select("a").map { it.text() }
         val durationText = document.select("tbody th:contains(Durasi)").next().text().trim()
 
-        val tracker = APIHolder.getTracker(listOf(title), TrackerType.getTypes(type), year, true)
+        val tracker = try {
+            kotlinx.coroutines.withTimeoutOrNull(2500) {
+                APIHolder.getTracker(listOf(title), TrackerType.getTypes(type), year, true)
+            }
+        } catch (_: Throwable) {
+            null
+        }
         val malId = tracker?.malId
 
         var animeMetaData: MetaAnimeData? = null
@@ -172,21 +178,31 @@ class AnimeSailProvider : MainAPI() {
 
         if (malId != null) {
             try {
-                val syncMetaData = app.get("https://api.ani.zip/mappings?mal_id=$malId").text
-                animeMetaData = parseAnimeData(syncMetaData)
-                tmdbid = animeMetaData?.mappings?.themoviedbId
-                kitsuid = animeMetaData?.mappings?.kitsuId
+                val syncMetaData = kotlinx.coroutines.withTimeoutOrNull(1500) {
+                    app.get("https://api.ani.zip/mappings?mal_id=$malId").text
+                }
+                if (syncMetaData != null) {
+                    animeMetaData = parseAnimeData(syncMetaData)
+                    tmdbid = animeMetaData?.mappings?.themoviedbId
+                    kitsuid = animeMetaData?.mappings?.kitsuId
+                }
             } catch (e: Exception) {
             }
         }
 
-        val logoUrl = fetchTmdbLogoUrl(
-            tmdbAPI = "https://api.themoviedb.org/3",
-            apiKey = "98ae14df2b8d8f8f8136499daf79f0e0",
-            type = type,
-            tmdbId = tmdbid,
-            appLangCode = "en"
-        )
+        val logoUrl = try {
+            kotlinx.coroutines.withTimeoutOrNull(1500) {
+                fetchTmdbLogoUrl(
+                    tmdbAPI = "https://api.themoviedb.org/3",
+                    apiKey = "98ae14df2b8d8f8f8136499daf79f0e0",
+                    type = type,
+                    tmdbId = tmdbid,
+                    appLangCode = "en"
+                )
+            }
+        } catch (_: Throwable) {
+            null
+        }
 
         val backgroundposter = animeMetaData?.images?.find { it.coverType == "Fanart" }?.url ?: tracker?.cover
 
@@ -374,8 +390,11 @@ class AnimeSailProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
+        android.util.Log.d("AnimeSailXR", "loadFixedExtractor: url=$url, serverName=$serverName, quality=$quality")
         loadExtractor(url, referer, subtitleCallback) { link ->
+            android.util.Log.d("AnimeSailXR", "loadExtractor Callback: link.name=${link.name}, link.source=${link.source}, serverName=$serverName")
             val finalName = if (serverName.isNotBlank() && !serverName.equals(name, ignoreCase = true)) serverName else link.name
+            android.util.Log.d("AnimeSailXR", "loadExtractor Callback: finalName=$finalName")
 
             runBlocking {
                 callback.invoke(
