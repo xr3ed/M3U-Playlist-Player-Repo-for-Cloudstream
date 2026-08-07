@@ -42,7 +42,7 @@
         "internalName": "AnimeSailProvider",
         "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailProvider.cs3",
-        "name": "#Anime AnimesailXR"
+        "name": "AnimeSailXR"
     },
     {
         "fileHash": "sha256-0ce4fb14c84f4b88524d07a044c06e8ca695a2e80aec682289a11e79b5af24f5",

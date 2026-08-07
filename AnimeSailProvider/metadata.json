@@ -1,6 +1,6 @@
 {
   "pluginClassName": "com.xr3ed.animesail.AnimeSailProviderPlugin",
-  "displayName": "#Anime AnimesailXR",
+  "displayName": "AnimeSailXR",
   "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
   "author": "xr3ed",
   "version": 12,
