@@ -532,7 +532,24 @@ class KlikXXiXR : MainAPI() {
                     KlikXXiExtractors.collectLinksFromHtml(body, pageUrl).forEach { links.add(it to tabText) }
                 }
             }
-            if (links.isNotEmpty()) return links.toList()
+            if (links.isNotEmpty()) {
+                val post = playerOptions.firstOrNull()?.attr("data-post")?.takeIf { it.isNotBlank() } ?: playerOptions.firstOrNull()?.attr("data-id") ?: ""
+                val type = playerOptions.firstOrNull()?.attr("data-type")?.takeIf { it.isNotBlank() } ?: "movie"
+                if (post.isNotBlank()) {
+                    val action = "doo_player_ajax"
+                    (6..10).map { n ->
+                        try {
+                            app.post(ajaxUrl, data = mapOf("action" to action, "post" to post, "nume" to n.toString(), "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
+                        } catch (_: Throwable) { "" }
+                    }.forEachIndexed { i, body ->
+                        val n = i + 6
+                        if (body.isNotBlank()) {
+                            KlikXXiExtractors.collectLinksFromHtml(body, pageUrl).forEach { links.add(it to "Server $n") }
+                        }
+                    }
+                }
+                return links.toList()
+            }
         }
 
         // Only run brute-force fallback if no links have been found yet!
@@ -663,7 +680,7 @@ class KlikXXiXR : MainAPI() {
         val mediaReferer = mediaReferer(url, referer)
         val mediaHost = runCatching { URI(url).host.orEmpty().lowercase(Locale.ROOT) }.getOrDefault("")
         val base = mapOf(
-            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+            "User-Agent" to USER_AGENT,
             "Accept" to "*/*",
             "Accept-Language" to "id,en-US;q=0.7,en;q=0.3",
             "Referer" to mediaReferer
