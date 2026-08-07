@@ -662,8 +662,10 @@ class KlikXXiXR : MainAPI() {
     private fun mediaHeaders(url: String, referer: String): Map<String, String> {
         val mediaReferer = mediaReferer(url, referer)
         val mediaHost = runCatching { URI(url).host.orEmpty().lowercase(Locale.ROOT) }.getOrDefault("")
-        val base = headers + mapOf(
+        val base = mapOf(
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
             "Accept" to "*/*",
+            "Accept-Language" to "id,en-US;q=0.7,en;q=0.3",
             "Referer" to mediaReferer
         )
         return if (mediaHost.contains("upload18.org") || mediaHost.contains("upload18.cc") || mediaHost.contains("321watch.workers.dev")) {
