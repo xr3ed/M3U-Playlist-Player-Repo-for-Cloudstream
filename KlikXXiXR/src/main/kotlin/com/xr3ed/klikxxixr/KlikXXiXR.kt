@@ -221,6 +221,14 @@ class KlikXXiXR : MainAPI() {
             if (!emitted.add(key)) return false
             val mediaReferer = mediaReferer(fixed, referer)
             val mediaHeaders = mediaHeaders(fixed, referer)
+            if (fixed.isM3u8Like()) {
+                val links = try { generateM3u8(source, fixed, mediaReferer, headers = mediaHeaders) } catch (_: Throwable) { emptyList() }
+                links.forEach { link ->
+                    val linkKey = link.url.substringBefore("#")
+                    if (emitted.add(linkKey)) callback(link)
+                }
+                if (links.isNotEmpty()) return true
+            }
             callback(newExtractorLink(source, source, fixed, if (fixed.isM3u8Like()) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO) {
                 this.referer = mediaReferer
                 this.quality = if (fixed.isM3u8Like()) Qualities.Unknown.value else qualityFromUrl(fixed)
@@ -272,22 +280,43 @@ class KlikXXiXR : MainAPI() {
 
         val queue = ArrayDeque<Pair<String, String>>()
         queue.add(startUrl to "$mainUrl/")
+        val visitedPlayerUrls = hashSetOf<String>()
         var rounds = 0
         while (queue.isNotEmpty() && rounds < 36) {
             rounds++
             val (url, referer) = queue.removeFirst()
+            val cleanUrl = cleanPlayerUrl(url)
+            if (cleanUrl.isNotEmpty() && !visitedPlayerUrls.add(cleanUrl)) continue
+
             if (url.isPlayableMedia()) {
                 if (emitDirect(url, referer)) found = true
                 continue
             }
             if (resolveKnownPlayer(url, referer)) found = true
             if (emitExtractor(url, referer)) found = true
+
             inspectPage(url, referer).forEach { next ->
+                val cleanNext = cleanPlayerUrl(next)
+                if (cleanNext.isEmpty() || visitedPlayerUrls.contains(cleanNext)) return@forEach
+
                 when {
-                    next.isPlayableMedia() -> if (emitDirect(next, url)) found = true
-                    resolveKnownPlayer(next, url) -> found = true
-                    shouldFollow(next) -> queue.add(next to url)
-                    else -> if (emitExtractor(next, url)) found = true
+                    next.isPlayableMedia() -> {
+                        if (visitedPlayerUrls.add(cleanNext)) {
+                            if (emitDirect(next, url)) found = true
+                        }
+                    }
+                    resolveKnownPlayer(next, url) -> {
+                        visitedPlayerUrls.add(cleanNext)
+                        found = true
+                    }
+                    shouldFollow(next) -> {
+                        queue.add(next to url)
+                    }
+                    else -> {
+                        if (visitedPlayerUrls.add(cleanNext)) {
+                            if (emitExtractor(next, url)) found = true
+                        }
+                    }
                 }
             }
         }
@@ -443,41 +472,47 @@ class KlikXXiXR : MainAPI() {
                     collectLinksFromHtml(body, pageUrl).forEach { links.add(it) }
                 }
             }
+            if (links.isNotEmpty()) return links.toList()
         }
 
         val playerOptions = document.select("li.dooplay_player_option, .dooplay_player_option, .dooplay_player, [data-post][data-nume][data-type], [data-post][data-type], [data-id][data-nume]")
-        playerOptions.forEach { option ->
-            val post = option.attr("data-post").ifBlank { option.attr("data-id") }
-            val nume = option.attr("data-nume").ifBlank { option.attr("data-index").ifBlank { "1" } }
-            val type = option.attr("data-type").ifBlank { sourceType(document, html) ?: "movie" }
-            if (post.isBlank()) return@forEach
+        if (playerOptions.isNotEmpty()) {
+            playerOptions.forEach { option ->
+                val post = option.attr("data-post").ifBlank { option.attr("data-id") }
+                val nume = option.attr("data-nume").ifBlank { option.attr("data-index").ifBlank { "1" } }
+                val type = option.attr("data-type").ifBlank { sourceType(document, html) ?: "movie" }
+                if (post.isBlank()) return@forEach
 
-            // Cek subtitle pada atribut opsi pemutar
-            listOf("data-subtitle", "data-sub", "data-tracks").forEach { attr ->
-                val subUrl = option.attr(attr).trim()
-                if (subUrl.isNotEmpty()) {
-                    fixUrl(subUrl, pageUrl)?.let { fixedSub ->
-                        subtitleCallback(SubtitleFile("Indonesian", fixedSub))
+                // Cek subtitle pada atribut opsi pemutar
+                listOf("data-subtitle", "data-sub", "data-tracks").forEach { attr ->
+                    val subUrl = option.attr(attr).trim()
+                    if (subUrl.isNotEmpty()) {
+                        fixUrl(subUrl, pageUrl)?.let { fixedSub ->
+                            subtitleCallback(SubtitleFile("Indonesian", fixedSub))
+                        }
                     }
                 }
-            }
 
-            listOf("doo_player_ajax", "doo_ajax_player", "player_ajax", "muvipro_player_content").forEach { action ->
-                val body = try {
-                    app.post(ajaxUrl, data = mapOf("action" to action, "post" to post, "nume" to nume, "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
-                } catch (_: Throwable) { "" }
-                if (body.isNotEmpty()) {
-                    try {
-                        val parsed = Jsoup.parse(body, pageUrl)
-                        collectSubtitles(parsed, pageUrl, subtitleCallback)
-                    } catch (_: Throwable) {}
+                listOf("doo_player_ajax", "doo_ajax_player", "player_ajax", "muvipro_player_content").forEach { action ->
+                    val body = try {
+                        app.post(ajaxUrl, data = mapOf("action" to action, "post" to post, "nume" to nume, "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
+                    } catch (_: Throwable) { "" }
+                    if (body.isNotEmpty()) {
+                        try {
+                            val parsed = Jsoup.parse(body, pageUrl)
+                            collectSubtitles(parsed, pageUrl, subtitleCallback)
+                        } catch (_: Throwable) {}
+                    }
+                    collectLinksFromHtml(body, pageUrl).forEach { links.add(it) }
                 }
-                collectLinksFromHtml(body, pageUrl).forEach { links.add(it) }
             }
+            if (links.isNotEmpty()) return links.toList()
         }
-        Regex("""(?i)(?:post|id)['"]?\s*[:=]\s*['"]?(\d{2,})['"]?""").findAll(html).map { it.groupValues[1] }.distinct().take(4).forEach { post ->
+
+        // Only run brute-force fallback if no links have been found yet!
+        Regex("""(?i)(?:post|id)['"]?\s*[:=]\s*['"]?(\d{2,})['"]?""").findAll(html).map { it.groupValues[1] }.distinct().take(2).forEach { post ->
             listOf("movie", "tv").forEach { type ->
-                (1..8).forEach { nume ->
+                (1..4).forEach { nume ->
                     val body = try {
                         app.post(ajaxUrl, data = mapOf("action" to "doo_player_ajax", "post" to post, "nume" to nume.toString(), "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
                     } catch (_: Throwable) { "" }
@@ -492,6 +527,13 @@ class KlikXXiXR : MainAPI() {
             }
         }
         return links.toList()
+    }
+
+    private fun cleanPlayerUrl(url: String): String {
+        val uri = try { URI(url) } catch (_: Throwable) { null } ?: return ""
+        val host = uri.host.orEmpty().lowercase(Locale.ROOT).removePrefix("www.")
+        val path = uri.path.orEmpty().trimEnd('/')
+        return "$host$path"
     }
 
     private fun collectLinksFromHtml(html: String, baseUrl: String): List<String> {
