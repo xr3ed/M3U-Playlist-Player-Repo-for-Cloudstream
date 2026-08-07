@@ -420,6 +420,39 @@ class KlikXXiXR : MainAPI() {
     ): List<String> {
         val links = linkedSetOf<String>()
         val ajaxUrl = "$mainUrl/wp-admin/admin-ajax.php"
+
+        // Muvipro players extraction
+        val muviproId = document.selectFirst("#muvipro_player_content_id")?.attr("data-id")
+        if (!muviproId.isNullOrBlank()) {
+            val tabs = document.select("ul.muvipro-player-tabs a[href]")
+            tabs.forEach { tabElement ->
+                val tabHref = tabElement.attr("href")
+                if (tabHref.startsWith("#")) {
+                    val tabName = tabHref.removePrefix("#")
+                    val body = try {
+                        app.post(
+                            ajaxUrl,
+                            data = mapOf(
+                                "action" to "muvipro_player_content",
+                                "post_id" to muviproId,
+                                "tab" to tabName
+                            ),
+                            headers = ajaxHeaders(pageUrl),
+                            referer = pageUrl
+                        ).text
+                    } catch (_: Throwable) { "" }
+                    
+                    if (body.isNotEmpty()) {
+                        try {
+                            val parsed = Jsoup.parse(body, pageUrl)
+                            collectSubtitles(parsed, pageUrl, subtitleCallback)
+                        } catch (_: Throwable) {}
+                    }
+                    collectLinksFromHtml(body, pageUrl).forEach { links.add(it) }
+                }
+            }
+        }
+
         val playerOptions = document.select("li.dooplay_player_option, .dooplay_player_option, .dooplay_player, [data-post][data-nume][data-type], [data-post][data-type], [data-id][data-nume]")
         playerOptions.forEach { option ->
             val post = option.attr("data-post").ifBlank { option.attr("data-id") }
