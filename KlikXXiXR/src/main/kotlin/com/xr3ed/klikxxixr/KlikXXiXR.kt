@@ -51,7 +51,7 @@ class KlikXXiXR : MainAPI() {
     override var lang = "id"
 
     override val mainPage = mainPageOf(
-        "$mainUrl/?s=&search=advanced&post_type=movie" to "Latest Movies",
+        "$mainUrl/" to "Latest Movies",
         "$mainUrl/tv/" to "TV Series",
         // Countries
         "$mainUrl/category/asia/" to "Asia",
@@ -282,12 +282,17 @@ class KlikXXiXR : MainAPI() {
     private fun pageUrl(data: String, page: Int): String {
         val fixed = fixUrl(data, mainUrl) ?: mainUrl
         if (page <= 1) return fixed
-        return if (fixed.contains("?")) {
-            val base = fixed.substringBefore("?")
-            val query = fixed.substringAfter("?")
+        val target = if (fixed.trimEnd('/') == mainUrl.trimEnd('/')) {
+            "$mainUrl/?s=&search=advanced&post_type=movie"
+        } else {
+            fixed
+        }
+        return if (target.contains("?")) {
+            val base = target.substringBefore("?")
+            val query = target.substringAfter("?")
             base.trimEnd('/') + "/page/$page/?" + query
         } else {
-            fixed.trimEnd('/') + "/page/$page/"
+            target.trimEnd('/') + "/page/$page/"
         }
     }
 
