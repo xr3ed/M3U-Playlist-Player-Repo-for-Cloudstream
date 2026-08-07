@@ -324,7 +324,8 @@ class KlikXXiXR : MainAPI() {
         val maskedUrl = "https://lynk.id/xr3ed#$href"
         val isSeries = type == TvType.TvSeries || type == TvType.AsianDrama
         if (isSeries) {
-            val cardCategories = container.select("a[href*='/category/'], a[href*='/genre/']")
+            val card = anchor.closest("article, .post, .item, .movie, .film, .card, .ml-item, .result-item, .owl-item, .swiper-slide, li, .col, .box") ?: container
+            val cardCategories = card.select("a[href*='/category/'], a[href*='/genre/']")
                 .map { it.text().trim().lowercase(Locale.ROOT) }
             if (cardCategories.any { it.contains("dracin") }) {
                 return null
