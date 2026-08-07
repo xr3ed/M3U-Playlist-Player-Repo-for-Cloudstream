@@ -29,8 +29,6 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -47,9 +45,6 @@ import javax.crypto.spec.SecretKeySpec
 class KlikXXiXR : MainAPI() {
     override var mainUrl = BuildConfig.KLIKXXI_MAIN_URL
     override var name = "KlikXXiXR"
-
-    private val categoryCache = java.util.concurrent.ConcurrentHashMap<String, List<String>>()
-    private val fetchSemaphore = Semaphore(5)
     override val hasMainPage = true
     override val hasQuickSearch = true
     override val hasDownloadSupport = true
@@ -76,6 +71,7 @@ class KlikXXiXR : MainAPI() {
         "$mainUrl/category/mystery/" to "Mystery",
         "$mainUrl/category/science-fiction/" to "Science Fiction",
         "$mainUrl/category/thriller/" to "Thriller",
+        "$mainUrl/category/viva-group/" to "Viva Group",
         "$mainUrl/category/war/" to "War",
     )
 
@@ -98,47 +94,7 @@ class KlikXXiXR : MainAPI() {
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
         val results = parseListing(document)
-
-        val filteredResults = if (request.name == "Latest Movies") {
-            kotlinx.coroutines.coroutineScope {
-                results.map { item ->
-                    val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
-                    async(kotlinx.coroutines.Dispatchers.IO) {
-                        try {
-                            val cached = categoryCache[originalUrl]
-                            val categories = if (cached != null) {
-                                cached
-                            } else {
-                                fetchSemaphore.withPermit {
-                                    categoryCache[originalUrl] ?: run {
-                                        val detailResponse = app.get(originalUrl, headers = headers, referer = mainUrl)
-                                        val detailDoc = detailResponse.document
-                                        val parsed = detailDoc.select("a[href*='/genre/'], a[href*='/category/']")
-                                            .map { it.text().trim().lowercase(Locale.ROOT) }
-                                        categoryCache[originalUrl] = parsed
-                                        parsed
-                                    }
-                                }
-                            }
-
-                            val isVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
-                            val isDracin = categories.any { it == "dracin" || it.contains("dracin") }
-                            if (isVivaGroup || isDracin) {
-                                null
-                            } else {
-                                item
-                            }
-                        } catch (e: Throwable) {
-                            item
-                        }
-                    }
-                }.awaitAll().filterNotNull()
-            }
-        } else {
-            results
-        }
-
-        return newHomePageResponse(request.name, filteredResults, hasNextPage(document, page))
+        return newHomePageResponse(request.name, results, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -165,12 +121,11 @@ class KlikXXiXR : MainAPI() {
 
         val poster = findPoster(document, page)
         val text = cleanText(document.text())
-        val tags = document.select("a[href*='/genre/'], a[href*='/category/']")
+        val tags = document.select("a[href*='/genre/']")
             .map { cleanText(it.text()).substringBefore("(").trim() }
             .filter { it.length in 2..40 && !it.equals("Trailer", true) && !it.equals("Watch", true) && !it.contains("gudang", true) }
             .distinct()
             .take(20)
-        if (tags.any { it.equals("viva group", true) || it.equals("viva-group", true) || it.equals("dracin", true) || it.contains("dracin", true) }) return null
         val actors = document.select("a[href*='/cast/'], a[href*='/actor/'], a[href*='/director/']")
             .map { cleanText(it.text()) }
             .filter { it.length in 2..60 }
@@ -345,12 +300,6 @@ class KlikXXiXR : MainAPI() {
         val href = fixUrl(anchor.attr("href"), mainUrl) ?: return null
         if (!isContentUrl(href) || href.lowercase(Locale.ROOT).contains("semi")) return null
         val container = anchor.bestContainer()
-        val card = anchor.closest("article, .post, .item, .movie, .film, .card, .ml-item, .result-item, .owl-item, .swiper-slide, li, .col, .box") ?: container
-        val genres = card.select("a[href*='/category/'], a[href*='/genre/']").map { it.text().trim().lowercase(Locale.ROOT) }
-        val slugLower = href.lowercase(Locale.ROOT)
-        if (genres.any { it.contains("viva group") || it.contains("viva-group") || it == "dracin" || it.contains("dracin") } ||
-            slugLower.contains("viva-group") || slugLower.contains("vivamax") || slugLower.contains("dracin")
-        ) return null
         val image = container.selectFirst("img[data-src], img[data-original], img[data-lazy-src], img[data-wpfc-original-src], img[src], img[srcset]") ?: anchor.selectFirst("img")
         val title = listOf(
             container.selectFirst("h1, h2, h3, .entry-title, .title, .name")?.text(),
@@ -360,8 +309,7 @@ class KlikXXiXR : MainAPI() {
             anchor.text(),
             titleFromUrl(href)
         ).firstOrNull { isUsefulTitle(it) }?.let { cleanTitle(it) } ?: return null
-        val titleLower = title.lowercase(Locale.ROOT)
-        if (titleLower.contains("vivamax") || titleLower.contains("viva group") || titleLower.contains("dracin") || isNsfw(title, href)) return null
+        if (isNsfw(title, href)) return null
         val poster = image?.imageUrl(mainUrl) ?: container.styleImage(mainUrl) ?: anchor.findNearbyImage(mainUrl) ?: return null
         val text = cleanText(container.text())
         val type = inferType(href, title, text, 0, null)
@@ -775,7 +723,7 @@ class KlikXXiXR : MainAPI() {
         val path = uri.path.orEmpty().trim('/')
         if (path.isBlank()) return false
         val first = path.substringBefore("/").lowercase(Locale.ROOT)
-        val blocked = setOf("genre", "year", "country", "tag", "category", "page", "dmca", "privacy-policy", "contact", "beranda", "wp-admin", "wp-content", "feed")
+        val blocked = setOf("genre", "year", "country", "tag", "category", "page", "dmca", "privacy-policy", "contact", "beranda", "wp-admin", "wp-content", "feed", "tv")
         if (first in blocked) return false
         if (url.contains("?s=", true) || url.contains("youtube.com", true) || url.contains("youtu.be", true)) return false
         return true
