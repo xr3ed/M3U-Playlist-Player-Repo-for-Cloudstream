@@ -635,10 +635,10 @@ class KlikXXiXR : MainAPI() {
         return !KlikXXiExtractors.run { lower.isNoiseUrl() } && (
             lower.contains(mainHost) || lower.contains("sht") || lower.contains("short") || lower.contains("embed") || lower.contains("player") || lower.contains("/play/") ||
                 lower.contains("stream") || lower.contains("drive") || lower.contains("gofile") || lower.contains("dood") || lower.contains("filemoon") ||
-                lower.contains("vidhide") || lower.contains("vidguard") || lower.contains("voe") || lower.contains("mp4upload") || lower.contains("uqload") ||
+                lower.contains("vidhide") || lower.contains("vidguard") || lower.contains("voe") || lower.contains("veev") || lower.contains("mp4upload") || lower.contains("uqload") ||
                 lower.contains("hubcloud") || lower.contains("gdplayer") || lower.contains("gdriveplayer") || lower.contains("krakenfiles") || lower.contains("filelions") ||
                 lower.contains("sf21.vidplayer.live") || lower.contains("minochinos.com") || lower.contains("earnvidjav.online") || lower.contains("upload18.org") || lower.contains("upload18.cc") || lower.contains("321watch.workers.dev") ||
-                lower.contains("morencius.com") || lower.contains("turbovidhls.com")
+                lower.contains("morencius.com") || lower.contains("turbovidhls.com") || lower.contains("strp2p") || lower.contains("upns")
             )
     }
 
