@@ -368,7 +368,7 @@
             "Anime",
             "OVA"
         ],
-        "version": 11,
+        "version": 12,
         "internalName": "AnimeSailProvider",
         "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailProvider.cs3",
