@@ -93,8 +93,7 @@ class KlikXXiXR : MainAPI() {
         val url = pageUrl(request.data, page)
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
-        val isTvSeries = request.data.contains("/tv/", ignoreCase = true) || request.data.endsWith("/tv", ignoreCase = true)
-        val results = parseListing(document, isTvSeries)
+        val results = parseListing(document)
         return newHomePageResponse(request.name, results, hasNextPage(document, page))
     }
 
@@ -292,31 +291,12 @@ class KlikXXiXR : MainAPI() {
         }
     }
 
-    private fun parseListing(document: Document, isTvSeries: Boolean = false): List<SearchResponse> {
+    private fun parseListing(document: Document): List<SearchResponse> {
         val results = linkedMapOf<String, SearchResponse>()
-        document.select(cardSelector).forEach { element ->
-            if (isTvSeries) {
-                val cardCategories = element.select("a[href*='/category/'], a[href*='/genre/']")
-                    .map { it.text().trim().lowercase(Locale.ROOT) }
-                if (cardCategories.any { it.contains("dracin") }) {
-                    return@forEach
-                }
-            }
-            element.toSearchResult()?.let { results[contentKey(it.url)] = it }
-        }
+        document.select(cardSelector).forEach { element -> element.toSearchResult()?.let { results[contentKey(it.url)] = it } }
         if (results.size < 6) {
             document.select("article a[href], .post a[href], .item a[href], .movie a[href], .film a[href], .ml-item a[href], .result-item a[href]")
-                .forEach { anchor ->
-                    val container = anchor.bestContainer()
-                    if (isTvSeries) {
-                        val cardCategories = container.select("a[href*='/category/'], a[href*='/genre/']")
-                            .map { it.text().trim().lowercase(Locale.ROOT) }
-                        if (cardCategories.any { it.contains("dracin") }) {
-                            return@forEach
-                        }
-                    }
-                    anchor.toSearchResult()?.let { results[contentKey(it.url)] = it }
-                }
+                .forEach { anchor -> anchor.toSearchResult()?.let { results[contentKey(it.url)] = it } }
         }
         return results.values.take(80)
     }
@@ -343,6 +323,13 @@ class KlikXXiXR : MainAPI() {
         val score = container.selectFirst(".rating, .score, .imdb, .vote")?.text()?.replace(",", ".")?.let { Regex("""\d+(?:\.\d+)?""").find(it)?.value?.toDoubleOrNull() }
         val maskedUrl = "https://lynk.id/xr3ed#$href"
         val isSeries = type == TvType.TvSeries || type == TvType.AsianDrama
+        if (isSeries) {
+            val cardCategories = container.select("a[href*='/category/'], a[href*='/genre/']")
+                .map { it.text().trim().lowercase(Locale.ROOT) }
+            if (cardCategories.any { it.contains("dracin") }) {
+                return null
+            }
+        }
         return if (isSeries) {
             newTvSeriesSearchResponse(title, maskedUrl, type) {
                 posterUrl = poster
