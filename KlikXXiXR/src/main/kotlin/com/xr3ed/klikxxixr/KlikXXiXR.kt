@@ -100,9 +100,9 @@ class KlikXXiXR : MainAPI() {
         val results = parseListing(document)
 
         val filteredResults = if (request.name == "Latest Movies") {
-            val deferred = results.map { item ->
-                val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
-                kotlinx.coroutines.coroutineScope {
+            kotlinx.coroutines.coroutineScope {
+                results.map { item ->
+                    val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
                     async(kotlinx.coroutines.Dispatchers.IO) {
                         try {
                             val cached = categoryCache[originalUrl]
@@ -132,9 +132,8 @@ class KlikXXiXR : MainAPI() {
                             item
                         }
                     }
-                }
+                }.awaitAll().filterNotNull()
             }
-            deferred.awaitAll().filterNotNull()
         } else {
             results
         }
