@@ -79,6 +79,7 @@ subprojects {
             buildConfigField("String", "LAYARKACA_MAIN_URL", "\"${getSecret("LAYARKACA_MAIN_URL", "dummy")}\"")
             buildConfigField("String", "LAYARKACA_SERIES_URL", "\"${getSecret("LAYARKACA_SERIES_URL", "dummy")}\"")
             buildConfigField("String", "LAYARKACA_SEARCH_URL", "\"${getSecret("LAYARKACA_SEARCH_URL", "dummy")}\"")
+            buildConfigField("String", "KLIKXXI_MAIN_URL", "\"${getSecret("KLIKXXI_MAIN_URL", "dummy")}\"")
             buildConfigField("String", "BYSE_POW_LR", "\"${getSecret("BYSE_POW_LR", "0")}\"")
             buildConfigField("String", "BYSE_POW_HR", "\"${getSecret("BYSE_POW_HR", "0")}\"")
             buildConfigField("String", "BYSE_API_CAPTCHA", "\"${getSecret("BYSE_API_CAPTCHA", "dummy")}\"")

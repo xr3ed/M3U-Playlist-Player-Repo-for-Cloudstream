@@ -43,6 +43,7 @@ jobs:
           LAYARKACA_MAIN_URL: ${{ secrets.LAYARKACA_MAIN_URL }}
           LAYARKACA_SERIES_URL: ${{ secrets.LAYARKACA_SERIES_URL }}
           LAYARKACA_SEARCH_URL: ${{ secrets.LAYARKACA_SEARCH_URL }}
+          KLIKXXI_MAIN_URL: ${{ secrets.KLIKXXI_MAIN_URL }}
           BYSE_POW_LR: ${{ secrets.BYSE_POW_LR }}
           BYSE_POW_HR: ${{ secrets.BYSE_POW_HR }}
           BYSE_API_CAPTCHA: ${{ secrets.BYSE_API_CAPTCHA }}
@@ -180,7 +181,7 @@ jobs:
           echo "Purging ALL files from jsDelivr cache..."
           
           # Purge semua file cs3 plugin
-          for plugin in idliXR DramaBox ShortMax Melolo RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV AnichinXR FilmBoxOffice MovieBoXR LayarKacaXR Support AnimeSailProvider; do
+          for plugin in idliXR DramaBox ShortMax Melolo RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV AnichinXR FilmBoxOffice MovieBoXR LayarKacaXR Support AnimeSailXR; do
             echo "Purging $plugin.cs3..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$plugin.cs3"
             echo ""
