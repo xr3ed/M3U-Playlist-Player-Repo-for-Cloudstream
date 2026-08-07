@@ -93,33 +93,7 @@ class KlikXXiXR : MainAPI() {
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
         val results = parseListing(document)
-
-        val deferred = results.map { item ->
-            val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
-            kotlinx.coroutines.coroutineScope {
-                async(kotlinx.coroutines.Dispatchers.IO) {
-                    try {
-                        val detailResponse = app.get(originalUrl, headers = headers, referer = mainUrl)
-                        val detailDoc = detailResponse.document
-                        val categories = detailDoc.select("a[href*='/genre/'], a[href*='/category/']")
-                            .map { it.text().trim().lowercase(Locale.ROOT) }
-                        
-                        val isVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
-                        val isDracin = categories.any { it == "dracin" || it.contains("dracin") }
-                        if (isVivaGroup || isDracin) {
-                            null
-                        } else {
-                            item
-                        }
-                    } catch (e: Throwable) {
-                        item
-                    }
-                }
-            }
-        }
-        val filteredResults = deferred.awaitAll().filterNotNull()
-
-        return newHomePageResponse(request.name, filteredResults, hasNextPage(document, page))
+        return newHomePageResponse(request.name, results, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -146,11 +120,12 @@ class KlikXXiXR : MainAPI() {
 
         val poster = findPoster(document, page)
         val text = cleanText(document.text())
-        val tags = document.select("a[href*='/genre/']")
+        val tags = document.select("a[href*='/genre/'], a[href*='/category/']")
             .map { cleanText(it.text()).substringBefore("(").trim() }
             .filter { it.length in 2..40 && !it.equals("Trailer", true) && !it.equals("Watch", true) && !it.contains("gudang", true) }
             .distinct()
             .take(20)
+        if (tags.any { it.equals("viva group", true) || it.equals("viva-group", true) || it.equals("dracin", true) || it.contains("dracin", true) }) return null
         val actors = document.select("a[href*='/cast/'], a[href*='/actor/'], a[href*='/director/']")
             .map { cleanText(it.text()) }
             .filter { it.length in 2..60 }
@@ -325,6 +300,8 @@ class KlikXXiXR : MainAPI() {
         val href = fixUrl(anchor.attr("href"), mainUrl) ?: return null
         if (!isContentUrl(href) || href.lowercase(Locale.ROOT).contains("semi")) return null
         val container = anchor.bestContainer()
+        val genres = container.select("a[href*='/category/'], a[href*='/genre/']").map { it.text().trim().lowercase(Locale.ROOT) }
+        if (genres.any { it.contains("viva group") || it.contains("viva-group") || it == "dracin" || it.contains("dracin") }) return null
         val image = container.selectFirst("img[data-src], img[data-original], img[data-lazy-src], img[data-wpfc-original-src], img[src], img[srcset]") ?: anchor.selectFirst("img")
         val title = listOf(
             container.selectFirst("h1, h2, h3, .entry-title, .title, .name")?.text(),
