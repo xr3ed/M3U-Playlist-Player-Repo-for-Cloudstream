@@ -723,7 +723,7 @@ class KlikXXiXR : MainAPI() {
         val path = uri.path.orEmpty().trim('/')
         if (path.isBlank()) return false
         val first = path.substringBefore("/").lowercase(Locale.ROOT)
-        val blocked = setOf("genre", "year", "country", "tag", "category", "page", "dmca", "privacy-policy", "contact", "beranda", "wp-admin", "wp-content", "feed", "tv")
+        val blocked = setOf("genre", "year", "country", "tag", "category", "page", "dmca", "privacy-policy", "contact", "beranda", "wp-admin", "wp-content", "feed")
         if (first in blocked) return false
         if (url.contains("?s=", true) || url.contains("youtube.com", true) || url.contains("youtu.be", true)) return false
         return true
