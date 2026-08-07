@@ -1,4 +1,4 @@
-version = 50
+version = 51
 
 android {
     namespace = "com.sad25kag.anichinxr"

@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://anichin.club&size=%size%",
-        "fileHash": "sha256-9db171fe7aee9c0878394aa1e76d9dc91e03d370fb3855e6ad0998c53788080f",
+        "fileHash": "sha256-a6aebcd6594c36dc76466f7216c6bdf4b2c59a2a96fb35292e11a0855e0a4a8a",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 109031,
+        "fileSize": 108313,
         "status": 1,
         "language": "id",
         "authors": [
@@ -16,7 +16,7 @@
             "Anime",
             "Cartoon"
         ],
-        "version": 50,
+        "version": 51,
         "internalName": "AnichinXR",
         "description": "Anichin Moe modifikasi oleh XR3ED",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnichinXR.cs3",

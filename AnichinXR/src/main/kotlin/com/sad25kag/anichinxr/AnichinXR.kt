@@ -150,9 +150,22 @@ class AnichinXR : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse {
         val cleanUrl = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
-        val document = app.get(fixUrl(cleanUrl)).document
+        var currentUrl = cleanUrl
+        var document = app.get(fixUrl(cleanUrl)).document
+
+        val breadcrumbs = document.select(".ts-breadcrumb a, .breadcrumb a")
+        if (document.selectFirst(".eplister") == null && breadcrumbs.size >= 3) {
+            val seriesUrl = breadcrumbs.getOrNull(1)?.attr("abs:href")
+            if (!seriesUrl.isNullOrBlank() && seriesUrl != mainUrl && seriesUrl != "$mainUrl/") {
+                currentUrl = seriesUrl
+                document = app.get(fixUrl(seriesUrl)).document
+            }
+        }
+
         val title = document.selectFirst("h1.entry-title")?.text()?.trim().orEmpty()
-        var poster = document.select("div.ime > img").attr("src")
+        var poster = document.selectFirst(".thumb img, div.ime img")?.attr("src")
+            ?: document.selectFirst("meta[property=og:image]")?.attr("content")
+            ?: ""
         val description = document.selectFirst("div.entry-content")?.text()?.trim()
         val type = document.selectFirst(".spe")?.text().orEmpty()
 
@@ -178,7 +191,7 @@ class AnichinXR : MainAPI() {
             poster = document.selectFirst("meta[property=og:image]")?.attr("content").orEmpty()
         }
 
-        val maskedUrl = if (url.contains("lynk.id")) url else "https://lynk.id/xr3ed#$url"
+        val maskedUrl = if (currentUrl.contains("lynk.id")) currentUrl else "https://lynk.id/xr3ed#$currentUrl"
 
         return if (tvType == TvType.TvSeries) {
             val episodes = document.select(".eplister li").mapNotNull { ep ->
@@ -208,7 +221,7 @@ class AnichinXR : MainAPI() {
                 this.tags = tags
             }
         } else {
-            val movieHref = document.selectFirst(".eplister li > a")?.attr("href")?.let { fixUrl(it) } ?: cleanUrl
+            val movieHref = document.selectFirst(".eplister li > a")?.attr("href")?.let { fixUrl(it) } ?: currentUrl
             val maskedMovieHref = "https://lynk.id/xr3ed#$movieHref"
 
             newMovieLoadResponse(title, maskedMovieHref, TvType.Movie, maskedMovieHref) {
@@ -280,11 +293,8 @@ class AnichinXR : MainAPI() {
             )
             .take(MAX_TOP_LEVEL_CANDIDATES)
 
-        val firstBatch = topLevelCandidates.filter { (url, label) -> candidatePriority(url, label) <= 2 }
-        val secondBatch = topLevelCandidates.filter { (url, label) -> candidatePriority(url, label) > 2 }
-
         coroutineScope {
-            firstBatch.map { (url, label) ->
+            topLevelCandidates.map { (url, label) ->
                 async {
                     try {
                         resolveVideoCandidate(
@@ -301,28 +311,6 @@ class AnichinXR : MainAPI() {
                     }
                 }
             }.awaitAll()
-        }
-
-        if (allLinks.isEmpty() && secondBatch.isNotEmpty()) {
-            coroutineScope {
-                secondBatch.map { (url, label) ->
-                    async {
-                        try {
-                            resolveVideoCandidate(
-                                url = url,
-                                label = label,
-                                referer = episodeUrl,
-                                visited = visited,
-                                subtitleCallback = subtitleCallback,
-                                callback = countedCallback,
-                            )
-                        } catch (error: Throwable) {
-                            if (error is CancellationException) throw error
-                            Log.w("Anichin", "Failed resolving server: $label -> $url", error)
-                        }
-                    }
-                }.awaitAll()
-            }
         }
 
         if (allLinks.isEmpty()) {
