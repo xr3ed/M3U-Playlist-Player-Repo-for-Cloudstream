@@ -71,7 +71,6 @@ class KlikXXiXR : MainAPI() {
         "$mainUrl/category/mystery/" to "Mystery",
         "$mainUrl/category/science-fiction/" to "Science Fiction",
         "$mainUrl/category/thriller/" to "Thriller",
-        "$mainUrl/category/viva-group/" to "Viva Group",
         "$mainUrl/category/war/" to "War",
     )
 
