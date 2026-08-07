@@ -51,7 +51,7 @@ class KlikXXiXR : MainAPI() {
     override var lang = "id"
 
     override val mainPage = mainPageOf(
-        "$mainUrl/" to "Latest Movies",
+        "$mainUrl/?s=&search=advanced&post_type=movie" to "Latest Movies",
         "$mainUrl/tv/" to "TV Series",
         // Countries
         "$mainUrl/category/asia/" to "Asia",
@@ -282,7 +282,13 @@ class KlikXXiXR : MainAPI() {
     private fun pageUrl(data: String, page: Int): String {
         val fixed = fixUrl(data, mainUrl) ?: mainUrl
         if (page <= 1) return fixed
-        return fixed.trimEnd('/') + "/page/$page/"
+        return if (fixed.contains("?")) {
+            val base = fixed.substringBefore("?")
+            val query = fixed.substringAfter("?")
+            base.trimEnd('/') + "/page/$page/?" + query
+        } else {
+            fixed.trimEnd('/') + "/page/$page/"
+        }
     }
 
     private fun parseListing(document: Document): List<SearchResponse> {
@@ -723,8 +729,9 @@ class KlikXXiXR : MainAPI() {
         val path = uri.path.orEmpty().trim('/')
         if (path.isBlank()) return false
         val first = path.substringBefore("/").lowercase(Locale.ROOT)
-        val blocked = setOf("genre", "year", "country", "tag", "category", "page", "dmca", "privacy-policy", "contact", "beranda", "wp-admin", "wp-content", "feed", "tv")
+        val blocked = setOf("genre", "year", "country", "tag", "category", "page", "dmca", "privacy-policy", "contact", "beranda", "wp-admin", "wp-content", "feed")
         if (first in blocked) return false
+        if (first == "tv" && !path.contains("/")) return false
         if (url.contains("?s=", true) || url.contains("youtube.com", true) || url.contains("youtu.be", true)) return false
         return true
     }
