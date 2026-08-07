@@ -33,25 +33,34 @@ Repositori resmi untuk memasang ekstensi pemutar M3U dan live streaming olahraga
 3. **`AnichinXR`**  
    Ekstensi khusus untuk streaming serial Donghua (Anime China) dengan subtitle Indonesia.
 
-4. **`DracinAIO`**  
-   Ekstensi all-in-one untuk menonton serial Drama China (Dracin) terlengkap.
+4. **`AnimeSailXR`**  
+   Ekstensi streaming Anime dan Donghua subtitle Indonesia dengan optimasi navigasi.
 
-5. **`DramaBox`**  
-   Ekstensi pemutar serial drama pendek (mini-series) populer.
+5. **`DracinAIO`**  
+   Ekstensi all-in-one untuk menonton serial Drama China (Dracin) terlengkap.
 
 6. **`GudangFilmXR`**  
    Ekstensi streaming film layar lebar dan serial barat/Asia terjemahan Indonesia.
 
-7. **`Melolo`**  
-   Ekstensi streaming drama Asia dan serial anime terpopuler.
+7. **`KlikXXiXR`**  
+   Ekstensi streaming film terbaru terjemahan Indonesia dengan kategori lengkap dari KlikXXI.
 
-8. **`ShortMax`**  
-   Ekstensi pemutar konten video drama pendek dari platform ShortMax.
+8. **`LayarKacaXR`**  
+   Ekstensi streaming film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.
 
-9. **`xr3edFlix`**  
-   Ekstensi premium untuk menyaksikan berbagai film dan serial box office secara gratis.
+9. **`FilmBoxOffice`**  
+   Ekstensi Film Box Office dengan dukungan Google Drive Premium.
 
-10. **`xr3edTV`**  
+10. **`idliXR`**  
+    Ekstensi Idlix dengan routing API domain aktif dan pemutaran sesi otomatis.
+
+11. **`SportsurgeXR`**  
+    Ekstensi siaran live streaming event olahraga olahraga internasional terlengkap.
+
+12. **`xr3edFlix`**  
+    Ekstensi premium untuk menyaksikan berbagai film dan serial box office secara gratis.
+
+13. **`xr3edTV`**  
     Ekstensi saluran siaran langsung televisi (Live TV) nasional maupun mancanegara.
 
 ---
