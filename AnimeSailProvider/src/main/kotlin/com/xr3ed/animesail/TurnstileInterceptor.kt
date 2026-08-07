@@ -1,27 +1,18 @@
 package com.xr3ed.animesail
 
 import android.annotation.SuppressLint
-import android.net.http.SslError
 import android.os.Handler
 import android.os.Looper
 import android.webkit.CookieManager
-import android.webkit.SslErrorHandler
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.app.Activity
-import android.app.Dialog
-import android.graphics.Color
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
-import com.lagradost.cloudstream3.CloudStreamApp
+import androidx.fragment.app.FragmentActivity
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class TurnstileInterceptor(private val targetCookie: String = "_as_turnstile") : Interceptor {
 
-    private fun getResumedActivity(): Activity? {
+    private fun getResumedActivity(): android.app.Activity? {
         try {
             val activityThreadClass = Class.forName("android.app.ActivityThread")
             val currentActivityThreadMethod = activityThreadClass.getMethod("currentActivityThread")
@@ -37,7 +28,7 @@ class TurnstileInterceptor(private val targetCookie: String = "_as_turnstile") :
                 if (!paused) {
                     val activityField = activityRecord.javaClass.getDeclaredField("activity")
                     activityField.isAccessible = true
-                    val activity = activityField.get(activityRecord) as? Activity
+                    val activity = activityField.get(activityRecord) as? android.app.Activity
                     if (activity != null && !activity.isFinishing) {
                         return activity
                     }
@@ -49,7 +40,7 @@ class TurnstileInterceptor(private val targetCookie: String = "_as_turnstile") :
         return null
     }
 
-    @SuppressLint("SetJavaScriptEnabled", "WebViewClientOnReceivedSslError")
+    @SuppressLint("SetJavaScriptEnabled")
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val url = originalRequest.url.toString()
@@ -77,70 +68,18 @@ class TurnstileInterceptor(private val targetCookie: String = "_as_turnstile") :
             cookieManager.flush()
         }
 
-        val resumedActivity = getResumedActivity()
+        val resumedActivity = getResumedActivity() as? FragmentActivity
         if (resumedActivity != null) {
-            val latch = java.util.concurrent.CountDownLatch(1)
+            val latch = CountDownLatch(1)
             val handler = Handler(Looper.getMainLooper())
             handler.post {
-                val dialog = Dialog(resumedActivity).apply {
-                    requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
-                    
-                    val root = LinearLayout(context).apply {
-                        orientation = LinearLayout.VERTICAL
-                        setPadding(48, 48, 48, 48)
-                        setBackgroundColor(Color.parseColor("#151624"))
-                    }
-                    
-                    val tv = TextView(context).apply {
-                        text = "🛡️ Verifikasi Keamanan AnimeSail"
-                        textSize = 16f
-                        setTextColor(Color.WHITE)
-                        setTypeface(null, android.graphics.Typeface.BOLD)
-                        setPadding(0, 0, 0, 8)
-                    }
-                    root.addView(tv)
-                    
-                    val desc = TextView(context).apply {
-                        text = "Silakan selesaikan verifikasi centang jika muncul di bawah."
-                        textSize = 12f
-                        setTextColor(Color.parseColor("#A0A0B0"))
-                        setPadding(0, 0, 0, 24)
-                    }
-                    root.addView(desc)
-                    
-                    val wv = WebView(context).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            800
-                        )
-                        settings.javaScriptEnabled = true
-                        settings.domStorageEnabled = true
-                        
-                        cookieManager.setAcceptThirdPartyCookies(this, true)
-                        
-                        webViewClient = object : WebViewClient() {
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                super.onPageFinished(view, url)
-                                val cookies = cookieManager.getCookie(domainUrl) ?: ""
-                                if (cookies.contains(targetCookie)) {
-                                    dismiss()
-                                }
-                            }
-                        }
-                    }
-                    root.addView(wv)
-                    setContentView(root)
-                    
-                    setOnDismissListener {
-                        latch.countDown()
-                    }
-                    
-                    wv.loadUrl(url)
+                val dialog = AnimeSailTurnstileDialog(url, targetCookie) {
+                    latch.countDown()
                 }
-                dialog.show()
+                dialog.show(resumedActivity.supportFragmentManager, "AnimeSailTurnstileDialog")
             }
             try {
-                latch.await(60, java.util.concurrent.TimeUnit.SECONDS)
+                latch.await(120, TimeUnit.SECONDS)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
