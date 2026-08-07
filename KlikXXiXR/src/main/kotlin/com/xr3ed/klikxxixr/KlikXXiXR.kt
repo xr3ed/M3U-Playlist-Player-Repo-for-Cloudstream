@@ -90,11 +90,20 @@ class KlikXXiXR : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
-        val url = pageUrl(request.data, page)
-        val response = app.get(url, headers = headers, referer = mainUrl)
-        val document = response.document
-        val results = parseListing(document)
-        return newHomePageResponse(request.name, results, hasNextPage(document, page))
+        var currentPage = page
+        var document = app.get(pageUrl(request.data, currentPage), headers = headers, referer = mainUrl).document
+        var results = parseListing(document)
+        
+        var attempts = 0
+        while (results.isEmpty() && attempts < 3) {
+            currentPage++
+            val nextDoc = app.get(pageUrl(request.data, currentPage), headers = headers, referer = mainUrl).document
+            results = parseListing(nextDoc)
+            document = nextDoc
+            if (!hasNextPage(nextDoc, currentPage)) break
+            attempts++
+        }
+        return newHomePageResponse(request.name, results, hasNextPage(document, currentPage))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -298,8 +307,9 @@ class KlikXXiXR : MainAPI() {
 
     private fun parseListing(document: Document): List<SearchResponse> {
         val results = linkedMapOf<String, SearchResponse>()
-        document.select(cardSelector).forEach { element -> element.toSearchResult()?.let { results[contentKey(it.url)] = it } }
-        if (results.size < 6) {
+        val cards = document.select(cardSelector)
+        cards.forEach { element -> element.toSearchResult()?.let { results[contentKey(it.url)] = it } }
+        if (cards.isEmpty() && results.size < 6) {
             document.select("article a[href], .post a[href], .item a[href], .movie a[href], .film a[href], .ml-item a[href], .result-item a[href]")
                 .forEach { anchor -> anchor.toSearchResult()?.let { results[contentKey(it.url)] = it } }
         }
