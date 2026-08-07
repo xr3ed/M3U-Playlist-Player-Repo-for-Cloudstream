@@ -3,6 +3,6 @@
   "displayName": "AnimeSailXR",
   "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
   "author": "xr3ed",
-  "version": 12,
+  "version": 13,
   "tvTypes": ["AnimeMovie", "Anime", "OVA"]
 }

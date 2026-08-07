@@ -24,7 +24,7 @@
     },
     {
         "iconUrl": "https://aghanim.xyz/wp-content/themes/animesail/assets/images/ico.png",
-        "fileHash": "sha256-137034990ddd7cb5496edc0e2db5f17c493c9f04c74245b79f5b04f4ee95a74c",
+        "fileHash": "sha256-7e8c923d93f8831aee5ddcfc41f49b2ad346b5751dd2fdf3dd0996cc57faebe0",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
         "fileSize": 79926,
@@ -38,7 +38,7 @@
             "Anime",
             "OVA"
         ],
-        "version": 12,
+        "version": 13,
         "internalName": "AnimeSailProvider",
         "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailProvider.cs3",
