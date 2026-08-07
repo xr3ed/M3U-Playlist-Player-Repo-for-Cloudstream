@@ -375,7 +375,7 @@ class AnimeSailProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ) {
         loadExtractor(url, referer, subtitleCallback) { link ->
-            val finalName = if (serverName.equals(link.name, ignoreCase = true)) link.name else "$serverName - ${link.name}"
+            val finalName = if (serverName.isNotBlank() && !serverName.equals(name, ignoreCase = true)) serverName else link.name
 
             runBlocking {
                 callback.invoke(
