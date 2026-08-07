@@ -90,20 +90,11 @@ class KlikXXiXR : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
-        var currentPage = page
-        var document = app.get(pageUrl(request.data, currentPage), headers = headers, referer = mainUrl).document
-        var results = parseListing(document)
-        
-        var attempts = 0
-        while (results.isEmpty() && attempts < 3) {
-            currentPage++
-            val nextDoc = app.get(pageUrl(request.data, currentPage), headers = headers, referer = mainUrl).document
-            results = parseListing(nextDoc)
-            document = nextDoc
-            if (!hasNextPage(nextDoc, currentPage)) break
-            attempts++
-        }
-        return newHomePageResponse(request.name, results, hasNextPage(document, currentPage))
+        val url = pageUrl(request.data, page)
+        val response = app.get(url, headers = headers, referer = mainUrl)
+        val document = response.document
+        val results = parseListing(document)
+        return newHomePageResponse(request.name, results, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
