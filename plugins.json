@@ -354,10 +354,10 @@
     },
     {
         "iconUrl": "https://aghanim.xyz/wp-content/themes/animesail/assets/images/ico.png",
-        "fileHash": "sha256-85b4f4d31904501dd73f7fe1e735dd0aa240c1a841ca33da838d88ab28d176f9",
+        "fileHash": "sha256-9c0a4b7a2a62565b2abe7a0674de55a82219fe3863e72df896f59b49e63acc48",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 72726,
+        "fileSize": 72730,
         "status": 1,
         "language": "id",
         "authors": [

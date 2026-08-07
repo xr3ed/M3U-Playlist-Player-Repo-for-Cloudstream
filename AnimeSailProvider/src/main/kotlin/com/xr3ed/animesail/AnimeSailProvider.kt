@@ -380,7 +380,7 @@ class AnimeSailProvider : MainAPI() {
             runBlocking {
                 callback.invoke(
                     newExtractorLink(
-                        source = link.name,
+                        source = finalName,
                         name = finalName,
                         url = link.url,
                         type = link.type
