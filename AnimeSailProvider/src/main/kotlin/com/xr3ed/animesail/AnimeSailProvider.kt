@@ -276,6 +276,12 @@ class AnimeSailProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        val uniqueUrls = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+        val filteredCallback = { link: ExtractorLink ->
+            if (uniqueUrls.add(link.url)) {
+                callback.invoke(link)
+            }
+        }
         val cleanData = if (data.contains("lynk.id")) data.substringAfterLast("#", "") else data
         val document = request(cleanData).document
         val playerPath = "$mainUrl/utils/player/"
@@ -297,7 +303,7 @@ class AnimeSailProvider : MainAPI() {
 
                 when {
                     iframe.endsWith(".mp4", ignoreCase = true) || iframe.endsWith(".m3u8", ignoreCase = true) -> {
-                        callback.invoke(
+                        filteredCallback.invoke(
                             newExtractorLink(
                                 source = serverName,
                                 name = serverName,
@@ -314,7 +320,7 @@ class AnimeSailProvider : MainAPI() {
                         val encodedUrl = iframe.substringAfter("url=").substringBefore("&")
                         if (encodedUrl.isNotBlank()) {
                             val realUrl = java.net.URLDecoder.decode(encodedUrl, "UTF-8")
-                            loadFixedExtractor(realUrl, serverName, quality, mainUrl, subtitleCallback, callback)
+                            loadFixedExtractor(realUrl, serverName, quality, mainUrl, subtitleCallback, filteredCallback)
                         }
                     }
 
@@ -327,7 +333,7 @@ class AnimeSailProvider : MainAPI() {
                         }
 
                         if (!link.isNullOrBlank()) {
-                            callback.invoke(
+                            filteredCallback.invoke(
                                 newExtractorLink(
                                     source = serverName,
                                     name = serverName,
@@ -345,21 +351,21 @@ class AnimeSailProvider : MainAPI() {
                         val doc = request(iframe, ref = cleanData).document
                         val innerLink = doc.select("iframe").attr("src")
                         if (innerLink.isNotBlank()) {
-                            loadFixedExtractor(fixUrl(innerLink), serverName, quality, mainUrl, subtitleCallback, callback)
+                            loadFixedExtractor(fixUrl(innerLink), serverName, quality, mainUrl, subtitleCallback, filteredCallback)
                         }
                     }
 
                     iframe.contains("aghanim.xyz/tools/redirect/") -> {
                         val id = iframe.substringAfter("id=").substringBefore("&token")
                         val link = "https://rasa-cintaku-semakin-berantai.xyz/v/$id"
-                        loadFixedExtractor(link, serverName, quality, mainUrl, subtitleCallback, callback)
+                        loadFixedExtractor(link, serverName, quality, mainUrl, subtitleCallback, filteredCallback)
                     }
 
                     iframe.contains(playerPath) -> {
                         val doc = request(iframe, ref = cleanData).document
                         val link = doc.select("source").attr("src")
                         if (link.isNotBlank()) {
-                            callback.invoke(
+                            filteredCallback.invoke(
                                 newExtractorLink(
                                     source = serverName,
                                     name = serverName,
@@ -374,7 +380,7 @@ class AnimeSailProvider : MainAPI() {
                     }
 
                     else -> {
-                        loadFixedExtractor(iframe, serverName, quality, mainUrl, subtitleCallback, callback)
+                        loadFixedExtractor(iframe, serverName, quality, mainUrl, subtitleCallback, filteredCallback)
                     }
                 }
             }
@@ -390,11 +396,16 @@ class AnimeSailProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        android.util.Log.d("AnimeSailXR", "loadFixedExtractor: url=$url, serverName=$serverName, quality=$quality")
         loadExtractor(url, referer, subtitleCallback) { link ->
-            android.util.Log.d("AnimeSailXR", "loadExtractor Callback: link.name=${link.name}, link.source=${link.source}, serverName=$serverName")
-            val finalName = if (serverName.isNotBlank() && !serverName.equals(name, ignoreCase = true)) serverName else link.name
-            android.util.Log.d("AnimeSailXR", "loadExtractor Callback: finalName=$finalName")
+            val isDodo = serverName.equals("Dodo", ignoreCase = true)
+            val finalName = if (isDodo) {
+                "Dodo Auto"
+            } else if (serverName.isNotBlank() && !serverName.equals(name, ignoreCase = true)) {
+                serverName
+            } else {
+                link.name
+            }
+            val finalQuality = if (isDodo) Qualities.Unknown.value else (if (link.type == ExtractorLinkType.M3U8) link.quality else quality ?: Qualities.Unknown.value)
 
             runBlocking {
                 callback.invoke(
@@ -405,7 +416,7 @@ class AnimeSailProvider : MainAPI() {
                         type = link.type
                     ) {
                         this.referer = if (link.referer.isNotBlank()) link.referer else (referer ?: mainUrl)
-                        this.quality = if (link.type == ExtractorLinkType.M3U8) link.quality else quality ?: Qualities.Unknown.value
+                        this.quality = finalQuality
                         this.headers = link.headers
                         this.extractorData = link.extractorData
                     }
