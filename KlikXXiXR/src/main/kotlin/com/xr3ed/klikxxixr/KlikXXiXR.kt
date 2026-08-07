@@ -351,11 +351,14 @@ class KlikXXiXR : MainAPI() {
         val year = Regex("""\b(19|20)\d{2}\b""").find(title)?.value?.toIntOrNull() ?: Regex("""\b(19|20)\d{2}\b""").find(text)?.value?.toIntOrNull()
         val score = container.selectFirst(".rating, .score, .imdb, .vote")?.text()?.replace(",", ".")?.let { Regex("""\d+(?:\.\d+)?""").find(it)?.value?.toDoubleOrNull() }
         val maskedUrl = "https://lynk.id/xr3ed#$href"
+        val card = anchor.closest("article, .post, .item, .movie, .film, .card, .ml-item, .result-item, .owl-item, .swiper-slide, li, .col, .box") ?: container
+        val cardCategories = card.select("a[href*='/category/'], a[href*='/genre/']")
+            .map { it.text().trim().lowercase(Locale.ROOT) }
+        if (cardCategories.any { it.contains("vivagroup") || it.contains("viva group") || it.replace(" ", "").contains("vivagroup") }) {
+            return null
+        }
         val isSeries = type == TvType.TvSeries || type == TvType.AsianDrama
         if (isSeries) {
-            val card = anchor.closest("article, .post, .item, .movie, .film, .card, .ml-item, .result-item, .owl-item, .swiper-slide, li, .col, .box") ?: container
-            val cardCategories = card.select("a[href*='/category/'], a[href*='/genre/']")
-                .map { it.text().trim().lowercase(Locale.ROOT) }
             if (cardCategories.any { it.contains("dracin") }) {
                 return null
             }
