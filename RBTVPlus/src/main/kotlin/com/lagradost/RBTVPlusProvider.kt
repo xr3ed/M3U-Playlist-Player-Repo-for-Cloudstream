@@ -1243,7 +1243,7 @@ class RBTVPlusProvider : MainAPI() {
 
         return newLiveStreamLoadResponse(
             matchTitle,
-            "https://lynk.id/xr3ed#$loadData",
+            "https://lynk.id/xr3ed#$loadData&t=${System.currentTimeMillis()}",
             loadData
         ) {
             this.posterUrl = null
@@ -1443,66 +1443,66 @@ class RBTVPlusProvider : MainAPI() {
                                         }
 
                                         if (!encryptedUrl.isNullOrEmpty()) {
-                                            val decryptedRaw = rot47(encryptedUrl)
-                                            val decryptedUrl = decryptedRaw.substring(8)
+                                             val decryptedRaw = rot47(encryptedUrl)
+                                             val decryptedUrl = decryptedRaw.substring(8)
 
-                                            var finalUrl = if (!rbSession.isNullOrEmpty()) {
-                                                val encToken = encryptAesCtr(rbSession)
-                                                val uriParsed = URI(decryptedUrl)
-                                                val origin = "${uriParsed.scheme}://${uriParsed.host}"
-                                                val pathname = uriParsed.path
-                                                val search = uriParsed.query
-                                                "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
-                                            } else {
-                                                decryptedUrl
-                                            }
+                                             var finalUrl = if (!rbSession.isNullOrEmpty()) {
+                                                 val encToken = encryptAesCtr(rbSession)
+                                                 val uriParsed = URI(decryptedUrl)
+                                                 val origin = "${uriParsed.scheme}://${uriParsed.host}"
+                                                 val pathname = uriParsed.path
+                                                 val search = uriParsed.query
+                                                 "$origin/token-${encToken}a$pathname" + (if (!search.isNullOrEmpty()) "?$search" else "")
+                                             } else {
+                                                 decryptedUrl
+                                             }
 
-                                            if (finalUrl.startsWith("http://")) {
-                                                finalUrl = finalUrl.replaceFirst("http://", "https://")
-                                            }
+                                             if (finalUrl.startsWith("http://")) {
+                                                 finalUrl = finalUrl.replaceFirst("http://", "https://")
+                                             }
 
-                                            val isM3u8 = finalUrl.contains(".m3u8", ignoreCase = true)
-                                            val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                                             val isDash = finalUrl.contains(".mpd", ignoreCase = true)
+                                             val linkType = if (isDash) ExtractorLinkType.DASH else ExtractorLinkType.M3U8
 
-                                            val sourceName = if (!item.name.isNullOrEmpty()) {
-                                                "Source ${index + 1} (${item.name})"
-                                            } else {
-                                                "Source ${index + 1}"
-                                            }
+                                             val sourceName = if (!item.name.isNullOrEmpty()) {
+                                                 "Source ${index + 1} (${item.name})"
+                                             } else {
+                                                 "Source ${index + 1}"
+                                             }
 
-                                            val qualityVal = when {
-                                                item.name?.contains("1080", ignoreCase = true) == true -> Qualities.P1080.value
-                                                item.name?.contains("720", ignoreCase = true) == true -> Qualities.P720.value
-                                                item.name?.contains("480", ignoreCase = true) == true -> Qualities.P480.value
-                                                item.name?.contains("360", ignoreCase = true) == true -> Qualities.P360.value
-                                                item.name?.contains("HD", ignoreCase = true) == true -> Qualities.P720.value
-                                                else -> Qualities.Unknown.value
-                                            }
+                                             val qualityVal = when {
+                                                 item.name?.contains("1080", ignoreCase = true) == true -> Qualities.P1080.value
+                                                 item.name?.contains("720", ignoreCase = true) == true -> Qualities.P720.value
+                                                 item.name?.contains("480", ignoreCase = true) == true -> Qualities.P480.value
+                                                 item.name?.contains("360", ignoreCase = true) == true -> Qualities.P360.value
+                                                 item.name?.contains("HD", ignoreCase = true) == true -> Qualities.P720.value
+                                                 else -> Qualities.Unknown.value
+                                             }
 
-                                            callback.invoke(
-                                                ExtractorLink(
-                                                    source = "RBTV+",
-                                                    name = sourceName,
-                                                    url = finalUrl,
-                                                    referer = "https://lola30es.mpipzni2naturally32kistomach.ru/",
-                                                    quality = qualityVal,
-                                                    type = linkType,
-                                                    headers = mapOf(
-                                                        "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
-                                                        "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
-                                                        "User-Agent" to BuildConfig.RBTV_USER_AGENT
-                                                    )
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                }.awaitAll()
+                                             callback.invoke(
+                                                 ExtractorLink(
+                                                     source = "RBTV+",
+                                                     name = sourceName,
+                                                     url = finalUrl,
+                                                     referer = "https://lola30es.mpipzni2naturally32kistomach.ru/",
+                                                     quality = qualityVal,
+                                                     type = linkType,
+                                                     headers = mapOf(
+                                                         "Referer" to "https://lola30es.mpipzni2naturally32kistomach.ru/",
+                                                         "Origin" to "https://lola30es.mpipzni2naturally32kistomach.ru",
+                                                         "User-Agent" to BuildConfig.RBTV_USER_AGENT
+                                                     )
+                                                 )
+                                             )
+                                         }
+                                     }
+                                 }
+                             }
+                         } catch (e: Exception) {
+                             e.printStackTrace()
+                         }
+                     }
+                 }.awaitAll()
             }
             return true
         } catch (e: Exception) {
