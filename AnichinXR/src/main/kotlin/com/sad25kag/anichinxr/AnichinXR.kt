@@ -30,7 +30,7 @@ class AnichinXR : MainAPI() {
         private const val MAX_TOP_LEVEL_CANDIDATES = 12
         private const val MAX_DOWNLOAD_CANDIDATES = 6
         private const val MAX_NESTED_CANDIDATES = 10
-        private const val MAX_RESOLVE_DEPTH = 1
+        private const val MAX_RESOLVE_DEPTH = 3
         private const val MAX_VISITED_LINKS = 28
         private const val MAX_NESTED_TEXT_BYTES = 1_000_000L
 
@@ -715,6 +715,9 @@ class AnichinXR : MainAPI() {
 
     private fun isPrimaryPlaybackHost(url: String, label: String): Boolean {
         val value = "$label $url".lowercase()
+        val mainHost = try { URI(mainUrl).host?.lowercase() } catch (e: Throwable) { null } ?: "anichin.moe"
+        if (url.lowercase().contains(mainHost) && url.lowercase().contains("/stream/")) return true
+
         return value.contains("dailymotion.com") ||
             value.contains("geo.dailymotion.com") ||
             value.contains("dai.ly") ||
@@ -737,6 +740,9 @@ class AnichinXR : MainAPI() {
 
     private fun candidatePriority(url: String, label: String): Int {
         val value = "$label $url".lowercase()
+        val mainHost = try { URI(mainUrl).host?.lowercase() } catch (e: Throwable) { null } ?: "anichin.moe"
+        if (url.lowercase().contains(mainHost) && url.lowercase().contains("/stream/")) return 0
+
         return when {
             value.contains("dailymotion.com") || value.contains("geo.dailymotion.com") || value.contains("dai.ly") -> 0
             value.contains("ok.ru") || value.contains("odnoklassniki.ru") -> 1
@@ -752,6 +758,9 @@ class AnichinXR : MainAPI() {
 
     private fun shouldReadNestedPage(url: String): Boolean {
         val value = url.lowercase()
+        val mainHost = try { URI(mainUrl).host?.lowercase() } catch (e: Throwable) { null } ?: "anichin.moe"
+        if (value.contains(mainHost) && value.contains("/stream/")) return true
+
         return value.contains("/embed", true) ||
             value.contains("/player", true) ||
             value.contains("/video", true) ||

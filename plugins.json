@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://anichin.club&size=%size%",
-        "fileHash": "sha256-477cb37d59aecb52d381e74b26516be8ab53690e9e0afa2f89957b4f16e0db2f",
+        "fileHash": "sha256-bc2cd5d52f7b0675aaf11ae1e3bd0cd98e36a6f8b26b24848fbcc01aea7b884e",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 107627,
+        "fileSize": 107596,
         "status": 1,
         "language": "id",
         "authors": [
@@ -16,17 +16,39 @@
             "Anime",
             "Cartoon"
         ],
-        "version": 48,
+        "version": 49,
         "internalName": "AnichinXR",
         "description": "Anichin Moe modifikasi oleh XR3ED",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnichinXR.cs3",
         "name": "AnichinXR"
     },
     {
-        "fileHash": "sha256-542577a7b0c876ef9db247df8cf43fdbb2e3daa8895b9afd6e1d3bb3c3412295",
+        "iconUrl": "https://aghanim.xyz/wp-content/themes/animesail/assets/images/ico.png",
+        "fileHash": "sha256-c432ce6e78aa66fa7dd84f3364c5ba598c35181237b948986802092d5fe92a54",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 76566,
+        "fileSize": 79926,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "AnimeMovie",
+            "Anime",
+            "OVA"
+        ],
+        "version": 11,
+        "internalName": "AnimeSailProvider",
+        "description": "AnimeSail \u2014 Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailProvider.cs3",
+        "name": "AnimeSailProvider"
+    },
+    {
+        "fileHash": "sha256-0ce4fb14c84f4b88524d07a044c06e8ca695a2e80aec682289a11e79b5af24f5",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 83748,
         "status": 1,
         "language": "id",
         "authors": [
@@ -35,7 +57,7 @@
         "tvTypes": [
             "TvSeries"
         ],
-        "version": 6,
+        "version": 7,
         "internalName": "DracinAIO",
         "description": "Ekstensi Cloudstream untuk menonton drama pendek dari berbagai provider",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAIO.cs3",
@@ -129,10 +151,10 @@
     },
     {
         "iconUrl": "https://assets.lk21.party/favicons/apple-icon-144x144.png",
-        "fileHash": "sha256-b6389d1856517d55b4de82f2dfefc0b80ee9e1d58ea14fe2661b9e6f5fcb8f94",
+        "fileHash": "sha256-ceed1996526f28e4f9986393bf1adcc86bbdbeec41ad91c38219104771cb0499",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 90592,
+        "fileSize": 115182,
         "status": 1,
         "language": "id",
         "authors": [
@@ -143,7 +165,7 @@
             "TvSeries",
             "AsianDrama"
         ],
-        "version": 5,
+        "version": 8,
         "internalName": "LayarKacaXR",
         "description": "LayarKaca \u2014 provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LayarKacaXR.cs3",
@@ -191,10 +213,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/MovieBoXR.png",
-        "fileHash": "sha256-6c62da2e27a95d71f1baa507665b694b6c78df77c62aec8f0a3d1961450bd1d7",
+        "fileHash": "sha256-683b76ca390cc5b79adba6fa25409801b848769b1e9641017b17a2860d760bf9",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 95351,
+        "fileSize": 114980,
         "status": 1,
         "language": "id",
         "authors": [
@@ -351,27 +373,5 @@
         "description": "Streaming TV Live \u2014 Sports & Entertainment",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
         "name": "xr3edTV"
-    },
-    {
-        "iconUrl": "https://aghanim.xyz/wp-content/themes/animesail/assets/images/ico.png",
-        "fileHash": "sha256-c432ce6e78aa66fa7dd84f3364c5ba598c35181237b948986802092d5fe92a54",
-        "apiVersion": 1,
-        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 79926,
-        "status": 1,
-        "language": "id",
-        "authors": [
-            "xr3ed"
-        ],
-        "tvTypes": [
-            "AnimeMovie",
-            "Anime",
-            "OVA"
-        ],
-        "version": 12,
-        "internalName": "AnimeSailProvider",
-        "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
-        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailProvider.cs3",
-        "name": "#Anime AnimesailXR"
     }
 ]
