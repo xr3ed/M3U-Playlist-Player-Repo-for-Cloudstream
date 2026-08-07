@@ -1,0 +1,1 @@
+[    1052ms] [INFO] Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner. @ https://z2.idlixku.com/:0

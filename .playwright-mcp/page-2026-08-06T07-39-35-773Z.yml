@@ -1,0 +1,261 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e9]:
+      - button [ref=e11] [cursor=pointer]:
+        - img "IDLIX" [ref=e12]
+      - navigation [ref=e14]:
+        - link "Beranda" [ref=e15] [cursor=pointer]:
+          - /url: /
+        - link "Film" [ref=e19] [cursor=pointer]:
+          - /url: /movie
+        - link "Serial TV" [ref=e24] [cursor=pointer]:
+          - /url: /series
+        - link "Genre" [ref=e28] [cursor=pointer]:
+          - /url: /genre
+        - button "Lainnya" [ref=e34] [cursor=pointer]
+      - generic [ref=e40]:
+        - button [ref=e41] [cursor=pointer]
+        - button "Akun" [ref=e46] [cursor=pointer]
+  - main [ref=e52]:
+    - region "IDLIX content catalog" [ref=e53]:
+      - heading "IDLIX — Nonton Film, Serial TV, Anime, Drama Korea Subtitle Bahasa" [level=1] [ref=e54]
+      - paragraph [ref=e55]: Nonton atau Streaming Film, Serial TV, Anime atau Drama Korea dalam format HD dan terbaru.
+      - generic [ref=e56]:
+        - heading "Trending Now" [level=2] [ref=e57]
+        - list [ref=e58]:
+          - listitem [ref=e59]:
+            - link "A Shop for Killers" [ref=e60] [cursor=pointer]:
+              - /url: /series/a-shop-for-killers-2024
+          - listitem [ref=e61]:
+            - link "Agent Kim Reactivated" [ref=e62] [cursor=pointer]:
+              - /url: /series/agent-kim-reactivated-2026
+          - listitem [ref=e63]:
+            - link "Evil Dead Burn" [ref=e64] [cursor=pointer]:
+              - /url: /movie/evil-dead-burn-2026
+          - listitem [ref=e65]:
+            - link "Dream to You" [ref=e66] [cursor=pointer]:
+              - /url: /series/dream-to-you-2026
+          - listitem [ref=e67]:
+            - link "The Mentalist" [ref=e68] [cursor=pointer]:
+              - /url: /series/the-mentalist-2008
+          - listitem [ref=e69]:
+            - link "Colony" [ref=e70] [cursor=pointer]:
+              - /url: /movie/colony-2026
+          - listitem [ref=e71]:
+            - link "Teach You a Lesson" [ref=e72] [cursor=pointer]:
+              - /url: /series/teach-you-a-lesson-2026
+          - listitem [ref=e73]:
+            - link "Spooky in Love" [ref=e74] [cursor=pointer]:
+              - /url: /series/spooky-in-love-2026
+          - listitem [ref=e75]:
+            - 'link "Spider-Man: No Way Home" [ref=e76] [cursor=pointer]':
+              - /url: /movie/spider-man-no-way-home-2021
+          - listitem [ref=e77]:
+            - link "See You at Work Tomorrow!" [ref=e78] [cursor=pointer]:
+              - /url: /series/see-you-at-work-tomorrow-2026
+      - generic [ref=e79]:
+        - heading "Trending in Your Country" [level=2] [ref=e80]
+        - list [ref=e81]:
+          - listitem [ref=e82]:
+            - link "A Shop for Killers" [ref=e83] [cursor=pointer]:
+              - /url: /series/a-shop-for-killers-2024
+          - listitem [ref=e84]:
+            - link "Agent Kim Reactivated" [ref=e85] [cursor=pointer]:
+              - /url: /series/agent-kim-reactivated-2026
+          - listitem [ref=e86]:
+            - link "Evil Dead Burn" [ref=e87] [cursor=pointer]:
+              - /url: /movie/evil-dead-burn-2026
+          - listitem [ref=e88]:
+            - link "Dream to You" [ref=e89] [cursor=pointer]:
+              - /url: /series/dream-to-you-2026
+          - listitem [ref=e90]:
+            - link "The Mentalist" [ref=e91] [cursor=pointer]:
+              - /url: /series/the-mentalist-2008
+          - listitem [ref=e92]:
+            - link "Colony" [ref=e93] [cursor=pointer]:
+              - /url: /movie/colony-2026
+          - listitem [ref=e94]:
+            - link "Teach You a Lesson" [ref=e95] [cursor=pointer]:
+              - /url: /series/teach-you-a-lesson-2026
+          - listitem [ref=e96]:
+            - link "Spooky in Love" [ref=e97] [cursor=pointer]:
+              - /url: /series/spooky-in-love-2026
+          - listitem [ref=e98]:
+            - 'link "Spider-Man: No Way Home" [ref=e99] [cursor=pointer]':
+              - /url: /movie/spider-man-no-way-home-2021
+          - listitem [ref=e100]:
+            - link "See You at Work Tomorrow!" [ref=e101] [cursor=pointer]:
+              - /url: /series/see-you-at-work-tomorrow-2026
+      - generic [ref=e102]:
+        - heading "Network Originals" [level=2] [ref=e103]
+        - list [ref=e104]:
+          - listitem [ref=e105]:
+            - 'link "Cyberpunk: Edgerunners" [ref=e106] [cursor=pointer]':
+              - /url: /series/cyberpunk-edgerunners-2022
+          - listitem [ref=e107]:
+            - link "Ladies First" [ref=e108] [cursor=pointer]:
+              - /url: /movie/ladies-first-2026
+          - listitem [ref=e109]:
+            - 'link "Formula 1: Drive to Survive" [ref=e110] [cursor=pointer]':
+              - /url: /series/formula-1-drive-to-survive-2019
+          - listitem [ref=e111]:
+            - link "Elite" [ref=e112] [cursor=pointer]:
+              - /url: /series/elite-2018
+          - listitem [ref=e113]:
+            - link "Genie, Make a Wish" [ref=e114] [cursor=pointer]:
+              - /url: /series/genie-make-a-wish-2025
+          - listitem [ref=e115]:
+            - link "Black Mirror" [ref=e116] [cursor=pointer]:
+              - /url: /series/black-mirror-2011
+          - listitem [ref=e117]:
+            - link "Obsession" [ref=e118] [cursor=pointer]:
+              - /url: /series/obsession-2023
+          - listitem [ref=e119]:
+            - link "The Sea Beast" [ref=e120] [cursor=pointer]:
+              - /url: /movie/the-sea-beast-2022
+          - listitem [ref=e121]:
+            - link "Bloody Smart" [ref=e122] [cursor=pointer]:
+              - /url: /series/bloody-smart-2026
+          - listitem [ref=e123]:
+            - link "Demon City" [ref=e124] [cursor=pointer]:
+              - /url: /movie/demon-city-2025
+      - generic [ref=e125]:
+        - heading "Collections" [level=2] [ref=e126]
+        - list [ref=e127]:
+          - listitem [ref=e128]:
+            - link "Perfect Match" [ref=e129] [cursor=pointer]:
+              - /url: /series/perfect-match-2025
+          - listitem [ref=e130]:
+            - link "The Story of Pearl Girl" [ref=e131] [cursor=pointer]:
+              - /url: /series/the-story-of-pearl-girl-2024
+          - listitem [ref=e132]:
+            - link "Put Your Head on My Shoulder" [ref=e133] [cursor=pointer]:
+              - /url: /series/put-your-head-on-my-shoulder-2019
+          - listitem [ref=e134]:
+            - link "Everyone Loves Me" [ref=e135] [cursor=pointer]:
+              - /url: /series/everyone-loves-me-2024
+          - listitem [ref=e136]:
+            - link "Our Generation" [ref=e137] [cursor=pointer]:
+              - /url: /series/our-generation-2025
+          - listitem [ref=e138]:
+            - link "A Dream Within a Dream" [ref=e139] [cursor=pointer]:
+              - /url: /series/a-dream-within-a-dream-2025
+          - listitem [ref=e140]:
+            - link "Here We Meet Again" [ref=e141] [cursor=pointer]:
+              - /url: /series/here-we-meet-again-2023
+          - listitem [ref=e142]:
+            - link "Please Feel At Ease Mr. Ling" [ref=e143] [cursor=pointer]:
+              - /url: /series/please-feel-at-ease-mr-ling-2021
+          - listitem [ref=e144]:
+            - link "Mumu" [ref=e145] [cursor=pointer]:
+              - /url: /movie/mumu-2025
+          - listitem [ref=e146]:
+            - link "Love of the Divine Tree" [ref=e147] [cursor=pointer]:
+              - /url: /series/love-of-the-divine-tree-2025
+      - generic [ref=e148]:
+        - heading "Recently Added Movies" [level=2] [ref=e149]
+        - list [ref=e150]:
+          - listitem [ref=e151]:
+            - link "Lockbox" [ref=e152] [cursor=pointer]:
+              - /url: /movie/lockbox-2026
+          - listitem [ref=e153]:
+            - link "The Isolate Thief" [ref=e154] [cursor=pointer]:
+              - /url: /movie/the-isolate-thief-2026
+          - listitem [ref=e155]:
+            - link "Evil Dead Burn" [ref=e156] [cursor=pointer]:
+              - /url: /movie/evil-dead-burn-2026
+          - listitem [ref=e157]:
+            - link "Lucky Strike" [ref=e158] [cursor=pointer]:
+              - /url: /movie/lucky-strike-2026
+          - listitem [ref=e159]:
+            - link "Another World" [ref=e160] [cursor=pointer]:
+              - /url: /movie/another-world-2025
+          - listitem [ref=e161]:
+            - link "Unanswered//butterfly" [ref=e162] [cursor=pointer]:
+              - /url: /movie/unansweredbutterfly-2026
+          - listitem [ref=e163]:
+            - 'link "Capps Crossing: Wrong Side of Dead" [ref=e164] [cursor=pointer]':
+              - /url: /movie/capps-crossing-wrong-side-of-dead-2026
+          - listitem [ref=e165]:
+            - link "15+ Coming of Age" [ref=e166] [cursor=pointer]:
+              - /url: /movie/15-coming-of-age-2017
+          - listitem [ref=e167]:
+            - link "Hope Gap" [ref=e168] [cursor=pointer]:
+              - /url: /movie/hope-gap-2019
+          - listitem [ref=e169]:
+            - link "Soulm8te" [ref=e170] [cursor=pointer]:
+              - /url: /movie/soulm8te-2026
+      - generic [ref=e171]:
+        - heading "Recently Added Series" [level=2] [ref=e172]
+        - list [ref=e173]:
+          - listitem [ref=e174]:
+            - link "Sterling Point" [ref=e175] [cursor=pointer]:
+              - /url: /series/sterling-point-2026
+          - listitem [ref=e176]:
+            - 'link "Star Wars: Visions Presents - The Ninth Jedi" [ref=e177] [cursor=pointer]':
+              - /url: /series/star-wars-visions-presents-the-ninth-jedi-2026
+          - listitem [ref=e178]:
+            - link "Salem" [ref=e179] [cursor=pointer]:
+              - /url: /series/salem-2014
+          - listitem [ref=e180]:
+            - 'link "Better Late Than Single: After Service" [ref=e181] [cursor=pointer]':
+              - /url: /series/better-late-than-single-after-service-2026
+          - listitem [ref=e182]:
+            - 'link "Criminal Minds: Beyond Borders" [ref=e183] [cursor=pointer]':
+              - /url: /series/criminal-minds-beyond-borders-2016
+          - listitem [ref=e184]:
+            - 'link "Criminal Minds: Suspect Behavior" [ref=e185] [cursor=pointer]':
+              - /url: /series/criminal-minds-suspect-behavior-2011
+          - listitem [ref=e186]:
+            - link "Shine" [ref=e187] [cursor=pointer]:
+              - /url: /series/shine-2025
+          - listitem [ref=e188]:
+            - link "White Collar" [ref=e189] [cursor=pointer]:
+              - /url: /series/white-collar-2009
+          - listitem [ref=e190]:
+            - link "My Bias, My Boss" [ref=e191] [cursor=pointer]:
+              - /url: /series/my-bias-my-boss-2026
+          - listitem [ref=e192]:
+            - link "Black Clover" [ref=e193] [cursor=pointer]:
+              - /url: /series/black-clover-2017
+      - generic [ref=e194]:
+        - heading [level=2]
+        - list [ref=e195]:
+          - listitem [ref=e196]:
+            - link "Agent Kim Reactivated" [ref=e197] [cursor=pointer]:
+              - /url: /series/agent-kim-reactivated-2026
+          - listitem [ref=e198]:
+            - link "A Shop for Killers" [ref=e199] [cursor=pointer]:
+              - /url: /series/a-shop-for-killers-2024
+          - listitem [ref=e200]:
+            - link "Colony" [ref=e201] [cursor=pointer]:
+              - /url: /movie/colony-2026
+          - listitem [ref=e202]:
+            - link "See You at Work Tomorrow!" [ref=e203] [cursor=pointer]:
+              - /url: /series/see-you-at-work-tomorrow-2026
+          - listitem [ref=e204]:
+            - link "Teach You a Lesson" [ref=e205] [cursor=pointer]:
+              - /url: /series/teach-you-a-lesson-2026
+      - generic [ref=e206]:
+        - heading "Recently Added Episodes" [level=2] [ref=e207]
+        - list
+      - navigation "Browse categories" [ref=e208]:
+        - link "Browse Movies" [ref=e209] [cursor=pointer]:
+          - /url: /movie
+        - link "Browse TV Series" [ref=e210] [cursor=pointer]:
+          - /url: /series
+        - link "Browse by Genre" [ref=e211] [cursor=pointer]:
+          - /url: /genre
+        - link "Browse by Country" [ref=e212] [cursor=pointer]:
+          - /url: /country
+        - link "Browse by Year" [ref=e213] [cursor=pointer]:
+          - /url: /year
+        - link "Browse by Network" [ref=e214] [cursor=pointer]:
+          - /url: /network
+  - contentinfo [ref=e331]:
+    - generic [ref=e333]:
+      - button [ref=e335] [cursor=pointer]:
+        - img "IDLIX" [ref=e336]
+      - paragraph [ref=e338]: IDLIX tidak menghosting, menyimpan, atau mendistribusikan file media apa pun. Semua konten diambil otomatis dari penyedia pihak ketiga di internet.
+      - link [ref=e340] [cursor=pointer]:
+        - /url: https://discord.gg/yVPFdhua4K
