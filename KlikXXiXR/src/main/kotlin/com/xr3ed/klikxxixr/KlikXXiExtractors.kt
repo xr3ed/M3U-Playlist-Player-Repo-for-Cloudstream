@@ -108,7 +108,7 @@ object KlikXXiExtractors {
             host.contains("sf21.vidplayer.live") -> resolveSf21Player(fixed, referer, sourceName, headers, mainUrl)
             host.contains("upload18.org") || host.contains("upload18.cc") -> resolveUpload18Player(fixed, referer, sourceName, headers)
             host.contains("hgcloud.to") || host.contains("audinifer.com") || host.contains("vibuxer.com") || host.contains("streamhg.co") -> resolveVibuxerPlayer(fixed, referer, sourceName)
-            host.contains("strp2p.site") || host.contains("upns.one") -> resolveUpnsInfoPlayer(fixed, sourceName, headers)
+            host.contains("strp2p.site") || host.contains("upns.one") -> resolveUpnsInfoPlayer(fixed, sourceName, mainUrl, headers)
             host.contains("hexload.com") -> resolveHexloadPlayer(fixed, sourceName, headers, mainUrl)
             else -> emptyList()
         }
@@ -207,7 +207,7 @@ object KlikXXiExtractors {
         return listOf(ResolvedPlayerLink(streamUrl, "https://$finalHost/", finalSource))
     }
 
-    private suspend fun resolveUpnsInfoPlayer(url: String, sourceName: String, headers: Map<String, String>): List<ResolvedPlayerLink> {
+    private suspend fun resolveUpnsInfoPlayer(url: String, sourceName: String, mainUrl: String, headers: Map<String, String>): List<ResolvedPlayerLink> {
         val fixed = fixUrl(url, "") ?: return emptyList()
         val uri = try { URI(fixed) } catch (_: Throwable) { return emptyList() }
         val host = uri.host.orEmpty()
@@ -221,7 +221,7 @@ object KlikXXiExtractors {
             val client = okhttp3.OkHttpClient()
             val request = okhttp3.Request.Builder()
                 .url(apiUrl)
-                .header("Referer", fixed)
+                .header("Referer", mainUrl)
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .header("Accept", "*/*")
                 .build()

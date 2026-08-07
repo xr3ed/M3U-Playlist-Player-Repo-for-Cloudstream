@@ -211,6 +211,7 @@ class KlikXXiXR : MainAPI() {
         }
         val startUrl = fixUrl(targetUrl, mainUrl) ?: return false
         val emitted = linkedSetOf<String>()
+        val emittedTabs = hashSetOf<String>()
         val visitedPages = linkedSetOf<String>()
         var found = false
 
@@ -223,6 +224,7 @@ class KlikXXiXR : MainAPI() {
             val mediaHeaders = mediaHeaders(fixed, referer)
             val isM3u = KlikXXiExtractors.run { fixed.isM3u8Like() }
             val customSource = if (source.startsWith("Server ", true)) source else name
+            if (customSource.startsWith("Server ", true) && !emittedTabs.add(customSource.lowercase(java.util.Locale.ROOT))) return false
             callback(newExtractorLink(customSource, customSource, fixed, if (isM3u) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO) {
                 this.referer = mediaReferer
                 this.quality = Qualities.Unknown.value
@@ -234,7 +236,7 @@ class KlikXXiXR : MainAPI() {
         suspend fun emitExtractor(url: String, referer: String, tabName: String): Boolean {
             var fixed = fixUrl(url, referer) ?: return false
             if (fixed.contains("veev.to/d/")) {
-                fixed = fixed.replace("veev.to/d/", "veev.to/e/")
+                fixed = fixed.replace("veev.to/d/", "voe.sx/e/")
             }
             if (KlikXXiExtractors.run { fixed.isNoiseUrl() }) return false
             if (KlikXXiExtractors.isPlayableMedia(fixed)) return emitDirect(fixed, referer, tabName)
@@ -260,6 +262,7 @@ class KlikXXiXR : MainAPI() {
 
             for (link in linksToEmit) {
                 val customName = if (tabName.isNotEmpty()) tabName else link.source
+                if (customName.startsWith("Server ", true) && !emittedTabs.add(customName.lowercase(java.util.Locale.ROOT))) continue
                 val customLink = newExtractorLink(customName, customName, link.url, link.type) {
                     this.referer = link.referer
                     this.quality = Qualities.Unknown.value
