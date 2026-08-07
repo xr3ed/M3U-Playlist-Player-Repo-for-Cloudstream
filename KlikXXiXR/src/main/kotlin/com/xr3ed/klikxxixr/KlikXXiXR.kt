@@ -354,9 +354,15 @@ class KlikXXiXR : MainAPI() {
         val card = anchor.closest("article, .post, .item, .movie, .film, .card, .ml-item, .result-item, .owl-item, .swiper-slide, li, .col, .box") ?: container
         val cardCategories = card.select("a[href*='/category/'], a[href*='/genre/']")
             .map { it.text().trim().lowercase(Locale.ROOT) }
-        if (cardCategories.any { it.contains("vivagroup") || it.contains("viva group") || it.replace(" ", "").contains("vivagroup") }) {
-            return null
-        }
+        val isNsfwMedia = isNsfw(title, href) ||
+                          text.lowercase(Locale.ROOT).contains("sexy") ||
+                          text.lowercase(Locale.ROOT).contains(" 18+") ||
+                          text.lowercase(Locale.ROOT).contains("adult") ||
+                          cardCategories.any { cat ->
+                              cat.contains("vivagroup") || cat.contains("viva group") || cat.contains("vivamax") || cat.contains("viva max") ||
+                              cat.contains("semi") || cat.contains("sexy") || cat.contains("dewasa") || cat.contains("adult") || cat.contains("18+") || cat.contains("erotis") || cat.contains("erotik") || cat.contains("erotic")
+                          }
+        if (isNsfwMedia) return null
         val isSeries = type == TvType.TvSeries || type == TvType.AsianDrama
         if (isSeries) {
             if (cardCategories.any { it.contains("dracin") }) {
@@ -914,7 +920,8 @@ class KlikXXiXR : MainAPI() {
     private fun isNsfw(title: String, url: String): Boolean {
         val titleLower = title.lowercase(Locale.ROOT)
         val urlLower = url.lowercase(Locale.ROOT)
-        return titleLower.contains("semi") || urlLower.contains("/semi") || urlLower.contains("semi-")
+        return titleLower.contains("semi") || titleLower.contains("sexy") || titleLower.contains("18+") || titleLower.contains("adult") || titleLower.contains("vulgar") || titleLower.contains("erotic") || titleLower.contains("erotis") || titleLower.contains("vivamax") || titleLower.contains("viva group") ||
+               urlLower.contains("semi") || urlLower.contains("sexy") || urlLower.contains("adult") || urlLower.contains("vulgar") || urlLower.contains("erotic") || urlLower.contains("erotis") || urlLower.contains("vivamax") || urlLower.contains("viva-group") || urlLower.contains("viva-max")
     }
 
     private val cardSelector = listOf(
