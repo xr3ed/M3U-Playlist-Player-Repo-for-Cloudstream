@@ -229,7 +229,8 @@ object KlikXXiExtractors {
         } catch (_: Throwable) { return emptyList() }
         if (encrypted.isBlank()) return emptyList()
         val decryptedJson = try {
-            val keyBytes = "kiemtienmua911ca".toByteArray()
+            val keyStr = com.xr3ed.klikxxixr.BuildConfig.KLIKXXI_AES_KEY.takeIf { it.isNotEmpty() } ?: "kiemtienmua911ca"
+            val keyBytes = keyStr.toByteArray()
             val ivBytes = getUpnsIv(fixed)
             val cipherBytes = encrypted.trim().replace("\"", "").chunked(2).map { it.toInt(16).toByte() }.toByteArray()
             val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
@@ -351,7 +352,7 @@ object KlikXXiExtractors {
                 "iframe[src], iframe[data-src], iframe[data-litespeed-src], embed[src], video[src], video source[src], source[src], " +
                 "a[href*='embed'], a[href*='player'], a[href*='play/index'], a[href*='stream'], a[href*='drive'], a[href*='gofile'], a[href*='dood'], a[href*='streamtape'], " +
                 "a[href*='filemoon'], a[href*='vidhide'], a[href*='vidguard'], a[href*='voe'], a[href*='mp4upload'], a[href*='uqload'], a[href*='krakenfiles'], " +
-                "a[href*='filelions'], a[href*='hubcloud'], a[href*='gdplayer'], a[href*='gdriveplayer'], a[href*='upload18'], a[href*='workers.dev'], a[href*='sht'], a[href*='short'], a[href*='morencius.com'], a[href*='turbovidhls.com'], a[href*='veev'], a[href*='strp2p'], a[href*='upns'], a[href*='.mp4'], a[href*='.m3u8']"
+                "a[href*='filelions'], a[href*='hubcloud'], a[href*='gdplayer'], a[href*='gdriveplayer'], a[href*='upload18'], a[href*='workers.dev'], a[href*='sht'], a[href*='short'], a[href*='morencius.com'], a[href*='turbovidhls.com'], a[href*='.mp4'], a[href*='.m3u8']"
         ).forEach { element ->
             val src = element.attr("data-src").ifBlank { element.attr("src") }.ifBlank { element.attr("data-litespeed-src") }.ifBlank { element.attr("href") }
             fixUrl(src, baseUrl)?.let { links.add(it) }

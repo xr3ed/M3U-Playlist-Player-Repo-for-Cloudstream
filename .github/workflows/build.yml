@@ -44,6 +44,7 @@ jobs:
           LAYARKACA_SERIES_URL: ${{ secrets.LAYARKACA_SERIES_URL }}
           LAYARKACA_SEARCH_URL: ${{ secrets.LAYARKACA_SEARCH_URL }}
           KLIKXXI_MAIN_URL: ${{ secrets.KLIKXXI_MAIN_URL }}
+          KLIKXXI_AES_KEY: ${{ secrets.KLIKXXI_AES_KEY }}
           BYSE_POW_LR: ${{ secrets.BYSE_POW_LR }}
           BYSE_POW_HR: ${{ secrets.BYSE_POW_HR }}
           BYSE_API_CAPTCHA: ${{ secrets.BYSE_API_CAPTCHA }}

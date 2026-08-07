@@ -5,6 +5,15 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    defaultConfig {
+        val properties = java.util.Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(java.io.FileInputStream(localPropertiesFile))
+        }
+        val aesKey = System.getenv("KLIKXXI_AES_KEY") ?: properties.getProperty("KLIKXXI_AES_KEY") ?: ""
+        buildConfigField("String", "KLIKXXI_AES_KEY", "\\"$aesKey\\"")
+    }
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")
     }

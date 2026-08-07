@@ -532,24 +532,7 @@ class KlikXXiXR : MainAPI() {
                     KlikXXiExtractors.collectLinksFromHtml(body, pageUrl).forEach { links.add(it to tabText) }
                 }
             }
-            if (links.isNotEmpty()) {
-                val post = playerOptions.firstOrNull()?.attr("data-post")?.takeIf { it.isNotBlank() } ?: playerOptions.firstOrNull()?.attr("data-id") ?: ""
-                val type = playerOptions.firstOrNull()?.attr("data-type")?.takeIf { it.isNotBlank() } ?: "movie"
-                if (post.isNotBlank()) {
-                    val action = "doo_player_ajax"
-                    (6..10).map { n ->
-                        try {
-                            app.post(ajaxUrl, data = mapOf("action" to action, "post" to post, "nume" to n.toString(), "type" to type), headers = ajaxHeaders(pageUrl), referer = pageUrl).text
-                        } catch (_: Throwable) { "" }
-                    }.forEachIndexed { i, body ->
-                        val n = i + 6
-                        if (body.isNotBlank()) {
-                            KlikXXiExtractors.collectLinksFromHtml(body, pageUrl).forEach { links.add(it to "Server $n") }
-                        }
-                    }
-                }
-                return links.toList()
-            }
+            if (links.isNotEmpty()) return links.toList()
         }
 
         // Only run brute-force fallback if no links have been found yet!
@@ -652,10 +635,10 @@ class KlikXXiXR : MainAPI() {
         return !KlikXXiExtractors.run { lower.isNoiseUrl() } && (
             lower.contains(mainHost) || lower.contains("sht") || lower.contains("short") || lower.contains("embed") || lower.contains("player") || lower.contains("/play/") ||
                 lower.contains("stream") || lower.contains("drive") || lower.contains("gofile") || lower.contains("dood") || lower.contains("filemoon") ||
-                lower.contains("vidhide") || lower.contains("vidguard") || lower.contains("voe") || lower.contains("veev") || lower.contains("mp4upload") || lower.contains("uqload") ||
+                lower.contains("vidhide") || lower.contains("vidguard") || lower.contains("voe") || lower.contains("mp4upload") || lower.contains("uqload") ||
                 lower.contains("hubcloud") || lower.contains("gdplayer") || lower.contains("gdriveplayer") || lower.contains("krakenfiles") || lower.contains("filelions") ||
                 lower.contains("sf21.vidplayer.live") || lower.contains("minochinos.com") || lower.contains("earnvidjav.online") || lower.contains("upload18.org") || lower.contains("upload18.cc") || lower.contains("321watch.workers.dev") ||
-                lower.contains("morencius.com") || lower.contains("turbovidhls.com") || lower.contains("strp2p") || lower.contains("upns")
+                lower.contains("morencius.com") || lower.contains("turbovidhls.com")
             )
     }
 
@@ -679,10 +662,8 @@ class KlikXXiXR : MainAPI() {
     private fun mediaHeaders(url: String, referer: String): Map<String, String> {
         val mediaReferer = mediaReferer(url, referer)
         val mediaHost = runCatching { URI(url).host.orEmpty().lowercase(Locale.ROOT) }.getOrDefault("")
-        val base = mapOf(
-            "User-Agent" to USER_AGENT,
+        val base = headers + mapOf(
             "Accept" to "*/*",
-            "Accept-Language" to "id,en-US;q=0.7,en;q=0.3",
             "Referer" to mediaReferer
         )
         return if (mediaHost.contains("upload18.org") || mediaHost.contains("upload18.cc") || mediaHost.contains("321watch.workers.dev")) {
