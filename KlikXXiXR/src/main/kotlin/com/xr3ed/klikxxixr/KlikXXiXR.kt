@@ -27,6 +27,8 @@ import com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8
 import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.utils.newExtractorLink
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -49,18 +51,28 @@ class KlikXXiXR : MainAPI() {
     override var lang = "id"
 
     override val mainPage = mainPageOf(
-        "$mainUrl/" to "Beranda",
-        "$mainUrl/genre/action/" to "Action",
-        "$mainUrl/genre/adventure/" to "Adventure",
-        "$mainUrl/genre/romance/" to "Romance",
-        "$mainUrl/genre/thriller/" to "Thriller",
-        "$mainUrl/genre/fantasy/" to "Fantasy",
-        "$mainUrl/genre/crime/" to "Crime",
-        "$mainUrl/genre/science-fiction/" to "Science Fiction",
-        "$mainUrl/genre/comedy/" to "Comedy",
-        "$mainUrl/genre/mystery/" to "Mystery",
-        "$mainUrl/genre/horror/" to "Horror",
-        "$mainUrl/genre/drama/" to "Drama",
+        "$mainUrl/" to "Latest Movies",
+        "$mainUrl/tv/" to "TV Series",
+        // Countries
+        "$mainUrl/category/asia/" to "Asia",
+        "$mainUrl/category/europa/" to "Europa",
+        "$mainUrl/country/india/" to "India",
+        "$mainUrl/category/korea/" to "Korea",
+        // Genres
+        "$mainUrl/category/action/" to "Action",
+        "$mainUrl/category/adventure/" to "Adventure",
+        "$mainUrl/category/comedy/" to "Comedy",
+        "$mainUrl/category/cartoon/" to "Cartoon",
+        "$mainUrl/category/crime/" to "Crime",
+        "$mainUrl/category/drama/" to "Drama",
+        "$mainUrl/category/fantasy/" to "Fantasy",
+        "$mainUrl/category/family/" to "Family",
+        "$mainUrl/category/horror/" to "Horror",
+        "$mainUrl/category/mystery/" to "Mystery",
+        "$mainUrl/category/science-fiction/" to "Science Fiction",
+        "$mainUrl/category/thriller/" to "Thriller",
+        "$mainUrl/category/viva-group/" to "Viva Group",
+        "$mainUrl/category/war/" to "War",
     )
 
     private val headers = mapOf(
@@ -82,7 +94,41 @@ class KlikXXiXR : MainAPI() {
         val response = app.get(url, headers = headers, referer = mainUrl)
         val document = response.document
         val results = parseListing(document)
-        return newHomePageResponse(request.name, results, hasNextPage(document, page))
+
+        val isAsiaCategory = request.data.contains("/category/asia/", ignoreCase = true) || request.data.contains("category/asia", ignoreCase = true)
+        val filteredResults = if (isAsiaCategory) {
+            val deferred = results.map { item ->
+                val originalUrl = if (item.url.contains("lynk.id")) item.url.substringAfterLast("#", "") else item.url
+                kotlinx.coroutines.coroutineScope {
+                    async(kotlinx.coroutines.Dispatchers.IO) {
+                        try {
+                            val detailResponse = app.get(originalUrl, headers = headers, referer = mainUrl)
+                            val detailDoc = detailResponse.document
+                            val categories = detailDoc.select("a[href*='/genre/'], a[href*='/category/']")
+                                .map { it.text().trim().lowercase(Locale.ROOT) }
+                            
+                            val hasAsia = categories.any { it == "asia" }
+                            val hasDrama = categories.any { it == "drama" }
+                            val hasVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
+                            val hasPhilippines = categories.any { it.contains("philippine") }
+                            
+                            if (hasAsia && hasDrama && hasVivaGroup && hasPhilippines) {
+                                null
+                            } else {
+                                item
+                            }
+                        } catch (e: Throwable) {
+                            item
+                        }
+                    }
+                }
+            }
+            deferred.awaitAll().filterNotNull()
+        } else {
+            results
+        }
+
+        return newHomePageResponse(request.name, filteredResults, hasNextPage(document, page))
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
