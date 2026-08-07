@@ -391,7 +391,7 @@ class LayarKacaXR : MainAPI() {
 
                 val poster = item.optString("poster")
                     .takeIf { it.isNotBlank() }
-                    ?.let { "https://poster.lk21.party/wp-content/uploads/$it" }
+                    ?.let { "https://cover.showcdnx.com/wp-content/uploads/$it" }
 
                 val rawLink = when {
                     slug.startsWith("http", true) -> slug
