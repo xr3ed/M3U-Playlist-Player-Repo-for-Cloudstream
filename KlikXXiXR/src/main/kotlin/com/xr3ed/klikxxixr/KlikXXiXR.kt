@@ -221,17 +221,9 @@ class KlikXXiXR : MainAPI() {
             if (!emitted.add(key)) return false
             val mediaReferer = mediaReferer(fixed, referer)
             val mediaHeaders = mediaHeaders(fixed, referer)
-            if (fixed.isM3u8Like()) {
-                val links = try { generateM3u8(source, fixed, mediaReferer, headers = mediaHeaders) } catch (_: Throwable) { emptyList() }
-                links.forEach { link ->
-                    val linkKey = link.url.substringBefore("#")
-                    if (emitted.add(linkKey)) callback(link)
-                }
-                if (links.isNotEmpty()) return true
-            }
             callback(newExtractorLink(source, source, fixed, if (fixed.isM3u8Like()) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO) {
                 this.referer = mediaReferer
-                this.quality = qualityFromUrl(fixed)
+                this.quality = if (fixed.isM3u8Like()) Qualities.Unknown.value else qualityFromUrl(fixed)
                 this.headers = mediaHeaders
             })
             return true
@@ -624,6 +616,9 @@ class KlikXXiXR : MainAPI() {
         return when {
             host.contains("sf21.vidplayer.live") -> resolveSf21Player(fixed, referer)
             host.contains("upload18.org") || host.contains("upload18.cc") -> resolveUpload18Player(fixed, referer)
+            host.contains("hgcloud.to") || host.contains("vibuxer.com") || host.contains("streamhg.co") -> resolveVibuxerPlayer(fixed, referer)
+            host.contains("strp2p.site") || host.contains("upns.one") -> resolveUpnsInfoPlayer(fixed)
+            host.contains("hexload.com") -> resolveHexloadPlayer(fixed)
             else -> emptyList()
         }
     }
@@ -926,7 +921,7 @@ class KlikXXiXR : MainAPI() {
 
     private fun String.isM3u8Like(): Boolean {
         val lower = lowercase(Locale.ROOT)
-        return lower.contains(".m3u8") || lower.contains("m3u8") || lower.contains("/hls/") || lower.contains("/stream/") || lower.contains("/play/token_hash")
+        return lower.contains(".m3u8") || lower.contains("m3u8") || lower.contains("/hls/") || lower.contains("/stream/") || lower.contains("/play/token_hash") || lower.contains("master.txt") || lower.contains(".urlset/master")
     }
 
     private fun String.isNoiseUrl(): Boolean {
@@ -960,4 +955,134 @@ class KlikXXiXR : MainAPI() {
     private val cardSelector = listOf(
         "article", ".post", ".item", ".movie", ".film", ".ml-item", ".result-item", ".owl-item", ".swiper-slide", ".poster", ".thumbnail", ".box", ".col", "div[itemtype='https://schema.org/Movie']", "div.gmr-item-modulepost"
     ).joinToString(",")
+
+    private suspend fun resolveVibuxerPlayer(url: String, referer: String): List<ResolvedPlayerLink> {
+        val fixed = fixUrl(url, referer) ?: return emptyList()
+        val host = try { URI(fixed).host.orEmpty().lowercase(Locale.ROOT) } catch (_: Throwable) { return emptyList() }
+        val response = try {
+            app.get(fixed, headers = headers + mapOf("Referer" to referer), referer = referer)
+        } catch (_: Throwable) { return emptyList() }
+        val finalUrl = response.url
+        val finalHost = try { URI(finalUrl).host.orEmpty().lowercase(Locale.ROOT) } catch (_: Throwable) { host }
+        val html = response.text
+        val pattern = Regex("""eval\(function\(p,a,c,k,e,[rd]\)\{.*return p;?\}\('(.*?)',(\d+),(\d+),'([^']*)'\.split\('\|'\)\)""", RegexOption.DOT_MATCHES_ALL)
+        val match = pattern.find(html) ?: return emptyList()
+        val p = match.groupValues[1]
+        val a = match.groupValues[2].toIntOrNull() ?: 36
+        val c = match.groupValues[3].toIntOrNull() ?: 0
+        val k = match.groupValues[4].split("|")
+        val wordPattern = Regex("""\b[0-9a-zA-Z_]+\b""")
+        val unpacked = wordPattern.replace(p) { m ->
+            val idx = m.value.toIntOrNull(a) ?: -1
+            if (idx in 0 until k.size && k[idx].isNotEmpty()) {
+                k[idx]
+            } else {
+                m.value
+            }
+        }
+        val streamUrl = Regex("""https?://[a-zA-Z0-9.-]+/[^"']*?\.urlset/master\.(?:txt|m3u8)""").find(unpacked)?.value
+            ?: Regex("""https?://[a-zA-Z0-9.-]+/[^"']*?/master\.(?:txt|m3u8)""").find(unpacked)?.value
+            ?: Regex("""["'](https?://[^"']*?\.m3u8[^"']*?)["']""").find(unpacked)?.groupValues?.getOrNull(1)
+            ?: return emptyList()
+        val sourceName = if (finalHost.contains("vibuxer")) "Vibuxer" else if (finalHost.contains("hgcloud")) "Hgcloud" else "Streamwish"
+        return listOf(ResolvedPlayerLink(streamUrl, "https://$finalHost/", "$name $sourceName"))
+    }
+
+    private fun getUpnsIv(url: String): ByteArray {
+        val E = "https:"
+        val R = E + "//"
+        val hostname = try { URI(url).host.orEmpty() } catch (_: Throwable) { "" }
+        val G = E.length * R.length
+        val F = 1
+        var B = ""
+        for (Se in F until 10) {
+            B += (Se + G).toChar()
+        }
+        val oe = "111"
+        val ye = 3 * (hostname.firstOrNull()?.code ?: 0)
+        val Ve = 111 * F + E.length
+        val P = Ve + 4
+        val X = E.getOrNull(F)?.code ?: 0
+        val me = X * F - 2
+        val suffix = stringFromCharCodes(G, oe.toInt(), ye, Ve, P, X, me)
+        val fullB = B + suffix
+        return fullB.toByteArray(Charsets.UTF_8).sliceArray(0 until 16)
+    }
+
+    private fun stringFromCharCodes(vararg codes: Int): String {
+        val sb = StringBuilder()
+        for (code in codes) {
+            sb.append(code.toChar())
+        }
+        return sb.toString()
+    }
+
+    private suspend fun resolveUpnsInfoPlayer(url: String): List<ResolvedPlayerLink> {
+        val fixed = fixUrl(url, mainUrl) ?: return emptyList()
+        val uri = try { URI(fixed) } catch (_: Throwable) { return emptyList() }
+        val host = uri.host.orEmpty()
+        val id = uri.rawFragment?.substringBefore("&")?.substringBefore("?")?.trim().orEmpty()
+            .ifBlank {
+                Regex("""(?i)(?:[?&]id=|/)([a-z0-9]{4,12})(?:[&#/?]|$)""").find(fixed)?.groupValues?.getOrNull(1).orEmpty()
+            }
+        if (id.isBlank()) return emptyList()
+        val apiUrl = "https://$host/api/v1/info?id=$id"
+        val encrypted = try {
+            app.get(apiUrl, headers = headers + mapOf("Accept" to "*/*", "Referer" to fixed), referer = fixed).text
+        } catch (_: Throwable) { return emptyList() }
+        if (encrypted.isBlank()) return emptyList()
+        val decryptedJson = try {
+            val keyBytes = "kiietiinmua911ca".toByteArray()
+            val ivBytes = getUpnsIv(fixed)
+            val cipherBytes = encrypted.trim().replace("\"", "").chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(keyBytes, "AES"), IvParameterSpec(ivBytes))
+            String(cipher.doFinal(cipherBytes))
+        } catch (e: Throwable) {
+            return emptyList()
+        }
+        val obj = try { JSONObject(decryptedJson) } catch (_: Throwable) { return emptyList() }
+        val links = linkedSetOf<String>()
+        obj.optString("hls").takeIf { it.isNotBlank() }?.let { fixUrl(it, "https://$host/")?.let(links::add) }
+        obj.optString("mp4").takeIf { it.isNotBlank() }?.let { fixUrl(it, "https://$host/")?.let(links::add) }
+        obj.optString("stream").takeIf { it.isNotBlank() }?.let { fixUrl(it, "https://$host/")?.let(links::add) }
+        obj.optString("direct").takeIf { it.isNotBlank() }?.let { fixUrl(it, "https://$host/")?.let(links::add) }
+        val sources = obj.optJSONArray("sources")
+        if (sources != null) {
+            for (i in 0 until sources.length()) {
+                val sObj = sources.optJSONObject(i) ?: continue
+                sObj.optString("file").takeIf { it.isNotBlank() }?.let { fixUrl(it, "https://$host/")?.let(links::add) }
+            }
+        }
+        val sourceName = if (host.contains("strp2p")) "Strp2p" else "Upns"
+        return links.filter { it.isPlayableMedia() }.map { ResolvedPlayerLink(it, "https://$host/", "$name $sourceName") }
+    }
+
+    private suspend fun resolveHexloadPlayer(url: String): List<ResolvedPlayerLink> {
+        val fixed = fixUrl(url, mainUrl) ?: return emptyList()
+        val id = Regex("""/embed-([a-zA-Z0-9]+)""").find(fixed)?.groupValues?.getOrNull(1) ?: return emptyList()
+        val response = try {
+            app.post(
+                "https://hexload.com/download",
+                data = mapOf(
+                    "op" to "download3",
+                    "id" to id,
+                    "ajax" to "1",
+                    "method_free" to "1",
+                    "dataType" to "json"
+                ),
+                headers = headers + mapOf("X-Requested-With" to "XMLHttpRequest"),
+                referer = fixed
+            ).text
+        } catch (_: Throwable) { "" }
+        val obj = try { JSONObject(response) } catch (_: Throwable) { null } ?: return emptyList()
+        if (obj.optString("msg") == "OK") {
+            val result = obj.optJSONObject("result") ?: return emptyList()
+            val videoUrl = result.optString("url")
+            if (videoUrl.isNotBlank()) {
+                return listOf(ResolvedPlayerLink(videoUrl, "https://hexload.com/", "$name Hexload"))
+            }
+        }
+        return emptyList()
+    }
 }
