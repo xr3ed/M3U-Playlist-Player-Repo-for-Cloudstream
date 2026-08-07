@@ -302,7 +302,8 @@ class KlikXXiXR : MainAPI() {
         val href = fixUrl(anchor.attr("href"), mainUrl) ?: return null
         if (!isContentUrl(href) || href.lowercase(Locale.ROOT).contains("semi")) return null
         val container = anchor.bestContainer()
-        val genres = container.select("a[href*='/category/'], a[href*='/genre/']").map { it.text().trim().lowercase(Locale.ROOT) }
+        val card = anchor.closest("article, .post, .item, .movie, .film, .card, .ml-item, .result-item, .owl-item, .swiper-slide, li, .col, .box") ?: container
+        val genres = card.select("a[href*='/category/'], a[href*='/genre/']").map { it.text().trim().lowercase(Locale.ROOT) }
         val slugLower = href.lowercase(Locale.ROOT)
         if (genres.any { it.contains("viva group") || it.contains("viva-group") || it == "dracin" || it.contains("dracin") } ||
             slugLower.contains("viva-group") || slugLower.contains("vivamax") || slugLower.contains("dracin")
