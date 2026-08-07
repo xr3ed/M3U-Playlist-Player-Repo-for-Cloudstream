@@ -105,7 +105,8 @@ class KlikXXiXR : MainAPI() {
                             .map { it.text().trim().lowercase(Locale.ROOT) }
                         
                         val isVivaGroup = categories.any { it.contains("viva group") || it.contains("viva-group") }
-                        if (isVivaGroup) {
+                        val isDracin = categories.any { it == "dracin" || it.contains("dracin") }
+                        if (isVivaGroup || isDracin) {
                             null
                         } else {
                             item
