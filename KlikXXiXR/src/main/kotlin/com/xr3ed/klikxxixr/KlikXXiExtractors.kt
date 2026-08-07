@@ -229,7 +229,8 @@ object KlikXXiExtractors {
         } catch (_: Throwable) { return emptyList() }
         if (encrypted.isBlank()) return emptyList()
         val decryptedJson = try {
-            val keyStr = com.xr3ed.klikxxixr.BuildConfig.KLIKXXI_AES_KEY.takeIf { it.isNotEmpty() } ?: "kiemtienmua911ca"
+            val keyStr = com.xr3ed.klikxxixr.BuildConfig.KLIKXXI_AES_KEY.takeIf { it.isNotEmpty() } ?: ""
+            if (keyStr.isEmpty()) return emptyList()
             val keyBytes = keyStr.toByteArray()
             val ivBytes = getUpnsIv(fixed)
             val cipherBytes = encrypted.trim().replace("\"", "").chunked(2).map { it.toInt(16).toByte() }.toByteArray()

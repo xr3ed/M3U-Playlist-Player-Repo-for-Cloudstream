@@ -1,7 +1,7 @@
 import java.util.Properties
 import java.io.FileInputStream
 
-version = 1
+version = 2
 android {
     namespace = "com.xr3ed.klikxxixr"
     buildFeatures {
