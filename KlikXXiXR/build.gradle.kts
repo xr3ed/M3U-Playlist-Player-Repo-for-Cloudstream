@@ -1,20 +1,9 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 version = 2
+
 android {
     namespace = "com.xr3ed.klikxxixr"
     buildFeatures {
         buildConfig = true
-    }
-    defaultConfig {
-        val localPropertiesFile = rootProject.file("local.properties")
-        val properties = Properties()
-        if (localPropertiesFile.exists()) {
-            properties.load(FileInputStream(localPropertiesFile))
-        }
-        val aesKey = (System.getenv("KLIKXXI_AES_KEY") ?: properties.getProperty("KLIKXXI_AES_KEY", "")).trim()
-                buildConfigField("String", "KLIKXXI_AES_KEY", "\"${aesKey}\"")
     }
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")
