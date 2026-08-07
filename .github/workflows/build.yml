@@ -99,7 +99,7 @@ jobs:
           XR3EV_PASSWORD: ${{ secrets.XR3EV_PASSWORD }}
           XR3EV_SALT: ${{ secrets.XR3EV_SALT }}
           XSTREAM_TMDB_API: ${{ secrets.XSTREAM_TMDB_API }}
-          MELOLO_URL: ${{ secrets.MELOLO_URL }}
+          DRACINAIO_URL: ${{ secrets.DRACINAIO_URL }}
           XR3EDTV_WORKER_URL: ${{ secrets.XR3EDTV_WORKER_URL }}
           XR3EDTV_WORKER_TOKEN: ${{ secrets.XR3EDTV_WORKER_TOKEN }}
           FBOX_OAUTH_CLIENT_ID: ${{ secrets.FBOX_OAUTH_CLIENT_ID }}

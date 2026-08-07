@@ -34,7 +34,7 @@ import kotlin.concurrent.thread
 class DracinAIOProvider : MainAPI() {
     companion object {
         var appContext: Context? = null
-        private val BASE_URL = String(Base64.decode(BuildConfig.MELOLO_URL, Base64.DEFAULT), Charsets.UTF_8)
+        private val BASE_URL = String(Base64.decode(BuildConfig.DRACINAIO_URL, Base64.DEFAULT), Charsets.UTF_8)
         private val API_URL = "$BASE_URL/api"
 
         private var sessionCookie: String? = null
