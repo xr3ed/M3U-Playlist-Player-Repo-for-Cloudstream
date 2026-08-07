@@ -46,6 +46,7 @@ class KlikXXiXR : MainAPI() {
     override var mainUrl = BuildConfig.KLIKXXI_MAIN_URL
     override var name = "KlikXXiXR"
     override val hasMainPage = true
+    private val lastLoadedPageMap = mutableMapOf<String, Int>()
     override val hasQuickSearch = true
     override val hasDownloadSupport = true
     override var lang = "id"
@@ -90,11 +91,33 @@ class KlikXXiXR : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
-        val url = pageUrl(request.data, page)
-        val response = app.get(url, headers = headers, referer = mainUrl)
-        val document = response.document
-        val results = parseListing(document)
-        return newHomePageResponse(request.name, results, hasNextPage(document, page))
+        val mapKey = request.data
+        if (page == 1) {
+            lastLoadedPageMap[mapKey] = 1
+        }
+        val startPage = if (page == 1) 1 else (lastLoadedPageMap[mapKey] ?: (page - 1)) + 1
+        var currentPage = startPage
+        val accumulatedResults = mutableListOf<SearchResponse>()
+        var document = app.get(pageUrl(request.data, currentPage), headers = headers, referer = mainUrl).document
+        var results = parseListing(document)
+        accumulatedResults.addAll(results)
+        lastLoadedPageMap[mapKey] = currentPage
+        
+        var attempts = 0
+        var hasNext = hasNextPage(document, currentPage)
+        while (accumulatedResults.size < 16 && hasNext && attempts < 4) {
+            currentPage++
+            val nextDoc = app.get(pageUrl(request.data, currentPage), headers = headers, referer = mainUrl).document
+            val pageResults = parseListing(nextDoc)
+            accumulatedResults.addAll(pageResults)
+            document = nextDoc
+            lastLoadedPageMap[mapKey] = currentPage
+            hasNext = hasNextPage(document, currentPage)
+            if (!hasNext) break
+            attempts++
+        }
+        val finalResults = accumulatedResults.distinctBy { it.url }
+        return newHomePageResponse(request.name, finalResults, hasNext)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
