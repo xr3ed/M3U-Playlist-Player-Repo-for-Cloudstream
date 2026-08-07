@@ -280,8 +280,11 @@ class AnichinXR : MainAPI() {
             )
             .take(MAX_TOP_LEVEL_CANDIDATES)
 
+        val firstBatch = topLevelCandidates.filter { (url, label) -> candidatePriority(url, label) <= 2 }
+        val secondBatch = topLevelCandidates.filter { (url, label) -> candidatePriority(url, label) > 2 }
+
         coroutineScope {
-            topLevelCandidates.map { (url, label) ->
+            firstBatch.map { (url, label) ->
                 async {
                     try {
                         resolveVideoCandidate(
@@ -298,6 +301,28 @@ class AnichinXR : MainAPI() {
                     }
                 }
             }.awaitAll()
+        }
+
+        if (allLinks.isEmpty() && secondBatch.isNotEmpty()) {
+            coroutineScope {
+                secondBatch.map { (url, label) ->
+                    async {
+                        try {
+                            resolveVideoCandidate(
+                                url = url,
+                                label = label,
+                                referer = episodeUrl,
+                                visited = visited,
+                                subtitleCallback = subtitleCallback,
+                                callback = countedCallback,
+                            )
+                        } catch (error: Throwable) {
+                            if (error is CancellationException) throw error
+                            Log.w("Anichin", "Failed resolving server: $label -> $url", error)
+                        }
+                    }
+                }.awaitAll()
+            }
         }
 
         if (allLinks.isEmpty()) {
