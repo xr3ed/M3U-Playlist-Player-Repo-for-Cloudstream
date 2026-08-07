@@ -351,5 +351,27 @@
         "description": "Streaming TV Live \u2014 Sports & Entertainment",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
         "name": "xr3edTV"
+    },
+    {
+        "iconUrl": "https://aghanim.xyz/wp-content/themes/animesail/assets/images/ico.png",
+        "fileHash": "sha256-11d6173f0767c8f765d4f2e5f7ced876834e4a9d097e5e18fab83ef190a757ce",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize": 72412,
+        "status": 1,
+        "language": "id",
+        "authors": [
+            "xr3ed"
+        ],
+        "tvTypes": [
+            "AnimeMovie",
+            "Anime",
+            "OVA"
+        ],
+        "version": 11,
+        "internalName": "AnimeSailProvider",
+        "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
+        "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailProvider.cs3",
+        "name": "#Anime AnimesailXR"
     }
 ]
