@@ -1,6 +1,6 @@
 import java.util.Properties
 
-version = 3
+version = 4
 
 val localProps = Properties().also { p ->
     val f = rootProject.file("local.properties")
