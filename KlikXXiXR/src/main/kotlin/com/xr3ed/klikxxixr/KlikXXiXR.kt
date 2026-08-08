@@ -438,6 +438,7 @@ class KlikXXiXR : MainAPI() {
                 if (!isContentUrl(href)) return@forEachIndexed
                 val combined = "${element.text()} $href".lowercase(Locale.ROOT)
                 if (!combined.contains("episode") && !combined.contains("eps") && !combined.contains("season")) return@forEachIndexed
+                if (combined.contains("batch")) return@forEachIndexed
                 val title = cleanText(element.text())
                 val ep = Regex("""(?i)(?:episode|eps|ep)\s*[-:.]?\s*(\d{1,4})""").find("$title $href")?.groupValues?.getOrNull(1)?.toIntOrNull()
                     ?: Regex("""(?i)(?:/|-)(\d{1,4})(?:/|$)""").find(href)?.groupValues?.getOrNull(1)?.toIntOrNull()
