@@ -136,7 +136,7 @@ object KlikXXiExtractors {
         } else {
             obj.optString("source").takeIf { it.isNotBlank() }?.let { fixUrl(it, playerOrigin)?.let(links::add) }
         }
-        return links.filter { isPlayableMedia(it) }.map { ResolvedPlayerLink(it, "$playerOrigin/", sourceName) }
+        return links.map { ResolvedPlayerLink(it, "$playerOrigin/", sourceName) }
     }
 
     private suspend fun resolveUpload18Player(url: String, referer: String, sourceName: String, headers: Map<String, String>): List<ResolvedPlayerLink> {
@@ -261,7 +261,7 @@ object KlikXXiExtractors {
         }
         val hostName = if (host.contains("strp2p")) "Strp2p" else "Upns"
         val finalSource = if (sourceName.isNotEmpty()) sourceName else hostName
-        return links.filter { isPlayableMedia(it) }.map { ResolvedPlayerLink(it, "https://$host/", finalSource) }
+        return links.map { ResolvedPlayerLink(it, "https://$host/", finalSource) }
     }
 
     private suspend fun resolveHexloadPlayer(url: String, sourceName: String, headers: Map<String, String>, mainUrl: String): List<ResolvedPlayerLink> {

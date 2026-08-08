@@ -213,6 +213,7 @@ class KlikXXiXR : MainAPI() {
         val emitted = linkedSetOf<String>()
         val emittedTabs = hashSetOf<String>()
         val visitedPages = linkedSetOf<String>()
+        val queue = ArrayDeque<Triple<String, String, String>>()
         var found = false
 
         suspend fun emitDirect(url: String, referer: String, source: String = name): Boolean {
@@ -262,7 +263,6 @@ class KlikXXiXR : MainAPI() {
 
             for (link in linksToEmit) {
                 val customName = if (tabName.isNotEmpty()) tabName else link.source
-                if (customName.startsWith("Server ", true) && !emittedTabs.add(customName.lowercase(java.util.Locale.ROOT))) continue
                 val customLink = newExtractorLink(customName, customName, link.url, link.type) {
                     this.referer = link.referer
                     this.quality = Qualities.Unknown.value
@@ -277,7 +277,12 @@ class KlikXXiXR : MainAPI() {
             val fixed = fixUrl(url, referer) ?: return false
             var localFound = false
             for (resolved in KlikXXiExtractors.resolvePlayerLinks(fixed, referer, tabName, headers, mainUrl)) {
-                if (emitDirect(resolved.url, resolved.referer, resolved.source)) localFound = true
+                if (KlikXXiExtractors.isPlayableMedia(resolved.url)) {
+                    if (emitDirect(resolved.url, resolved.referer, resolved.source)) localFound = true
+                } else {
+                    queue.add(Triple(resolved.url, resolved.referer, resolved.source))
+                    localFound = true
+                }
             }
             return localFound
         }
@@ -298,7 +303,6 @@ class KlikXXiXR : MainAPI() {
             return links.filterNot { KlikXXiExtractors.run { it.first.isNoiseUrl() } }
         }
 
-        val queue = ArrayDeque<Triple<String, String, String>>()
         queue.add(Triple(startUrl, "$mainUrl/", ""))
         val visitedPlayerUrls = hashSetOf<String>()
         var rounds = 0
