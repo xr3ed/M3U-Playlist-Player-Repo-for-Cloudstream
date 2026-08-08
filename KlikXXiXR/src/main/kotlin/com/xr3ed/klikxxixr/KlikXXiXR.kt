@@ -235,8 +235,8 @@ class KlikXXiXR : MainAPI() {
 
         suspend fun emitExtractor(url: String, referer: String, tabName: String): Boolean {
             var fixed = fixUrl(url, referer) ?: return false
-            if (fixed.contains("veev.to/d/")) {
-                fixed = fixed.replace("veev.to/d/", "voe.sx/e/")
+            if (fixed.contains("veev.to/")) {
+                fixed = fixed.replace("veev.to/d/", "voe.sx/e/").replace("veev.to/e/", "voe.sx/e/")
             }
             if (KlikXXiExtractors.run { fixed.isNoiseUrl() }) return false
             if (KlikXXiExtractors.isPlayableMedia(fixed)) return emitDirect(fixed, referer, tabName)
@@ -639,7 +639,7 @@ class KlikXXiXR : MainAPI() {
                 lower.contains("vidhide") || lower.contains("vidguard") || lower.contains("voe") || lower.contains("mp4upload") || lower.contains("uqload") ||
                 lower.contains("hubcloud") || lower.contains("gdplayer") || lower.contains("gdriveplayer") || lower.contains("krakenfiles") || lower.contains("filelions") ||
                 lower.contains("sf21.vidplayer.live") || lower.contains("minochinos.com") || lower.contains("earnvidjav.online") || lower.contains("upload18.org") || lower.contains("upload18.cc") || lower.contains("321watch.workers.dev") ||
-                lower.contains("morencius.com") || lower.contains("turbovidhls.com") || lower.contains("hgcloud") || lower.contains("audinifer") || lower.contains("vibuxer") || lower.contains("streamhg")
+                lower.contains("morencius.com") || lower.contains("turbovidhls.com") || lower.contains("hgcloud") || lower.contains("audinifer") || lower.contains("vibuxer") || lower.contains("streamhg") || lower.contains("luluvdo") || lower.contains("veev") || lower.contains("hexload") || lower.contains("upns") || lower.contains("strp2p")
             )
     }
 
