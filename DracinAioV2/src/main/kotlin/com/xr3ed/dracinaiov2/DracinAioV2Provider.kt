@@ -15,6 +15,8 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 import com.xr3ed.dracinaiov2.BuildConfig
+import com.lagradost.cloudstream3.utils.DataStore.getKey
+import com.lagradost.cloudstream3.utils.DataStore.setKey
 
 class DracinAioV2Provider : MainAPI() {
     companion object {
@@ -80,22 +82,7 @@ class DracinAioV2Provider : MainAPI() {
         MainPageData(title, key)
     }
 
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(request.data)}"
-        
-        val httpRequest = Request.Builder()
-            .url(url)
-            .header("User-Agent", "okhttp/4.9.1")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .build()
-            
-        val res = try {
-            customClient.newCall(httpRequest).execute().body?.string() ?: ""
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
-        }
-        
+    private fun parseSectionsItems(res: String): List<SearchResponse> {
         val items = ArrayList<SearchResponse>()
         try {
             val jsonObj = org.json.JSONObject(res)
@@ -121,6 +108,48 @@ class DracinAioV2Provider : MainAPI() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        return items
+    }
+
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+        val cacheKey = "dracin_v2_cache_${request.data}_$page"
+        val cacheTimeKey = "dracin_v2_cache_time_${request.data}_$page"
+        
+        val context = appContext
+        if (context != null) {
+            val cachedJson = context.getKey<String>(cacheKey)
+            val cachedTime = context.getKey<Long>(cacheTimeKey) ?: 0L
+            val now = System.currentTimeMillis()
+            if (cachedJson != null && now - cachedTime < 10800000) { // 3 hours cache TTL (3 * 60 * 60 * 1000)
+                val parsedItems = parseSectionsItems(cachedJson)
+                if (parsedItems.isNotEmpty()) {
+                    android.util.Log.d("DracinAioV2", "getMainPage loaded from local cache for ${request.data}")
+                    return newHomePageResponse(request.name, parsedItems)
+                }
+            }
+        }
+
+        val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(request.data)}"
+        
+        val httpRequest = Request.Builder()
+            .url(url)
+            .header("User-Agent", "okhttp/4.9.1")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .build()
+            
+        val res = try {
+            customClient.newCall(httpRequest).execute().body?.string() ?: ""
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+        
+        if (res.isNotEmpty() && context != null) {
+            context.setKey(cacheKey, res)
+            context.setKey(cacheTimeKey, System.currentTimeMillis())
+        }
+        
+        val items = parseSectionsItems(res)
         return newHomePageResponse(request.name, items)
     }
 
