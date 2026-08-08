@@ -22,8 +22,10 @@ class DracinAioV2Provider : MainAPI() {
         val BASE_URL = BuildConfig.DRACINAIO_V2_URL
         val customClient by lazy {
             app.baseClient.newBuilder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(15, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .protocols(listOf(okhttp3.Protocol.HTTP_1_1))
                 .build()
         }
     }
@@ -33,6 +35,7 @@ class DracinAioV2Provider : MainAPI() {
     override var lang = "id"
     override var supportedTypes = setOf(TvType.TvSeries)
     override val hasMainPage = true
+    override val hasQuickSearch = true
 
     private val providers = listOf(
         Pair("bilitv", "BiliTV"),
@@ -119,6 +122,47 @@ class DracinAioV2Provider : MainAPI() {
             e.printStackTrace()
         }
         return newHomePageResponse(request.name, items)
+    }
+
+    override suspend fun search(query: String): List<SearchResponse>? {
+        val encodedQuery = java.net.URLEncoder.encode(query, "UTF-8")
+        val url = "$mainUrl/search?q=$encodedQuery&limit=50&lang=id-ID"
+        
+        val httpRequest = Request.Builder()
+            .url(url)
+            .header("X-Requested-With", "XMLHttpRequest")
+            .header("User-Agent", "okhttp/4.9.1")
+            .build()
+            
+        val res = try {
+            customClient.newCall(httpRequest).execute().body?.string() ?: ""
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+        
+        val items = ArrayList<SearchResponse>()
+        try {
+            val jsonObj = org.json.JSONObject(res)
+            val jsonItems = jsonObj.optJSONArray("items")
+            if (jsonItems != null) {
+                for (i in 0 until jsonItems.length()) {
+                    val item = jsonItems.getJSONObject(i)
+                    val title = item.optString("title")
+                    val poster = item.optString("poster_url")
+                    val watchUrl = item.optString("url")
+                    
+                    val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
+                    
+                    items.add(newTvSeriesSearchResponse(title, maskedUrl) {
+                        this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
+                    })
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return items
     }
 
     override suspend fun load(url: String): LoadResponse? {
@@ -287,32 +331,76 @@ class DracinAioV2Provider : MainAPI() {
             
             android.util.Log.d("DracinAioV2", "loadLinks refresh-source response: $res")
             
-            val episodeMatch = Regex("""play_url"\s*:\s*"([^"]+)"""").find(res)
-            val hlsHintMatch = Regex("""direct_play_is_hls"\s*:\s*(true|false)""").find(res)
-            
-            if (episodeMatch != null) {
-                val playUrl = episodeMatch.groupValues[1].replace("\\/", "/")
-                val isHls = hlsHintMatch?.groupValues?.get(1)?.toBoolean() ?: false
+            try {
+                val jsonObj = org.json.JSONObject(res)
+                val playUrl = jsonObj.optString("play_url").replace("\\/", "/")
+                val isHls = jsonObj.optBoolean("direct_play_is_hls", false) || playUrl.contains(".m3u8")
                 
-                android.util.Log.d("DracinAioV2", "loadLinks final playUrl: $playUrl, isHls: $isHls")
-                val cleanedPlayUrl = playUrl
-                    .replace(Regex("""^https?://[^/]+\.(?:workers|pages)\.dev/.*?(https?://)"""), "$1")
-                    .replace("https://lhr-nitro.workers.dev/proxify?url=", "")
-                    .replace("https://pdx-nitro.workers.dev/proxify?url=", "")
-                
-                val isM3u8 = cleanedPlayUrl.contains(".m3u8") || hlsHintMatch?.groupValues?.get(1) == "true"
-                val linkType = if (isM3u8) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
-                callback.invoke(
-                    newExtractorLink(
-                        name = this.name,
-                        source = this.name,
-                        url = cleanedPlayUrl,
-                        type = linkType
-                    ) {
-                        this.quality = Qualities.Unknown.value
+                if (playUrl.isNotEmpty()) {
+                    val cleanedPlayUrl = playUrl
+                        .replace(Regex("""^https?://[^/]+\.(?:workers|pages)\.dev/.*?(https?://)"""), "$1")
+                        .replace("https://lhr-nitro.workers.dev/proxify?url=", "")
+                        .replace("https://pdx-nitro.workers.dev/proxify?url=", "")
+                    
+                    val linkType = if (isHls) ExtractorLinkType.M3U8 else ExtractorLinkType.VIDEO
+                    callback.invoke(
+                        newExtractorLink(
+                            name = this.name,
+                            source = this.name,
+                            url = cleanedPlayUrl,
+                            type = linkType
+                        ) {
+                            this.quality = Qualities.Unknown.value
+                            this.headers = mapOf(
+                                "Referer" to "$BASE_URL/",
+                                "User-Agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
+                            )
+                        }
+                    )
+                    
+                    // Extract subtitles
+                    val multiSubs = jsonObj.optJSONArray("multi_subtitles")
+                    if (multiSubs != null && multiSubs.length() > 0) {
+                        for (i in 0 until multiSubs.length()) {
+                            val subItem = multiSubs.getJSONObject(i)
+                            val subPath = subItem.optString("subtitle_url").replace("\\/", "/")
+                            val lang = subItem.optString("language_code")
+                            val label = subItem.optString("label")
+                            
+                            if (subPath.isNotEmpty()) {
+                                val fullSubUrl = if (subPath.startsWith("/")) {
+                                    "${edgeBase.trimEnd('/')}$subPath"
+                                } else {
+                                    subPath
+                                }
+                                subtitleCallback.invoke(
+                                    SubtitleFile(
+                                        lang = label.ifEmpty { lang },
+                                        url = fullSubUrl
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        val subPath = jsonObj.optString("subtitle_url").replace("\\/", "/")
+                        if (subPath.isNotEmpty()) {
+                            val fullSubUrl = if (subPath.startsWith("/")) {
+                                "${edgeBase.trimEnd('/')}$subPath"
+                            } else {
+                                subPath
+                            }
+                            subtitleCallback.invoke(
+                                SubtitleFile(
+                                    lang = "Subtitle",
+                                    url = fullSubUrl
+                                )
+                            )
+                        }
                     }
-                )
-                return true
+                    return true
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("DracinAioV2", "Failed to parse refresh-source response JSON", e)
             }
         }
         return false
