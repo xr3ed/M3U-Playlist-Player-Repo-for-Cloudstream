@@ -83,6 +83,7 @@ class DracinAioV2Provider : MainAPI() {
     }
 
     private val tabSectionsCache = java.util.concurrent.ConcurrentHashMap<String, List<HomePageList>>()
+    private val seenTitlesHistory = java.util.concurrent.ConcurrentHashMap<String, MutableSet<String>>()
 
     private fun parseSections(res: String, providerCode: String): List<HomePageList> {
         val lists = ArrayList<HomePageList>()
@@ -122,276 +123,158 @@ class DracinAioV2Provider : MainAPI() {
         return lists
     }
 
-    private fun fetchProviderPages(providerCode: String, maxPages: Int = 4): String {
-        val mergedSections = mutableMapOf<String, org.json.JSONObject>()
-        val tabKeys = ArrayList<String>()
-        
-        val urlPage1 = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}"
-        val httpRequest1 = Request.Builder()
-            .url(urlPage1)
-            .header("User-Agent", "okhttp/4.9.1")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .build()
-            
-        val resPage1 = try {
-            customClient.newCall(httpRequest1).execute().body?.string() ?: ""
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
-        }
-        
-        if (resPage1.isEmpty()) {
-            return ""
-        }
-        
-        try {
-            val jsonObj = org.json.JSONObject(resPage1)
-            val sections = jsonObj.optJSONArray("sections")
-            if (sections != null) {
-                for (i in 0 until sections.length()) {
-                    val sectionObj = sections.getJSONObject(i)
-                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
-                    val tabKey = sectionObj.optString("tab_key")
-                    if (tabKey.isNotEmpty()) {
-                        tabKeys.add(tabKey)
-                    }
-                    
-                    val items = sectionObj.optJSONArray("items")
-                    if (items != null) {
-                        val existingSection = mergedSections.getOrPut(sectionName) {
-                            org.json.JSONObject().apply {
-                                put("tab_label", sectionName)
-                                put("items", org.json.JSONArray())
-                            }
-                        }
-                        val existingItems = existingSection.getJSONArray("items")
-                        for (j in 0 until items.length()) {
-                            existingItems.put(items.getJSONObject(j))
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return resPage1
-        }
-        
-        if (tabKeys.isNotEmpty() && maxPages > 1) {
-            for (p in 2..maxPages) {
-                try { Thread.sleep(200) } catch (e: Exception) {}
-                
-                val url = StringBuilder("$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}")
-                for (tabKey in tabKeys) {
-                    url.append("&tab_pages[").append(tabKey).append("]=").append(p)
-                }
-                
-                val httpRequest = Request.Builder()
-                    .url(url.toString())
-                    .header("User-Agent", "okhttp/4.9.1")
-                    .header("X-Requested-With", "XMLHttpRequest")
-                    .build()
-                    
-                val responseText = try {
-                    customClient.newCall(httpRequest).execute().body?.string() ?: ""
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    ""
-                }
-                
-                if (responseText.isNotEmpty()) {
-                    try {
-                        val jsonObj = org.json.JSONObject(responseText)
-                        val sections = jsonObj.optJSONArray("sections")
-                        if (sections != null) {
-                            for (i in 0 until sections.length()) {
-                                val sectionObj = sections.getJSONObject(i)
-                                val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
-                                val items = sectionObj.optJSONArray("items")
-                                if (items != null) {
-                                    val existingSection = mergedSections.getOrPut(sectionName) {
-                                        org.json.JSONObject().apply {
-                                            put("tab_label", sectionName)
-                                            put("items", org.json.JSONArray())
-                                        }
-                                    }
-                                    val existingItems = existingSection.getJSONArray("items")
-                                    for (j in 0 until items.length()) {
-                                        val itemObj = items.getJSONObject(j)
-                                        val title = itemObj.optString("title")
-                                        
-                                        var exists = false
-                                        for (k in 0 until existingItems.length()) {
-                                            if (existingItems.getJSONObject(k).optString("title") == title) {
-                                                exists = true
-                                                break
-                                            }
-                                        }
-                                        if (!exists) {
-                                            existingItems.put(itemObj)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        }
-        
-        return try {
-            org.json.JSONObject().apply {
-                put("ok", true)
-                val sectionsArray = org.json.JSONArray()
-                for (sec in mergedSections.values) {
-                    sectionsArray.put(sec)
-                }
-                put("sections", sectionsArray)
-            }.toString()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            resPage1
-        }
-    }
-
-    private fun fetchProviderPageForGrid(providerCode: String, subCategoryName: String, pageNum: Int): List<SearchResponse> {
-        val urlPage1 = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}"
-        val httpRequest1 = Request.Builder()
-            .url(urlPage1)
-            .header("User-Agent", "okhttp/4.9.1")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .build()
-            
-        val resPage1 = try {
-            customClient.newCall(httpRequest1).execute().body?.string() ?: ""
-        } catch (e: Exception) {
-            return emptyList()
-        }
-        
-        if (resPage1.isEmpty()) return emptyList()
-        
-        var tabKey = ""
-        try {
-            val jsonObj = org.json.JSONObject(resPage1)
-            val sections = jsonObj.optJSONArray("sections")
-            if (sections != null) {
-                for (i in 0 until sections.length()) {
-                    val sectionObj = sections.getJSONObject(i)
-                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
-                    if (sectionName.equals(subCategoryName, ignoreCase = true)) {
-                        tabKey = sectionObj.optString("tab_key")
-                        if (pageNum == 1) {
-                            val list = ArrayList<SearchResponse>()
-                            val jsonItems = sectionObj.optJSONArray("items")
-                            if (jsonItems != null) {
-                                for (j in 0 until jsonItems.length()) {
-                                    val item = jsonItems.getJSONObject(j)
-                                    val title = item.optString("title")
-                                    val poster = item.optString("poster_url")
-                                    val watchUrl = item.optString("watch_url")
-                                    val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
-                                    list.add(newTvSeriesSearchResponse(title, maskedUrl) {
-                                        this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
-                                    })
-                                }
-                            }
-                            return list
-                        }
-                        break
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        
-        if (tabKey.isEmpty() || pageNum <= 1) return emptyList()
-        
-        val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}&tab_pages[$tabKey]=$pageNum"
+    private fun fetchProviderPage1(providerCode: String): String {
+        val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}"
         val httpRequest = Request.Builder()
             .url(url)
             .header("User-Agent", "okhttp/4.9.1")
             .header("X-Requested-With", "XMLHttpRequest")
             .build()
-            
-        val responseText = try {
+        return try {
             customClient.newCall(httpRequest).execute().body?.string() ?: ""
         } catch (e: Exception) {
-            return emptyList()
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    private fun fetchProviderPagePCombined(providerCode: String, tabKeys: List<String>, page: Int): String {
+        val url = StringBuilder("$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}")
+        for (tabKey in tabKeys) {
+            url.append("&tab_pages[").append(tabKey).append("]=").append(page)
+        }
+        val urlStr = url.toString()
+        android.util.Log.d("DracinAioV2", "fetchProviderPagePCombined - page: $page, url: '$urlStr', tabKeys: $tabKeys")
+        val httpRequest = Request.Builder()
+            .url(urlStr)
+            .header("User-Agent", "okhttp/4.9.1")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .build()
+        return try {
+            val response = customClient.newCall(httpRequest).execute()
+            val code = response.code
+            val bodyStr = response.body?.string() ?: ""
+            android.util.Log.d("DracinAioV2", "fetchProviderPagePCombined - response code: $code, body length: ${bodyStr.length}")
+            bodyStr
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+        android.util.Log.d("DracinAioV2", "getMainPage called - page: $page, provider: '${request.data}', name: '${request.name}'")
+        
+        val providerCode = request.data
+        val cacheKey = "dracin_v2_cache_${providerCode}_v7"
+        val context = appContext
+        
+        val seen = seenTitlesHistory.getOrPut(providerCode) {
+            java.util.Collections.synchronizedSet(HashSet<String>())
+        }
+        if (page == 1) {
+            seen.clear()
         }
         
-        if (responseText.isEmpty()) return emptyList()
+        var page1Res = ""
+        if (context != null) {
+            val cached = context.getKey<String>(cacheKey) ?: ""
+            if (cached.contains("\"sections\"")) {
+                page1Res = cached
+            }
+        }
+        if (page1Res.isEmpty()) {
+            page1Res = fetchProviderPage1(providerCode)
+            if (page1Res.contains("\"sections\"") && context != null) {
+                context.setKey(cacheKey, page1Res)
+                context.setKey("dracin_v2_cache_time_${providerCode}_v7", System.currentTimeMillis())
+            }
+        }
         
-        val list = ArrayList<SearchResponse>()
+        if (page1Res.isEmpty()) {
+            return newHomePageResponse(emptyList(), hasNext = false)
+        }
+        
+        val tabKeys = ArrayList<String>()
         try {
-            val jsonObj = org.json.JSONObject(responseText)
+            val jsonObj = org.json.JSONObject(page1Res)
             val sections = jsonObj.optJSONArray("sections")
             if (sections != null) {
                 for (i in 0 until sections.length()) {
                     val sectionObj = sections.getJSONObject(i)
-                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
-                    if (sectionName.equals(subCategoryName, ignoreCase = true)) {
-                        val jsonItems = sectionObj.optJSONArray("items")
-                        if (jsonItems != null) {
-                            for (j in 0 until jsonItems.length()) {
-                                val item = jsonItems.getJSONObject(j)
-                                val title = item.optString("title")
-                                val poster = item.optString("poster_url")
-                                val watchUrl = item.optString("watch_url")
-                                val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
-                                list.add(newTvSeriesSearchResponse(title, maskedUrl) {
-                                    this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
-                                })
-                            }
-                        }
-                        break
+                    val tabKey = sectionObj.optString("tab_key")
+                    if (tabKey.isNotEmpty()) {
+                        tabKeys.add(tabKey)
                     }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return list
-    }
-
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val isGridView = request.name.contains(" - ")
-        if (isGridView) {
-            val subCategoryName = request.name.substringAfter(" - ")
-            val list = fetchProviderPageForGrid(request.data, subCategoryName, pageNum = page)
-            val hasNext = list.isNotEmpty() && page < 4
-            return newHomePageResponse(data = request, list = list, hasNext = hasNext)
-        }
-
-        // Home Page horizontal lists (lazy-load page 1 only)
-        val cacheKey = "dracin_v2_cache_${request.data}_v6"
-        val cacheTimeKey = "dracin_v2_cache_time_${request.data}_v6"
         
-        val context = appContext
-        var res = ""
+        val items = ArrayList<SearchResponse>()
+        var gotAnyItems = false
+        var currentPage = page
         
-        if (context != null) {
-            val cachedJson = context.getKey<String>(cacheKey)
-            val cachedTime = context.getKey<Long>(cacheTimeKey) ?: 0L
-            val now = System.currentTimeMillis()
-            if (cachedJson != null && now - cachedTime < 10800000) { // 3 hours cache TTL
-                res = cachedJson
-                android.util.Log.d("DracinAioV2", "getMainPage loaded from local cache for ${request.data}")
+        while (true) {
+            val pageRes = if (currentPage == 1) {
+                page1Res
+            } else {
+                fetchProviderPagePCombined(providerCode, tabKeys, currentPage)
             }
-        }
-
-        if (res.isEmpty()) {
-            // Fetch ONLY Page 1 for the home screen to make loading instant!
-            res = fetchProviderPages(request.data, maxPages = 1)
-            if (res.isNotEmpty() && context != null) {
-                context.setKey(cacheKey, res)
-                context.setKey(cacheTimeKey, System.currentTimeMillis())
+            
+            if (pageRes.isEmpty()) {
+                break
             }
+            
+            var pageGotItems = false
+            try {
+                val jsonObj = org.json.JSONObject(pageRes)
+                val sections = jsonObj.optJSONArray("sections")
+                if (sections != null) {
+                    for (i in 0 until sections.length()) {
+                        val sectionObj = sections.getJSONObject(i)
+                        val jsonItems = sectionObj.optJSONArray("items")
+                        if (jsonItems != null && jsonItems.length() > 0) {
+                            pageGotItems = true
+                            for (j in 0 until jsonItems.length()) {
+                                val item = jsonItems.getJSONObject(j)
+                                val title = item.optString("title")
+                                val poster = item.optString("poster_url")
+                                val watchUrl = item.optString("watch_url")
+                                
+                                if (seen.add(title)) {
+                                    val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
+                                    items.add(newTvSeriesSearchResponse(title, maskedUrl) {
+                                        this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            
+            if (pageGotItems) {
+                gotAnyItems = true
+            }
+            
+            // If we found some items, or if we reached safety limit, stop looping.
+            if (items.isNotEmpty() || currentPage >= 30) {
+                break
+            }
+            
+            currentPage++
         }
         
-        val fullList = parseSections(res, request.data)
-        return newHomePageResponse(fullList, hasNext = false)
+        val homePageList = HomePageList(request.name, items)
+        val hasNextPage = gotAnyItems
+        
+        val titlesList = items.map { it.name }
+        android.util.Log.d("DracinAioV2", "getMainPage Option A return - items size: ${items.size}, titles: $titlesList, hasNextPage: $hasNextPage")
+        return newHomePageResponse(listOf(homePageList), hasNext = hasNextPage)
     }
 
     override suspend fun search(query: String): List<SearchResponse>? {
@@ -485,15 +368,7 @@ class DracinAioV2Provider : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         val cleanUrl = if (data.contains("lynk.id")) data.substringAfterLast("#", "") else data
-        val separator = if (cleanUrl.contains("?")) "&" else "?"
-        val cacheBusterUrl = "$cleanUrl${separator}_t=${System.currentTimeMillis()}"
-        val response = app.get(
-            cacheBusterUrl,
-            headers = mapOf(
-                "Cache-Control" to "no-cache",
-                "Pragma" to "no-cache"
-            )
-        )
+        val response = app.get(cleanUrl)
         val html = response.text
         
         val allSubtitles = mutableMapOf<String, SubtitleFile>()
@@ -664,7 +539,7 @@ class DracinAioV2Provider : MainAPI() {
             try {
                 val jsonObj = org.json.JSONObject(res)
                 val playUrl = jsonObj.optString("play_url").replace("\\/", "/")
-                val isHls = jsonObj.optBoolean("direct_play_is_hls", false) || playUrl.contains(".m3u8")
+                val isHls = jsonObj.optBoolean("direct_play_is_hls", false) || playUrl.contains(".m3u8") || playUrl.contains("stream.narto-drama.com")
                 
                 if (playUrl.isNotEmpty()) {
                     val cleanedPlayUrl = playUrl
