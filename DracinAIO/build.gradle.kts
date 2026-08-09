@@ -1,4 +1,4 @@
-version = 14
+version = 26
 
 android {
     namespace = "com.lagradost.DracinAIO"

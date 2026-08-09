@@ -238,7 +238,10 @@ class DracinAIOProvider : MainAPI() {
     override val hasMainPage = true
 
     override val mainPage = listOf(
-        MainPageData("Beranda", "beranda")
+        MainPageData("Beranda", "beranda"),
+        MainPageData("Top 10 Drama China", "global|top10"),
+        MainPageData("Paling Dicari", "global|trending"),
+        MainPageData("Drama Populer", "global|barutayang")
     ) + providers.flatMap { prov ->
         val list = ArrayList<MainPageData>()
         list.add(MainPageData("[${prov.name}] - Semua", "${prov.code}|semua"))
