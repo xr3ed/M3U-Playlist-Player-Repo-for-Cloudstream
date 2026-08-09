@@ -279,9 +279,15 @@ class DracinAIOProvider : MainAPI() {
 
     private suspend fun httpGet(url: String): String {
         val now = System.currentTimeMillis()
+        val isHomepageCall = url == mainUrl || 
+                             url.contains("action=rank") || 
+                             url.contains("action=list") || 
+                             url.contains("action=home")
+        val ttl = if (isHomepageCall) 10800000L else 10000L // 3 hours for homepage, 10 seconds for detail/stream/search
+        
         cacheMutex.withLock {
             val cached = cache[url]
-            if (cached != null && now - cached.first < 10000) {
+            if (cached != null && now - cached.first < ttl) {
                 return cached.second
             }
         }
@@ -450,11 +456,11 @@ class DracinAIOProvider : MainAPI() {
 
             val context = appContext
             if (context != null) {
-                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v7")
-                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v7") ?: 0L
+                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v9")
+                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v9") ?: 0L
                 val now = System.currentTimeMillis()
-                // Cache TTL: 10 minutes (600.000 ms)
-                if (cachedJson != null && now - cachedTime < 600000) {
+                // Cache TTL: 3 hours (10.800.000 ms)
+                if (cachedJson != null && now - cachedTime < 10800000) {
                     val cachedLists = deserializeHomeCache(cachedJson)
                     if (cachedLists.isNotEmpty()) {
                         Log.d("DracinAIO", "Loading homepage from local DataStore cache (Age: ${(now - cachedTime)/1000}s)")
@@ -465,49 +471,7 @@ class DracinAIOProvider : MainAPI() {
 
             val homePageLists = ArrayList<HomePageList>()
 
-            // 1. Load Global Lists (Top 10, Trending, Baru Tayang)
-            try {
-                val responseText = httpGet(mainUrl)
-                if (responseText.isNotEmpty()) {
-                    val sections = listOf(
-                        "Top 10 Drama China" to "Top 10 Drama China",
-                        "Paling Dicari" to "Paling Dicari",
-                        "Terbaru Hari Ini" to "Terbaru Hari Ini"
-                    )
-                    for ((title, term) in sections) {
-                        val startIndex = responseText.indexOf(term)
-                        if (startIndex != -1) {
-                            val block = responseText.substring(startIndex, kotlin.math.min(startIndex + 25000, responseText.length))
-                            val anchorRegex = """<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>""".toRegex(RegexOption.DOT_MATCHES_ALL)
-                            val matches = anchorRegex.findAll(block)
-                            val list = ArrayList<SearchResponse>()
-                            for (m in matches) {
-                                val href = m.groupValues[1]
-                                val inner = m.groupValues[2]
-                                val watchPart = href.substringAfter("/watch/")
-                                val providerCode = watchPart.substringBefore("/")
-                                val id = if (watchPart.contains("--")) watchPart.substringAfter("--") else watchPart.substringAfterLast("/")
-                                if (providerCode.isEmpty() || id.isEmpty()) continue
-                                val srcRegex = """src="([^"]+)"""".toRegex()
-                                val altRegex = """alt="([^"]+)"""".toRegex()
-                                val src = srcRegex.find(inner)?.groupValues?.get(1) ?: ""
-                                val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
-                                val coverUrl = getDirectImageUrl(src)
-                                list.add(
-                                    newMovieSearchResponse(alt, buildDetailUrl(providerCode, id, alt, src), TvType.TvSeries) {
-                                        this.posterUrl = coverUrl
-                                    }
-                                )
-                            }
-                            if (list.isNotEmpty()) {
-                                homePageLists.add(HomePageList(title, list))
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            // 1. Global Lists (Top 10, Paling Dicari, Populer) will be computed dynamically from parallel provider lists below
 
             // 2. Load Selected Provider Lists in Parallel
             val deferredLists = withContext(Dispatchers.IO) {
@@ -544,14 +508,63 @@ class DracinAIOProvider : MainAPI() {
             }
 
             val providerLists = deferredLists.awaitAll().filterNotNull().flatten()
-            homePageLists.addAll(providerLists)
+            
+            val dotdramaList = providerLists.find { it.name.contains("DotDrama", ignoreCase = true) }?.list ?: emptyList()
+            val meloloList = providerLists.find { it.name.contains("Melolo", ignoreCase = true) }?.list ?: emptyList()
+            val dramaboxList = providerLists.find { it.name.contains("DramaBox", ignoreCase = true) }?.list ?: emptyList()
+            val shortmaxList = providerLists.find { it.name.contains("ShortMax", ignoreCase = true) }?.list ?: emptyList()
+            
+            val top10List = ArrayList<SearchResponse>()
+            val palingDicariList = ArrayList<SearchResponse>()
+            val maxLen = kotlin.math.max(dotdramaList.size, meloloList.size)
+            for (i in 0 until maxLen) {
+                if (i < dotdramaList.size) {
+                    val item = dotdramaList[i]
+                    if (top10List.size < 10) {
+                        top10List.add(item)
+                    } else if (palingDicariList.size < 12) {
+                        palingDicariList.add(item)
+                    }
+                }
+                if (i < meloloList.size) {
+                    val item = meloloList[i]
+                    if (top10List.size < 10) {
+                        top10List.add(item)
+                    } else if (palingDicariList.size < 12) {
+                        palingDicariList.add(item)
+                    }
+                }
+            }
+            
+            val terbaruList = ArrayList<SearchResponse>()
+            val maxLen2 = kotlin.math.max(dramaboxList.size, shortmaxList.size)
+            for (i in 0 until maxLen2) {
+                if (i < dramaboxList.size) {
+                    if (terbaruList.size < 12) terbaruList.add(dramaboxList[i])
+                }
+                if (i < shortmaxList.size) {
+                    if (terbaruList.size < 12) terbaruList.add(shortmaxList[i])
+                }
+            }
+            
+            if (top10List.isNotEmpty()) {
+                homePageLists.add(HomePageList("Top 10 Drama China", top10List))
+            }
+            if (palingDicariList.isNotEmpty()) {
+                homePageLists.add(HomePageList("Paling Dicari", palingDicariList))
+            }
+            if (terbaruList.isNotEmpty()) {
+                homePageLists.add(HomePageList("Drama Populer", terbaruList))
+            }
+            
+            // Removed homePageLists.addAll(providerLists) to eliminate duplicates on Beranda
 
             if (homePageLists.isNotEmpty() && context != null) {
                 try {
                     val jsonStr = serializeHomeCache(homePageLists)
                     if (jsonStr.isNotEmpty()) {
-                        context.setKey("dracin_aio_home_cache_v7", jsonStr)
-                        context.setKey("dracin_aio_home_cache_time_v7", System.currentTimeMillis())
+                        context.setKey("dracin_aio_home_cache_v9", jsonStr)
+                        context.setKey("dracin_aio_home_cache_time_v9", System.currentTimeMillis())
                         Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
                     }
                 } catch (e: Exception) {
