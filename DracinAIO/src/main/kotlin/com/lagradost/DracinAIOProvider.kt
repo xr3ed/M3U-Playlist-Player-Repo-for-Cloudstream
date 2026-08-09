@@ -460,8 +460,8 @@ class DracinAIOProvider : MainAPI() {
 
             val context = appContext
             if (context != null) {
-                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v9")
-                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v9") ?: 0L
+                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v10")
+                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v10") ?: 0L
                 val now = System.currentTimeMillis()
                 // Cache TTL: 3 hours (10.800.000 ms)
                 if (cachedJson != null && now - cachedTime < 10800000) {
@@ -567,8 +567,8 @@ class DracinAIOProvider : MainAPI() {
                 try {
                     val jsonStr = serializeHomeCache(homePageLists)
                     if (jsonStr.isNotEmpty()) {
-                        context.setKey("dracin_aio_home_cache_v9", jsonStr)
-                        context.setKey("dracin_aio_home_cache_time_v9", System.currentTimeMillis())
+                        context.setKey("dracin_aio_home_cache_v10", jsonStr)
+                        context.setKey("dracin_aio_home_cache_time_v10", System.currentTimeMillis())
                         Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
                     }
                 } catch (e: Exception) {
