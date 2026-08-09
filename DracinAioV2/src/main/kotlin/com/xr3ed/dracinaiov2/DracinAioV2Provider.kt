@@ -17,6 +17,7 @@ import kotlinx.coroutines.*
 import com.xr3ed.dracinaiov2.BuildConfig
 import com.lagradost.cloudstream3.utils.DataStore.getKey
 import com.lagradost.cloudstream3.utils.DataStore.setKey
+import com.lagradost.cloudstream3.HomePageList
 
 class DracinAioV2Provider : MainAPI() {
     companion object {
@@ -40,117 +41,146 @@ class DracinAioV2Provider : MainAPI() {
     override val hasQuickSearch = true
 
     private val providers = listOf(
-        Pair("bilitv", "BiliTV"),
         Pair("bibishort", "BibiShort"),
-        Pair("freereels", "FreeReels"),
-        Pair("reelshort", "ReelShort"),
-        Pair("dramabox", "DramaBox"),
-        Pair("shortmax", "ShortMax"),
-        Pair("dramabite", "DramaBite"),
-        Pair("dramawave", "DramaWave"),
-        Pair("vyntage", "Vyntage"),
-        Pair("dramanova", "DramaNova"),
-        Pair("dotdrama", "DotDrama"),
-        Pair("rapidtv", "RapidTV"),
+        Pair("bilitv", "BiliTV"),
         Pair("cubetv", "CubeTV"),
-        Pair("happyshort", "HappyShort"),
-        Pair("reelbuzz", "ReelBuzz"),
+        Pair("dotdrama", "DotDrama"),
+        Pair("dramabite", "DramaBite"),
+        Pair("dramabox", "DramaBox"),
+        Pair("dramanova", "DramaNova"),
+        Pair("dramawave", "DramaWave"),
         Pair("flareflow", "FlareFlow"),
-        Pair("pinedrama", "PineDrama"),
-        Pair("serealplus", "Sereal+"),
-        Pair("netshort", "NetShort"),
-        Pair("idrama", "iDrama"),
-        Pair("melolo", "Melolo"),
-        Pair("starshort", "StarShort"),
-        Pair("goodshort", "GoodShort"),
         Pair("flextv", "FlexTV"),
-        Pair("kalostv", "KalosTV"),
+        Pair("flickreels", "FlickReels"),
+        Pair("freereels", "FreeReels"),
         Pair("fundrama", "FunDrama"),
+        Pair("goodshort", "GoodShort"),
+        Pair("happyshort", "HappyShort"),
+        Pair("idrama", "iDrama"),
+        Pair("joyreels", "JoyReels"),
+        Pair("kalostv", "KalosTV"),
+        Pair("melolo", "Melolo"),
         Pair("microdrama", "MicroDrama"),
         Pair("moboreels", "MoboReels"),
+        Pair("netshort", "NetShort"),
+        Pair("pinedrama", "PineDrama"),
+        Pair("rapidtv", "RapidTV"),
+        Pair("reelbuzz", "ReelBuzz"),
         Pair("reelife", "Reelife"),
-        Pair("reelala", "Reelala"),
+        Pair("reelshort", "ReelShort"),
+        Pair("serealplus", "Sereal+"),
+        Pair("shortical", "Shortical"),
+        Pair("shortmax", "ShortMax"),
         Pair("stardusttv", "StardustTV"),
+        Pair("starshort", "StarShort"),
         Pair("velolo", "Velolo"),
         Pair("vigloo", "Vigloo"),
-        Pair("flickreels", "FlickReels"),
-        Pair("joyreels", "JoyReels"),
-        Pair("shortical", "Shortical")
+        Pair("vyntage", "Vyntage")
     )
 
     override val mainPage = providers.map { (key, title) ->
         MainPageData(title, key)
     }
 
-    private fun parseSectionsItems(res: String): List<SearchResponse> {
-        val items = ArrayList<SearchResponse>()
+    private val tabSectionsCache = java.util.concurrent.ConcurrentHashMap<String, List<HomePageList>>()
+
+    private fun parseSections(res: String, providerCode: String): List<HomePageList> {
+        val lists = ArrayList<HomePageList>()
         try {
             val jsonObj = org.json.JSONObject(res)
             val sections = jsonObj.optJSONArray("sections")
-            if (sections != null && sections.length() > 0) {
-                val section = sections.getJSONObject(0)
-                val jsonItems = section.optJSONArray("items")
-                if (jsonItems != null) {
-                    for (i in 0 until jsonItems.length()) {
-                        val item = jsonItems.getJSONObject(i)
-                        val title = item.optString("title")
-                        val poster = item.optString("poster_url")
-                        val watchUrl = item.optString("watch_url")
-                        
-                        val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
-                        
-                        items.add(newTvSeriesSearchResponse(title, maskedUrl) {
-                            this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
-                        })
+            if (sections != null) {
+                val providerName = providers.find { it.first == providerCode }?.second ?: providerCode
+                for (i in 0 until sections.length()) {
+                    val sectionObj = sections.getJSONObject(i)
+                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
+                    val formattedName = "$providerName - $sectionName"
+                    val jsonItems = sectionObj.optJSONArray("items")
+                    if (jsonItems != null) {
+                        val items = ArrayList<SearchResponse>()
+                        for (j in 0 until jsonItems.length()) {
+                            val item = jsonItems.getJSONObject(j)
+                            val title = item.optString("title")
+                            val poster = item.optString("poster_url")
+                            val watchUrl = item.optString("watch_url")
+                            
+                            val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
+                            
+                            items.add(newTvSeriesSearchResponse(title, maskedUrl) {
+                                this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
+                            })
+                        }
+                        if (items.isNotEmpty()) {
+                            lists.add(HomePageList(formattedName, items))
+                        }
                     }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return items
+        return lists
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val cacheKey = "dracin_v2_cache_${request.data}_$page"
-        val cacheTimeKey = "dracin_v2_cache_time_${request.data}_$page"
+        if (page > 1) {
+            val cached = tabSectionsCache[request.data]
+            if (cached != null && cached.isNotEmpty()) {
+                val nextSection = cached[0]
+                val remaining = cached.drop(1)
+                tabSectionsCache[request.data] = remaining
+                return newHomePageResponse(listOf(nextSection), hasNext = remaining.isNotEmpty())
+            }
+            return newHomePageResponse(emptyList(), hasNext = false)
+        }
+
+        // page == 1
+        val cacheKey = "dracin_v2_cache_${request.data}_v3"
+        val cacheTimeKey = "dracin_v2_cache_time_${request.data}_v3"
         
         val context = appContext
+        var res = ""
+        
         if (context != null) {
             val cachedJson = context.getKey<String>(cacheKey)
             val cachedTime = context.getKey<Long>(cacheTimeKey) ?: 0L
             val now = System.currentTimeMillis()
             if (cachedJson != null && now - cachedTime < 10800000) { // 3 hours cache TTL (3 * 60 * 60 * 1000)
-                val parsedItems = parseSectionsItems(cachedJson)
-                if (parsedItems.isNotEmpty()) {
-                    android.util.Log.d("DracinAioV2", "getMainPage loaded from local cache for ${request.data}")
-                    return newHomePageResponse(request.name, parsedItems)
-                }
+                res = cachedJson
+                android.util.Log.d("DracinAioV2", "getMainPage loaded from local cache for ${request.data}")
             }
         }
 
-        val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(request.data)}"
-        
-        val httpRequest = Request.Builder()
-            .url(url)
-            .header("User-Agent", "okhttp/4.9.1")
-            .header("X-Requested-With", "XMLHttpRequest")
-            .build()
+        if (res.isEmpty()) {
+            val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(request.data)}"
             
-        val res = try {
-            customClient.newCall(httpRequest).execute().body?.string() ?: ""
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
+            val httpRequest = Request.Builder()
+                .url(url)
+                .header("User-Agent", "okhttp/4.9.1")
+                .header("X-Requested-With", "XMLHttpRequest")
+                .build()
+                
+            res = try {
+                customClient.newCall(httpRequest).execute().body?.string() ?: ""
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ""
+            }
+            
+            if (res.isNotEmpty() && context != null) {
+                context.setKey(cacheKey, res)
+                context.setKey(cacheTimeKey, System.currentTimeMillis())
+            }
         }
         
-        if (res.isNotEmpty() && context != null) {
-            context.setKey(cacheKey, res)
-            context.setKey(cacheTimeKey, System.currentTimeMillis())
+        val fullList = parseSections(res, request.data)
+        if (fullList.size > 1) {
+            val first = fullList[0]
+            val remaining = fullList.drop(1)
+            tabSectionsCache[request.data] = remaining
+            return newHomePageResponse(listOf(first), hasNext = true)
         }
-        
-        val items = parseSectionsItems(res)
-        return newHomePageResponse(request.name, items)
+        return newHomePageResponse(fullList, hasNext = false)
     }
 
     override suspend fun search(query: String): List<SearchResponse>? {
@@ -276,28 +306,27 @@ class DracinAioV2Provider : MainAPI() {
                         
                         if (gateTokenMatch != null) {
                             val gateToken = gateTokenMatch.groupValues[1]
-                            for (i in 0..5) {
-                                jobs.add(async(Dispatchers.IO) {
-                                    val unlockReq = Request.Builder()
-                                        .url("$BASE_URL${BuildConfig.DRACINAIO_V2_PATH_GATE_UNLOCK}")
-                                        .post("""{"token":"$gateToken"}""".toRequestBody("application/json".toMediaTypeOrNull()))
-                                        .header("X-CSRF-TOKEN", csrfToken)
-                                        .header("X-Requested-With", "XMLHttpRequest")
-                                        .header("Referer", cleanUrl)
-                                        .header("Cookie", cookieString)
-                                        .build()
-                                    try { 
-                                        customClient.newCall(unlockReq).execute().use { res ->
-                                            val setCookies = res.headers("Set-Cookie")
-                                            synchronized(cookieLock) {
-                                                cookieString = updateCookieString(cookieString, setCookies)
-                                            }
+                            jobs.add(async(Dispatchers.IO) {
+                                val unlockReq = Request.Builder()
+                                    .url("$BASE_URL${BuildConfig.DRACINAIO_V2_PATH_GATE_UNLOCK}")
+                                    .post("""{"token":"$gateToken"}""".toRequestBody("application/json".toMediaTypeOrNull()))
+                                    .header("X-CSRF-TOKEN", csrfToken)
+                                    .header("X-Requested-With", "XMLHttpRequest")
+                                    .header("Referer", cleanUrl)
+                                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                                    .header("Cookie", cookieString)
+                                    .build()
+                                try { 
+                                    customClient.newCall(unlockReq).execute().use { res ->
+                                        val setCookies = res.headers("Set-Cookie")
+                                        synchronized(cookieLock) {
+                                            cookieString = updateCookieString(cookieString, setCookies)
                                         }
-                                    } catch (e: Exception) { 
-                                        android.util.Log.e("DracinAioV2", "gate-unlock $i failed", e)
                                     }
-                                })
-                            }
+                                } catch (e: Exception) { 
+                                    android.util.Log.e("DracinAioV2", "gate-unlock failed", e)
+                                }
+                            })
                         }
                         
                         if (consentTokenMatch != null) {
@@ -309,6 +338,7 @@ class DracinAioV2Provider : MainAPI() {
                                     .header("X-CSRF-TOKEN", csrfToken)
                                     .header("X-Requested-With", "XMLHttpRequest")
                                     .header("Referer", cleanUrl)
+                                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                     .header("Cookie", cookieString)
                                     .build()
                                 try { 
@@ -344,6 +374,7 @@ class DracinAioV2Provider : MainAPI() {
                 .header("Accept", "application/json")
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header("Referer", cleanUrl)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .header("Sec-Fetch-Dest", "empty")
                 .header("Sec-Fetch-Mode", "cors")
                 .header("Sec-Fetch-Site", "same-origin")
