@@ -1,0 +1,8 @@
+{
+  "pluginClassName": "com.xr3ed.MyHomepagePlugin",
+  "displayName": "My Homepage",
+  "description": "Beranda Kustom Tanpa Sync",
+  "author": "xr3ed",
+  "version": 1,
+  "tvTypes": ["Movie", "TvSeries", "Anime"]
+}
