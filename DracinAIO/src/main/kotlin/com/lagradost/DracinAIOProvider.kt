@@ -492,7 +492,7 @@ class DracinAIOProvider : MainAPI() {
                             val rawItems = parseRankItems(responseText)
                             
                             val lists = ArrayList<HomePageList>()
-                            val pageItems = rawItems.take(6)
+                            val pageItems = rawItems.take(24)
                             val searchResponses = pageItems.map {
                                 val coverUrl = getDirectImageUrl(it.cover)
                                 newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
