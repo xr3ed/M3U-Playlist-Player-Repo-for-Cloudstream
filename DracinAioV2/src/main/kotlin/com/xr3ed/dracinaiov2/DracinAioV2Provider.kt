@@ -485,7 +485,15 @@ class DracinAioV2Provider : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         val cleanUrl = if (data.contains("lynk.id")) data.substringAfterLast("#", "") else data
-        val response = app.get(cleanUrl)
+        val separator = if (cleanUrl.contains("?")) "&" else "?"
+        val cacheBusterUrl = "$cleanUrl${separator}_t=${System.currentTimeMillis()}"
+        val response = app.get(
+            cacheBusterUrl,
+            headers = mapOf(
+                "Cache-Control" to "no-cache",
+                "Pragma" to "no-cache"
+            )
+        )
         val html = response.text
         
         val allSubtitles = mutableMapOf<String, SubtitleFile>()
