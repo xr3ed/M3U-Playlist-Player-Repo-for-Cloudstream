@@ -122,21 +122,251 @@ class DracinAioV2Provider : MainAPI() {
         return lists
     }
 
-    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        if (page > 1) {
-            val cached = tabSectionsCache[request.data]
-            if (cached != null && cached.isNotEmpty()) {
-                val nextSection = cached[0]
-                val remaining = cached.drop(1)
-                tabSectionsCache[request.data] = remaining
-                return newHomePageResponse(listOf(nextSection), hasNext = remaining.isNotEmpty())
+    private fun fetchProviderPages(providerCode: String, maxPages: Int = 4): String {
+        val mergedSections = mutableMapOf<String, org.json.JSONObject>()
+        val tabKeys = ArrayList<String>()
+        
+        val urlPage1 = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}"
+        val httpRequest1 = Request.Builder()
+            .url(urlPage1)
+            .header("User-Agent", "okhttp/4.9.1")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .build()
+            
+        val resPage1 = try {
+            customClient.newCall(httpRequest1).execute().body?.string() ?: ""
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+        
+        if (resPage1.isEmpty()) {
+            return ""
+        }
+        
+        try {
+            val jsonObj = org.json.JSONObject(resPage1)
+            val sections = jsonObj.optJSONArray("sections")
+            if (sections != null) {
+                for (i in 0 until sections.length()) {
+                    val sectionObj = sections.getJSONObject(i)
+                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
+                    val tabKey = sectionObj.optString("tab_key")
+                    if (tabKey.isNotEmpty()) {
+                        tabKeys.add(tabKey)
+                    }
+                    
+                    val items = sectionObj.optJSONArray("items")
+                    if (items != null) {
+                        val existingSection = mergedSections.getOrPut(sectionName) {
+                            org.json.JSONObject().apply {
+                                put("tab_label", sectionName)
+                                put("items", org.json.JSONArray())
+                            }
+                        }
+                        val existingItems = existingSection.getJSONArray("items")
+                        for (j in 0 until items.length()) {
+                            existingItems.put(items.getJSONObject(j))
+                        }
+                    }
+                }
             }
-            return newHomePageResponse(emptyList(), hasNext = false)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return resPage1
+        }
+        
+        if (tabKeys.isNotEmpty() && maxPages > 1) {
+            for (p in 2..maxPages) {
+                try { Thread.sleep(200) } catch (e: Exception) {}
+                
+                val url = StringBuilder("$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}")
+                for (tabKey in tabKeys) {
+                    url.append("&tab_pages[").append(tabKey).append("]=").append(p)
+                }
+                
+                val httpRequest = Request.Builder()
+                    .url(url.toString())
+                    .header("User-Agent", "okhttp/4.9.1")
+                    .header("X-Requested-With", "XMLHttpRequest")
+                    .build()
+                    
+                val responseText = try {
+                    customClient.newCall(httpRequest).execute().body?.string() ?: ""
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    ""
+                }
+                
+                if (responseText.isNotEmpty()) {
+                    try {
+                        val jsonObj = org.json.JSONObject(responseText)
+                        val sections = jsonObj.optJSONArray("sections")
+                        if (sections != null) {
+                            for (i in 0 until sections.length()) {
+                                val sectionObj = sections.getJSONObject(i)
+                                val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
+                                val items = sectionObj.optJSONArray("items")
+                                if (items != null) {
+                                    val existingSection = mergedSections.getOrPut(sectionName) {
+                                        org.json.JSONObject().apply {
+                                            put("tab_label", sectionName)
+                                            put("items", org.json.JSONArray())
+                                        }
+                                    }
+                                    val existingItems = existingSection.getJSONArray("items")
+                                    for (j in 0 until items.length()) {
+                                        val itemObj = items.getJSONObject(j)
+                                        val title = itemObj.optString("title")
+                                        
+                                        var exists = false
+                                        for (k in 0 until existingItems.length()) {
+                                            if (existingItems.getJSONObject(k).optString("title") == title) {
+                                                exists = true
+                                                break
+                                            }
+                                        }
+                                        if (!exists) {
+                                            existingItems.put(itemObj)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+        
+        return try {
+            org.json.JSONObject().apply {
+                put("ok", true)
+                val sectionsArray = org.json.JSONArray()
+                for (sec in mergedSections.values) {
+                    sectionsArray.put(sec)
+                }
+                put("sections", sectionsArray)
+            }.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            resPage1
+        }
+    }
+
+    private fun fetchProviderPageForGrid(providerCode: String, subCategoryName: String, pageNum: Int): List<SearchResponse> {
+        val urlPage1 = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}"
+        val httpRequest1 = Request.Builder()
+            .url(urlPage1)
+            .header("User-Agent", "okhttp/4.9.1")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .build()
+            
+        val resPage1 = try {
+            customClient.newCall(httpRequest1).execute().body?.string() ?: ""
+        } catch (e: Exception) {
+            return emptyList()
+        }
+        
+        if (resPage1.isEmpty()) return emptyList()
+        
+        var tabKey = ""
+        try {
+            val jsonObj = org.json.JSONObject(resPage1)
+            val sections = jsonObj.optJSONArray("sections")
+            if (sections != null) {
+                for (i in 0 until sections.length()) {
+                    val sectionObj = sections.getJSONObject(i)
+                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
+                    if (sectionName.equals(subCategoryName, ignoreCase = true)) {
+                        tabKey = sectionObj.optString("tab_key")
+                        if (pageNum == 1) {
+                            val list = ArrayList<SearchResponse>()
+                            val jsonItems = sectionObj.optJSONArray("items")
+                            if (jsonItems != null) {
+                                for (j in 0 until jsonItems.length()) {
+                                    val item = jsonItems.getJSONObject(j)
+                                    val title = item.optString("title")
+                                    val poster = item.optString("poster_url")
+                                    val watchUrl = item.optString("watch_url")
+                                    val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
+                                    list.add(newTvSeriesSearchResponse(title, maskedUrl) {
+                                        this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
+                                    })
+                                }
+                            }
+                            return list
+                        }
+                        break
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        
+        if (tabKey.isEmpty() || pageNum <= 1) return emptyList()
+        
+        val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(providerCode)}&tab_pages[$tabKey]=$pageNum"
+        val httpRequest = Request.Builder()
+            .url(url)
+            .header("User-Agent", "okhttp/4.9.1")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .build()
+            
+        val responseText = try {
+            customClient.newCall(httpRequest).execute().body?.string() ?: ""
+        } catch (e: Exception) {
+            return emptyList()
+        }
+        
+        if (responseText.isEmpty()) return emptyList()
+        
+        val list = ArrayList<SearchResponse>()
+        try {
+            val jsonObj = org.json.JSONObject(responseText)
+            val sections = jsonObj.optJSONArray("sections")
+            if (sections != null) {
+                for (i in 0 until sections.length()) {
+                    val sectionObj = sections.getJSONObject(i)
+                    val sectionName = sectionObj.optString("tab_label").ifEmpty { "Rekomendasi" }
+                    if (sectionName.equals(subCategoryName, ignoreCase = true)) {
+                        val jsonItems = sectionObj.optJSONArray("items")
+                        if (jsonItems != null) {
+                            for (j in 0 until jsonItems.length()) {
+                                val item = jsonItems.getJSONObject(j)
+                                val title = item.optString("title")
+                                val poster = item.optString("poster_url")
+                                val watchUrl = item.optString("watch_url")
+                                val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
+                                list.add(newTvSeriesSearchResponse(title, maskedUrl) {
+                                    this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
+                                })
+                            }
+                        }
+                        break
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return list
+    }
+
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
+        val isGridView = request.name.contains(" - ")
+        if (isGridView) {
+            val subCategoryName = request.name.substringAfter(" - ")
+            val list = fetchProviderPageForGrid(request.data, subCategoryName, pageNum = page)
+            val hasNext = list.isNotEmpty() && page < 4
+            return newHomePageResponse(data = request, list = list, hasNext = hasNext)
         }
 
-        // page == 1
-        val cacheKey = "dracin_v2_cache_${request.data}_v3"
-        val cacheTimeKey = "dracin_v2_cache_time_${request.data}_v3"
+        // Home Page horizontal lists (lazy-load page 1 only)
+        val cacheKey = "dracin_v2_cache_${request.data}_v6"
+        val cacheTimeKey = "dracin_v2_cache_time_${request.data}_v6"
         
         val context = appContext
         var res = ""
@@ -145,28 +375,15 @@ class DracinAioV2Provider : MainAPI() {
             val cachedJson = context.getKey<String>(cacheKey)
             val cachedTime = context.getKey<Long>(cacheTimeKey) ?: 0L
             val now = System.currentTimeMillis()
-            if (cachedJson != null && now - cachedTime < 10800000) { // 3 hours cache TTL (3 * 60 * 60 * 1000)
+            if (cachedJson != null && now - cachedTime < 10800000) { // 3 hours cache TTL
                 res = cachedJson
                 android.util.Log.d("DracinAioV2", "getMainPage loaded from local cache for ${request.data}")
             }
         }
 
         if (res.isEmpty()) {
-            val url = "$mainUrl${BuildConfig.DRACINAIO_V2_PATH_SECTIONS.format(request.data)}"
-            
-            val httpRequest = Request.Builder()
-                .url(url)
-                .header("User-Agent", "okhttp/4.9.1")
-                .header("X-Requested-With", "XMLHttpRequest")
-                .build()
-                
-            res = try {
-                customClient.newCall(httpRequest).execute().body?.string() ?: ""
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ""
-            }
-            
+            // Fetch ONLY Page 1 for the home screen to make loading instant!
+            res = fetchProviderPages(request.data, maxPages = 1)
             if (res.isNotEmpty() && context != null) {
                 context.setKey(cacheKey, res)
                 context.setKey(cacheTimeKey, System.currentTimeMillis())
@@ -174,12 +391,6 @@ class DracinAioV2Provider : MainAPI() {
         }
         
         val fullList = parseSections(res, request.data)
-        if (fullList.size > 1) {
-            val first = fullList[0]
-            val remaining = fullList.drop(1)
-            tabSectionsCache[request.data] = remaining
-            return newHomePageResponse(listOf(first), hasNext = true)
-        }
         return newHomePageResponse(fullList, hasNext = false)
     }
 
@@ -277,6 +488,57 @@ class DracinAioV2Provider : MainAPI() {
         val response = app.get(cleanUrl)
         val html = response.text
         
+        val allSubtitles = mutableMapOf<String, SubtitleFile>()
+        try {
+            val epNum = response.url.substringBefore("?").substringAfterLast("/").toIntOrNull() ?: 1
+            val episodeItemsRawMatch = Regex("""const\s+episodeItemsRaw\s*=\s*(\[[\s\S]*?\]);""").find(html)
+            if (episodeItemsRawMatch != null) {
+                val rawJson = episodeItemsRawMatch.groupValues[1]
+                val arr = org.json.JSONArray(rawJson)
+                for (i in 0 until arr.length()) {
+                    val item = arr.getJSONObject(i)
+                    val num = item.optInt("number", -1)
+                    if (num == epNum) {
+                        val multi = item.optJSONArray("multi_subtitles")
+                        if (multi != null) {
+                            val baseHost = java.net.URI(BASE_URL).host ?: ""
+                            val defaultEdgeBase = "https://edge.$baseHost"
+                            val edgeBaseMatch = Regex("""refreshSourceEdgeBase\s*=\s*["']([^"']+)["']""").find(html)
+                            val edgeBase = edgeBaseMatch?.groupValues?.get(1)?.replace("\\", "") ?: defaultEdgeBase
+                            
+                            for (j in 0 until multi.length()) {
+                                val subItem = multi.getJSONObject(j)
+                                val subPath = subItem.optString("subtitle_url").replace("\\/", "/")
+                                val lang = subItem.optString("language_code")
+                                val label = subItem.optString("label")
+                                
+                                if (subPath.isNotEmpty()) {
+                                    val fullSubUrl = if (subPath.startsWith("http://") || subPath.startsWith("https://")) {
+                                        subPath
+                                    } else {
+                                        val cleanSubPath = if (subPath.startsWith("/")) subPath else "/$subPath"
+                                        "${edgeBase.trimEnd('/')}$cleanSubPath"
+                                    }
+                                    val vttSubUrl = if (fullSubUrl.endsWith(".vtt", ignoreCase = true) || fullSubUrl.endsWith(".srt", ignoreCase = true)) {
+                                        fullSubUrl
+                                    } else {
+                                        "$fullSubUrl#.vtt"
+                                    }
+                                    allSubtitles[lang.lowercase()] = SubtitleFile(
+                                        lang = label.ifEmpty { lang },
+                                        url = vttSubUrl
+                                    )
+                                }
+                            }
+                        }
+                        break
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("DracinAioV2", "Failed to parse episodeItemsRaw in loadLinks", e)
+        }
+
         var cookieString = response.cookies.map { "${it.key}=${it.value}" }.joinToString("; ")
         android.util.Log.d("DracinAioV2", "loadLinks cleanUrl: $cleanUrl")
         android.util.Log.d("DracinAioV2", "loadLinks html length: ${html.length}, contains token: ${html.contains("refreshSourceContextToken")}")
@@ -285,7 +547,7 @@ class DracinAioV2Provider : MainAPI() {
         val tokenMatch = Regex("""refreshSourceContextToken\s*=\s*["']([^"']+)["']""").find(html)
         if (tokenMatch != null) {
             val token = tokenMatch.groupValues[1]
-            val baseUrl = cleanUrl.substringBefore("?")
+            val baseUrl = response.url.substringBefore("?")
             
             // Check if ad gate is already unlocked
             val remainingMsMatch = Regex("""adsGateRemainingMs\s*=\s*([0-9]+)""").find(html)
@@ -312,7 +574,7 @@ class DracinAioV2Provider : MainAPI() {
                                     .post("""{"token":"$gateToken"}""".toRequestBody("application/json".toMediaTypeOrNull()))
                                     .header("X-CSRF-TOKEN", csrfToken)
                                     .header("X-Requested-With", "XMLHttpRequest")
-                                    .header("Referer", cleanUrl)
+                                    .header("Referer", response.url)
                                     .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                     .header("Cookie", cookieString)
                                     .build()
@@ -337,7 +599,7 @@ class DracinAioV2Provider : MainAPI() {
                                     .post("""{"token":"$consentToken"}""".toRequestBody("application/json".toMediaTypeOrNull()))
                                     .header("X-CSRF-TOKEN", csrfToken)
                                     .header("X-Requested-With", "XMLHttpRequest")
-                                    .header("Referer", cleanUrl)
+                                    .header("Referer", response.url)
                                     .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                                     .header("Cookie", cookieString)
                                     .build()
@@ -373,7 +635,7 @@ class DracinAioV2Provider : MainAPI() {
                 .url(refreshUrl)
                 .header("Accept", "application/json")
                 .header("X-Requested-With", "XMLHttpRequest")
-                .header("Referer", cleanUrl)
+                .header("Referer", response.url)
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .header("Sec-Fetch-Dest", "empty")
                 .header("Sec-Fetch-Mode", "cors")
@@ -428,34 +690,47 @@ class DracinAioV2Provider : MainAPI() {
                             val label = subItem.optString("label")
                             
                             if (subPath.isNotEmpty()) {
-                                val fullSubUrl = if (subPath.startsWith("/")) {
-                                    "${edgeBase.trimEnd('/')}$subPath"
-                                } else {
+                                val fullSubUrl = if (subPath.startsWith("http://") || subPath.startsWith("https://")) {
                                     subPath
+                                } else {
+                                    val cleanSubPath = if (subPath.startsWith("/")) subPath else "/$subPath"
+                                    "${edgeBase.trimEnd('/')}$cleanSubPath"
                                 }
-                                subtitleCallback.invoke(
-                                    SubtitleFile(
-                                        lang = label.ifEmpty { lang },
-                                        url = fullSubUrl
-                                    )
+                                val vttSubUrl = if (fullSubUrl.endsWith(".vtt", ignoreCase = true) || fullSubUrl.endsWith(".srt", ignoreCase = true)) {
+                                    fullSubUrl
+                                } else {
+                                    "$fullSubUrl#.vtt"
+                                }
+                                allSubtitles[lang.lowercase()] = SubtitleFile(
+                                    lang = label.ifEmpty { lang },
+                                    url = vttSubUrl
                                 )
                             }
                         }
                     } else {
                         val subPath = jsonObj.optString("subtitle_url").replace("\\/", "/")
                         if (subPath.isNotEmpty()) {
-                            val fullSubUrl = if (subPath.startsWith("/")) {
-                                "${edgeBase.trimEnd('/')}$subPath"
-                            } else {
+                            val fullSubUrl = if (subPath.startsWith("http://") || subPath.startsWith("https://")) {
                                 subPath
+                            } else {
+                                val cleanSubPath = if (subPath.startsWith("/")) subPath else "/$subPath"
+                                "${edgeBase.trimEnd('/')}$cleanSubPath"
                             }
-                            subtitleCallback.invoke(
-                                SubtitleFile(
-                                    lang = "Subtitle",
-                                    url = fullSubUrl
-                                )
+                            val vttSubUrl = if (fullSubUrl.endsWith(".vtt", ignoreCase = true) || fullSubUrl.endsWith(".srt", ignoreCase = true)) {
+                                fullSubUrl
+                            } else {
+                                "$fullSubUrl#.vtt"
+                            }
+                            allSubtitles["subtitle"] = SubtitleFile(
+                                lang = "Subtitle",
+                                url = vttSubUrl
                             )
                         }
+                    }
+                    
+                    // Invoke callback for all collected subtitles (both HTML pre-rendered and API live)
+                    allSubtitles.values.forEach {
+                        subtitleCallback.invoke(it)
                     }
                     return true
                 }
