@@ -85,6 +85,8 @@ class DracinAioV2Provider : MainAPI() {
 
     private val tabSectionsCache = java.util.concurrent.ConcurrentHashMap<String, List<HomePageList>>()
     private val seenTitlesHistory = java.util.concurrent.ConcurrentHashMap<String, MutableSet<String>>()
+    private val providerParsedItems = java.util.concurrent.ConcurrentHashMap<String, ArrayList<SearchResponse>>()
+    private val providerServerPages = java.util.concurrent.ConcurrentHashMap<String, Int>()
 
     private fun parseSections(res: String, providerCode: String): List<HomePageList> {
         val lists = ArrayList<HomePageList>()
@@ -179,8 +181,11 @@ class DracinAioV2Provider : MainAPI() {
         val seen = seenTitlesHistory.getOrPut(providerCode) {
             java.util.Collections.synchronizedSet(HashSet<String>())
         }
+        
         if (page == 1) {
             seen.clear()
+            providerParsedItems[providerCode] = ArrayList()
+            providerServerPages[providerCode] = 1
         }
         
         var page1Res = ""
@@ -219,15 +224,18 @@ class DracinAioV2Provider : MainAPI() {
             e.printStackTrace()
         }
         
-        val items = ArrayList<SearchResponse>()
-        var gotAnyItems = false
-        var currentPage = page
+        val parsedList = providerParsedItems.getOrPut(providerCode) { ArrayList() }
+        var serverPage = providerServerPages.getOrPut(providerCode) { 1 }
         
-        while (true) {
-            val pageRes = if (currentPage == 1) {
+        val chunkSize = 9
+        val targetStart = (page - 1) * chunkSize
+        val targetEnd = page * chunkSize
+        
+        while (parsedList.size < targetEnd && serverPage <= 30) {
+            val pageRes = if (serverPage == 1) {
                 page1Res
             } else {
-                fetchProviderPagePCombined(providerCode, tabKeys, currentPage)
+                fetchProviderPagePCombined(providerCode, tabKeys, serverPage)
             }
             
             if (pageRes.isEmpty()) {
@@ -252,7 +260,7 @@ class DracinAioV2Provider : MainAPI() {
                                 
                                 if (seen.add(title)) {
                                     val maskedUrl = if (watchUrl.contains("lynk.id")) watchUrl else "https://lynk.id/xr3ed#$watchUrl"
-                                    items.add(newTvSeriesSearchResponse(title, maskedUrl) {
+                                    parsedList.add(newTvSeriesSearchResponse(title, maskedUrl) {
                                         this.posterUrl = if (poster.startsWith("/")) "$mainUrl$poster" else poster
                                     })
                                 }
@@ -264,23 +272,27 @@ class DracinAioV2Provider : MainAPI() {
                 e.printStackTrace()
             }
             
-            if (pageGotItems) {
-                gotAnyItems = true
-            }
-            
-            // If we found some items, or if we reached safety limit, stop looping.
-            if (items.isNotEmpty() || currentPage >= 30) {
+            if (!pageGotItems) {
                 break
             }
             
-            currentPage++
+            serverPage++
+            providerServerPages[providerCode] = serverPage
         }
         
-        val homePageList = HomePageList(request.name, items)
-        val hasNextPage = gotAnyItems
+        val chunkItems = ArrayList<SearchResponse>()
+        if (targetStart < parsedList.size) {
+            val endIdx = minOf(targetEnd, parsedList.size)
+            for (i in targetStart until endIdx) {
+                chunkItems.add(parsedList[i])
+            }
+        }
         
-        val titlesList = items.map { it.name }
-        android.util.Log.d("DracinAioV2", "getMainPage Option A return - items size: ${items.size}, titles: $titlesList, hasNextPage: $hasNextPage")
+        val homePageList = HomePageList(request.name, chunkItems)
+        val hasNextPage = (parsedList.size > targetEnd) || (serverPage <= 30)
+        
+        val titlesList = chunkItems.map { it.name }
+        android.util.Log.d("DracinAioV2", "getMainPage Option A return - items size: ${chunkItems.size}, total parsed size: ${parsedList.size}, titles: $titlesList, hasNextPage: $hasNextPage")
         return newHomePageResponse(listOf(homePageList), hasNext = hasNextPage)
     }
 
