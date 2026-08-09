@@ -25,7 +25,7 @@
                 android:layout_rowWeight="1"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="5dp"
-                android:text="My Homepage Settings"
+                android:text="Pengaturan Beranda Saya"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -34,13 +34,18 @@
                 android:layout_height="wrap_content"
                 android:gravity="right">
 
-                <ImageView
+                <TextView
                     android:id="@+id/save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="5dp"
-                    android:padding="5dp"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="8dp"
+                    android:text="Simpan"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
                     android:focusable="true"
                     android:nextFocusDown="@id/config_img"
                     android:nextFocusUp="@id/save" />
@@ -69,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_rowWeight="1"
-                android:text="Configure Extension Sections"
+                android:text="Pilih Kategori Beranda"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -101,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_rowWeight="1"
-                android:text="Reorder Sections"
+                android:text="Atur Urutan Kategori"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -116,8 +121,113 @@
                     android:layout_height="wrap_content"
                     android:padding="5dp"
                     android:focusable="true"
-                    android:nextFocusDown="@id/delete_img"
+                    android:nextFocusDown="@id/ext_name_on_home_toggle"
                     android:nextFocusUp="@id/config_img" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Switch Row -->
+        <Switch
+            android:id="@+id/ext_name_on_home_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:text="Tampilkan nama sumber/aplikasi di beranda"
+            android:focusable="true"
+            android:nextFocusUp="@id/reorder_img"
+            android:nextFocusDown="@id/export_btn"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:text="Menampilkan nama ekstensi/provider di depan nama kategori agar Anda tahu video tersebut berasal dari mana." />
+
+        <ImageView
+            android:src="@android:drawable/divider_horizontal_dark"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:text="Ekspor Pengaturan"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right">
+
+                <TextView
+                    android:id="@+id/export_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:focusable="true"
+                    android:text="Ekspor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:nextFocusUp="@id/ext_name_on_home_toggle"
+                    android:nextFocusDown="@id/import_btn" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_rowWeight="1"
+                android:text="Impor Pengaturan"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right">
+
+                <TextView
+                    android:id="@+id/import_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:focusable="true"
+                    android:text="Impor"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:nextFocusUp="@id/export_btn"
+                    android:nextFocusDown="@id/delete_img" />
 
             </LinearLayout>
 
@@ -143,7 +253,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_rowWeight="1"
-                android:text="Reset Settings"
+                android:text="Hapus Semua Pilihan"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -162,7 +272,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:nextFocusDown="@id/save"
-                    android:nextFocusUp="@id/reorder_img" />
+                    android:nextFocusUp="@id/import_btn" />
 
             </LinearLayout>
 

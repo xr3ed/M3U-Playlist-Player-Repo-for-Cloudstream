@@ -20,7 +20,7 @@ object MyHomepageStorageManager {
     }
 
     fun setExtNameOnHome(context: Context, value: Boolean) {
-        getPrefs(context).edit().putBoolean("EXT_NAME_ON_HOME", value).apply()
+        getPrefs(context).edit().putBoolean("EXT_NAME_ON_HOME", value).commit()
     }
 
     fun getCurrentExtensions(context: Context): Array<ExtensionInfo> {
@@ -35,17 +35,19 @@ object MyHomepageStorageManager {
 
     fun setCurrentExtensions(context: Context, value: Array<ExtensionInfo>) {
         val json = mapper.writeValueAsString(value)
-        getPrefs(context).edit().putString("EXTENSIONS_LIST", json).apply()
+        getPrefs(context).edit().putString("EXTENSIONS_LIST", json).commit()
     }
 
     fun deleteAllData(context: Context) {
-        getPrefs(context).edit().clear().apply()
+        getPrefs(context).edit().clear().commit()
     }
 
     fun fetchExtensions(context: Context): Array<ExtensionInfo> {
         val providers = MyHomepageUtils.getAllProviders()
         val cachedExtensions = getCurrentExtensions(context)
-        val filtered = providers.filter { it.name != "My Homepage" && !it.name.contains("Ultima") }
+        val filtered = providers.filter {
+            !it.javaClass.simpleName.contains("MyHomepage") && !it.name.contains("Ultima")
+        }
 
         return filtered.map { provider ->
             val existing = cachedExtensions.find { it.name == provider.name }
@@ -61,5 +63,42 @@ object MyHomepageStorageManager {
                 }.toTypedArray()
             )
         }.toTypedArray()
+    }
+
+    fun exportSettings(context: Context): String {
+        val extNameOnHome = getExtNameOnHome(context)
+        val extensionsList = getPrefs(context).getString("EXTENSIONS_LIST", "") ?: ""
+
+        val json = org.json.JSONObject().apply {
+            put("extNameOnHome", extNameOnHome)
+            put("extensionsList", extensionsList)
+        }
+        return android.util.Base64.encodeToString(
+            json.toString().toByteArray(Charsets.UTF_8),
+            android.util.Base64.NO_WRAP or android.util.Base64.NO_PADDING
+        )
+    }
+
+    fun importSettings(context: Context, base64: String): Boolean {
+        return try {
+            val decodedBytes = android.util.Base64.decode(base64, android.util.Base64.DEFAULT)
+            val jsonStr = String(decodedBytes, Charsets.UTF_8)
+            val json = org.json.JSONObject(jsonStr)
+
+            val extNameOnHome = json.optBoolean("extNameOnHome", true)
+            val extensionsList = json.optString("extensionsList", "")
+
+            val editor = getPrefs(context).edit()
+            editor.putBoolean("EXT_NAME_ON_HOME", extNameOnHome)
+            if (extensionsList.isNotEmpty()) {
+                editor.putString("EXTENSIONS_LIST", extensionsList)
+            } else {
+                editor.remove("EXTENSIONS_LIST")
+            }
+            editor.commit()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

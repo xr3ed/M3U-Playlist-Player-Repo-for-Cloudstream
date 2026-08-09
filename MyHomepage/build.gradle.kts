@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 android {
     buildFeatures {
@@ -17,6 +17,7 @@ cloudstream {
     tvTypes = listOf(
         "Movie", "TvSeries", "Anime"
     )
+    requiresResources = true
 }
 
 dependencies {

@@ -62,9 +62,8 @@ class MyHomepageReorder(val plugin: MyHomepagePlugin) : BottomSheetDialogFragmen
     ): View {
         val root = getLayout("reorder", inflater, container)
 
-        val saveBtn = root.findView<ImageView>("save")
-        saveBtn.setImageDrawable(getDrawable("save_icon"))
-        saveBtn.makeTvCompatible()
+        val saveBtn = root.findView<TextView>("save")
+        saveBtn.background = getDrawable("green_button")
         saveBtn.setOnClickListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
@@ -125,7 +124,7 @@ class MyHomepageReorder(val plugin: MyHomepagePlugin) : BottomSheetDialogFragmen
                 when (selectedSection) {
                     null -> {
                         selectedSection = section
-                        showToast("Dipilih! Ketuk target.")
+                        showToast("Terpilih! Ketuk posisi target.")
                         updateSectionList(
                             sectionsListView,
                             inflater,
@@ -171,7 +170,7 @@ class MyHomepageReorder(val plugin: MyHomepagePlugin) : BottomSheetDialogFragmen
                             noSectionWarning,
                             sectionsMutable
                         )
-                        showToast("Seksi dipindahkan ke posisi ${targetIndex + 1}")
+                        showToast("Kategori dipindahkan ke posisi ${targetIndex + 1}")
                     }
                 }
 
@@ -252,7 +251,7 @@ class MyHomepageReorder(val plugin: MyHomepagePlugin) : BottomSheetDialogFragmen
     override fun onDetach() {
         super.onDetach()
         MyHomepageSettings(plugin).show(
-            activity?.supportFragmentManager ?: throw Exception("Unable to open configure settings"),
+            activity?.supportFragmentManager ?: throw Exception("Gagal membuka pengaturan"),
             ""
         )
     }

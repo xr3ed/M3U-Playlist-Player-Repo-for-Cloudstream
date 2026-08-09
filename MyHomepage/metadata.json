@@ -3,6 +3,6 @@
   "displayName": "My Homepage",
   "description": "Beranda Kustom Tanpa Sync",
   "author": "xr3ed",
-  "version": 1,
+  "version": 2,
   "tvTypes": ["Movie", "TvSeries", "Anime"]
 }

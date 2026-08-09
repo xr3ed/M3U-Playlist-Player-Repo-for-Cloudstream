@@ -59,22 +59,13 @@ class MyHomepageConfigureExtensions(val plugin: MyHomepagePlugin) : BottomSheetD
         val settings = getLayout("configure_extensions", inflater, container)
 
         // Save button
-        val saveBtn = settings.findView<ImageView>("save")
-        saveBtn.setImageDrawable(getDrawable("save_icon"))
-        saveBtn.makeTvCompatible()
+        val saveBtn = settings.findView<TextView>("save")
+        saveBtn.background = getDrawable("green_button")
         saveBtn.setOnClickListener {
             sm.setCurrentExtensions(requireContext(), extensions)
             plugin.reload()
             showToast("Disimpan")
             dismiss()
-        }
-
-        // Toggle switch
-        val extNameOnHomeBtn = settings.findView<Switch>("ext_name_on_home_toggle")
-        extNameOnHomeBtn.makeTvCompatible()
-        extNameOnHomeBtn.isChecked = sm.getExtNameOnHome(requireContext())
-        extNameOnHomeBtn.setOnCheckedChangeListener { _, isChecked ->
-            sm.setExtNameOnHome(requireContext(), isChecked)
         }
 
         // Extensions list
@@ -139,7 +130,7 @@ class MyHomepageConfigureExtensions(val plugin: MyHomepagePlugin) : BottomSheetD
     override fun onDetach() {
         val settings = MyHomepageSettings(plugin)
         settings.show(
-            activity?.supportFragmentManager ?: throw Exception("Unable to open configure settings"),
+            activity?.supportFragmentManager ?: throw Exception("Gagal membuka pengaturan"),
             ""
         )
         super.onDetach()

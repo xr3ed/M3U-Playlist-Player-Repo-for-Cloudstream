@@ -25,7 +25,7 @@
                 android:layout_rowWeight="1"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="5dp"
-                android:text="Configure Extension Sections"
+                android:text="Pilih Kategori Beranda"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -34,13 +34,19 @@
                 android:layout_height="wrap_content"
                 android:gravity="right">
 
-                <ImageView
+                <TextView
                     android:id="@+id/save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="5dp"
-                    android:padding="5dp" />
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="8dp"
+                    android:text="Simpan"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:focusable="true" />
 
             </LinearLayout>
 
@@ -50,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:text="set priority next to section (higher number to stay on top)" />
+            android:text="Centang kategori yang ingin ditampilkan di beranda" />
 
         <ImageView
             android:src="@android:drawable/divider_horizontal_dark"
@@ -61,15 +67,6 @@
             android:paddingRight="2dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp" />
-
-        <Switch
-            android:id="@+id/ext_name_on_home_toggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:padding="5dp"
-            android:text="Include extension name on home screen"
-            android:focusable="true" />
 
         <LinearLayout
             android:id="@+id/extensions_list"

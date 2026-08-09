@@ -23,9 +23,9 @@ import com.xr3ed.MyHomepageUtils.SectionInfo
 import com.lagradost.cloudstream3.CloudStreamApp
 
 class MyHomepage(val plugin: MyHomepagePlugin) : MainAPI() {
-    override var name = "My Homepage"
+    override var name = "🏠 My Homepage"
     override var supportedTypes = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
-    override var lang = "id"
+    override var lang = "home"
     override val hasMainPage = true
     override val hasQuickSearch = true
 
