@@ -33,7 +33,7 @@ class DracinAioV2Provider : MainAPI() {
         }
     }
 
-    override var name = "#Dracin All in One [Backup]"
+    override var name = "#Dracin All in One v.2"
     override var mainUrl = BASE_URL
     override var lang = "id"
     override var supportedTypes = setOf(TvType.TvSeries)
