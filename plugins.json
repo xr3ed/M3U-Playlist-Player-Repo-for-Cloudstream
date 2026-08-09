@@ -45,10 +45,10 @@
         "name": "AnimeSailXR"
     },
     {
-        "fileHash": "sha256-b11476d2734e3c8f90d251538dfd5428eb30489af35843b6e8644e01aecf4f06",
+        "fileHash": "sha256-286c672eb4370ba42e781de37ed2e1f10c3053e116057a0ba54e1ac084d49e61",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 83819,
+        "fileSize": 84635,
         "status": 1,
         "language": "id",
         "authors": [
@@ -57,7 +57,7 @@
         "tvTypes": [
             "TvSeries"
         ],
-        "version": 26,
+        "version": 27,
         "internalName": "DracinAIO",
         "description": "Ekstensi Cloudstream untuk menonton drama pendek dari berbagai provider",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAIO.cs3",

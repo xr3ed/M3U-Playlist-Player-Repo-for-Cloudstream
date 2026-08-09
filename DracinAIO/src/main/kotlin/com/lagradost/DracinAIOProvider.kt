@@ -582,42 +582,71 @@ class DracinAIOProvider : MainAPI() {
             return newHomePageResponse(homePageLists, hasNext = false)
         } else if (filterData.startsWith("global|")) {
             val type = filterData.substringAfter("global|")
-            val term = when (type) {
-                "top10" -> "Top 10 Drama China"
-                "trending" -> "Paling Dicari"
-                else -> "Terbaru Hari Ini"
-            }
-
-            val responseText = httpGet(mainUrl)
-            val list = ArrayList<SearchResponse>()
-            if (responseText.isNotEmpty()) {
-                val startIndex = responseText.indexOf(term)
-                if (startIndex != -1) {
-                    val block = responseText.substring(startIndex, kotlin.math.min(startIndex + 25000, responseText.length))
-                    val anchorRegex = """<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>""".toRegex(RegexOption.DOT_MATCHES_ALL)
-                    val matches = anchorRegex.findAll(block)
-                    for (m in matches) {
-                        val href = m.groupValues[1]
-                        val inner = m.groupValues[2]
-                        val watchPart = href.substringAfter("/watch/")
-                        val providerCode = watchPart.substringBefore("/")
-                        val id = if (watchPart.contains("--")) watchPart.substringAfter("--") else watchPart.substringAfterLast("/")
-                        if (providerCode.isEmpty() || id.isEmpty()) continue
-                        val srcRegex = """src="([^"]+)"""".toRegex()
-                        val altRegex = """alt="([^"]+)"""".toRegex()
-                        val src = srcRegex.find(inner)?.groupValues?.get(1) ?: ""
-                        val alt = altRegex.find(inner)?.groupValues?.get(1) ?: ""
-                        val coverUrl = getDirectImageUrl(src)
-                        list.add(
-                            newMovieSearchResponse(alt, buildDetailUrl(providerCode, id, alt, src), TvType.TvSeries) {
-                                this.posterUrl = coverUrl
+            
+            val list = withContext(Dispatchers.IO) {
+                val codesToFetch = when (type) {
+                    "top10", "trending" -> listOf("dotdrama", "melolo")
+                    else -> listOf("dramabox", "shortmax")
+                }
+                
+                val deferredLists = providers.filter { codesToFetch.contains(it.code) }.map { prov ->
+                    async {
+                        try {
+                            val action = when (prov.code) {
+                                "dotdrama" -> "list"
+                                else -> "rank"
                             }
-                        )
+                            val url = "$API_URL/${prov.code}?action=$action"
+                            val responseText = httpGet(url)
+                            val rawItems = parseRankItems(responseText)
+                            
+                            val searchResponses = rawItems.take(24).map {
+                                val coverUrl = getDirectImageUrl(it.cover)
+                                newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
+                                    this.posterUrl = coverUrl
+                                }
+                            }
+                            searchResponses
+                        } catch (e: Exception) {
+                            emptyList<SearchResponse>()
+                        }
                     }
                 }
+                
+                val results = deferredLists.awaitAll()
+                val list1 = results.getOrNull(0) ?: emptyList()
+                val list2 = results.getOrNull(1) ?: emptyList()
+                
+                val combined = ArrayList<SearchResponse>()
+                
+                if (type == "top10") {
+                    val maxLen = kotlin.math.max(list1.size, list2.size)
+                    for (i in 0 until maxLen) {
+                        if (i < list1.size && combined.size < 10) combined.add(list1[i])
+                        if (i < list2.size && combined.size < 10) combined.add(list2[i])
+                    }
+                } else if (type == "trending") {
+                    val temp = ArrayList<SearchResponse>()
+                    val maxLen = kotlin.math.max(list1.size, list2.size)
+                    for (i in 0 until maxLen) {
+                        if (i < list1.size) temp.add(list1[i])
+                        if (i < list2.size) temp.add(list2[i])
+                    }
+                    if (temp.size > 10) {
+                        val endIdx = kotlin.math.min(22, temp.size)
+                        combined.addAll(temp.subList(10, endIdx))
+                    }
+                } else {
+                    val maxLen = kotlin.math.max(list1.size, list2.size)
+                    for (i in 0 until maxLen) {
+                        if (i < list1.size && combined.size < 12) combined.add(list1[i])
+                        if (i < list2.size && combined.size < 12) combined.add(list2[i])
+                    }
+                }
+                combined
             }
 
-            val pageSize = 9
+            val pageSize = 24
             val start = (page - 1) * pageSize
             if (start >= list.size) return newHomePageResponse(request, emptyList(), hasNext = false)
             val end = kotlin.math.min(start + pageSize, list.size)
