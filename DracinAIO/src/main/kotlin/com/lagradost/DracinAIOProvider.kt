@@ -33,6 +33,7 @@ import kotlin.concurrent.thread
 
 class DracinAIOProvider : MainAPI() {
     companion object {
+        private val networkSemaphore = java.util.concurrent.Semaphore(3)
         var appContext: Context? = null
         private val BASE_URL = String(Base64.decode(BuildConfig.DRACINAIO_URL, Base64.DEFAULT), Charsets.UTF_8)
         private val API_URL = "$BASE_URL/api"
@@ -292,6 +293,7 @@ class DracinAIOProvider : MainAPI() {
             }
         }
 
+        networkSemaphore.acquire()
         val result = try {
             val reqHeaders = getHeaders()
             val req = Request.Builder()
@@ -321,6 +323,8 @@ class DracinAIOProvider : MainAPI() {
         } catch (e: Exception) {
             e.printStackTrace()
             ""
+        } finally {
+            networkSemaphore.release()
         }
 
         if (result.isNotEmpty() && !result.contains("502 Bad Gateway") && !result.contains("Unauthorized")) {
@@ -488,7 +492,7 @@ class DracinAIOProvider : MainAPI() {
                             val rawItems = parseRankItems(responseText)
                             
                             val lists = ArrayList<HomePageList>()
-                            val pageItems = rawItems.take(24)
+                            val pageItems = rawItems.take(6)
                             val searchResponses = pageItems.map {
                                 val coverUrl = getDirectImageUrl(it.cover)
                                 newMovieSearchResponse(it.title, buildDetailUrl(prov.code, it.id, it.title, it.cover), TvType.TvSeries) {
@@ -610,7 +614,7 @@ class DracinAIOProvider : MainAPI() {
                 }
             }
 
-            val pageSize = 24
+            val pageSize = 9
             val start = (page - 1) * pageSize
             if (start >= list.size) return newHomePageResponse(request, emptyList(), hasNext = false)
             val end = kotlin.math.min(start + pageSize, list.size)
@@ -638,7 +642,7 @@ class DracinAIOProvider : MainAPI() {
                 rawItems.filter { !isDubOrIndo(it.title) }
             }
 
-            val pageSize = 24
+            val pageSize = 9
             val start = (page - 1) * pageSize
             if (start >= filteredItems.size) return newHomePageResponse(request, emptyList(), hasNext = false)
             val end = kotlin.math.min(start + pageSize, filteredItems.size)
