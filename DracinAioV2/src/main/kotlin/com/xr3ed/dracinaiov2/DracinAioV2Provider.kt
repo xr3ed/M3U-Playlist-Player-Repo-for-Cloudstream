@@ -21,6 +21,7 @@ import com.lagradost.cloudstream3.HomePageList
 
 class DracinAioV2Provider : MainAPI() {
     companion object {
+        val networkSemaphore = java.util.concurrent.Semaphore(3)
         var appContext: Context? = null
         val BASE_URL = BuildConfig.DRACINAIO_V2_URL
         val customClient by lazy {
@@ -130,11 +131,14 @@ class DracinAioV2Provider : MainAPI() {
             .header("User-Agent", "okhttp/4.9.1")
             .header("X-Requested-With", "XMLHttpRequest")
             .build()
+        networkSemaphore.acquire()
         return try {
             customClient.newCall(httpRequest).execute().body?.string() ?: ""
         } catch (e: Exception) {
             e.printStackTrace()
             ""
+        } finally {
+            networkSemaphore.release()
         }
     }
 
@@ -150,6 +154,7 @@ class DracinAioV2Provider : MainAPI() {
             .header("User-Agent", "okhttp/4.9.1")
             .header("X-Requested-With", "XMLHttpRequest")
             .build()
+        networkSemaphore.acquire()
         return try {
             val response = customClient.newCall(httpRequest).execute()
             val code = response.code
@@ -159,6 +164,8 @@ class DracinAioV2Provider : MainAPI() {
         } catch (e: Exception) {
             e.printStackTrace()
             ""
+        } finally {
+            networkSemaphore.release()
         }
     }
 
