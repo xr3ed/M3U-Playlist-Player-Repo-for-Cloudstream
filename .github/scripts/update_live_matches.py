@@ -204,26 +204,6 @@ def fetch_all_matches_from_api(api_host):
             print(f"  [sport={sport_type}] Error: {e}")
     return all_matches
 
-def find_devtools_script(urls):
-    for url in urls:
-        try:
-            resp = requests.get(url, timeout=6, headers={"User-Agent": RBTV_USER_AGENT})
-            if resp.status_code == 200:
-                scripts = re.findall(r'src="([^"]+/statics/[a-f0-9]+\.js)"', resp.text)
-                for script in reversed(scripts):
-                    full_url = urljoin(url, script)
-                    try:
-                        r = requests.get(full_url, timeout=3, headers={"User-Agent": RBTV_USER_AGENT})
-                        if r.status_code == 200 and "about:blank" in r.text:
-                            filename = script.split("/")[-1]
-                            print(f"  Ditemukan devtools-detector script: {filename}")
-                            return filename
-                    except:
-                        pass
-        except:
-            pass
-    return "b4a82d59613.js"
-
 # =========================================================
 # BAGIAN 2: Playwright DOM Scraping
 # =========================================================
@@ -246,9 +226,6 @@ async def get_visible_match_ids_via_playwright(entry_url):
     for m in mirrors:
         if m not in test_urls:
             test_urls.append(m)
-
-    # Deteksi secara dinamis nama file devtools-detector
-    devtools_filename = find_devtools_script(test_urls)
 
     STEALTH_JS = """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
@@ -281,14 +258,25 @@ async def get_visible_match_ids_via_playwright(entry_url):
             await context.add_init_script(STEALTH_JS)
             page = await context.new_page()
 
-            # Blokir devtools detector script agar tidak meredirect ke about:blank
+            # Blokir devtools detector script secara dinamis agar tidak meredirect ke about:blank
             async def handle_route(route, request):
-                if devtools_filename in request.url:
-                    print(f"  [Playwright] Memblokir DevTools Detector: {request.url}")
-                    await route.abort()
+                url = request.url
+                if "statics" in url and url.endswith(".js"):
+                    try:
+                        # Ambil respon dari jaringan terlebih dahulu untuk diperiksa
+                        response = await route.fetch()
+                        body = await response.text()
+                        if "about:blank" in body:
+                            print(f"  [Playwright] Memblokir DevTools Detector (mengandung about:blank): {url}")
+                            await route.abort()
+                        else:
+                            await route.fulfill(response=response)
+                    except Exception as e:
+                        print(f"  Error fetching script {url}: {e}")
+                        await route.continue_()
                 else:
                     await route.continue_()
-            await page.route("**/*", handle_route)
+            await page.route("**/*.js", handle_route)
 
             def handle_request(request):
                 url = request.url
