@@ -52,3 +52,5 @@ node_modules/
 /MovieBoXR/
 # Ignore DracinAioV2 source code
 /DracinAioV2/
+# Ignore DubIndoXR source code
+/DubIndoXR/
