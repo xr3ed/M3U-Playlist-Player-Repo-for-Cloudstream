@@ -16,6 +16,7 @@ import hashlib
 import requests
 from datetime import datetime, timezone, timedelta
 from playwright.async_api import async_playwright
+from urllib.parse import urljoin
 
 WIB = timezone(timedelta(hours=7))
 GIST_ID = os.environ.get("GIST_ID")
@@ -28,6 +29,8 @@ RBTV_REFERER = RBTV_SITE_URL.replace("/id/", "") + "/" if RBTV_SITE_URL else ""
 RBTV_PATH_BS = os.environ.get("RBTV_PATH_BS", "")
 RBTV_PATH_LIVE = os.environ.get("RBTV_PATH_LIVE", "")
 RBTV_USER_AGENT = os.environ.get("RBTV_USER_AGENT", "")
+if not RBTV_USER_AGENT:
+    RBTV_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 # =========================================================
 # BAGIAN 1: Protobuf helpers & API calls (Pure Python)
@@ -201,6 +204,26 @@ def fetch_all_matches_from_api(api_host):
             print(f"  [sport={sport_type}] Error: {e}")
     return all_matches
 
+def find_devtools_script(urls):
+    for url in urls:
+        try:
+            resp = requests.get(url, timeout=6, headers={"User-Agent": RBTV_USER_AGENT})
+            if resp.status_code == 200:
+                scripts = re.findall(r'src="([^"]+/statics/[a-f0-9]+\.js)"', resp.text)
+                for script in reversed(scripts):
+                    full_url = urljoin(url, script)
+                    try:
+                        r = requests.get(full_url, timeout=3, headers={"User-Agent": RBTV_USER_AGENT})
+                        if r.status_code == 200 and "about:blank" in r.text:
+                            filename = script.split("/")[-1]
+                            print(f"  Ditemukan devtools-detector script: {filename}")
+                            return filename
+                    except:
+                        pass
+        except:
+            pass
+    return "b4a82d59613.js"
+
 # =========================================================
 # BAGIAN 2: Playwright DOM Scraping
 # =========================================================
@@ -223,6 +246,9 @@ async def get_visible_match_ids_via_playwright(entry_url):
     for m in mirrors:
         if m not in test_urls:
             test_urls.append(m)
+
+    # Deteksi secara dinamis nama file devtools-detector
+    devtools_filename = find_devtools_script(test_urls)
 
     STEALTH_JS = """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
@@ -253,6 +279,15 @@ async def get_visible_match_ids_via_playwright(entry_url):
             )
             await context.add_init_script(STEALTH_JS)
             page = await context.new_page()
+
+            # Blokir devtools detector script agar tidak meredirect ke about:blank
+            async def handle_route(route, request):
+                if devtools_filename in request.url:
+                    print(f"  [Playwright] Memblokir DevTools Detector: {request.url}")
+                    await route.abort()
+                else:
+                    await route.continue_()
+            await page.route("**/*", handle_route)
 
             def handle_request(request):
                 url = request.url
