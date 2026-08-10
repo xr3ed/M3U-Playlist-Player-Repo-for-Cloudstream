@@ -83,20 +83,31 @@ class RBTVPlusProvider : MainAPI() {
         private val urlMutex = Mutex()
 
         private fun downloadBitmap(url: String): android.graphics.Bitmap? {
+            android.util.Log.d("RBTVPlusLogo", "Downloading logo: $url")
             return try {
+                val refererUrl = resolvedMainUrl ?: BuildConfig.RBTV_MAIN_URL
                 val request = okhttp3.Request.Builder()
                     .url(url)
                     .header("User-Agent", BuildConfig.RBTV_USER_AGENT)
+                    .header("Referer", "$refererUrl/")
                     .build()
                 cleanClient.newCall(request).execute().use { response ->
+                    android.util.Log.d("RBTVPlusLogo", "Logo response code: ${response.code} for $url")
                     if (response.isSuccessful) {
                         val bytes = response.body?.bytes()
                         if (bytes != null) {
                             android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        } else null
-                    } else null
+                        } else {
+                            android.util.Log.d("RBTVPlusLogo", "Bytes null for $url")
+                            null
+                        }
+                    } else {
+                        android.util.Log.d("RBTVPlusLogo", "Response not successful for $url")
+                        null
+                    }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("RBTVPlusLogo", "Error downloading $url", e)
                 null
             }
         }
@@ -394,7 +405,7 @@ class RBTVPlusProvider : MainAPI() {
                     }
                     canvas.save()
                     canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, paint)
+                    canvas.drawBitmap(logoBmp, null, destRect, null)
                     canvas.restore()
                     team1TextLeft = 155f
                 } else {
@@ -487,7 +498,7 @@ class RBTVPlusProvider : MainAPI() {
                     }
                     canvas.save()
                     canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, paint)
+                    canvas.drawBitmap(logoBmp, null, destRect, null)
                     canvas.restore()
                     team2TextLeft = 155f
                 } else {
@@ -816,11 +827,29 @@ class RBTVPlusProvider : MainAPI() {
     )
 
     private fun getFullLogoUrl(logo: String, apiHost: String): String {
+        val activeLogoHost = try {
+            val apiHostUri = java.net.URI(apiHost)
+            val apiHostHost = apiHostUri.host ?: ""
+            if (apiHostHost.startsWith("apis-data")) {
+                val base = apiHostHost.substringAfter(".")
+                "https://logos1.$base"
+            } else {
+                "https://logos1.tcdru136ovur.ru"
+            }
+        } catch (e: Exception) {
+            "https://logos1.tcdru136ovur.ru"
+        }
+
+        val domain = mainUrl.ifEmpty { "https://www.rbtvplus.com" }
         return when {
+            logo.contains("/aelogo/") -> {
+                val path = logo.substringAfter("/aelogo/")
+                "$activeLogoHost/aelogo/$path"
+            }
             logo.startsWith("http") -> logo
             logo.startsWith("//") -> "https:$logo"
-            logo.startsWith("/") -> "https://www.rbtvplus.com$logo"
-            else -> "https://www.rbtvplus.com/$logo"
+            logo.startsWith("/") -> "${domain}${logo}"
+            else -> "${domain}/${logo}"
         }
     }
 
@@ -1083,6 +1112,22 @@ class RBTVPlusProvider : MainAPI() {
         }
     }
 
+    private fun getSportMaxDurationMs(sportType: Int): Long {
+        return when (sportType) {
+            1 -> 130 * 60 * 1000L       // Sepak Bola: 2 jam 10 menit
+            2 -> 160 * 60 * 1000L       // Basket: 2 jam 40 menit
+            3 -> 300 * 60 * 1000L       // Tenis: 5 jam
+            4 -> 240 * 60 * 1000L       // Bisbol: 4 jam
+            6 -> 480 * 60 * 1000L       // Kriket: 8 jam
+            7 -> 210 * 60 * 1000L       // Motorsport: 3,5 jam
+            8 -> 120 * 60 * 1000L       // Rugby: 2 jam
+            12, 13 -> 180 * 60 * 1000L  // Bulutangkis, Voli: 3 jam
+            14 -> 360 * 60 * 1000L      // Fighting: 6 jam
+            90 -> 480 * 60 * 1000L      // Golf: 8 jam
+            else -> 180 * 60 * 1000L    // Default: 3 jam
+        }
+    }
+
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
@@ -1111,7 +1156,7 @@ class RBTVPlusProvider : MainAPI() {
             if (gistLiveIds != null && m.matchId in gistLiveIds) return@filter true
 
             // Fallback waktu: tampilkan jika waktu mulai sudah lewat >= 10 menit (untuk antisipasi Gist telat update)
-            m.matchTime > 0L && now >= (m.matchTime + 10 * 60 * 1000)
+            m.matchTime > 0L && now >= (m.matchTime + 10 * 60 * 1000) && now <= (m.matchTime + getSportMaxDurationMs(m.sportType))
         }
 
         val homePages = ArrayList<HomePageList>()

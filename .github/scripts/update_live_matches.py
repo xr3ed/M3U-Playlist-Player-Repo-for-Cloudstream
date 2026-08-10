@@ -208,16 +208,30 @@ async def get_visible_match_ids_via_playwright(entry_url):
     """
     Buka website RBTV+ dengan Playwright + stealth settings,
     ekstrak matchId yang benar-benar tampil di halaman Live.
+    Coba beberapa domain fallback jika domain utama gagal/time out.
     """
     visible_ids = set()
     captured_api_host = [None]
-    resolved_active_domain = entry_url
+    resolved_active_domain = None
+    
+    test_urls = []
+    if entry_url:
+        test_urls.append(entry_url)
+    
+    # Alternatif domain cermin yang aktif
+    mirrors = ["https://www.rbtvplus18.top/id/", "https://www.fctv33hd.ink/id/"]
+    for m in mirrors:
+        if m not in test_urls:
+            test_urls.append(m)
+
     STEALTH_JS = """
         Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
         Object.defineProperty(navigator, 'plugins', {get: () => [1,2,3]});
         Object.defineProperty(navigator, 'languages', {get: () => ['id-ID','id','en']});
         window.chrome = {runtime: {}};
     """
+    
+    success = False
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(
@@ -237,7 +251,6 @@ async def get_visible_match_ids_via_playwright(entry_url):
                 java_script_enabled=True,
                 ignore_https_errors=True
             )
-            # Inject stealth script sebelum halaman dimuat
             await context.add_init_script(STEALTH_JS)
             page = await context.new_page()
 
@@ -250,84 +263,123 @@ async def get_visible_match_ids_via_playwright(entry_url):
 
             page.on("request", handle_request)
 
-            print(f"Membuka RBTV+ website: {entry_url} ...")
-            try:
-                 await page.goto(entry_url,
-                               wait_until='domcontentloaded', timeout=30000)
-                 print("Halaman dimuat, menunggu konten...")
-                 await asyncio.sleep(8)
-                 # Deteksi active domain dari URL akhir pasca redirect browser
-                 final_url = page.url
-                 m = re.match(r"(https?://[^/]+)", final_url)
-                 if m:
-                     resolved_active_domain = m.group(1) + "/id/"
-                     print(f"  Final active domain resolved: {resolved_active_domain}")
-            except Exception as e:
-                 print(f"Timeout/Error saat goto: {e}")
+            for url in test_urls:
+                print(f"Membuka RBTV+ website: {url} ...")
+                try:
+                    await page.goto(url, wait_until='domcontentloaded', timeout=15000)
+                    print("Halaman dimuat, menunggu konten...")
+                    await asyncio.sleep(8)
+                    
+                    title = await page.title()
+                    if "403" in title or "Access Denied" in title or "Cloudflare" in title:
+                        print(f"  Domain {url} terdeteksi terblokir Cloudflare (Title: {title})")
+                        continue
 
-            # Coba scroll untuk trigger lazy loading
-            await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
-            await asyncio.sleep(3)
-            await page.evaluate("window.scrollTo(0, 0)")
-            await asyncio.sleep(2)
+                    final_url = page.url
+                    m = re.match(r"(https?://[^/]+)", final_url)
+                    if m:
+                        resolved_active_domain = m.group(1) + "/id/"
+                        print(f"  Final active domain resolved: {resolved_active_domain}")
+                    
+                    success = True
+                    break
+                except Exception as e:
+                    print(f"Timeout/Error saat membuka {url}: {e}")
 
-            # Ekstrak semua href yang mengandung matchId
-            try:
-                hrefs = await page.evaluate("""
-                    () => {
-                        const result = [];
-                        document.querySelectorAll('a').forEach(a => {
-                            const href = a.href || a.getAttribute('href') || '';
-                            if (href) result.push(href);
-                        });
-                        return result;
-                    }
-                """)
-                for href in hrefs:
-                    for mid in re.findall(r'[/-](\d{7,})', href):
+            if success:
+                # Coba scroll untuk trigger lazy loading
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+                await asyncio.sleep(3)
+                await page.evaluate("window.scrollTo(0, 0)")
+                await asyncio.sleep(2)
+
+                # Ekstrak semua href yang mengandung matchId
+                try:
+                    hrefs = await page.evaluate("""
+                        () => {
+                            const result = [];
+                            document.querySelectorAll('a').forEach(a => {
+                                const href = a.href || a.getAttribute('href') || '';
+                                if (href) result.push(href);
+                            });
+                            return result;
+                        }
+                    """)
+                    for href in hrefs:
+                        for mid in re.findall(r'[/-](\d{7,})', href):
+                            visible_ids.add(int(mid))
+                    print(f"  DOM links: {len(hrefs)} hrefs, {len(visible_ids)} matchIds")
+                except Exception as e:
+                    print(f"  Error ekstrak hrefs: {e}")
+
+                # Coba juga data attributes
+                try:
+                    data_ids = await page.evaluate("""
+                        () => {
+                            const ids = [];
+                            document.querySelectorAll('[data-id],[data-match-id],[data-matchid]').forEach(el => {
+                                const id = el.dataset.id || el.dataset.matchId || el.dataset.matchid;
+                                if (id) ids.push(id);
+                            });
+                            return ids;
+                        }
+                    """)
+                    for did in data_ids:
+                        m = re.search(r'(\d{7,})', str(did))
+                        if m: visible_ids.add(int(m.group(1)))
+                except: pass
+
+                # Ambil text dari halaman untuk cari match IDs
+                try:
+                    page_text = await page.inner_text('body')
+                    for mid in re.findall(r'\b(\d{7,8})\b', page_text):
                         visible_ids.add(int(mid))
-                print(f"  DOM links: {len(hrefs)} hrefs, {len(visible_ids)} matchIds")
-            except Exception as e:
-                print(f"  Error ekstrak hrefs: {e}")
+                except: pass
 
-            # Coba juga data attributes
-            try:
-                data_ids = await page.evaluate("""
-                    () => {
-                        const ids = [];
-                        document.querySelectorAll('[data-id],[data-match-id],[data-matchid]').forEach(el => {
-                            const id = el.dataset.id || el.dataset.matchId || el.dataset.matchid;
-                            if (id) ids.push(id);
-                        });
-                        return ids;
-                    }
-                """)
-                for did in data_ids:
-                    m = re.search(r'(\d{7,})', str(did))
-                    if m: visible_ids.add(int(m.group(1)))
-            except: pass
-
-            # Ambil text dari halaman untuk cari match IDs
-            try:
-                page_text = await page.inner_text('body')
-                for mid in re.findall(r'\b(\d{7,8})\b', page_text):
-                    visible_ids.add(int(mid))
-            except: pass
-
-            # Screenshot untuk debug
-            try:
-                await page.screenshot(path='/tmp/rbtv_debug.png', full_page=False)
-                print("  Screenshot disimpan ke /tmp/rbtv_debug.png")
-            except: pass
+                # Screenshot untuk debug
+                try:
+                    await page.screenshot(path='/tmp/rbtv_debug.png', full_page=False)
+                    print("  Screenshot disimpan ke /tmp/rbtv_debug.png")
+                except: pass
 
             await browser.close()
     except Exception as e:
         print(f"Playwright error: {e}")
+
+    # Fallback jika Playwright gagal / diblokir, tes dengan request biasa
+    if not resolved_active_domain:
+        for url in test_urls:
+            try:
+                r = requests.get(url, timeout=5, headers={"User-Agent": RBTV_USER_AGENT})
+                if r.status_code == 200:
+                    resolved_active_domain = url
+                    print(f"  Fallback active domain resolved via requests: {resolved_active_domain}")
+                    break
+            except:
+                pass
+
+    if not resolved_active_domain:
+        resolved_active_domain = entry_url
+
     return visible_ids, resolved_active_domain, captured_api_host[0]
 
-# =========================================================
-# BAGIAN 3: Main Logic
-# =========================================================
+def get_sport_max_duration_ms(sport_id):
+    # Mapping durasi maksimal berdasarkan tipe olahraga
+    durations = {
+        1: 130 * 60 * 1000,      # Sepak Bola: 130 menit
+        2: 160 * 60 * 1000,      # Basket: 160 menit
+        3: 300 * 60 * 1000,      # Tenis: 5 jam
+        4: 240 * 60 * 1000,      # Bisbol: 4 jam
+        6: 480 * 60 * 1000,      # Kriket: 8 jam
+        7: 210 * 60 * 1000,      # Motorsport: 3,5 jam
+        8: 120 * 60 * 1000,      # Rugby: 2 jam
+        12: 180 * 60 * 1000,     # Bulutangkis: 3 jam
+        13: 180 * 60 * 1000,     # Voli: 3 jam
+        14: 360 * 60 * 1000,     # Fighting: 6 jam
+        90: 480 * 60 * 1000      # Golf: 8 jam
+    }
+    return durations.get(sport_id, 180 * 60 * 1000) # Default 3 jam
+
 async def main():
     global RBTV_SITE_URL, RBTV_REFERER
     print("=" * 60)
@@ -378,7 +430,7 @@ async def main():
         for m in all_matches.values():
             if m['status'] >= 10000: continue
             if m['status'] in ONGOING: live_matches.append(m)
-            elif m['time'] > 0 and (now_ms - 150 * 60 * 1000) <= m['time'] <= (now_ms + 60 * 60 * 1000): live_matches.append(m)
+            elif m['time'] > 0 and (now_ms - get_sport_max_duration_ms(m['sport'])) <= m['time'] <= (now_ms + 60 * 60 * 1000): live_matches.append(m)
         source = "API filter fallback (ONGOING + 60min)"
         print(f"\n[3] Fallback API filter: {len(live_matches)} live matches")
 

@@ -415,7 +415,7 @@ class SportsurgeXRProvider : MainAPI() {
                     }
                     canvas.save()
                     canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, paint)
+                    canvas.drawBitmap(logoBmp, null, destRect, null)
                     canvas.restore()
                     team1TextLeft = 155f
                 } else {
@@ -488,7 +488,7 @@ class SportsurgeXRProvider : MainAPI() {
                     }
                     canvas.save()
                     canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, paint)
+                    canvas.drawBitmap(logoBmp, null, destRect, null)
                     canvas.restore()
                     team2TextLeft = 155f
                 } else {
@@ -576,15 +576,26 @@ class SportsurgeXRProvider : MainAPI() {
         val categoryPath = request.data
         val categoryName = request.name
         
-        val url = "$mainUrl$categoryPath"
-        val response = app.get(url, timeout = 15)
-        if (response.code != 200) return null
-        
         val targetSport = categoryPath.replace("/", "").lowercase()
-        val matches = parseMatches(response.text, targetSport).sortedByDescending { it.status.contains("live", ignoreCase = true) }
+        
+        // Coba scrape homepage terlebih dahulu untuk mendapatkan nama liga yang akurat
+        var response = app.get(mainUrl, timeout = 15)
+        var matches = if (response.code == 200) {
+            parseMatches(response.text, targetSport)
+        } else emptyList()
+        
+        // Jika kosong, fallback ke subpage kategori langsung
+        if (matches.isEmpty()) {
+            response = app.get("$mainUrl$categoryPath", timeout = 15)
+            if (response.code == 200) {
+                matches = parseMatches(response.text, targetSport)
+            }
+        }
+        
+        val sortedMatches = matches.sortedByDescending { it.status.contains("live", ignoreCase = true) }
         
         // Unduh semua logo unik secara paralel terlebih dahulu di Dispatchers.IO
-        val logoUrls = matches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
+        val logoUrls = sortedMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
         val logoBitmaps = coroutineScope {
             logoUrls.map { url ->
                 async(kotlinx.coroutines.Dispatchers.IO) {
@@ -593,7 +604,7 @@ class SportsurgeXRProvider : MainAPI() {
             }.awaitAll().toMap()
         }
 
-        val searchResps = matches.map { m ->
+        val searchResps = sortedMatches.map { m ->
             val isLive = m.status.contains("live", ignoreCase = true)
             val poster = generateDynamicJpegPoster(
                 sport = categoryName,
@@ -609,8 +620,13 @@ class SportsurgeXRProvider : MainAPI() {
             )
             
             val detailUrl = "https://lynk.id/xr3ed#$mainUrl${m.path}"
+            val cardTitle = if (m.league.isNotEmpty()) {
+                "${m.team1} vs ${m.team2} (${m.league})"
+            } else {
+                "${m.team1} vs ${m.team2}"
+            }
             newLiveSearchResponse(
-                "${m.team1} vs ${m.team2}",
+                cardTitle,
                 detailUrl,
                 TvType.Live
             ) {
@@ -636,7 +652,7 @@ class SportsurgeXRProvider : MainAPI() {
                         val url = "$mainUrl${cat.data}"
                         val response = app.get(url, timeout = 8)
                         if (response.code == 200) {
-                            parseMatches(response.text)
+                            parseMatches(response.text, cat.data.replace("/", ""))
                         } else emptyList()
                     } catch (e: Exception) {
                         emptyList()
@@ -672,8 +688,13 @@ class SportsurgeXRProvider : MainAPI() {
                 )
                 
                 val detailUrl = "https://lynk.id/xr3ed#$mainUrl${m.path}"
+                val cardTitle = if (m.league.isNotEmpty()) {
+                    "${m.team1} vs ${m.team2} (${m.league})"
+                } else {
+                    "${m.team1} vs ${m.team2}"
+                }
                 newLiveSearchResponse(
-                    "${m.team1} vs ${m.team2}",
+                    cardTitle,
                     detailUrl,
                     TvType.Live
                 ) {
