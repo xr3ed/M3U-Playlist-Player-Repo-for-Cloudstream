@@ -77,4 +77,16 @@ class SportsurgeXRProviderTest {
             println("\nTesting completed. Resolved at least one stream: $resolvedAtLeastOne")
         }
     }
+
+    @Test
+    fun testDirectEventPage() {
+        runBlocking {
+            val provider = SportsurgeXRProvider()
+            val loadResult = provider.load("https://sportsurge.st/events/san-diego-padres-vs-houston-astros")
+            assertNotNull(loadResult)
+            if (loadResult is LiveStreamLoadResponse) {
+                println("Streams JSON: ${loadResult.dataUrl}")
+            }
+        }
+    }
 }

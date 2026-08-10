@@ -16,7 +16,8 @@ data class WebMatchInfo(
     val team1: String,
     val logo1: String,
     val team2: String,
-    val logo2: String
+    val logo2: String,
+    val league: String
 )
 
 // Data class untuk list stream yang di-serialize ke JSON loadData
@@ -35,7 +36,7 @@ class SportsurgeXRProvider : MainAPI() {
         const val DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
-    override var mainUrl = "https://s1.sportsurge.pk"
+    override var mainUrl = "https://sportsurge.st"
     override var name = "⚽ SportsurgeXR"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
@@ -62,57 +63,129 @@ class SportsurgeXRProvider : MainAPI() {
             .replace("\\t", "\t")
     }
 
-    private fun parseMatches(html: String): List<WebMatchInfo> {
-        val pushes = Regex("""self\.__next_f\.push\(\[\d+,\s*"(.*?)"\]\)""")
-            .findAll(html)
-            .map { it.groupValues[1] }
-            .joinToString("")
-        
-        val combined = unescapeNextF(pushes)
-        val blocks = combined.split("{\"href\":\"/events/")
+    private fun getSportForLeague(league: String): String {
+        val l = league.lowercase()
+        return when {
+            l.contains("mlb") || l.contains("baseball") || l.contains("bisbol") -> "baseball"
+            l.contains("nfl") || l.contains("american football") -> "nfl"
+            l.contains("nba") || l.contains("basketball") || l.contains("wnba") || l.contains("euroleague") || l.contains("basket") -> "nba"
+            l.contains("boxing") || l.contains("tinju") || l.contains("ppv") -> "boxing"
+            l.contains("ufc") || l.contains("mma") || l.contains("bellator") || l.contains("one championship") -> "ufc"
+            l.contains("nhl") || l.contains("hockey") || l.contains("hoki") -> "nhl"
+            l.contains("formula 1") || l.contains("f1") || l.contains("motogp") || l.contains("motorsport") -> "f1"
+            l.contains("rugby") -> "rugby"
+            else -> "football" // Default to football/soccer
+        }
+    }
+
+    private fun getDisplayNameForSport(sport: String): String {
+        return when (sport.lowercase()) {
+            "football" -> "Sepak Bola"
+            "nfl" -> "NFL"
+            "nba" -> "NBA"
+            "ufc" -> "UFC"
+            "boxing" -> "Boxing"
+            "f1" -> "Formula 1"
+            "nhl" -> "NHL"
+            "rugby" -> "Rugby"
+            else -> sport.uppercase()
+        }
+    }
+
+    private fun parseMatches(html: String, targetSport: String? = null): List<WebMatchInfo> {
+        val document = org.jsoup.Jsoup.parse(html)
         val matches = ArrayList<WebMatchInfo>()
         
-        for (i in 1 until blocks.size) {
-            val b = blocks[i]
-            val pathMatch = Regex("""^([a-zA-Z0-9-]+)""").find(b) ?: continue
-            val path = "/events/" + pathMatch.groupValues[1]
+        // Select league blocks
+        val leagueBlocks = document.select("div.mb-7, div[class*=\"mb-7\"]")
+        for (leagueEl in leagueBlocks) {
+            val leagueNameEl = leagueEl.selectFirst("div.text-white.font-semibold.text-sm")
+            val leagueName = leagueNameEl?.text() ?: if (targetSport != null) {
+                getDisplayNameForSport(targetSport)
+            } else continue
+            if (leagueName.isEmpty()) continue
             
-            val statusMatch = Regex("""\"className\":\"text-xs\",\"children\":\"([^\"]+)\"""").find(b)
-            val status = statusMatch?.groupValues?.get(1) ?: "Upcoming"
-            
-            val logos = ArrayList<String>()
-            val teams = ArrayList<String>()
-            
-            val imgMatches = Regex("""\"src\":\"(https://v1\.1cdnforall\.online/storage/[^\"]+)\"[^}]+p\s*\}\s*,\s*\"\s*([^\"]+?)\s*\"\]""").findAll(b)
-            for (im in imgMatches) {
-                logos.add(im.groupValues[1])
-                teams.add(im.groupValues[2])
+            val sport = if (leagueNameEl != null) getSportForLeague(leagueName) else targetSport ?: "other"
+            if (targetSport != null && sport != targetSport) {
+                continue
             }
             
-            if (logos.size < 2) {
-                logos.clear()
-                teams.clear()
-                val cleanLogos = Regex("""\"src\":\"(https://v1\.1cdnforall\.online/storage/[^\"]+)\"""").findAll(b).map { it.groupValues[1] }.toList()
-                val cleanAlts = Regex("""\"alt\":\"([^\"]+?)\s*Live\s*HD\"""").findAll(b).map { it.groupValues[1] }.toList()
-                for (j in 0 until minOf(cleanLogos.size, cleanAlts.size)) {
-                    logos.add(cleanLogos[j])
-                    teams.add(cleanAlts[j])
+            val matchLinks = leagueEl.select("a[href^=\"/events/\"]")
+            for (linkEl in matchLinks) {
+                val path = linkEl.attr("href")
+                if (path.isEmpty()) continue
+                
+                val status = linkEl.selectFirst("div.text-xs")?.text() ?: "Upcoming"
+                
+                val teamDivs = linkEl.select("div.flex.gap-2.items-center, div.flex.items-center.gap-2")
+                val team1 = teamDivs.getOrNull(0)?.text()?.trim() ?: "Team A"
+                val logo1 = teamDivs.getOrNull(0)?.selectFirst("img")?.attr("src") ?: ""
+                val team2 = teamDivs.getOrNull(1)?.text()?.trim() ?: "Team B"
+                val logo2 = teamDivs.getOrNull(1)?.selectFirst("img")?.attr("src") ?: ""
+                
+                val isEnded = status.contains("ended", ignoreCase = true) ||
+                        status.contains("finished", ignoreCase = true) ||
+                        status.contains("completed", ignoreCase = true)
+                
+                if (!isEnded) {
+                    matches.add(WebMatchInfo(path, status, team1, logo1, team2, logo2, leagueName))
                 }
             }
+        }
+        
+        // Fallback: if JSoup selection found nothing, try Next.js regex parsing (only for search or general fallback)
+        if (matches.isEmpty() && targetSport == null) {
+            val pushes = Regex("""self\.__next_f\.push\(\[\d+,\s*"(.*?)"\]\)""")
+                .findAll(html)
+                .map { it.groupValues[1] }
+                .joinToString("")
             
-            val t1Name = teams.getOrNull(0) ?: "Team A"
-            val t1Logo = logos.getOrNull(0) ?: ""
-            val t2Name = teams.getOrNull(1) ?: "Team B"
-            val t2Logo = logos.getOrNull(1) ?: ""
+            val combined = unescapeNextF(pushes)
+            val blocks = combined.split("{\"href\":\"/events/")
             
-            val isEnded = status.contains("ended", ignoreCase = true) ||
-                    status.contains("finished", ignoreCase = true) ||
-                    status.contains("completed", ignoreCase = true)
-            
-            if (!isEnded) {
-                matches.add(WebMatchInfo(path, status, t1Name, t1Logo, t2Name, t2Logo))
+            for (i in 1 until blocks.size) {
+                val b = blocks[i]
+                val pathMatch = Regex("""^([a-zA-Z0-9-]+)""").find(b) ?: continue
+                val path = "/events/" + pathMatch.groupValues[1]
+                
+                val statusMatch = Regex("""\"className\":\"text-xs\",\"children\":\"([^\"]+)\"""").find(b)
+                val status = statusMatch?.groupValues?.get(1) ?: "Upcoming"
+                
+                val logos = ArrayList<String>()
+                val teams = ArrayList<String>()
+                
+                val imgMatches = Regex("""\"src\":\"(https://v1\.1cdnforall\.online/storage/[^\"]+)\"[^}]+p\s*\}\s*,\s*\"\s*([^\"]+?)\s*\"\]""").findAll(b)
+                for (im in imgMatches) {
+                    logos.add(im.groupValues[1])
+                    teams.add(im.groupValues[2])
+                }
+                
+                if (logos.size < 2) {
+                    logos.clear()
+                    teams.clear()
+                    val cleanLogos = Regex("""\"src\":\"(https://v1\.1cdnforall\.online/storage/[^\"]+)\"""").findAll(b).map { it.groupValues[1] }.toList()
+                    val cleanAlts = Regex("""\"alt\":\"([^\"]+?)\s*Live\s*HD\"""").findAll(b).map { it.groupValues[1] }.toList()
+                    for (j in 0 until minOf(cleanLogos.size, cleanAlts.size)) {
+                        logos.add(cleanLogos[j])
+                        teams.add(cleanAlts[j])
+                    }
+                }
+                
+                val t1Name = teams.getOrNull(0) ?: "Team A"
+                val t1Logo = logos.getOrNull(0) ?: ""
+                val t2Name = teams.getOrNull(1) ?: "Team B"
+                val t2Logo = logos.getOrNull(1) ?: ""
+                
+                val isEnded = status.contains("ended", ignoreCase = true) ||
+                        status.contains("finished", ignoreCase = true) ||
+                        status.contains("completed", ignoreCase = true)
+                
+                if (!isEnded) {
+                    matches.add(WebMatchInfo(path, status, t1Name, t1Logo, t2Name, t2Logo, "Live Match"))
+                }
             }
         }
+        
         return matches
     }
 
@@ -231,12 +304,16 @@ class SportsurgeXRProvider : MainAPI() {
             val canvas = android.graphics.Canvas(bitmap)
             val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
 
-            val (baseColor, accentColor) = when (sport.lowercase()) {
-                "sepak bola", "football", "soccer" -> Pair("#041c0e", "#00ff87")
-                "basket", "nba", "basketball" -> Pair("#241105", "#ff5e00")
-                "tenis", "bulutangkis", "tennis", "badminton" -> Pair("#1a2007", "#ccff00")
-                "tinju", "mma", "boxing", "ufc", "fighting" -> Pair("#260d0d", "#ff3333")
-                "motorsport", "formula 1", "f1" -> Pair("#0d1e26", "#00d2ff")
+            val sportLower = sport.lowercase()
+            val (baseColor, accentColor) = when {
+                sportLower.contains("sepak bola") || sportLower.contains("football") || sportLower.contains("soccer") -> Pair("#041c0e", "#00ff87")
+                sportLower.contains("basket") || sportLower.contains("nba") || sportLower.contains("basketball") -> Pair("#241105", "#ff5e00")
+                sportLower.contains("tenis") || sportLower.contains("tennis") || sportLower.contains("badminton") || sportLower.contains("bulutangkis") -> Pair("#1a2007", "#ccff00")
+                sportLower.contains("tinju") || sportLower.contains("mma") || sportLower.contains("boxing") || sportLower.contains("ufc") || sportLower.contains("fighting") -> Pair("#260d0d", "#ff3333")
+                sportLower.contains("motorsport") || sportLower.contains("formula 1") || sportLower.contains("f1") || sportLower.contains("motogp") -> Pair("#0d1e26", "#00d2ff")
+                sportLower.contains("nfl") || sportLower.contains("american football") -> Pair("#001e3d", "#ffb612") // NFL Navy + Gold
+                sportLower.contains("bisbol") || sportLower.contains("baseball") || sportLower.contains("mlb") -> Pair("#0c2340", "#ff3333") // MLB Navy + Red
+                sportLower.contains("nhl") || sportLower.contains("hockey") -> Pair("#00205b", "#a5acaf") // NHL Blue + Silver
                 else -> Pair("#16082c", "#00f2fe")
             }
 
@@ -297,7 +374,20 @@ class SportsurgeXRProvider : MainAPI() {
             paint.textSize = 24f
             paint.textAlign = android.graphics.Paint.Align.CENTER
             paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            canvas.drawText(sport.uppercase(), 200f, 95f, paint)
+
+            val cleanSportName = when {
+                sportLower.contains("sepak bola") || sportLower.contains("football") || sportLower.contains("soccer") -> "SEPAK BOLA"
+                sportLower.contains("nfl") || sportLower.contains("american football") -> "AMERICAN FOOTBALL"
+                sportLower.contains("basket") || sportLower.contains("nba") || sportLower.contains("basketball") -> "BASKET"
+                sportLower.contains("bisbol") || sportLower.contains("baseball") || sportLower.contains("mlb") -> "BISBOL"
+                sportLower.contains("hoki") || sportLower.contains("nhl") || sportLower.contains("hockey") -> "HOKI ES"
+                sportLower.contains("tinju") || sportLower.contains("boxing") -> "TINJU"
+                sportLower.contains("mma") || sportLower.contains("ufc") -> "MMA"
+                sportLower.contains("formula 1") || sportLower.contains("f1") || sportLower.contains("motogp") || sportLower.contains("motorsport") -> "FORMULA 1"
+                sportLower.contains("rugby") -> "RUGBY"
+                else -> sport.uppercase()
+            }
+            canvas.drawText(cleanSportName, 200f, 95f, paint)
 
             paint.color = android.graphics.Color.parseColor(accentColor)
             paint.textSize = 30f
@@ -490,7 +580,8 @@ class SportsurgeXRProvider : MainAPI() {
         val response = app.get(url, timeout = 15)
         if (response.code != 200) return null
         
-        val matches = parseMatches(response.text).sortedByDescending { it.status.contains("live", ignoreCase = true) }
+        val targetSport = categoryPath.replace("/", "").lowercase()
+        val matches = parseMatches(response.text, targetSport).sortedByDescending { it.status.contains("live", ignoreCase = true) }
         
         // Unduh semua logo unik secara paralel terlebih dahulu di Dispatchers.IO
         val logoUrls = matches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
@@ -506,7 +597,7 @@ class SportsurgeXRProvider : MainAPI() {
             val isLive = m.status.contains("live", ignoreCase = true)
             val poster = generateDynamicJpegPoster(
                 sport = categoryName,
-                league = categoryName,
+                league = m.league,
                 team1 = m.team1,
                 team2 = m.team2,
                 timeStr = m.status,
@@ -569,7 +660,7 @@ class SportsurgeXRProvider : MainAPI() {
                 val isLive = m.status.contains("live", ignoreCase = true)
                 val poster = generateDynamicJpegPoster(
                     sport = "Olahraga",
-                    league = "Live Match",
+                    league = m.league,
                     team1 = m.team1,
                     team2 = m.team2,
                     timeStr = m.status,
@@ -596,10 +687,27 @@ class SportsurgeXRProvider : MainAPI() {
         val cleanUrl = if (url.contains("lynk.id")) url.substringAfterLast("#", "") else url
         val maskedUrl = if (url.contains("lynk.id")) url else "https://lynk.id/xr3ed#$url"
 
-        val response = app.get(cleanUrl, timeout = 15)
-        if (response.code != 200) return null
+        val request = okhttp3.Request.Builder()
+            .url(cleanUrl)
+            .header("User-Agent", DESKTOP_UA)
+            .build()
+        val html = try {
+            cleanClient.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    response.body?.string() ?: ""
+                } else {
+                    println("Request failed with code: ${response.code}, message: ${response.message}")
+                    ""
+                }
+            }
+        } catch (e: Exception) {
+            println("Exception during load fetch:")
+            e.printStackTrace()
+            ""
+        }
+        if (html.isEmpty()) return null
         
-        val rawStreams = parseStreams(response.text)
+        val rawStreams = parseStreams(html)
         val streams = rawStreams.sortedWith(compareBy<SportsurgeStreamInfo> {
             val name = it.channel.lowercase()
             when {
