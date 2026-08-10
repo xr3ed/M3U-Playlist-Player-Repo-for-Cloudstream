@@ -114,36 +114,58 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
         exportBtn.setOnClickListener {
             val activity = activity ?: return@setOnClickListener
             val code = sm.exportSettings(requireContext())
+            
+            val options = arrayOf(
+                "Simpan Langsung ke /Download (Rekomendasi)",
+                "Simpan via Pemilih Berkas (SAF)",
+                "Salin Kode ke Clipboard"
+            )
 
             AlertDialog.Builder(activity)
                 .setTitle("Ekspor Pengaturan")
-                .setMessage("Pilih metode ekspor:")
-                .setPositiveButton("Simpan ke File") { _, _ ->
-                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_TITLE, "my_homepage_config.json")
-                    }
-                    try {
-                        startActivityForResult(intent, 9998)
-                    } catch (e: Exception) {
-                        try {
-                            val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-                            if (!downloadDir.exists()) downloadDir.mkdirs()
-                            val file = java.io.File(downloadDir, "my_homepage_config.json")
-                            file.writeText(code)
-                            showToast("Simpan ke folder /Download/my_homepage_config.json (Fallback)")
-                        } catch (ex: Exception) {
-                            showToast("Gagal simpan file: ${ex.message}")
+                .setItems(options) { _, which ->
+                    when (which) {
+                        0 -> { // Simpan Langsung ke /Download
+                            try {
+                                val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                                if (!downloadDir.exists()) downloadDir.mkdirs()
+                                val file = java.io.File(downloadDir, "my_homepage_config.json")
+                                file.writeText(code)
+                                showToast("Berhasil disimpan ke /Download/my_homepage_config.json")
+                            } catch (ex: Exception) {
+                                showToast("Gagal menyimpan file: ${ex.message}")
+                            }
+                        }
+                        1 -> { // Simpan via Pemilih Berkas (SAF)
+                            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/json"
+                                putExtra(Intent.EXTRA_TITLE, "my_homepage_config.json")
+                            }
+                            try {
+                                startActivityForResult(intent, 9998)
+                            } catch (e: Exception) {
+                                showToast("File picker tidak didukung, menggunakan penyimpanan langsung...")
+                                try {
+                                    val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                                    if (!downloadDir.exists()) downloadDir.mkdirs()
+                                    val file = java.io.File(downloadDir, "my_homepage_config.json")
+                                    file.writeText(code)
+                                    showToast("Berhasil disimpan ke /Download/my_homepage_config.json")
+                                } catch (ex: Exception) {
+                                    showToast("Gagal menyimpan file: ${ex.message}")
+                                }
+                            }
+                        }
+                        2 -> { // Salin Kode
+                            val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clip = android.content.ClipData.newPlainText("MyHomepage Config", code)
+                            clipboard.setPrimaryClip(clip)
+                            showToast("Kode disalin ke clipboard!")
                         }
                     }
                 }
-                .setNegativeButton("Salin Kode") { _, _ ->
-                    val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                    val clip = android.content.ClipData.newPlainText("MyHomepage Config", code)
-                    clipboard.setPrimaryClip(clip)
-                    showToast("Kode disalin ke clipboard!")
-                }
+                .setNegativeButton("Batal", null)
                 .show()
                 .setDefaultFocus()
         }
@@ -153,67 +175,100 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
         importBtn.makeTvCompatible()
         importBtn.setOnClickListener {
             val activity = activity ?: return@setOnClickListener
+            
+            val options = arrayOf(
+                "Muat Langsung dari /Download (Rekomendasi)",
+                "Muat via Pemilih Berkas (SAF)",
+                "Tempel Kode dari Clipboard"
+            )
 
             AlertDialog.Builder(activity)
                 .setTitle("Impor Pengaturan")
-                .setMessage("Pilih metode impor:")
-                .setPositiveButton("Muat dari File") { _, _ ->
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "*/*"
-                    }
-                    try {
-                        startActivityForResult(intent, 9999)
-                    } catch (e: Exception) {
-                        try {
-                            val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-                            val file = java.io.File(downloadDir, "my_homepage_config.json")
-                            if (file.exists()) {
-                                val fileCode = file.readText().trim()
-                                val success = sm.importSettings(requireContext(), fileCode)
-                                if (success) {
-                                    plugin.reload()
-                                    showToast("Berhasil diimpor! Merestart...")
-                                    dismiss()
-                                    restartApp()
+                .setItems(options) { _, which ->
+                    when (which) {
+                        0 -> { // Muat Langsung dari /Download
+                            try {
+                                val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                                val file = java.io.File(downloadDir, "my_homepage_config.json")
+                                if (file.exists()) {
+                                    val fileCode = file.readText().trim()
+                                    val success = sm.importSettings(requireContext(), fileCode)
+                                    if (success) {
+                                        plugin.reload()
+                                        showToast("Berhasil diimpor! Merestart...")
+                                        dismiss()
+                                        restartApp()
+                                    } else {
+                                        showToast("Gagal: Format file tidak valid!")
+                                    }
                                 } else {
-                                    showToast("Gagal: Format file tidak valid!")
+                                    showToast("File /Download/my_homepage_config.json tidak ditemukan!")
                                 }
-                            } else {
-                                showToast("File /Download/my_homepage_config.json tidak ditemukan!")
+                            } catch (ex: Exception) {
+                                showToast("Gagal impor file: ${ex.message}")
                             }
-                        } catch (ex: Exception) {
-                            showToast("Gagal impor file: ${ex.message}")
+                        }
+                        1 -> { // Muat via Pemilih Berkas (SAF)
+                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "*/*"
+                            }
+                            try {
+                                startActivityForResult(intent, 9999)
+                            } catch (e: Exception) {
+                                showToast("File picker tidak didukung, mencoba memuat dari /Download...")
+                                try {
+                                    val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                                    val file = java.io.File(downloadDir, "my_homepage_config.json")
+                                    if (file.exists()) {
+                                        val fileCode = file.readText().trim()
+                                        val success = sm.importSettings(requireContext(), fileCode)
+                                        if (success) {
+                                            plugin.reload()
+                                            showToast("Berhasil diimpor! Merestart...")
+                                            dismiss()
+                                            restartApp()
+                                        } else {
+                                            showToast("Gagal: Format file tidak valid!")
+                                        }
+                                    } else {
+                                        showToast("File /Download/my_homepage_config.json tidak ditemukan!")
+                                    }
+                                } catch (ex: Exception) {
+                                    showToast("Gagal impor file: ${ex.message}")
+                                }
+                            }
+                        }
+                        2 -> { // Tempel Kode
+                            val input = EditText(activity).apply {
+                                hint = "Tempel kode pengaturan di sini"
+                            }
+                            AlertDialog.Builder(activity)
+                                .setTitle("Impor via Kode")
+                                .setView(input)
+                                .setPositiveButton("Impor") { _, _ ->
+                                    val code = input.text.toString().trim()
+                                    if (code.isNotEmpty()) {
+                                        val success = sm.importSettings(requireContext(), code)
+                                        if (success) {
+                                            plugin.reload()
+                                            showToast("Berhasil diimpor! Merestart...")
+                                            dismiss()
+                                            restartApp()
+                                        } else {
+                                            showToast("Gagal: Kode tidak valid!")
+                                        }
+                                    } else {
+                                        showToast("Kode tidak boleh kosong!")
+                                    }
+                                }
+                                .setNegativeButton("Batal", null)
+                                .show()
+                                .setDefaultFocus()
                         }
                     }
                 }
-                .setNegativeButton("Tempel Kode") { _, _ ->
-                    val input = EditText(activity).apply {
-                        hint = "Tempel kode pengaturan di sini"
-                    }
-                    AlertDialog.Builder(activity)
-                        .setTitle("Impor via Kode")
-                        .setView(input)
-                        .setPositiveButton("Impor") { _, _ ->
-                            val code = input.text.toString().trim()
-                            if (code.isNotEmpty()) {
-                                val success = sm.importSettings(requireContext(), code)
-                                if (success) {
-                                    plugin.reload()
-                                    showToast("Berhasil diimpor! Merestart...")
-                                    dismiss()
-                                    restartApp()
-                                } else {
-                                    showToast("Gagal: Kode tidak valid!")
-                                }
-                            } else {
-                                showToast("Kode tidak boleh kosong!")
-                            }
-                        }
-                        .setNegativeButton("Batal", null)
-                        .show()
-                        .setDefaultFocus()
-                }
+                .setNegativeButton("Batal", null)
                 .show()
                 .setDefaultFocus()
         }
