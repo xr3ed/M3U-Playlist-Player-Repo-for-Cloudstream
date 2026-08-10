@@ -257,11 +257,12 @@ async def get_visible_match_ids_via_playwright(entry_url):
         window.chrome = {runtime: {}};
     """
     
+    is_headless = not bool(os.environ.get("DISPLAY"))
     success = False
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(
-                headless=True,
+                headless=is_headless,
                 args=[
                     '--no-sandbox', '--disable-dev-shm-usage',
                     '--disable-blink-features=AutomationControlled',

@@ -34,4 +34,4 @@ jobs:
           RBTV_PATH_BS: ${{ secrets.RBTV_PATH_BS }}
           RBTV_PATH_LIVE: ${{ secrets.RBTV_PATH_LIVE }}
           RBTV_USER_AGENT: ${{ secrets.RBTV_USER_AGENT }}
-        run: python .github/scripts/update_live_matches.py
+        run: xvfb-run python .github/scripts/update_live_matches.py
