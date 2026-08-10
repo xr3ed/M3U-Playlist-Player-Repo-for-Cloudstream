@@ -258,23 +258,27 @@ async def get_visible_match_ids_via_playwright(entry_url):
                 ignore_https_errors=True
             )
             await context.add_init_script(STEALTH_JS)
-            page = await context.new_page()
-
-            # Blokir devtools detector script secara dinamis agar tidak meredirect ke about:blank
+            page = await context.new_page()            # Blokir devtools detector script secara dinamis agar tidak meredirect ke about:blank
             async def handle_route(route, request):
                 url = request.url
                 if "statics" in url and url.endswith(".js"):
                     try:
-                        # Ambil respon dari jaringan terlebih dahulu untuk diperiksa
                         response = await route.fetch()
                         body = await response.text()
-                        if "about:blank" in body:
-                            print(f"  [Playwright] Memblokir DevTools Detector (mengandung about:blank): {url}")
-                            await route.abort()
-                        else:
-                            await route.fulfill(response=response)
+                        if "dd\\x20detect" in body or "dd detect" in body:
+                            pattern = r"(console\s*\[['\"]warn['\"]\]\(\s*['\"]dd\\x20detect,\\x20type:['\"]\s*,\s*[a-zA-Z0-9_]+\s*\)\s*,\s*)[a-zA-Z0-9_]+\(\)"
+                            if re.search(pattern, body):
+                                print(f"  [Playwright] Neutralizing devtools action in: {url}")
+                                modified_body = re.sub(pattern, r"\g<1>console.log('Bypassed!')", body)
+                                await route.fulfill(
+                                    status=response.status,
+                                    headers=response.headers,
+                                    body=modified_body
+                                )
+                                return
+                        await route.fulfill(response=response)
                     except Exception as e:
-                        print(f"  Error fetching script {url}: {e}")
+                        print(f"  Error patching {url}: {e}")
                         await route.continue_()
                 else:
                     await route.continue_()
@@ -453,13 +457,13 @@ async def main():
         source = f"intersection (API+DOM, {len(visible_ids)} DOM ids)"
         print(f"\n[3] Menggunakan intersection: {len(live_matches)} live matches")
     else:
-        # Fallback: API filter ONGOING + 8 jam
+        # Fallback: API filter ONGOING + 30 menit
         live_matches = []
         for m in all_matches.values():
             if m['status'] >= 10000: continue
             if m['status'] in ONGOING: live_matches.append(m)
-            elif m['time'] > 0 and (now_ms - get_sport_max_duration_ms(m['sport'])) <= m['time'] <= (now_ms + 8 * 60 * 60 * 1000): live_matches.append(m)
-        source = "API filter fallback (ONGOING + 8h)"
+            elif m['time'] > 0 and (now_ms - get_sport_max_duration_ms(m['sport'])) <= m['time'] <= (now_ms + 30 * 60 * 1000): live_matches.append(m)
+        source = "API filter fallback (ONGOING + 30min)"
         print(f"\n[3] Fallback API filter: {len(live_matches)} live matches")
 
     # Format output
