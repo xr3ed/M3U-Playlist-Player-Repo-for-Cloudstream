@@ -245,9 +245,10 @@ class RBTVPlusProvider : MainAPI() {
         logoUrl1: String? = null,
         logoUrl2: String? = null,
         preloadedLogos: Map<String, android.graphics.Bitmap?> = emptyMap(),
-        isIndonesia: Boolean = false
+        isIndonesia: Boolean = false,
+        title: String? = null
     ): String {
-        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}_${logoUrl1 ?: ""}_${logoUrl2 ?: ""}_$isIndonesia"
+        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}_${logoUrl1 ?: ""}_${logoUrl2 ?: ""}_${isIndonesia}_${title ?: ""}"
         val cached = posterCache[cacheKey]
         if (cached != null) return cached
         return try {
@@ -383,31 +384,89 @@ class RBTVPlusProvider : MainAPI() {
             val truncatedLeague = if (cleanLeague.length > 20) cleanLeague.substring(0, 17) + "..." else cleanLeague
             canvas.drawText(truncatedLeague, 200f, 150f, paint)
 
-            // 7. Draw Team 1 Badge Card & Text
-            // Sub-container card untuk Team 1
-            paint.color = android.graphics.Color.parseColor("#26FFFFFF") // Putih transparan (15% opacity)
-            paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
-            // Border mini card
-            paint.color = android.graphics.Color.parseColor("#40FFFFFF")
-            paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 1.5f
-            canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
+            val isSingleEvent = team1.isNullOrEmpty() && team2.isNullOrEmpty()
+            if (isSingleEvent) {
+                // Draw single container card Y=185 to Y=445
+                paint.color = android.graphics.Color.parseColor("#26FFFFFF") // Putih transparan (15% opacity)
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawRoundRect(45f, 185f, 355f, 445f, 16f, 16f, paint)
+                // Border
+                paint.color = android.graphics.Color.parseColor("#40FFFFFF")
+                paint.style = android.graphics.Paint.Style.STROKE
+                paint.strokeWidth = 1.5f
+                canvas.drawRoundRect(45f, 185f, 355f, 445f, 16f, 16f, paint)
 
-            var team1TextLeft = 65f
-            if (!logoUrl1.isNullOrEmpty()) {
-                val logoBmp = preloadedLogos[logoUrl1] ?: logoCache[logoUrl1]
-                if (logoBmp != null) {
-                    logoCache[logoUrl1] = logoBmp
-                    val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
-                    val path = android.graphics.Path().apply {
-                        addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
+                // League name top half
+                paint.color = android.graphics.Color.WHITE
+                paint.style = android.graphics.Paint.Style.FILL
+                paint.textSize = 34f
+                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+                val cleanLg = league ?: "Tournament"
+                val lgLines = wrapText(cleanLg, 16)
+                var currentY = if (lgLines.size > 1) 230f else 255f
+                for (line in lgLines) {
+                    canvas.drawText(line, 200f, currentY, paint)
+                    currentY += 40f
+                }
+
+                // Divider line
+                paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                paint.strokeWidth = 2f
+                canvas.drawLine(100f, 315f, 300f, 315f, paint)
+
+                // Match title bottom half
+                paint.color = android.graphics.Color.parseColor(accentColor)
+                paint.textSize = 30f
+                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                val cleanT = title?.replace(Regex("\\s*\\(\\d{2}:\\d{2}\\s*WIB\\)\\s*"), "") ?: "Live Event"
+                val tLines = wrapText(cleanT, 16)
+                currentY = if (tLines.size > 1) 365f else 385f
+                for (line in tLines) {
+                    canvas.drawText(line, 200f, currentY, paint)
+                    currentY += 36f
+                }
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+            } else {
+                // 7. Draw Team 1 Badge Card & Text
+                // Sub-container card untuk Team 1
+                paint.color = android.graphics.Color.parseColor("#26FFFFFF") // Putih transparan (15% opacity)
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
+                // Border mini card
+                paint.color = android.graphics.Color.parseColor("#40FFFFFF")
+                paint.style = android.graphics.Paint.Style.STROKE
+                paint.strokeWidth = 1.5f
+                canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
+
+                var team1TextLeft = 65f
+                if (!logoUrl1.isNullOrEmpty()) {
+                    val logoBmp = preloadedLogos[logoUrl1] ?: logoCache[logoUrl1]
+                    if (logoBmp != null) {
+                        logoCache[logoUrl1] = logoBmp
+                        val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
+                        val path = android.graphics.Path().apply {
+                            addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
+                        }
+                        canvas.save()
+                        canvas.clipPath(path)
+                        canvas.drawBitmap(logoBmp, null, destRect, null)
+                        canvas.restore()
+                        team1TextLeft = 155f
+                    } else {
+                        val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
+                        paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                        paint.style = android.graphics.Paint.Style.FILL
+                        canvas.drawRoundRect(destRect, 12f, 12f, paint)
+                        
+                        paint.color = android.graphics.Color.WHITE
+                        paint.textSize = 32f
+                        paint.textAlign = android.graphics.Paint.Align.CENTER
+                        paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                        val letter = team1?.firstOrNull()?.toString()?.uppercase() ?: "A"
+                        canvas.drawText(letter, 100f, 245f, paint)
+                        team1TextLeft = 155f
                     }
-                    canvas.save()
-                    canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, null)
-                    canvas.restore()
-                    team1TextLeft = 155f
                 } else {
                     val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
                     paint.color = android.graphics.Color.parseColor("#33FFFFFF")
@@ -422,85 +481,85 @@ class RBTVPlusProvider : MainAPI() {
                     canvas.drawText(letter, 100f, 245f, paint)
                     team1TextLeft = 155f
                 }
-            } else {
-                val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
-                paint.color = android.graphics.Color.parseColor("#33FFFFFF")
-                paint.style = android.graphics.Paint.Style.FILL
-                canvas.drawRoundRect(destRect, 12f, 12f, paint)
-                
+
+                // Teks Team 1
                 paint.color = android.graphics.Color.WHITE
-                paint.textSize = 32f
-                paint.textAlign = android.graphics.Paint.Align.CENTER
+                paint.style = android.graphics.Paint.Style.FILL
+                paint.textSize = 36f
                 paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-                val letter = team1?.firstOrNull()?.toString()?.uppercase() ?: "A"
-                canvas.drawText(letter, 100f, 245f, paint)
-                team1TextLeft = 155f
-            }
-
-            // Teks Team 1
-            paint.color = android.graphics.Color.WHITE
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.textSize = 36f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            val t1 = team1 ?: "Team A"
-            val t1Limit = if (team1TextLeft == 155f) 8 else 14
-            val t1Lines = wrapText(t1, t1Limit)
-            if (team1TextLeft == 65f) {
-                paint.textAlign = android.graphics.Paint.Align.CENTER
-                var currentY = if (t1Lines.size > 1) 225f else 245f
-                for (line in t1Lines) {
-                    canvas.drawText(line, 200f, currentY, paint)
-                    currentY += 42f
-                }
-            } else {
-                paint.textAlign = android.graphics.Paint.Align.LEFT
-                var currentY = if (t1Lines.size > 1) 225f else 245f
-                for (line in t1Lines) {
-                    canvas.drawText(line, team1TextLeft, currentY, paint)
-                    currentY += 42f
-                }
-            }
-
-            // 8. Draw Glow Divider & VS Text
-            // Garis pemisah horizontal kiri
-            paint.color = android.graphics.Color.parseColor("#33FFFFFF")
-            paint.strokeWidth = 2f
-            canvas.drawLine(45f, 315f, 150f, 315f, paint)
-            // Garis pemisah horizontal kanan
-            canvas.drawLine(250f, 315f, 355f, 315f, paint)
-
-            // Teks VS
-            paint.color = android.graphics.Color.parseColor(accentColor)
-            paint.textSize = 34f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD_ITALIC)
-            canvas.drawText("VS", 200f, 326f, paint)
-
-            // 9. Draw Team 2 Badge Card & Text
-            // Sub-container card untuk Team 2
-            paint.color = android.graphics.Color.parseColor("#26FFFFFF") // Putih transparan (15% opacity)
-            paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
-            // Border mini card
-            paint.color = android.graphics.Color.parseColor("#40FFFFFF")
-            paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 1.5f
-            canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
-
-            var team2TextLeft = 65f
-            if (!logoUrl2.isNullOrEmpty()) {
-                val logoBmp = preloadedLogos[logoUrl2] ?: logoCache[logoUrl2]
-                if (logoBmp != null) {
-                    logoCache[logoUrl2] = logoBmp
-                    val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
-                    val path = android.graphics.Path().apply {
-                        addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
+                val t1 = team1 ?: "Team A"
+                val t1Limit = if (team1TextLeft == 155f) 8 else 14
+                val t1Lines = wrapText(t1, t1Limit)
+                if (team1TextLeft == 65f) {
+                    paint.textAlign = android.graphics.Paint.Align.CENTER
+                    var currentY = if (t1Lines.size > 1) 225f else 245f
+                    for (line in t1Lines) {
+                        canvas.drawText(line, 200f, currentY, paint)
+                        currentY += 42f
                     }
-                    canvas.save()
-                    canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, null)
-                    canvas.restore()
-                    team2TextLeft = 155f
+                } else {
+                    paint.textAlign = android.graphics.Paint.Align.LEFT
+                    var currentY = if (t1Lines.size > 1) 225f else 245f
+                    for (line in t1Lines) {
+                        canvas.drawText(line, team1TextLeft, currentY, paint)
+                        currentY += 42f
+                    }
+                }
+
+                // 8. Draw Glow Divider & VS Text
+                // Garis pemisah horizontal kiri
+                paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                paint.strokeWidth = 2f
+                canvas.drawLine(45f, 315f, 150f, 315f, paint)
+                // Garis pemisah horizontal kanan
+                canvas.drawLine(250f, 315f, 355f, 315f, paint)
+
+                // Teks VS
+                paint.color = android.graphics.Color.parseColor(accentColor)
+                paint.textSize = 34f
+                paint.textAlign = android.graphics.Paint.Align.CENTER
+                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD_ITALIC)
+                canvas.drawText("VS", 200f, 326f, paint)
+
+                // 9. Draw Team 2 Badge Card & Text
+                // Sub-container card untuk Team 2
+                paint.color = android.graphics.Color.parseColor("#26FFFFFF") // Putih transparan (15% opacity)
+                paint.style = android.graphics.Paint.Style.FILL
+                canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
+                // Border mini card
+                paint.color = android.graphics.Color.parseColor("#40FFFFFF")
+                paint.style = android.graphics.Paint.Style.STROKE
+                paint.strokeWidth = 1.5f
+                canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
+
+                var team2TextLeft = 65f
+                if (!logoUrl2.isNullOrEmpty()) {
+                    val logoBmp = preloadedLogos[logoUrl2] ?: logoCache[logoUrl2]
+                    if (logoBmp != null) {
+                        logoCache[logoUrl2] = logoBmp
+                        val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
+                        val path = android.graphics.Path().apply {
+                            addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
+                        }
+                        canvas.save()
+                        canvas.clipPath(path)
+                        canvas.drawBitmap(logoBmp, null, destRect, null)
+                        canvas.restore()
+                        team2TextLeft = 155f
+                    } else {
+                        val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
+                        paint.color = android.graphics.Color.parseColor("#33FFFFFF")
+                        paint.style = android.graphics.Paint.Style.FILL
+                        canvas.drawRoundRect(destRect, 12f, 12f, paint)
+                        
+                        paint.color = android.graphics.Color.WHITE
+                        paint.textSize = 32f
+                        paint.textAlign = android.graphics.Paint.Align.CENTER
+                        paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                        val letter = team2?.firstOrNull()?.toString()?.uppercase() ?: "B"
+                        canvas.drawText(letter, 100f, 405f, paint)
+                        team2TextLeft = 155f
+                    }
                 } else {
                     val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
                     paint.color = android.graphics.Color.parseColor("#33FFFFFF")
@@ -515,45 +574,32 @@ class RBTVPlusProvider : MainAPI() {
                     canvas.drawText(letter, 100f, 405f, paint)
                     team2TextLeft = 155f
                 }
-            } else {
-                val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
-                paint.color = android.graphics.Color.parseColor("#33FFFFFF")
-                paint.style = android.graphics.Paint.Style.FILL
-                canvas.drawRoundRect(destRect, 12f, 12f, paint)
-                
-                paint.color = android.graphics.Color.WHITE
-                paint.textSize = 32f
-                paint.textAlign = android.graphics.Paint.Align.CENTER
-                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-                val letter = team2?.firstOrNull()?.toString()?.uppercase() ?: "B"
-                canvas.drawText(letter, 100f, 405f, paint)
-                team2TextLeft = 155f
-            }
 
-            // Teks Team 2
-            paint.color = android.graphics.Color.WHITE
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.textSize = 36f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            val t2 = team2 ?: "Team B"
-            val t2Limit = if (team2TextLeft == 155f) 8 else 14
-            val t2Lines = wrapText(t2, t2Limit)
-            if (team2TextLeft == 65f) {
+                // Teks Team 2
+                paint.color = android.graphics.Color.WHITE
+                paint.style = android.graphics.Paint.Style.FILL
+                paint.textSize = 36f
+                paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
+                val t2 = team2 ?: "Team B"
+                val t2Limit = if (team2TextLeft == 155f) 8 else 14
+                val t2Lines = wrapText(t2, t2Limit)
+                if (team2TextLeft == 65f) {
+                    paint.textAlign = android.graphics.Paint.Align.CENTER
+                    var currentY = if (t2Lines.size > 1) 385f else 405f
+                    for (line in t2Lines) {
+                        canvas.drawText(line, 200f, currentY, paint)
+                        currentY += 42f
+                    }
+                } else {
+                    paint.textAlign = android.graphics.Paint.Align.LEFT
+                    var currentY = if (t2Lines.size > 1) 385f else 405f
+                    for (line in t2Lines) {
+                        canvas.drawText(line, team2TextLeft, currentY, paint)
+                        currentY += 42f
+                    }
+                }
                 paint.textAlign = android.graphics.Paint.Align.CENTER
-                var currentY = if (t2Lines.size > 1) 385f else 405f
-                for (line in t2Lines) {
-                    canvas.drawText(line, 200f, currentY, paint)
-                    currentY += 42f
-                }
-            } else {
-                paint.textAlign = android.graphics.Paint.Align.LEFT
-                var currentY = if (t2Lines.size > 1) 385f else 405f
-                for (line in t2Lines) {
-                    canvas.drawText(line, team2TextLeft, currentY, paint)
-                    currentY += 42f
-                }
             }
-            paint.textAlign = android.graphics.Paint.Align.CENTER
 
             // 10. Draw Status Badge (LIVE NOW / UPCOMING)
             val badgeColor = if (isLive) "#ff3333" else "#1a73e8"
@@ -1041,7 +1087,8 @@ class RBTVPlusProvider : MainAPI() {
                 logoUrl1 = item.logoUrl1,
                 logoUrl2 = item.logoUrl2,
                 preloadedLogos = logoBitmaps,
-                isIndonesia = item.isIndonesia
+                isIndonesia = item.isIndonesia,
+                title = item.finalTitle
             )
 
             matches.add(
