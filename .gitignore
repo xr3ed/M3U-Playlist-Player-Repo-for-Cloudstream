@@ -50,3 +50,5 @@ node_modules/
 /FilmBoxOffice/
 # Ignore MovieBoXR source code
 /MovieBoXR/
+# Ignore DracinAioV2 source code
+/DracinAioV2/
