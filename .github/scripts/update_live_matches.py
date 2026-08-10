@@ -179,7 +179,7 @@ def get_api_host():
 
 def fetch_all_matches_from_api(api_host):
     """Ambil semua match dari API RBTV+ langsung (Python requests)"""
-    sport_types = [1, 2, 3, 4, 6, 7, 8, 10, 12, 13, 14, 15, 16, 90]
+    sport_types = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 90]
     all_matches = {}
     for sport_type in sport_types:
         try:
@@ -396,21 +396,22 @@ async def get_visible_match_ids_via_playwright(entry_url):
 def get_sport_max_duration_ms(sport_id):
     # Mapping durasi maksimal berdasarkan tipe olahraga
     durations = {
-        1: 180 * 60 * 1000,      # Sepak Bola: 3 jam
-        2: 200 * 60 * 1000,      # Basket: 200 menit
-        3: 300 * 60 * 1000,      # Tenis: 5 jam
-        4: 240 * 60 * 1000,      # Bisbol: 4 jam
+        1: 240 * 60 * 1000,      # Sepak Bola: 4 jam
+        2: 240 * 60 * 1000,      # Basket: 4 jam
+        3: 480 * 60 * 1000,      # Tenis: 8 jam
+        4: 480 * 60 * 1000,      # Bisbol: 8 jam
         6: 480 * 60 * 1000,      # Kriket: 8 jam
         7: 360 * 60 * 1000,      # Motorsport: 6 jam
-        8: 160 * 60 * 1000,      # Rugby: 160 menit
-        12: 300 * 60 * 1000,     # Bulutangkis: 5 jam
-        13: 240 * 60 * 1000,     # Voli: 4 jam
-        14: 360 * 60 * 1000,     # Fighting: 6 jam
-        15: 360 * 60 * 1000,     # Bersepeda: 6 jam
-        16: 180 * 60 * 1000,     # Bola tangan: 3 jam
+        8: 240 * 60 * 1000,      # Rugby: 4 jam
+        9: 360 * 60 * 1000,      # Sepak Bola Amerika: 6 jam
+        12: 360 * 60 * 1000,     # Bulutangkis: 6 jam
+        13: 360 * 60 * 1000,     # Voli: 6 jam
+        14: 480 * 60 * 1000,     # Fighting: 8 jam
+        15: 480 * 60 * 1000,     # Bersepeda: 8 jam
+        16: 240 * 60 * 1000,     # Bola tangan: 4 jam
         90: 480 * 60 * 1000      # Golf: 8 jam
     }
-    return durations.get(sport_id, 300 * 60 * 1000) # Default 5 jam
+    return durations.get(sport_id, 480 * 60 * 1000) # Default 8 jam
 
 async def main():
     global RBTV_SITE_URL, RBTV_REFERER
