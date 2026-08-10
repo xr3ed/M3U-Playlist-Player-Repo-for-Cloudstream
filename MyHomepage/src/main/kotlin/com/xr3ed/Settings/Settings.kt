@@ -252,7 +252,17 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
                 outputStream?.bufferedWriter()?.use { it.write(code) }
                 showToast("Pengaturan berhasil diekspor ke file!")
             } catch (e: Exception) {
-                showToast("Gagal menyimpan file: ${e.message}")
+                // Fallback to direct write to /sdcard/Download
+                try {
+                    val code = sm.exportSettings(requireContext())
+                    val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                    if (!downloadDir.exists()) downloadDir.mkdirs()
+                    val file = java.io.File(downloadDir, "my_homepage_config.json")
+                    file.writeText(code)
+                    showToast("Simpan ke folder /Download/my_homepage_config.json (Fallback)")
+                } catch (ex: Exception) {
+                    showToast("Gagal menyimpan file: ${e.message}")
+                }
             }
         } else if (requestCode == 9999 && resultCode == android.app.Activity.RESULT_OK) {
             val uri = data?.data ?: return
@@ -273,7 +283,27 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
                     showToast("File kosong!")
                 }
             } catch (e: Exception) {
-                showToast("Gagal membaca file: ${e.message}")
+                // Fallback to direct read from /sdcard/Download
+                try {
+                    val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                    val file = java.io.File(downloadDir, "my_homepage_config.json")
+                    if (file.exists()) {
+                        val fileCode = file.readText().trim()
+                        val success = sm.importSettings(requireContext(), fileCode)
+                        if (success) {
+                            plugin.reload()
+                            showToast("Berhasil diimpor! Merestart...")
+                            dismiss()
+                            restartApp()
+                        } else {
+                            showToast("Gagal: Format file tidak valid!")
+                        }
+                    } else {
+                        showToast("Gagal membaca file: ${e.message}")
+                    }
+                } catch (ex: Exception) {
+                    showToast("Gagal membaca file: ${e.message}")
+                }
             }
         }
     }
