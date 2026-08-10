@@ -18,6 +18,8 @@ from datetime import datetime, timezone, timedelta
 from playwright.async_api import async_playwright
 from urllib.parse import urljoin
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 WIB = timezone(timedelta(hours=7))
 GIST_ID = os.environ.get("GIST_ID")
 GIST_TOKEN = os.environ.get("GIST_TOKEN", "")
@@ -390,19 +392,21 @@ async def get_visible_match_ids_via_playwright(entry_url):
 def get_sport_max_duration_ms(sport_id):
     # Mapping durasi maksimal berdasarkan tipe olahraga
     durations = {
-        1: 130 * 60 * 1000,      # Sepak Bola: 130 menit
-        2: 160 * 60 * 1000,      # Basket: 160 menit
+        1: 180 * 60 * 1000,      # Sepak Bola: 3 jam
+        2: 200 * 60 * 1000,      # Basket: 200 menit
         3: 300 * 60 * 1000,      # Tenis: 5 jam
         4: 240 * 60 * 1000,      # Bisbol: 4 jam
         6: 480 * 60 * 1000,      # Kriket: 8 jam
-        7: 210 * 60 * 1000,      # Motorsport: 3,5 jam
-        8: 120 * 60 * 1000,      # Rugby: 2 jam
-        12: 180 * 60 * 1000,     # Bulutangkis: 3 jam
-        13: 180 * 60 * 1000,     # Voli: 3 jam
+        7: 360 * 60 * 1000,      # Motorsport: 6 jam
+        8: 160 * 60 * 1000,      # Rugby: 160 menit
+        12: 300 * 60 * 1000,     # Bulutangkis: 5 jam
+        13: 240 * 60 * 1000,     # Voli: 4 jam
         14: 360 * 60 * 1000,     # Fighting: 6 jam
+        15: 360 * 60 * 1000,     # Bersepeda: 6 jam
+        16: 180 * 60 * 1000,     # Bola tangan: 3 jam
         90: 480 * 60 * 1000      # Golf: 8 jam
     }
-    return durations.get(sport_id, 180 * 60 * 1000) # Default 3 jam
+    return durations.get(sport_id, 300 * 60 * 1000) # Default 5 jam
 
 async def main():
     global RBTV_SITE_URL, RBTV_REFERER
@@ -449,13 +453,13 @@ async def main():
         source = f"intersection (API+DOM, {len(visible_ids)} DOM ids)"
         print(f"\n[3] Menggunakan intersection: {len(live_matches)} live matches")
     else:
-        # Fallback: API filter ONGOING + 60 menit
+        # Fallback: API filter ONGOING + 8 jam
         live_matches = []
         for m in all_matches.values():
             if m['status'] >= 10000: continue
             if m['status'] in ONGOING: live_matches.append(m)
-            elif m['time'] > 0 and (now_ms - get_sport_max_duration_ms(m['sport'])) <= m['time'] <= (now_ms + 60 * 60 * 1000): live_matches.append(m)
-        source = "API filter fallback (ONGOING + 60min)"
+            elif m['time'] > 0 and (now_ms - get_sport_max_duration_ms(m['sport'])) <= m['time'] <= (now_ms + 8 * 60 * 60 * 1000): live_matches.append(m)
+        source = "API filter fallback (ONGOING + 8h)"
         print(f"\n[3] Fallback API filter: {len(live_matches)} live matches")
 
     # Format output
