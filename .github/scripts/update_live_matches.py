@@ -378,7 +378,7 @@ async def main():
         for m in all_matches.values():
             if m['status'] >= 10000: continue
             if m['status'] in ONGOING: live_matches.append(m)
-            elif m['time'] > 0 and now_ms >= (m['time'] + 60 * 60 * 1000): live_matches.append(m)
+            elif m['time'] > 0 and (now_ms - 150 * 60 * 1000) <= m['time'] <= (now_ms + 60 * 60 * 1000): live_matches.append(m)
         source = "API filter fallback (ONGOING + 60min)"
         print(f"\n[3] Fallback API filter: {len(live_matches)} live matches")
 
