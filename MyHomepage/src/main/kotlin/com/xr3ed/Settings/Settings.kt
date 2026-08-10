@@ -249,7 +249,16 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
             try {
                 val code = sm.exportSettings(requireContext())
                 val outputStream = activity.contentResolver.openOutputStream(uri)
-                outputStream?.bufferedWriter()?.use { it.write(code) }
+                outputStream?.use { it.write(code.toByteArray(Charsets.UTF_8)) }
+                
+                val size = try {
+                    activity.contentResolver.openFileDescriptor(uri, "r")?.use { it.statSize } ?: 0L
+                } catch (ex: Exception) {
+                    0L
+                }
+                if (size == 0L) {
+                    throw java.io.IOException("Sistem memblokir penulisan data (0 bytes)")
+                }
                 showToast("Pengaturan berhasil diekspor ke file!")
             } catch (e: Exception) {
                 // Fallback to direct write to /sdcard/Download
