@@ -56,7 +56,7 @@
         "internalName":  "DubIndoXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
         "version":  7,
-        "description":  "Dubbindo â€” status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
+        "description":  "Dubbindo Ã¢â‚¬â€ status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
         "authors":  [
                         "xr3ed"
                     ],
@@ -77,7 +77,7 @@
                         "Movie"
                     ],
         "description":  "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
-        "version":  35,
+        "version":  37,
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
         "apiVersion":  1,
         "name":  "WifiMovie",
