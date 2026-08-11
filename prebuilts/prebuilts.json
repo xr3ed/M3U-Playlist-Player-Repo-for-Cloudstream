@@ -1,74 +1,91 @@
-[
-  {
-    "name": "FilmBoxOffice",
-    "internalName": "FilmBoxOffice",
-    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/FilmBoxOffice.cs3",
-    "version": 36,
-    "description": "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
-    "authors": [
-      "xr3ed"
-    ],
-    "tvTypes": [
-      "Movie"
-    ],
-    "apiVersion": 1,
-    "status": 1,
-    "language": "id",
-    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
-  },
-  {
-    "name": "MovieBoXR",
-    "internalName": "MovieBoXR",
-    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
-    "version": 32,
-    "description": "Multi Language Movies and Series Provider",
-    "authors": [
-      "xr3ed"
-    ],
-    "tvTypes": [
-      "Movie",
-      "TvSeries"
-    ],
-    "apiVersion": 1,
-    "status": 1,
-    "language": "id",
-    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
-  },
-  {
-    "name": "DracinAio V2",
-    "internalName": "DracinAioV2",
-    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
-    "version": 62,
-    "description": "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
-    "authors": [
-      "xr3ed"
-    ],
-    "tvTypes": [
-      "TvSeries"
-    ],
-    "apiVersion": 1,
-    "status": 1,
-    "language": "id",
-    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
-  },
-  {
-    "name": "DubIndoXR",
-    "internalName": "DubIndoXR",
-    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
-    "version": 7,
-    "description": "Dubbindo — status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
-    "authors": [
-      "xr3ed"
-    ],
-    "tvTypes": [
-      "TvSeries",
-      "Movie",
-      "Cartoon",
-      "Anime"
-    ],
-    "apiVersion": 1,
-    "status": 1,
-    "language": "id",
-    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
-  }
+﻿[
+    {
+        "name":  "FilmBoxOffice",
+        "internalName":  "FilmBoxOffice",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/FilmBoxOffice.cs3",
+        "version":  36,
+        "description":  "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "Movie"
+                    ],
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "MovieBoXR",
+        "internalName":  "MovieBoXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
+        "version":  32,
+        "description":  "Multi Language Movies and Series Provider",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "Movie",
+                        "TvSeries"
+                    ],
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "DracinAio V2",
+        "internalName":  "DracinAioV2",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
+        "version":  62,
+        "description":  "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "TvSeries"
+                    ],
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "DubIndoXR",
+        "internalName":  "DubIndoXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
+        "version":  7,
+        "description":  "Dubbindo â€” status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "TvSeries",
+                        "Movie",
+                        "Cartoon",
+                        "Anime"
+                    ],
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/WIFI-MOVIE.cs3",
+        "tvTypes":  [
+                        "Movie"
+                    ],
+        "description":  "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
+        "version":  35,
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "apiVersion":  1,
+        "name":  "WifiMovie",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "internalName":  "WifiMovie",
+        "language":  "id",
+        "status":  1
+    }
 ]

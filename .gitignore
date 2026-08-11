@@ -54,3 +54,6 @@ node_modules/
 /DracinAioV2/
 # Ignore DubIndoXR source code
 /DubIndoXR/
+
+# Ignore WIFI-MOVIE source code
+/WIFI-MOVIE/
