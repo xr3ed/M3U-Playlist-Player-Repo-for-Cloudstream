@@ -244,7 +244,6 @@ class AnichinXR : MainAPI() {
         val document = app.get(episodeUrl, referer = mainUrl).document
         val candidates = linkedSetOf<Pair<String, String>>()
         val visited = linkedSetOf<String>()
-        val emitted = linkedSetOf<String>()
 
         fun addCandidate(value: String?, label: String = "Anichin") {
             if (value.isNullOrBlank()) return
@@ -276,10 +275,7 @@ class AnichinXR : MainAPI() {
 
         extractKnownVideoUrls(document.html()).forEach { candidates.add(it to "Anichin") }
 
-        val allLinks = java.util.Collections.synchronizedList(mutableListOf<ExtractorLink>())
-        val countedCallback: (ExtractorLink) -> Unit = { link ->
-            allLinks.add(link)
-        }
+        val emittedCleanSources = java.util.Collections.synchronizedSet(mutableSetOf<String>())
 
         val topLevelCandidates = candidates
             .mapNotNull { (url, label) -> normalizeAnyUrl(url, episodeUrl)?.let { it to label } }
@@ -295,7 +291,8 @@ class AnichinXR : MainAPI() {
 
         coroutineScope {
             topLevelCandidates.map { (url, label) ->
-                async {
+                launch {
+                    val candidateLinks = mutableListOf<ExtractorLink>()
                     try {
                         resolveVideoCandidate(
                             url = url,
@@ -303,17 +300,20 @@ class AnichinXR : MainAPI() {
                             referer = episodeUrl,
                             visited = visited,
                             subtitleCallback = subtitleCallback,
-                            callback = countedCallback,
+                            callback = { candidateLinks.add(it) },
                         )
                     } catch (error: Throwable) {
                         if (error is CancellationException) throw error
                         Log.w("Anichin", "Failed resolving server: $label -> $url", error)
                     }
+                    if (candidateLinks.isNotEmpty()) {
+                        emitBestLinks(candidateLinks, emittedCleanSources, callback)
+                    }
                 }
-            }.awaitAll()
+            }
         }
 
-        if (allLinks.isEmpty()) {
+        if (emittedCleanSources.isEmpty()) {
             val downloadCandidates = document.select(".soraddlx a[href], .dlbox a[href], .download a[href], .entry-content a[href], a[href*='mirrored.to'], a[href*='apk.miuiku.com']")
                 .mapNotNull { element ->
                     element.attr("abs:href").ifBlank { element.attr("href") }
@@ -328,7 +328,8 @@ class AnichinXR : MainAPI() {
 
             coroutineScope {
                 downloadCandidates.map { url ->
-                    async {
+                    launch {
+                        val candidateLinks = mutableListOf<ExtractorLink>()
                         try {
                             resolveVideoCandidate(
                                 url = url,
@@ -336,45 +337,56 @@ class AnichinXR : MainAPI() {
                                 referer = episodeUrl,
                                 visited = visited,
                                 subtitleCallback = subtitleCallback,
-                                callback = countedCallback,
+                                callback = { candidateLinks.add(it) },
                             )
                         } catch (error: Throwable) {
                             if (error is CancellationException) throw error
                             Log.w("Anichin", "Failed resolving download: $url", error)
                         }
+                        if (candidateLinks.isNotEmpty()) {
+                            emitBestLinks(candidateLinks, emittedCleanSources, callback)
+                        }
                     }
-                }.awaitAll()
+                }
             }
         }
 
-        // Process all accumulated links
-        val grouped = allLinks.groupBy { link ->
-            when {
-                link.source.equals("Morencius", ignoreCase = true) -> "VidHide [ADS]"
-                link.source.equals("Vidhide", ignoreCase = true) -> "VidHide [ADS]"
-                link.source.equals("StreamRuby", ignoreCase = true) -> "Streamruby [ADS]"
-                link.source.equals("OK.ru", ignoreCase = true) -> "Okru"
-                link.source.equals("Odnoklassniki", ignoreCase = true) -> "Okru"
-                link.source.equals("Rumble", ignoreCase = true) -> "Rumble [Setting DNS]"
-                link.source.equals("RPMShare", ignoreCase = true) -> "RPM Share [ADS]"
-                link.source.equals("Dailymotion", ignoreCase = true) -> "Dailymotion [ADS]"
-                link.source.equals("Geodailymotion", ignoreCase = true) -> "Dailymotion [ADS]"
-                link.source.equals("D-Tube", ignoreCase = true) -> "DTube"
-                link.source.equals("Source Auto", ignoreCase = true) -> "New Player [ADS]"
-                link.source.equals("New Player [ADS]", ignoreCase = true) -> "New Player [ADS]"
-                link.source.equals("TurboVIP", ignoreCase = true) -> "New Player"
-                else -> link.source
-            }
-        }
+        return emittedCleanSources.isNotEmpty()
+    }
 
+    private fun cleanSourceName(source: String): String {
+        return when {
+            source.equals("Morencius", ignoreCase = true) -> "VidHide [ADS]"
+            source.equals("Vidhide", ignoreCase = true) -> "VidHide [ADS]"
+            source.equals("StreamRuby", ignoreCase = true) -> "Streamruby [ADS]"
+            source.equals("OK.ru", ignoreCase = true) -> "Okru"
+            source.equals("Odnoklassniki", ignoreCase = true) -> "Okru"
+            source.equals("Rumble", ignoreCase = true) -> "Rumble [Setting DNS]"
+            source.equals("RPMShare", ignoreCase = true) -> "RPM Share [ADS]"
+            source.equals("Dailymotion", ignoreCase = true) -> "Dailymotion [ADS]"
+            source.equals("Geodailymotion", ignoreCase = true) -> "Dailymotion [ADS]"
+            source.equals("D-Tube", ignoreCase = true) -> "DTube"
+            source.equals("Source Auto", ignoreCase = true) -> "New Player [ADS]"
+            source.equals("New Player [ADS]", ignoreCase = true) -> "New Player [ADS]"
+            source.equals("TurboVIP", ignoreCase = true) -> "New Player"
+            else -> source
+        }
+    }
+
+    private suspend fun emitBestLinks(
+        candidateLinks: List<ExtractorLink>,
+        emittedCleanSources: MutableSet<String>,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        val grouped = candidateLinks.groupBy { link ->
+            cleanSourceName(link.source)
+        }
         grouped.forEach { (cleanSource, links) ->
-            // For each server/source group, we only want to emit 1 link.
-            // If there are multiple links, we pick the one with the highest quality.
-            val bestLink = links.maxByOrNull { it.quality }
-            if (bestLink != null) {
-                val cleanName = "$cleanSource Auto"
-                val finalLink = kotlinx.coroutines.runBlocking {
-                    newExtractorLink(
+            if (emittedCleanSources.add(cleanSource)) {
+                val bestLink = links.maxByOrNull { it.quality }
+                if (bestLink != null) {
+                    val cleanName = "$cleanSource Auto"
+                    val finalLink = newExtractorLink(
                         source = cleanSource,
                         name = cleanName,
                         url = bestLink.url,
@@ -384,13 +396,10 @@ class AnichinXR : MainAPI() {
                         this.quality = Qualities.Unknown.value // Force Auto in UI
                         this.headers = bestLink.headers
                     }
+                    callback(finalLink)
                 }
-                callback(finalLink)
-                emitted.add(bestLink.url)
             }
         }
-
-        return emitted.isNotEmpty()
     }
 
     private suspend fun resolveVideoCandidate(
