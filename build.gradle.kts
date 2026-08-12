@@ -8,6 +8,7 @@ import java.util.Properties
 buildscript {
     repositories {
         google()
+        maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         maven("https://jitpack.io")
     }
@@ -22,6 +23,7 @@ buildscript {
 allprojects {
     repositories {
         google()
+        maven("https://maven.aliyun.com/repository/public")
         mavenCentral()
         maven("https://jitpack.io")
     }
