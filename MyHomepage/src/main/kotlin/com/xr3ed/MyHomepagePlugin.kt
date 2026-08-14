@@ -26,6 +26,8 @@ class MyHomepagePlugin : Plugin() {
         activity = null
     }
 
+    private var lastObservedActivityHash: Int = 0
+
     private fun restoreSettings() {
         openSettings = { ctx ->
             val act = ctx as? AppCompatActivity
@@ -38,6 +40,43 @@ class MyHomepagePlugin : Plugin() {
         }
     }
 
+    private fun setupSettingsButtonListener(act: AppCompatActivity?) {
+        if (act == null || act.isFinishing || act.isDestroyed) return
+        val actHash = System.identityHashCode(act)
+        if (lastObservedActivityHash == actHash) return
+        lastObservedActivityHash = actHash
+
+        val decorView = act.window?.decorView ?: return
+        decorView.viewTreeObserver?.addOnGlobalLayoutListener(object : android.view.ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if (act.isFinishing || act.isDestroyed) {
+                    try {
+                        decorView.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                    } catch (e: Throwable) {}
+                    return
+                }
+                try {
+                    val resId = act.resources.getIdentifier("settings_my_homepage", "id", act.packageName)
+                    if (resId != 0) {
+                        val view = act.findViewById<android.view.View>(resId)
+                        if (view != null) {
+                            val tagKey = resId
+                            if (view.getTag(tagKey) == null) {
+                                view.setTag(tagKey, true)
+                                view.setOnClickListener {
+                                    restoreSettings()
+                                    openSettings?.invoke(act)
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Throwable) {
+                    Log.e("MyHomepage", "Error in global layout listener: ${e.message}")
+                }
+            }
+        })
+    }
+
     override fun load(context: Context) {
         cleanup()
         pluginScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -46,6 +85,7 @@ class MyHomepagePlugin : Plugin() {
         registerMainAPI(MyHomepage(this))
 
         restoreSettings()
+        setupSettingsButtonListener(context as? AppCompatActivity)
 
         val handler = android.os.Handler(android.os.Looper.getMainLooper())
         handler.post { restoreSettings() }
@@ -57,8 +97,10 @@ class MyHomepagePlugin : Plugin() {
         val callback = object : android.app.Application.ActivityLifecycleCallbacks {
             override fun onActivityResumed(act: android.app.Activity) {
                 if (act is MainActivity) {
-                    this@MyHomepagePlugin.activity = act as? AppCompatActivity
+                    val compatAct = act as? AppCompatActivity
+                    this@MyHomepagePlugin.activity = compatAct
                     restoreSettings()
+                    setupSettingsButtonListener(compatAct)
                 }
             }
             override fun onActivityCreated(act: android.app.Activity, savedInstanceState: android.os.Bundle?) {}
