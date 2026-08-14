@@ -26,13 +26,7 @@ class MyHomepagePlugin : Plugin() {
         activity = null
     }
 
-    override fun load(context: Context) {
-        cleanup()
-        pluginScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-        activity = context as? AppCompatActivity
-
-        registerMainAPI(MyHomepage(this))
-
+    private fun restoreSettings() {
         openSettings = { ctx ->
             val act = ctx as? AppCompatActivity
             if (act != null && !act.isFinishing && !act.isDestroyed) {
@@ -42,12 +36,28 @@ class MyHomepagePlugin : Plugin() {
                 Log.e("MyHomepage", "Activity is not valid, cannot show settings dialog")
             }
         }
+    }
+
+    override fun load(context: Context) {
+        cleanup()
+        pluginScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        activity = context as? AppCompatActivity
+
+        registerMainAPI(MyHomepage(this))
+
+        restoreSettings()
+
+        pluginScope.launch(Dispatchers.Main) {
+            delay(3000)
+            restoreSettings()
+        }
 
         val appInstance = context.applicationContext as? android.app.Application
         val callback = object : android.app.Application.ActivityLifecycleCallbacks {
             override fun onActivityResumed(act: android.app.Activity) {
                 if (act is MainActivity) {
                     this@MyHomepagePlugin.activity = act as? AppCompatActivity
+                    restoreSettings()
                 }
             }
             override fun onActivityCreated(act: android.app.Activity, savedInstanceState: android.os.Bundle?) {}
