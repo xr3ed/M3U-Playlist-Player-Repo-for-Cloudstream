@@ -47,10 +47,11 @@ class MyHomepagePlugin : Plugin() {
 
         restoreSettings()
 
-        pluginScope.launch(Dispatchers.Main) {
-            delay(3000)
-            restoreSettings()
-        }
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        handler.post { restoreSettings() }
+        handler.postDelayed({ restoreSettings() }, 1000)
+        handler.postDelayed({ restoreSettings() }, 3000)
+        handler.postDelayed({ restoreSettings() }, 5000)
 
         val appInstance = context.applicationContext as? android.app.Application
         val callback = object : android.app.Application.ActivityLifecycleCallbacks {
