@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.lagradost.cloudstream3.CommonActivity.showToast
 import com.lagradost.cloudstream3.utils.AppContextUtils.setDefaultFocus
-import com.xr3ed.liveevent.BuildConfig
 import com.xr3ed.liveevent.LiveEventPlugin
 import com.xr3ed.liveevent.LiveEventStorageManager
 
@@ -25,24 +24,32 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
     private val sm = LiveEventStorageManager
     private val res: Resources = plugin.resources ?: throw Exception("Unable to read resources")
 
+    private fun getResId(name: String, defType: String): Int {
+        var id = res.getIdentifier(name, defType, "com.xr3ed")
+        if (id == 0) id = res.getIdentifier(name, defType, "com.xr3ed.LiveEvent")
+        if (id == 0) id = res.getIdentifier(name, defType, "com.xr3ed.liveevent")
+        if (id == 0) id = res.getIdentifier(name, defType, null)
+        return id
+    }
+
     private fun getLayout(name: String, inflater: LayoutInflater, container: ViewGroup?): View {
-        val id = res.getIdentifier(name, "layout", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val id = getResId(name, "layout")
         val layout = res.getLayout(id)
         return inflater.inflate(layout, container, false)
     }
 
     private fun getDrawable(name: String): Drawable {
-        val id = res.getIdentifier(name, "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val id = getResId(name, "drawable")
         return res.getDrawable(id, null) ?: throw Exception("Unable to find drawable $name")
     }
 
     private fun <T : View> View.findView(name: String): T {
-        val id = res.getIdentifier(name, "id", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val id = getResId(name, "id")
         return this.findViewById(id)
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = res.getIdentifier("outline", "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val outlineId = getResId("outline", "drawable")
         this.background = res.getDrawable(outlineId, null)
     }
 

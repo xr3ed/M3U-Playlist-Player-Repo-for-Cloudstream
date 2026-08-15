@@ -16,7 +16,6 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.lagradost.cloudstream3.CommonActivity.showToast
-import com.xr3ed.liveevent.BuildConfig
 import com.xr3ed.liveevent.LiveEventPlugin
 import com.xr3ed.liveevent.LiveEventStorageManager
 import com.xr3ed.liveevent.LiveEventUtils
@@ -35,23 +34,31 @@ class LiveEventReorder(val plugin: LiveEventPlugin) : BottomSheetDialogFragment(
         extensions = sm.fetchExtensions(requireContext())
     }
 
+    private fun getResId(name: String, defType: String): Int {
+        var id = res.getIdentifier(name, defType, "com.xr3ed")
+        if (id == 0) id = res.getIdentifier(name, defType, "com.xr3ed.LiveEvent")
+        if (id == 0) id = res.getIdentifier(name, defType, "com.xr3ed.liveevent")
+        if (id == 0) id = res.getIdentifier(name, defType, null)
+        return id
+    }
+
     private fun getLayout(name: String, inflater: LayoutInflater, container: ViewGroup?): View {
-        val id = res.getIdentifier(name, "layout", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val id = getResId(name, "layout")
         return inflater.inflate(res.getLayout(id), container, false)
     }
 
     private fun getDrawable(name: String): Drawable {
-        val id = res.getIdentifier(name, "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val id = getResId(name, "drawable")
         return res.getDrawable(id, null) ?: throw Exception("Unable to find drawable $name")
     }
 
     private fun <T : View> View.findView(name: String): T {
-        val id = res.getIdentifier(name, "id", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val id = getResId(name, "id")
         return findViewById(id)
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = res.getIdentifier("outline", "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val outlineId = getResId("outline", "drawable")
         background = res.getDrawable(outlineId, null)
     }
 

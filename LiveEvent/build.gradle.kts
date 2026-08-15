@@ -1,7 +1,6 @@
-version = 1
+version = 2
 
 android {
-    namespace = "com.xr3ed.liveevent"
     buildFeatures {
         buildConfig = true
     }
