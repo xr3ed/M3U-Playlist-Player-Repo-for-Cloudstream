@@ -87,5 +87,26 @@
         "internalName":  "WifiMovie",
         "language":  "id",
         "status":  1
+    },
+    {
+        "name":  "idliXR",
+        "internalName":  "idliXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/idliXR.cs3",
+        "version":  52,
+        "description":  "Idlix provider with active-domain API routing, detail URL normalization, provider session lifecycle, and session redeem playback flow.",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "Movie",
+                        "TvSeries",
+                        "Anime",
+                        "AsianDrama"
+                    ],
+        "iconUrl":  "https://www.google.com/s2/favicons?domain=z2.idlixku.com&sz=%size%",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
     }
 ]

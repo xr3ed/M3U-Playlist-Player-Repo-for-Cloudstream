@@ -46,14 +46,11 @@ __pycache__/
 
 # Node modules
 node_modules/
-# Ignore FilmBoxOffice source code
-/FilmBoxOffice/
-# Ignore MovieBoXR source code
-/MovieBoXR/
-# Ignore DracinAioV2 source code
-/DracinAioV2/
-# Ignore DubIndoXR source code
-/DubIndoXR/
 
-# Ignore WIFI-MOVIE source code
+# Ignore source codes of prebuilt plugins
+/FilmBoxOffice/
+/MovieBoXR/
+/DracinAioV2/
+/DubIndoXR/
 /WIFI-MOVIE/
+/idliXR/
