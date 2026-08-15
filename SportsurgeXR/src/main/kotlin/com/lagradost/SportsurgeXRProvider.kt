@@ -6,6 +6,8 @@ import com.lagradost.SportsurgeXR.BuildConfig
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.net.URI
 import java.net.URLEncoder
 
@@ -231,6 +233,7 @@ class SportsurgeXRProvider : MainAPI() {
 
     private fun downloadBitmap(url: String): android.graphics.Bitmap? {
         return try {
+            logoCache[url]?.let { return it }
             val request = okhttp3.Request.Builder()
                 .url(url)
                 .header("User-Agent", DESKTOP_UA)
@@ -239,11 +242,19 @@ class SportsurgeXRProvider : MainAPI() {
                 if (response.isSuccessful) {
                     val bytes = response.body?.bytes()
                     if (bytes != null) {
-                        android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        val opts = android.graphics.BitmapFactory.Options().apply {
+                            inSampleSize = 2
+                            inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
+                        }
+                        val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
+                        if (bmp != null) {
+                            logoCache[url] = bmp
+                        }
+                        bmp
                     } else null
                 } else null
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             null
         }
     }
@@ -594,12 +605,19 @@ class SportsurgeXRProvider : MainAPI() {
         
         val sortedMatches = matches.sortedByDescending { it.status.contains("live", ignoreCase = true) }
         
-        // Unduh semua logo unik secara paralel terlebih dahulu di Dispatchers.IO
-        val logoUrls = sortedMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
+        // Unduh logo secara terkendali (Semaphore 3) agar hemat RAM di Android TV
+        val logoUrls = sortedMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct().take(25)
+        val logoSemaphore = Semaphore(3)
         val logoBitmaps = coroutineScope {
             logoUrls.map { url ->
                 async(kotlinx.coroutines.Dispatchers.IO) {
-                    url to downloadBitmap(url)
+                    logoSemaphore.withPermit {
+                        try {
+                            url to downloadBitmap(url)
+                        } catch (e: Throwable) {
+                            url to null
+                        }
+                    }
                 }
             }.awaitAll().toMap()
         }
@@ -664,11 +682,18 @@ class SportsurgeXRProvider : MainAPI() {
                 m.team1.contains(query, ignoreCase = true) || m.team2.contains(query, ignoreCase = true)
             }.sortedByDescending { it.status.contains("live", ignoreCase = true) }
             
-            // Unduh logo secara paralel untuk hasil pencarian
-            val logoUrls = filteredMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct()
+            // Unduh logo secara terkendali untuk hasil pencarian
+            val logoUrls = filteredMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct().take(25)
+            val searchLogoSemaphore = Semaphore(3)
             val logoBitmaps = logoUrls.map { url ->
                 async(kotlinx.coroutines.Dispatchers.IO) {
-                    url to downloadBitmap(url)
+                    searchLogoSemaphore.withPermit {
+                        try {
+                            url to downloadBitmap(url)
+                        } catch (e: Throwable) {
+                            url to null
+                        }
+                    }
                 }
             }.awaitAll().toMap()
 
