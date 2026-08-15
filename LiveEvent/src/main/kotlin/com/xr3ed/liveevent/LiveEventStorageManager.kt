@@ -59,15 +59,6 @@ object LiveEventStorageManager {
             }
         }
 
-        // 3. Fallback sinkronisasi: Ambil dari konfigurasi Ultima jika tersedia
-        try {
-            val ultimaList = getKey<Array<*>>("ULTIMA_EXTENSIONS_LIST")
-            if (ultimaList != null && ultimaList.isNotEmpty()) {
-                val json = mapper.writeValueAsString(ultimaList)
-                return mapper.readValue<Array<ExtensionInfo>>(json)
-            }
-        } catch (_: Throwable) {}
-
         return emptyArray()
     }
 

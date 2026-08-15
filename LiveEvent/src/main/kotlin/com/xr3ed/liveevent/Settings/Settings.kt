@@ -245,18 +245,20 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
                 .show()
         }
 
-        // Delete All Data Button
-        val delAllDataBtn = settings.findView<ImageView>("del_all_data_img")
-        delAllDataBtn.setImageDrawable(getDrawable("delete_icon"))
-        delAllDataBtn.makeTvCompatible()
-        delAllDataBtn.setOnClickListener {
+        // Reset Button
+        val deleteBtn = settings.findView<TextView>("delete_img")
+        deleteBtn.text = "Reset"
+        deleteBtn.makeTvCompatible()
+        deleteBtn.setOnClickListener {
             AlertDialog.Builder(requireContext())
-                .setTitle("Reset Data")
+                .setTitle("Reset Live Event")
                 .setMessage("Apakah Anda yakin ingin menghapus semua konfigurasi Live Event?")
                 .setPositiveButton("Ya") { _, _ ->
                     sm.deleteAllData(requireContext())
+                    plugin.reload()
                     showToast("Semua data berhasil dihapus.")
                     dismiss()
+                    restartApp()
                 }
                 .setNegativeButton("Batal", null)
                 .show()
