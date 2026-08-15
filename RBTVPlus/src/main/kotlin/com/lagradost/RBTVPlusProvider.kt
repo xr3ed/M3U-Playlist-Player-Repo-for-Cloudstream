@@ -7,7 +7,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
 import org.json.JSONObject
 import java.net.URI
 import java.net.URL
@@ -83,8 +85,8 @@ class RBTVPlusProvider : MainAPI() {
         private val urlMutex = Mutex()
 
         private fun downloadBitmap(url: String): android.graphics.Bitmap? {
-            android.util.Log.d("RBTVPlusLogo", "Downloading logo: $url")
             return try {
+                logoCache[url]?.let { return it }
                 val refererUrl = resolvedMainUrl ?: BuildConfig.RBTV_MAIN_URL
                 val request = okhttp3.Request.Builder()
                     .url(url)
@@ -92,22 +94,22 @@ class RBTVPlusProvider : MainAPI() {
                     .header("Referer", "$refererUrl/")
                     .build()
                 cleanClient.newCall(request).execute().use { response ->
-                    android.util.Log.d("RBTVPlusLogo", "Logo response code: ${response.code} for $url")
                     if (response.isSuccessful) {
                         val bytes = response.body?.bytes()
                         if (bytes != null) {
-                            android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                        } else {
-                            android.util.Log.d("RBTVPlusLogo", "Bytes null for $url")
-                            null
-                        }
-                    } else {
-                        android.util.Log.d("RBTVPlusLogo", "Response not successful for $url")
-                        null
-                    }
+                            val opts = android.graphics.BitmapFactory.Options().apply {
+                                inSampleSize = 2
+                                inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
+                            }
+                            val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
+                            if (bmp != null) {
+                                logoCache[url] = bmp
+                            }
+                            bmp
+                        } else null
+                    } else null
                 }
-            } catch (e: Exception) {
-                android.util.Log.e("RBTVPlusLogo", "Error downloading $url", e)
+            } catch (e: Throwable) {
                 null
             }
         }
@@ -1057,12 +1059,19 @@ class RBTVPlusProvider : MainAPI() {
             }
         }
 
-        // Unduh semua logo unik secara paralel terlebih dahulu di Dispatchers.IO
-        val logoUrls = rawItems.flatMap { listOf(it.logoUrl1, it.logoUrl2) }.filterNotNull().filter { it.isNotEmpty() }.distinct()
+        // Unduh logo secara terkendali (Semaphore 3) agar tidak membebani memori di Android TV
+        val logoUrls = rawItems.flatMap { listOf(it.logoUrl1, it.logoUrl2) }.filterNotNull().filter { it.isNotEmpty() }.distinct().take(25)
+        val logoSemaphore = kotlinx.coroutines.sync.Semaphore(3)
         val logoBitmaps = coroutineScope {
             logoUrls.map { url ->
                 async(kotlinx.coroutines.Dispatchers.IO) {
-                    url to downloadBitmap(url)
+                    logoSemaphore.withPermit {
+                        try {
+                            url to downloadBitmap(url)
+                        } catch (e: Throwable) {
+                            url to null
+                        }
+                    }
                 }
             }.awaitAll().toMap()
         }
