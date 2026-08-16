@@ -11,9 +11,13 @@ import com.xr3ed.liveevent.LiveEventUtils.ExtensionInfo
 import com.xr3ed.liveevent.LiveEventUtils.SectionInfo
 
 object LiveEventStorageManager {
-    // Kunci persis seperti M3UPlaylistPlayer ("saved_playlists_list") agar 100% otomatis tersinkronisasi di Ultima mana pun
-    const val KEY_SAVED_SECTIONS_LIST = "live_event_saved_sections_list"
-    const val KEY_EXT_NAME_ON_HOME = "live_event_ext_name_on_home"
+    // Kunci generik (identik dengan "saved_playlists_list" milik M3UPlaylistPlayer)
+    // agar 100% otomatis tersinkronisasi sebagai SETTINGS oleh Ultima phisher98
+    const val KEY_SAVED_SECTIONS_LIST = "saved_sections_list"
+    const val KEY_FALLBACK_LIVE_SECTIONS = "live_sections_list"
+    const val KEY_LEGACY_SECTIONS_LIST = "live_event_saved_sections_list"
+    const val KEY_EXT_NAME_ON_HOME = "ext_name_on_home_live"
+    const val KEY_LEGACY_EXT_NAME = "live_event_ext_name_on_home"
     const val KEY_LEGACY_EXTENSIONS = "LIVE_EVENT_EXTENSIONS_LIST"
 
     private val mapper = jacksonObjectMapper()
@@ -21,6 +25,7 @@ object LiveEventStorageManager {
     fun getExtNameOnHome(context: Context? = null): Boolean {
         val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context
         return ctx?.getKey<Boolean>(KEY_EXT_NAME_ON_HOME)
+            ?: ctx?.getKey<Boolean>(KEY_LEGACY_EXT_NAME)
             ?: ctx?.getKey<Boolean>("LIVE_EVENT_EXT_NAME_ON_HOME")
             ?: true
     }
@@ -28,6 +33,7 @@ object LiveEventStorageManager {
     fun setExtNameOnHome(context: Context?, value: Boolean) {
         val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context
         ctx?.setKey(KEY_EXT_NAME_ON_HOME, value)
+        ctx?.setKey(KEY_LEGACY_EXT_NAME, value)
     }
 
     /**
@@ -37,8 +43,11 @@ object LiveEventStorageManager {
     fun getSavedSections(context: Context? = null): List<SectionInfo> {
         val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context ?: return emptyList()
 
-        // 1. Baca dari format String sederhana
+        // 1. Baca dari format String generik (SyncCategory.SETTINGS di Ultima phisher98)
         val raw = ctx.getKey<String>(KEY_SAVED_SECTIONS_LIST)
+            ?: ctx.getKey<String>(KEY_FALLBACK_LIVE_SECTIONS)
+            ?: ctx.getKey<String>(KEY_LEGACY_SECTIONS_LIST)
+
         if (!raw.isNullOrBlank()) {
             return raw.split("\n").mapNotNull { line ->
                 if (line.isBlank()) return@mapNotNull null
@@ -106,12 +115,15 @@ object LiveEventStorageManager {
     }
 
     fun saveSections(context: Context?, sections: List<SectionInfo>) {
-        val ctx = context ?: CloudStreamApp.context ?: return
+        val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context ?: return
         // Simpan sebagai plain text String persis seperti M3UPlaylistPlayer
         val raw = sections.joinToString("\n") {
             "${it.pluginName}||${it.name}||${it.url}||${it.enabled}||${it.priority}"
         }
+        // Simpan ke kunci generik agar Ultima phisher98 membackup sebagai SETTINGS
         ctx.setKey(KEY_SAVED_SECTIONS_LIST, raw)
+        ctx.setKey(KEY_FALLBACK_LIVE_SECTIONS, raw)
+        ctx.setKey(KEY_LEGACY_SECTIONS_LIST, raw)
 
         // Juga simpan ke format legacy untuk kompatibilitas ganda
         try {
@@ -119,29 +131,6 @@ object LiveEventStorageManager {
                 ExtensionInfo(name = pName, sections = sList.toTypedArray())
             }.toTypedArray()
             ctx.setKey(KEY_LEGACY_EXTENSIONS, grouped)
-        } catch (_: Throwable) {}
-
-        // Sinkronisasi langsung ke ULTIMA_EXTENSIONS_LIST milik Ultima
-        try {
-            val ultimaExts = ctx.getKey<Array<ExtensionInfo>>("ULTIMA_EXTENSIONS_LIST")?.toMutableList() ?: mutableListOf()
-            val liveEventSections = sections.filter { it.enabled }.map { sec ->
-                SectionInfo(
-                    name = sec.name,
-                    url = "${sec.pluginName}||${sec.name}||${sec.url}",
-                    pluginName = "🔴 Live Event",
-                    enabled = true,
-                    priority = sec.priority
-                )
-            }.toTypedArray()
-
-            val existingIndex = ultimaExts.indexOfFirst { it.name == "🔴 Live Event" || it.name == "Live Event" }
-            val newEntry = ExtensionInfo(name = "🔴 Live Event", sections = liveEventSections)
-            if (existingIndex >= 0) {
-                ultimaExts[existingIndex] = newEntry
-            } else if (liveEventSections.isNotEmpty()) {
-                ultimaExts.add(newEntry)
-            }
-            ctx.setKey("ULTIMA_EXTENSIONS_LIST", ultimaExts.toTypedArray())
         } catch (_: Throwable) {}
     }
 

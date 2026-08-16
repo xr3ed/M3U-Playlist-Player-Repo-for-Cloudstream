@@ -8,6 +8,9 @@ import com.lagradost.cloudstream3.plugins.Plugin
 import com.xr3ed.liveevent.Settings.LiveEventSettings
 import com.lagradost.api.Log
 
+import com.lagradost.cloudstream3.utils.DataStore.getKey
+import com.lagradost.cloudstream3.utils.DataStore.setKey
+
 @CloudstreamPlugin
 class LiveEventPlugin : Plugin() {
     var activity: AppCompatActivity? = null
@@ -22,6 +25,8 @@ class LiveEventPlugin : Plugin() {
         this.pluginContext = context
         activity = context as? AppCompatActivity
 
+        migrateIfNeeded(context)
+
         registerMainAPI(LiveEvent(this))
 
         openSettings = { ctx ->
@@ -31,6 +36,17 @@ class LiveEventPlugin : Plugin() {
                 frag.show(act.supportFragmentManager, "LiveEventSettingsDialog")
             } else {
                 Log.e("LiveEvent", "Activity is not valid, cannot show settings dialog")
+            }
+        }
+    }
+
+    private fun migrateIfNeeded(context: Context) {
+        val generic = context.getKey<String>(LiveEventStorageManager.KEY_SAVED_SECTIONS_LIST)
+        if (generic.isNullOrBlank()) {
+            val legacy = context.getKey<String>(LiveEventStorageManager.KEY_LEGACY_SECTIONS_LIST)
+            if (!legacy.isNullOrBlank()) {
+                context.setKey(LiveEventStorageManager.KEY_SAVED_SECTIONS_LIST, legacy)
+                context.setKey(LiveEventStorageManager.KEY_FALLBACK_LIVE_SECTIONS, legacy)
             }
         }
     }
