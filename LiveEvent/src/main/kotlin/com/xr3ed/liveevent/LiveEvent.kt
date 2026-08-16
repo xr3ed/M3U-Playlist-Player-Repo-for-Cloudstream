@@ -29,7 +29,6 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
     override val hasMainPage = true
     override val hasQuickSearch = true
 
-    private val mapper = jacksonObjectMapper()
     private var sectionNamesList: List<String> = emptyList()
 
     private fun loadSections(): List<MainPageData> {
@@ -37,17 +36,16 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
         val result = mutableListOf<MainPageData>()
         
         val context = CloudStreamApp.context ?: plugin.activity
-        val savedPlugins = LiveEventStorageManager.getCurrentExtensions(context)
+        val savedSections = LiveEventStorageManager.getSavedSections(context)
         val extNameOnHome = LiveEventStorageManager.getExtNameOnHome(context)
 
-        val enabledSections = savedPlugins
-            .flatMap { it.sections?.asList() ?: emptyList() }
+        val enabledSections = savedSections
             .filter { it.enabled }
             .sortedByDescending { it.priority }
 
         enabledSections.forEach { section ->
             try {
-                val sectionKey = mapper.writeValueAsString(section)
+                val sectionKey = "${section.pluginName}||${section.name}||${section.url}"
                 val sectionName = buildSectionName(section, tempSectionNames, extNameOnHome)
                 result += mainPageOf(sectionKey to sectionName)
             } catch (e: Exception) {
@@ -75,24 +73,28 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
     override val mainPage get() = loadSections()
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
-        if (request.name.isEmpty()) {
+        if (request.name.isEmpty() || request.data.isEmpty()) {
             throw ErrorLoadingException("Pilih kategori siaran langsung dari menu pengaturan untuk menampilkan di sini.")
         }
 
         return try {
-            val section = AppUtils.parseJson<SectionInfo>(request.data)
-            val provider = LiveEventUtils.getAllProviders().find { it.name == section.pluginName }
-                ?: throw ErrorLoadingException("Provider '${section.pluginName}' tidak tersedia.")
+            val parts = request.data.split("||")
+            val pluginName = parts[0].trim()
+            val sectionName = parts[1].trim()
+            val sectionUrl = if (parts.size >= 3) parts[2].trim() else ""
+
+            val provider = LiveEventUtils.getAllProviders().find { it.name.equals(pluginName, ignoreCase = true) }
+                ?: throw ErrorLoadingException("Provider '$pluginName' tidak tersedia.")
 
             val liveData = provider.mainPage
-                .find { it.name.equals(section.name, ignoreCase = true) }
+                .find { it.name.equals(sectionName, ignoreCase = true) }
                 ?.data
-                ?: section.url
+                ?: sectionUrl
 
             val response = provider.getMainPage(
                 page,
                 MainPageRequest(
-                    name = section.name,
+                    name = sectionName,
                     data = liveData,
                     horizontalImages = request.horizontalImages
                 )
@@ -105,80 +107,87 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
                 response.hasNext
             )
         } catch (e: Throwable) {
-            Log.e("LiveEvent", "Error loading main page: ${e.message}")
-            e.printStackTrace()
-            null
+            // Fallback parsing for legacy JSON format
+            try {
+                val section = AppUtils.parseJson<SectionInfo>(request.data)
+                val provider = LiveEventUtils.getAllProviders().find { it.name.equals(section.pluginName, ignoreCase = true) }
+                    ?: throw ErrorLoadingException("Provider '${section.pluginName}' tidak tersedia.")
+
+                val liveData = provider.mainPage
+                    .find { it.name.equals(section.name, ignoreCase = true) }
+                    ?.data
+                    ?: section.url
+
+                val response = provider.getMainPage(
+                    page,
+                    MainPageRequest(
+                        name = section.name,
+                        data = liveData,
+                        horizontalImages = request.horizontalImages
+                    )
+                ) ?: return null
+
+                newHomePageResponse(
+                    response.items.map { list ->
+                        HomePageList(request.name, list.list, list.isHorizontalImages)
+                    },
+                    response.hasNext
+                )
+            } catch (_: Throwable) {
+                Log.e("LiveEvent", "Error loading main page: ${e.message}")
+                null
+            }
         }
     }
 
-    override suspend fun search(query: String, page: Int): SearchResponseList {
-        val context = CloudStreamApp.context ?: plugin.activity ?: return emptyList<SearchResponse>().toNewSearchResponseList()
-        val enabledPluginNames = LiveEventStorageManager.getCurrentExtensions(context)
-            .flatMap { it.sections?.asList() ?: emptyList() }
-            .filter { it.enabled }
-            .map { it.pluginName }
-            .distinct()
+    override suspend fun quickSearch(query: String): List<SearchResponse> {
+        return search(query)
+    }
 
-        if (enabledPluginNames.isEmpty()) return emptyList<SearchResponse>().toNewSearchResponseList()
+    override suspend fun search(query: String): List<SearchResponse> {
+        val providers = LiveEventUtils.getAllProviders().filter {
+            !it.javaClass.simpleName.contains("LiveEvent") && 
+            !it.javaClass.simpleName.contains("MyHomepage") && 
+            !it.name.contains("Live Event")
+        }
 
-        val allProviders = LiveEventUtils.getAllProviders()
-
-        val tasks = enabledPluginNames.mapNotNull { pluginName ->
-            val provider = allProviders.find { it.name == pluginName } ?: return@mapNotNull null
+        val searchTasks = providers.map { provider ->
             suspend {
                 try {
-                    val items = provider.search(query, 1)?.items
-                        ?: provider.search(query).orEmpty()
-
-                    items.map { item ->
+                    provider.search(query)?.map { item ->
                         newMovieSearchResponse(
-                            "[$pluginName] ${item.name}",
-                            item.url,
-                            TvType.Live
+                            "[${provider.name}] ${item.name}",
+                            item.url
                         ) {
                             this.posterUrl = item.posterUrl
                             this.posterHeaders = item.posterHeaders
                             this.quality = item.quality
-                            this.id = item.id
                         }
-                    }
+                    } ?: emptyList()
                 } catch (e: Exception) {
-                    Log.e("LiveEvent", "Search failed for '$pluginName': ${e.message}")
-                    emptyList<SearchResponse>()
+                    Log.e("LiveEvent", "Search error on ${provider.name}: ${e.message}")
+                    emptyList()
                 }
             }
         }
 
-        return LiveEventUtils.runLimitedParallel(limit = 4, tasks).flatten().toNewSearchResponseList()
+        val results = LiveEventUtils.runLimitedParallel(4, searchTasks)
+        return results.flatten().distinctBy { it.url }
     }
 
-    override suspend fun load(url: String): LoadResponse {
-        val enabledPlugins = mainPage
-            .mapNotNull {
-                try {
-                    AppUtils.parseJson<SectionInfo>(it.data).pluginName
-                } catch (_: Exception) {
-                    null
-                }
-            }
-
-        val providersToTry = LiveEventUtils.getAllProviders().filter { it.name in enabledPlugins }
-
-        for (provider in providersToTry) {
-            try {
-                val response = provider.load(url)
-
-                if (response != null &&
-                    response.name.isNotBlank() &&
-                    !response.posterUrl.isNullOrBlank()
-                ) {
-                    return response
-                }
-            } catch (_: Throwable) {
-                Log.e("LiveEvent", "Failed loading from ${provider.name}")
-            }
+    override suspend fun load(url: String): LoadResponse? {
+        val providers = LiveEventUtils.getAllProviders().filter {
+            !it.javaClass.simpleName.contains("LiveEvent") && 
+            !it.javaClass.simpleName.contains("MyHomepage") && 
+            !it.name.contains("Live Event")
         }
 
-        return newMovieLoadResponse("🔴 Live Event", "", TvType.Live, "")
+        for (provider in providers) {
+            try {
+                val res = provider.load(url)
+                if (res != null) return res
+            } catch (_: Exception) {}
+        }
+        return null
     }
 }
