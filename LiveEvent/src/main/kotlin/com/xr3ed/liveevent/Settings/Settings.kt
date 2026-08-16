@@ -19,6 +19,7 @@ import com.lagradost.cloudstream3.CommonActivity.showToast
 import com.lagradost.cloudstream3.utils.AppContextUtils.setDefaultFocus
 import com.xr3ed.liveevent.LiveEventPlugin
 import com.xr3ed.liveevent.LiveEventStorageManager
+import com.xr3ed.liveevent.LiveEventUtils
 
 class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment() {
     private val sm = LiveEventStorageManager
@@ -49,8 +50,7 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = getResId("outline", "drawable")
-        this.background = res.getDrawable(outlineId, null)
+        LiveEventUtils.makeTvCompatible(this)
     }
 
     @SuppressLint("SetTextI18n")
@@ -128,9 +128,18 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
                 "Salin Kode ke Clipboard"
             )
 
+            val textColor = LiveEventUtils.getThemeTextColor(activity)
+            val adapter = object : android.widget.ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, options) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as TextView
+                    view.setTextColor(textColor)
+                    return view
+                }
+            }
+
             AlertDialog.Builder(activity)
                 .setTitle("Ekspor Pengaturan Live Event")
-                .setItems(options) { _, which ->
+                .setAdapter(adapter) { _, which ->
                     when (which) {
                         0 -> {
                             try {
@@ -187,9 +196,18 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
                 "Tempel Kode Manual"
             )
 
+            val textColor = LiveEventUtils.getThemeTextColor(activity)
+            val adapter = object : android.widget.ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, options) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as TextView
+                    view.setTextColor(textColor)
+                    return view
+                }
+            }
+
             AlertDialog.Builder(activity)
                 .setTitle("Impor Pengaturan Live Event")
-                .setItems(options) { _, which ->
+                .setAdapter(adapter) { _, which ->
                     when (which) {
                         0 -> {
                             try {
@@ -222,8 +240,17 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
                             }
                         }
                         2 -> {
-                            val input = EditText(activity)
-                            input.hint = "Tempel teks konfigurasi di sini..."
+                            val input = EditText(activity).apply {
+                                hint = "Tempel teks konfigurasi di sini..."
+                                setTextColor(textColor)
+                                val hintColor = android.graphics.Color.argb(
+                                    128,
+                                    android.graphics.Color.red(textColor),
+                                    android.graphics.Color.green(textColor),
+                                    android.graphics.Color.blue(textColor)
+                                )
+                                setHintTextColor(hintColor)
+                            }
                             AlertDialog.Builder(activity)
                                 .setTitle("Impor via Teks")
                                 .setView(input)

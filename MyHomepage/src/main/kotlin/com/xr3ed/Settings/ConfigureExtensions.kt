@@ -50,8 +50,7 @@ class MyHomepageConfigureExtensions(val plugin: MyHomepagePlugin) : BottomSheetD
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = res.getIdentifier("outline", "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
-        this.background = res.getDrawable(outlineId, null)
+        MyHomepageUtils.makeTvCompatible(this)
     }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")

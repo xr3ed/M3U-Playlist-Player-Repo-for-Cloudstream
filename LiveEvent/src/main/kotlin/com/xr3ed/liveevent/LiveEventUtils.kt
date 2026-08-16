@@ -126,4 +126,43 @@ object LiveEventUtils {
             }.awaitAll()
         }
     }
+
+    fun getThemeTextColor(context: android.content.Context): Int {
+        val typedValue = android.util.TypedValue()
+        val resolved = context.theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
+        if (resolved && typedValue.data != 0) {
+            return typedValue.data
+        }
+        val fallbackId = context.resources.getIdentifier("textColor", "attr", context.packageName)
+        if (fallbackId != 0 && context.theme.resolveAttribute(fallbackId, typedValue, true)) {
+            return typedValue.data
+        }
+        return android.graphics.Color.WHITE
+    }
+
+    fun makeTvCompatible(view: android.view.View) {
+        val ctx = view.context
+        val strokeColor = getThemeTextColor(ctx)
+        val strokeWidth = (2 * ctx.resources.displayMetrics.density).toInt()
+        val cornerRadius = 4 * ctx.resources.displayMetrics.density
+
+        val focusedDrawable = android.graphics.drawable.GradientDrawable().apply {
+            setStroke(strokeWidth, strokeColor)
+            setCornerRadius(cornerRadius)
+        }
+        val hoveredDrawable = android.graphics.drawable.GradientDrawable().apply {
+            val r = android.graphics.Color.red(strokeColor)
+            val g = android.graphics.Color.green(strokeColor)
+            val b = android.graphics.Color.blue(strokeColor)
+            setColor(android.graphics.Color.argb(35, r, g, b))
+            setCornerRadius(cornerRadius)
+        }
+        val stateList = android.graphics.drawable.StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_focused), focusedDrawable)
+            addState(intArrayOf(android.R.attr.state_hovered), hoveredDrawable)
+            addState(intArrayOf(), android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+        }
+        view.background = stateList
+        view.isFocusable = true
+    }
 }

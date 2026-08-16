@@ -57,8 +57,7 @@ class LiveEventReorder(val plugin: LiveEventPlugin) : BottomSheetDialogFragment(
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = getResId("outline", "drawable")
-        background = res.getDrawable(outlineId, null)
+        LiveEventUtils.makeTvCompatible(this)
     }
 
     override fun onCreateView(

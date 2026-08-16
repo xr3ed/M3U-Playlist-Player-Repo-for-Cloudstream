@@ -51,8 +51,7 @@ class MyHomepageReorder(val plugin: MyHomepagePlugin) : BottomSheetDialogFragmen
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = res.getIdentifier("outline", "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
-        background = res.getDrawable(outlineId, null)
+        MyHomepageUtils.makeTvCompatible(this)
     }
 
     override fun onCreateView(

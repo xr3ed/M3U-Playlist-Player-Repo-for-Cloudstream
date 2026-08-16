@@ -20,6 +20,7 @@ import com.lagradost.cloudstream3.utils.AppContextUtils.setDefaultFocus
 import com.xr3ed.BuildConfig
 import com.xr3ed.MyHomepagePlugin
 import com.xr3ed.MyHomepageStorageManager
+import com.xr3ed.MyHomepageUtils
 
 class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragment() {
     private val sm = MyHomepageStorageManager
@@ -42,8 +43,7 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = res.getIdentifier("outline", "drawable", BuildConfig.LIBRARY_PACKAGE_NAME)
-        this.background = res.getDrawable(outlineId, null)
+        MyHomepageUtils.makeTvCompatible(this)
     }
 
     @SuppressLint("SetTextI18n")
@@ -89,7 +89,7 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
 
         // Reorder Button
         val reorderBtn = settings.findView<ImageView>("reorder_img")
-        reorderBtn.setImageDrawable(getDrawable("edit_icon"))
+        reorderBtn.setImageDrawable(getDrawable("save_icon"))
         reorderBtn.makeTvCompatible()
         reorderBtn.setOnClickListener {
             val reorder = MyHomepageReorder(plugin)
@@ -121,9 +121,18 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
                 "Salin Kode ke Clipboard"
             )
 
+            val textColor = MyHomepageUtils.getThemeTextColor(activity)
+            val adapter = object : android.widget.ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, options) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as TextView
+                    view.setTextColor(textColor)
+                    return view
+                }
+            }
+
             AlertDialog.Builder(activity)
                 .setTitle("Ekspor Pengaturan")
-                .setItems(options) { _, which ->
+                .setAdapter(adapter) { _, which ->
                     when (which) {
                         0 -> { // Simpan Langsung ke /Download
                             try {
@@ -182,9 +191,18 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
                 "Tempel Kode dari Clipboard"
             )
 
+            val textColor = MyHomepageUtils.getThemeTextColor(activity)
+            val adapter = object : android.widget.ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, options) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as TextView
+                    view.setTextColor(textColor)
+                    return view
+                }
+            }
+
             AlertDialog.Builder(activity)
                 .setTitle("Impor Pengaturan")
-                .setItems(options) { _, which ->
+                .setAdapter(adapter) { _, which ->
                     when (which) {
                         0 -> { // Muat Langsung dari /Download
                             try {
@@ -242,6 +260,14 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
                         2 -> { // Tempel Kode
                             val input = EditText(activity).apply {
                                 hint = "Tempel kode pengaturan di sini"
+                                setTextColor(textColor)
+                                val hintColor = android.graphics.Color.argb(
+                                    128,
+                                    android.graphics.Color.red(textColor),
+                                    android.graphics.Color.green(textColor),
+                                    android.graphics.Color.blue(textColor)
+                                )
+                                setHintTextColor(hintColor)
                             }
                             AlertDialog.Builder(activity)
                                 .setTitle("Impor via Kode")

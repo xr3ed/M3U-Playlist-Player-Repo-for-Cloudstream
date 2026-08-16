@@ -57,8 +57,7 @@ class LiveEventConfigureExtensions(val plugin: LiveEventPlugin) : BottomSheetDia
     }
 
     private fun View.makeTvCompatible() {
-        val outlineId = getResId("outline", "drawable")
-        this.background = res.getDrawable(outlineId, null)
+        LiveEventUtils.makeTvCompatible(this)
     }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
