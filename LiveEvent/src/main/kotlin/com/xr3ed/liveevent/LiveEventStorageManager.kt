@@ -25,10 +25,19 @@ object LiveEventStorageManager {
     }
 
     fun getCurrentExtensions(context: Context? = null): Array<ExtensionInfo> {
-        val ctx = context ?: CloudStreamApp.context
-        if (ctx == null) return emptyArray()
+        val ctx = context ?: CloudStreamApp.context ?: return emptyArray()
 
-        // 1. Baca sebagai objek terstruktur langsung dari DataStore
+        // 1. Coba baca sebagai String JSON (format yang 100% kompatibel dengan Ultima Sync)
+        try {
+            val raw = ctx.getKey<String>(KEY_EXTENSIONS)
+            if (!raw.isNullOrBlank() && raw != "null") {
+                return mapper.readValue<Array<ExtensionInfo>>(raw)
+            }
+        } catch (e: Throwable) {
+            Log.e("LiveEvent", "Error reading extensions as JSON String: ${e.message}")
+        }
+
+        // 2. Fallback jika DataStore menyimpan sebagai Array objek
         try {
             val list = ctx.getKey<Array<ExtensionInfo>>(KEY_EXTENSIONS)
             if (list != null && list.isNotEmpty()) {
@@ -36,20 +45,18 @@ object LiveEventStorageManager {
             }
         } catch (_: Throwable) {}
 
-        // 2. Fallback baca jika disimpan sebagai JSON string di DataStore
-        try {
-            val rawJson = ctx.getKey<String>(KEY_EXTENSIONS)
-            if (!rawJson.isNullOrBlank()) {
-                return mapper.readValue<Array<ExtensionInfo>>(rawJson)
-            }
-        } catch (_: Throwable) {}
-
         return emptyArray()
     }
 
     fun setCurrentExtensions(context: Context?, value: Array<ExtensionInfo>) {
-        val ctx = context ?: CloudStreamApp.context
-        ctx?.setKey(KEY_EXTENSIONS, value)
+        val ctx = context ?: CloudStreamApp.context ?: return
+        try {
+            // Simpan sebagai JSON String murni persis seperti M3UPlaylistPlayer / Ultima
+            val json = mapper.writeValueAsString(value)
+            ctx.setKey(KEY_EXTENSIONS, json)
+        } catch (e: Exception) {
+            Log.e("LiveEvent", "Failed to save extensions to DataStore: ${e.message}")
+        }
     }
 
     fun deleteAllData(context: Context?) {
