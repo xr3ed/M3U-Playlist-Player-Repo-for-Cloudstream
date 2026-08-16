@@ -41,13 +41,16 @@ class LiveEventPlugin : Plugin() {
     }
 
     private fun migrateIfNeeded(context: Context) {
-        val generic = context.getKey<String>(LiveEventStorageManager.KEY_SAVED_SECTIONS_LIST)
-        if (generic.isNullOrBlank()) {
-            val legacy = context.getKey<String>(LiveEventStorageManager.KEY_LEGACY_SECTIONS_LIST)
-            if (!legacy.isNullOrBlank()) {
-                context.setKey(LiveEventStorageManager.KEY_SAVED_SECTIONS_LIST, legacy)
-                context.setKey(LiveEventStorageManager.KEY_FALLBACK_LIVE_SECTIONS, legacy)
-            }
+        val currentData = context.getKey<String>(LiveEventStorageManager.KEY_SAVED_SECTIONS_DATA)
+            ?: context.getKey<String>(LiveEventStorageManager.KEY_LIVE_EVENTS_CONFIG)
+            ?: context.getKey<String>(LiveEventStorageManager.KEY_SAVED_SECTIONS_LIST)
+            ?: context.getKey<String>(LiveEventStorageManager.KEY_FALLBACK_LIVE_SECTIONS)
+            ?: context.getKey<String>(LiveEventStorageManager.KEY_LEGACY_SECTIONS_LIST)
+
+        if (!currentData.isNullOrBlank()) {
+            context.setKey(LiveEventStorageManager.KEY_SAVED_SECTIONS_DATA, currentData)
+            context.setKey(LiveEventStorageManager.KEY_LIVE_EVENTS_CONFIG, currentData)
+            context.setKey(LiveEventStorageManager.KEY_SAVED_SECTIONS_LIST, currentData)
         }
     }
 

@@ -11,11 +11,14 @@ import com.xr3ed.liveevent.LiveEventUtils.ExtensionInfo
 import com.xr3ed.liveevent.LiveEventUtils.SectionInfo
 
 object LiveEventStorageManager {
-    // Kunci generik (identik dengan "saved_playlists_list" milik M3UPlaylistPlayer)
-    // agar 100% otomatis tersinkronisasi sebagai SETTINGS oleh Ultima phisher98
+    // Kunci GENERAL (tidak mengandung kata 'list', 'home', atau 'layout')
+    // agar 100% otomatis tersinkronisasi sebagai GENERAL (restoreGeneral: true) oleh Ultima phisher98
+    const val KEY_SAVED_SECTIONS_DATA = "saved_sections_data"
+    const val KEY_LIVE_EVENTS_CONFIG = "live_events_config"
     const val KEY_SAVED_SECTIONS_LIST = "saved_sections_list"
     const val KEY_FALLBACK_LIVE_SECTIONS = "live_sections_list"
     const val KEY_LEGACY_SECTIONS_LIST = "live_event_saved_sections_list"
+    const val KEY_EXT_NAME_PREFIX = "live_event_prefix_tag"
     const val KEY_EXT_NAME_ON_HOME = "ext_name_on_home_live"
     const val KEY_LEGACY_EXT_NAME = "live_event_ext_name_on_home"
     const val KEY_LEGACY_EXTENSIONS = "LIVE_EVENT_EXTENSIONS_LIST"
@@ -24,7 +27,8 @@ object LiveEventStorageManager {
 
     fun getExtNameOnHome(context: Context? = null): Boolean {
         val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context
-        return ctx?.getKey<Boolean>(KEY_EXT_NAME_ON_HOME)
+        return ctx?.getKey<Boolean>(KEY_EXT_NAME_PREFIX)
+            ?: ctx?.getKey<Boolean>(KEY_EXT_NAME_ON_HOME)
             ?: ctx?.getKey<Boolean>(KEY_LEGACY_EXT_NAME)
             ?: ctx?.getKey<Boolean>("LIVE_EVENT_EXT_NAME_ON_HOME")
             ?: true
@@ -32,6 +36,7 @@ object LiveEventStorageManager {
 
     fun setExtNameOnHome(context: Context?, value: Boolean) {
         val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context
+        ctx?.setKey(KEY_EXT_NAME_PREFIX, value)
         ctx?.setKey(KEY_EXT_NAME_ON_HOME, value)
         ctx?.setKey(KEY_LEGACY_EXT_NAME, value)
     }
@@ -43,8 +48,10 @@ object LiveEventStorageManager {
     fun getSavedSections(context: Context? = null): List<SectionInfo> {
         val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context ?: return emptyList()
 
-        // 1. Baca dari format String generik (SyncCategory.SETTINGS di Ultima phisher98)
-        val raw = ctx.getKey<String>(KEY_SAVED_SECTIONS_LIST)
+        // 1. Baca dari format String generik (SyncCategory.SETTINGS / GENERAL di Ultima phisher98)
+        val raw = ctx.getKey<String>(KEY_SAVED_SECTIONS_DATA)
+            ?: ctx.getKey<String>(KEY_LIVE_EVENTS_CONFIG)
+            ?: ctx.getKey<String>(KEY_SAVED_SECTIONS_LIST)
             ?: ctx.getKey<String>(KEY_FALLBACK_LIVE_SECTIONS)
             ?: ctx.getKey<String>(KEY_LEGACY_SECTIONS_LIST)
 
@@ -120,7 +127,9 @@ object LiveEventStorageManager {
         val raw = sections.joinToString("\n") {
             "${it.pluginName}||${it.name}||${it.url}||${it.enabled}||${it.priority}"
         }
-        // Simpan ke kunci generik agar Ultima phisher98 membackup sebagai SETTINGS
+        // Simpan ke kunci GENERAL (kategori GENERAL di Ultima phisher98)
+        ctx.setKey(KEY_SAVED_SECTIONS_DATA, raw)
+        ctx.setKey(KEY_LIVE_EVENTS_CONFIG, raw)
         ctx.setKey(KEY_SAVED_SECTIONS_LIST, raw)
         ctx.setKey(KEY_FALLBACK_LIVE_SECTIONS, raw)
         ctx.setKey(KEY_LEGACY_SECTIONS_LIST, raw)
