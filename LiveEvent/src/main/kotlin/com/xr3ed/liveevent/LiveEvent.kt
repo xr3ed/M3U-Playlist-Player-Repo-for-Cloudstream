@@ -35,7 +35,7 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
         val tempSectionNames = mutableListOf<String>()
         val result = mutableListOf<MainPageData>()
         
-        val context = CloudStreamApp.context ?: plugin.activity
+        val context = plugin.pluginContext ?: LiveEventPlugin.context ?: CloudStreamApp.context ?: plugin.activity
         val savedSections = LiveEventStorageManager.getSavedSections(context)
         val extNameOnHome = LiveEventStorageManager.getExtNameOnHome(context)
 

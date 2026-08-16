@@ -11,8 +11,15 @@ import com.lagradost.api.Log
 @CloudstreamPlugin
 class LiveEventPlugin : Plugin() {
     var activity: AppCompatActivity? = null
+    var pluginContext: Context? = null
+
+    companion object {
+        var context: Context? = null
+    }
 
     override fun load(context: Context) {
+        LiveEventPlugin.context = context
+        this.pluginContext = context
         activity = context as? AppCompatActivity
 
         registerMainAPI(LiveEvent(this))

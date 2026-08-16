@@ -19,14 +19,14 @@ object LiveEventStorageManager {
     private val mapper = jacksonObjectMapper()
 
     fun getExtNameOnHome(context: Context? = null): Boolean {
-        val ctx = context ?: CloudStreamApp.context
+        val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context
         return ctx?.getKey<Boolean>(KEY_EXT_NAME_ON_HOME)
             ?: ctx?.getKey<Boolean>("LIVE_EVENT_EXT_NAME_ON_HOME")
             ?: true
     }
 
     fun setExtNameOnHome(context: Context?, value: Boolean) {
-        val ctx = context ?: CloudStreamApp.context
+        val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context
         ctx?.setKey(KEY_EXT_NAME_ON_HOME, value)
     }
 
@@ -35,7 +35,7 @@ object LiveEventStorageManager {
      * Format: pluginName||sectionName||sectionUrl||enabled||priority
      */
     fun getSavedSections(context: Context? = null): List<SectionInfo> {
-        val ctx = context ?: CloudStreamApp.context ?: return emptyList()
+        val ctx = context ?: LiveEventPlugin.context ?: CloudStreamApp.context ?: return emptyList()
 
         // 1. Baca dari format String sederhana
         val raw = ctx.getKey<String>(KEY_SAVED_SECTIONS_LIST)
