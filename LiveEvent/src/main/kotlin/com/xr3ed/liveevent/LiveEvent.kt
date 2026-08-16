@@ -83,13 +83,23 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
             val sectionName = parts[1].trim()
             val sectionUrl = if (parts.size >= 3) parts[2].trim() else ""
 
-            val provider = LiveEventUtils.getAllProviders().find { it.name.equals(pluginName, ignoreCase = true) }
-                ?: throw ErrorLoadingException("Provider '$pluginName' tidak tersedia.")
+            var provider = LiveEventUtils.findProvider(pluginName)
+            if (provider == null) {
+                kotlinx.coroutines.delay(400)
+                provider = LiveEventUtils.findProvider(pluginName)
+            }
+            if (provider == null) {
+                throw ErrorLoadingException("Provider '$pluginName' tidak tersedia.")
+            }
 
-            val liveData = provider.mainPage
-                .find { it.name.equals(sectionName, ignoreCase = true) }
-                ?.data
-                ?: sectionUrl
+            val liveData = try {
+                provider.mainPage
+                    .find { it.name.trim().equals(sectionName.trim(), ignoreCase = true) }
+                    ?.data
+                    ?: sectionUrl
+            } catch (_: Throwable) {
+                sectionUrl
+            }
 
             val response = provider.getMainPage(
                 page,
@@ -110,13 +120,23 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
             // Fallback parsing for legacy JSON format
             try {
                 val section = AppUtils.parseJson<SectionInfo>(request.data)
-                val provider = LiveEventUtils.getAllProviders().find { it.name.equals(section.pluginName, ignoreCase = true) }
-                    ?: throw ErrorLoadingException("Provider '${section.pluginName}' tidak tersedia.")
+                var provider = LiveEventUtils.findProvider(section.pluginName)
+                if (provider == null) {
+                    kotlinx.coroutines.delay(400)
+                    provider = LiveEventUtils.findProvider(section.pluginName)
+                }
+                if (provider == null) {
+                    throw ErrorLoadingException("Provider '${section.pluginName}' tidak tersedia.")
+                }
 
-                val liveData = provider.mainPage
-                    .find { it.name.equals(section.name, ignoreCase = true) }
-                    ?.data
-                    ?: section.url
+                val liveData = try {
+                    provider.mainPage
+                        .find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                        ?.data
+                        ?: section.url
+                } catch (_: Throwable) {
+                    section.url
+                }
 
                 val response = provider.getMainPage(
                     page,

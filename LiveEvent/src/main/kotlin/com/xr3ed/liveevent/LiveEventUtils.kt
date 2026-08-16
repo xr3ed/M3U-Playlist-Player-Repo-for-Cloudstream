@@ -64,6 +64,24 @@ object LiveEventUtils {
         }
     }
 
+    fun findProvider(name: String): com.lagradost.cloudstream3.MainAPI? {
+        val providers = getAllProviders()
+        if (providers.isEmpty()) return null
+
+        val cleanTarget = name.replace("🔴", "").replace("Live", "").trim()
+
+        return providers.find { it.name.equals(name, ignoreCase = true) }
+            ?: providers.find { it.name.trim().equals(name.trim(), ignoreCase = true) }
+            ?: providers.find {
+                val cleanP = it.name.replace("🔴", "").replace("Live", "").trim()
+                cleanP.equals(cleanTarget, ignoreCase = true)
+            }
+            ?: providers.find {
+                val cleanP = it.name.replace("🔴", "").replace("Live", "").trim()
+                cleanP.contains(cleanTarget, ignoreCase = true) || cleanTarget.contains(cleanP, ignoreCase = true)
+            }
+    }
+
     data class SectionInfo(
         @param:JsonProperty("name") var name: String,
         @param:JsonProperty("url") var url: String,
