@@ -145,10 +145,11 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val providers = LiveEventUtils.getAllProviders().filter {
-            !it.javaClass.simpleName.contains("LiveEvent") && 
-            !it.javaClass.simpleName.contains("MyHomepage") && 
-            !it.name.contains("Live Event")
+        val providers = LiveEventUtils.getAllProviders().filter { provider ->
+            !provider.javaClass.simpleName.contains("LiveEvent") && 
+            !provider.javaClass.simpleName.contains("MyHomepage") && 
+            !provider.name.contains("Live Event") &&
+            provider.supportedTypes.contains(TvType.Live)
         }
 
         val searchTasks = providers.map { provider ->
@@ -176,10 +177,11 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val providers = LiveEventUtils.getAllProviders().filter {
-            !it.javaClass.simpleName.contains("LiveEvent") && 
-            !it.javaClass.simpleName.contains("MyHomepage") && 
-            !it.name.contains("Live Event")
+        val providers = LiveEventUtils.getAllProviders().filter { provider ->
+            !provider.javaClass.simpleName.contains("LiveEvent") && 
+            !provider.javaClass.simpleName.contains("MyHomepage") && 
+            !provider.name.contains("Live Event") &&
+            provider.supportedTypes.contains(TvType.Live)
         }
 
         for (provider in providers) {

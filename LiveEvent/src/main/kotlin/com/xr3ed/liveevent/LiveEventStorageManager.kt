@@ -119,15 +119,21 @@ object LiveEventStorageManager {
     fun fetchExtensions(context: Context): Array<ExtensionInfo> {
         val providers = LiveEventUtils.getAllProviders()
         val cachedSections = getSavedSections(context)
-        val filtered = providers.filter {
-            !it.javaClass.simpleName.contains("LiveEvent") && 
-            !it.javaClass.simpleName.contains("MyHomepage") && 
-            !it.name.contains("Live Event")
+        val filtered = providers.filter { provider ->
+            !provider.javaClass.simpleName.contains("LiveEvent") && 
+            !provider.javaClass.simpleName.contains("MyHomepage") && 
+            !provider.name.contains("Live Event") &&
+            provider.supportedTypes.contains(com.lagradost.cloudstream3.TvType.Live)
         }
 
         return filtered.map { provider ->
             val existingSections = cachedSections.filter { it.pluginName.equals(provider.name, ignoreCase = true) }
-            val sections = provider.mainPage.map { section ->
+            val mainPages = try {
+                provider.mainPage
+            } catch (t: Throwable) {
+                emptyList()
+            }
+            val sections = mainPages.map { section ->
                 val existing = existingSections.find { it.name.equals(section.name, ignoreCase = true) }
                 existing ?: SectionInfo(
                     name = section.name,
