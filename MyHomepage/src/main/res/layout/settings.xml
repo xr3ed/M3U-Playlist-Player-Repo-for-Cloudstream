@@ -173,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_rowWeight="1"
-                android:text="Ekspor Pengaturan"
+                android:text="Cadangkan Pengaturan"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -188,7 +188,7 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:focusable="true"
-                    android:text="Ekspor"
+                    android:text="Cadangkan"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:nextFocusUp="@id/ext_name_on_home_toggle"
@@ -208,7 +208,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_rowWeight="1"
-                android:text="Impor Pengaturan"
+                android:text="Pulihkan Pengaturan"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -223,7 +223,7 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:focusable="true"
-                    android:text="Impor"
+                    android:text="Pulihkan"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:nextFocusUp="@id/export_btn"

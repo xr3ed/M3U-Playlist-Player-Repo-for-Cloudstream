@@ -116,161 +116,120 @@ class LiveEventSettings(val plugin: LiveEventPlugin) : BottomSheetDialogFragment
             sm.setExtNameOnHome(requireContext(), isChecked)
         }
 
-        // Export Button
+        // Cadangkan Button
         val exportBtn = settings.findView<TextView>("export_btn")
+        exportBtn.text = "Cadangkan"
         exportBtn.makeTvCompatible()
         exportBtn.setOnClickListener {
             val activity = activity ?: return@setOnClickListener
             val code = sm.exportSettings(requireContext())
-            
-            val options = arrayOf(
-                "Simpan Langsung ke /Download (Rekomendasi)",
-                "Simpan via Pemilih Berkas (SAF)",
-                "Salin Kode ke Clipboard"
-            )
-
-            val textColor = LiveEventUtils.getThemeTextColor(activity)
-            val adapter = object : android.widget.ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, options) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    view.setTextColor(textColor)
-                    return view
-                }
-            }
 
             AlertDialog.Builder(activity)
-                .setTitle("Ekspor Pengaturan Live Event")
-                .setAdapter(adapter) { _, which ->
-                    when (which) {
-                        0 -> {
-                            try {
-                                val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-                                if (!downloadDir.exists()) downloadDir.mkdirs()
-                                val file = java.io.File(downloadDir, "live_event_config.json")
-                                file.writeText(code)
-                                showToast("Berhasil disimpan ke /Download/live_event_config.json")
-                            } catch (ex: Exception) {
-                                showToast("Gagal menyimpan file: ${ex.message}")
-                            }
-                        }
-                        1 -> {
-                            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "application/json"
-                                putExtra(Intent.EXTRA_TITLE, "live_event_config.json")
-                            }
-                            try {
-                                startActivityForResult(intent, 9998)
-                            } catch (e: Exception) {
-                                showToast("File picker tidak didukung, menggunakan penyimpanan langsung...")
-                                try {
-                                    val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-                                    if (!downloadDir.exists()) downloadDir.mkdirs()
-                                    val file = java.io.File(downloadDir, "live_event_config.json")
-                                    file.writeText(code)
-                                    showToast("Berhasil disimpan ke /Download/live_event_config.json")
-                                } catch (ex: Exception) {
-                                    showToast("Gagal menyimpan file: ${ex.message}")
-                                }
-                            }
-                        }
-                        2 -> {
-                            val clipboard = activity.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            val clip = android.content.ClipData.newPlainText("LiveEvent_Config", code)
-                            clipboard.setPrimaryClip(clip)
-                            showToast("Kode konfigurasi berhasil disalin ke clipboard!")
+                .setTitle("Cadangkan Pengaturan Live Event")
+                .setMessage("Pilih metode pencadangan data:")
+                .setPositiveButton("Cadangkan Otomatis") { _, _ ->
+                    try {
+                        val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                        if (!downloadDir.exists()) downloadDir.mkdirs()
+                        val file = java.io.File(downloadDir, "live_event_config.json")
+                        file.writeText(code)
+                        showToast("Berhasil dicadangkan ke /Download/live_event_config.json")
+                    } catch (ex: Exception) {
+                        showToast("Gagal mencadangkan: ${ex.message}")
+                    }
+                }
+                .setNeutralButton("Pilih Lokasi (Browse) 📁") { _, _ ->
+                    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        putExtra(Intent.EXTRA_TITLE, "live_event_config.json")
+                    }
+                    try {
+                        startActivityForResult(intent, 9998)
+                    } catch (e: Exception) {
+                        showToast("File picker tidak didukung, mencadangkan otomatis...")
+                        try {
+                            val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                            if (!downloadDir.exists()) downloadDir.mkdirs()
+                            val file = java.io.File(downloadDir, "live_event_config.json")
+                            file.writeText(code)
+                            showToast("Berhasil dicadangkan ke /Download/live_event_config.json")
+                        } catch (ex: Exception) {
+                            showToast("Gagal mencadangkan: ${ex.message}")
                         }
                     }
                 }
                 .setNegativeButton("Batal", null)
                 .show()
+                .setDefaultFocus()
         }
 
-        // Import Button
+        // Pulihkan Button
         val importBtn = settings.findView<TextView>("import_btn")
+        importBtn.text = "Pulihkan"
         importBtn.makeTvCompatible()
         importBtn.setOnClickListener {
             val activity = activity ?: return@setOnClickListener
-            val options = arrayOf(
-                "Muat Otomatis dari /Download (live_event_config.json)",
-                "Muat via Pemilih Berkas (SAF)",
-                "Tempel Kode Manual"
-            )
-
-            val textColor = LiveEventUtils.getThemeTextColor(activity)
-            val adapter = object : android.widget.ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, options) {
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent) as TextView
-                    view.setTextColor(textColor)
-                    return view
-                }
-            }
 
             AlertDialog.Builder(activity)
-                .setTitle("Impor Pengaturan Live Event")
-                .setAdapter(adapter) { _, which ->
-                    when (which) {
-                        0 -> {
-                            try {
-                                val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
-                                val file = java.io.File(downloadDir, "live_event_config.json")
-                                if (file.exists()) {
-                                    val code = file.readText()
-                                    if (sm.importSettings(requireContext(), code)) {
-                                        showToast("Berhasil memuat pengaturan dari /Download/live_event_config.json")
-                                        dismiss()
-                                    } else {
-                                        showToast("Format file tidak valid!")
-                                    }
+                .setTitle("Pulihkan Pengaturan Live Event")
+                .setMessage("Pilih metode pemulihan data:")
+                .setPositiveButton("Pulihkan Otomatis") { _, _ ->
+                    try {
+                        val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                        val file = java.io.File(downloadDir, "live_event_config.json")
+                        if (file.exists()) {
+                            val code = file.readText().trim()
+                            val success = sm.importSettings(requireContext(), code)
+                            if (success) {
+                                plugin.reload()
+                                showToast("Berhasil dipulihkan! Merestart...")
+                                dismiss()
+                                restartApp()
+                            } else {
+                                showToast("Format file tidak valid!")
+                            }
+                        } else {
+                            showToast("File /Download/live_event_config.json tidak ditemukan!")
+                        }
+                    } catch (ex: Exception) {
+                        showToast("Gagal memulihkan: ${ex.message}")
+                    }
+                }
+                .setNeutralButton("Pilih File (Browse) 📁") { _, _ ->
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "*/*"
+                    }
+                    try {
+                        startActivityForResult(intent, 9999)
+                    } catch (e: Exception) {
+                        showToast("File picker tidak didukung, mencoba memulihkan dari /Download...")
+                        try {
+                            val downloadDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                            val file = java.io.File(downloadDir, "live_event_config.json")
+                            if (file.exists()) {
+                                val fileCode = file.readText().trim()
+                                val success = sm.importSettings(requireContext(), fileCode)
+                                if (success) {
+                                    plugin.reload()
+                                    showToast("Berhasil dipulihkan! Merestart...")
+                                    dismiss()
+                                    restartApp()
                                 } else {
-                                    showToast("File tidak ditemukan di /Download/live_event_config.json")
+                                    showToast("Format file tidak valid!")
                                 }
-                            } catch (ex: Exception) {
-                                showToast("Gagal membaca file: ${ex.message}")
+                            } else {
+                                showToast("File /Download/live_event_config.json tidak ditemukan!")
                             }
-                        }
-                        1 -> {
-                            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                                addCategory(Intent.CATEGORY_OPENABLE)
-                                type = "*/*"
-                            }
-                            try {
-                                startActivityForResult(intent, 9999)
-                            } catch (e: Exception) {
-                                showToast("File picker tidak didukung")
-                            }
-                        }
-                        2 -> {
-                            val input = EditText(activity).apply {
-                                hint = "Tempel teks konfigurasi di sini..."
-                                setTextColor(textColor)
-                                val hintColor = android.graphics.Color.argb(
-                                    128,
-                                    android.graphics.Color.red(textColor),
-                                    android.graphics.Color.green(textColor),
-                                    android.graphics.Color.blue(textColor)
-                                )
-                                setHintTextColor(hintColor)
-                            }
-                            AlertDialog.Builder(activity)
-                                .setTitle("Impor via Teks")
-                                .setView(input)
-                                .setPositiveButton("Terapkan") { _, _ ->
-                                    val text = input.text.toString().trim()
-                                    if (text.isNotEmpty() && sm.importSettings(requireContext(), text)) {
-                                        showToast("Pengaturan berhasil diimpor!")
-                                        dismiss()
-                                    } else {
-                                        showToast("Format teks tidak valid!")
-                                    }
-                                }
-                                .setNegativeButton("Batal", null)
-                                .show()
+                        } catch (ex: Exception) {
+                            showToast("Gagal memulihkan: ${ex.message}")
                         }
                     }
                 }
                 .setNegativeButton("Batal", null)
                 .show()
+                .setDefaultFocus()
         }
 
         // Reset Button
