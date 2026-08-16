@@ -6,16 +6,15 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.lagradost.cloudstream3.CommonActivity.showToast
+import com.lagradost.api.Log
 import com.xr3ed.liveevent.LiveEventPlugin
 import com.xr3ed.liveevent.LiveEventStorageManager
 import com.xr3ed.liveevent.LiveEventUtils
@@ -179,49 +178,77 @@ class LiveEventReorder(val plugin: LiveEventPlugin) : BottomSheetDialogFragment(
                 }
             }
 
-            val upBtn = sectionView.findView<ImageView>("up_arrow")
-            upBtn.makeTvCompatible()
-            upBtn.setOnClickListener {
-                val list = displaySections.toMutableList()
-                val idx = list.indexOf(section)
+            val increaseBtn = sectionView.findView<ImageView>("increase")
+            val decreaseBtn = sectionView.findView<ImageView>("decrease")
+            increaseBtn.setImageDrawable(getDrawable("triangle"))
+            decreaseBtn.setImageDrawable(getDrawable("triangle"))
+            decreaseBtn.rotation = 180f
+
+            increaseBtn.makeTvCompatible()
+            decreaseBtn.makeTvCompatible()
+
+            increaseBtn.setOnClickListener {
+                val idx = displaySections.indexOf(section)
                 if (idx > 0) {
-                    val temp = list[idx - 1]
-                    list[idx - 1] = section
-                    list[idx] = temp
+                    val newList = displaySections.toMutableList()
+                    newList.removeAt(idx)
+                    newList.add(idx - 1, section)
+                    newList.forEachIndexed { index, sec -> sec.priority = newList.size - index }
+                    updateSectionList(sectionsListView, inflater, container, noSectionWarning, newList)
 
-                    var p = list.size
-                    list.forEach { s -> s.priority = p-- }
-                    updateSectionList(sectionsListView, inflater, container, noSectionWarning, list)
+                    sectionsListView.post {
+                        for (i in 0 until sectionsListView.childCount) {
+                            val child = sectionsListView.getChildAt(i)
+                            val nameView = child.findView<TextView>("section_name")
+                            if (nameView.text.contains(section.name, ignoreCase = true)) {
+                                child.findView<ImageView>("increase").requestFocus()
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    showToast("Sudah di paling atas")
                 }
             }
 
-            val downBtn = sectionView.findView<ImageView>("down_arrow")
-            downBtn.makeTvCompatible()
-            downBtn.setOnClickListener {
-                val list = displaySections.toMutableList()
-                val idx = list.indexOf(section)
-                if (idx < list.size - 1) {
-                    val temp = list[idx + 1]
-                    list[idx + 1] = section
-                    list[idx] = temp
+            decreaseBtn.setOnClickListener {
+                val idx = displaySections.indexOf(section)
+                if (idx < displaySections.lastIndex) {
+                    val newList = displaySections.toMutableList()
+                    newList.removeAt(idx)
+                    newList.add(idx + 1, section)
+                    newList.forEachIndexed { index, sec -> sec.priority = newList.size - index }
+                    updateSectionList(sectionsListView, inflater, container, noSectionWarning, newList)
 
-                    var p = list.size
-                    list.forEach { s -> s.priority = p-- }
-                    updateSectionList(sectionsListView, inflater, container, noSectionWarning, list)
+                    sectionsListView.post {
+                        for (i in 0 until sectionsListView.childCount) {
+                            val child = sectionsListView.getChildAt(i)
+                            val nameView = child.findView<TextView>("section_name")
+                            if (nameView.text.contains(section.name, ignoreCase = true)) {
+                                child.findView<ImageView>("decrease").requestFocus()
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    showToast("Sudah di paling bawah")
                 }
             }
 
+            counter -= 1
             sectionsListView.addView(sectionView)
-            counter--
         }
     }
 
     override fun onDetach() {
-        val settings = LiveEventSettings(plugin)
-        settings.show(
-            activity?.supportFragmentManager ?: throw Exception("Gagal membuka pengaturan"),
-            ""
-        )
         super.onDetach()
+        val act = activity ?: plugin.activity
+        if (act != null && !act.isFinishing && !act.isDestroyed && !act.supportFragmentManager.isStateSaved) {
+            try {
+                LiveEventSettings(plugin).show(act.supportFragmentManager, "LiveEventSettingsDialog")
+            } catch (e: Exception) {
+                Log.e("LiveEvent", "Failed to restore settings dialog: ${e.message}")
+            }
+        }
     }
 }

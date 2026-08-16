@@ -135,11 +135,14 @@ class LiveEventConfigureExtensions(val plugin: LiveEventPlugin) : BottomSheetDia
     }
 
     override fun onDetach() {
-        val settings = LiveEventSettings(plugin)
-        settings.show(
-            activity?.supportFragmentManager ?: throw Exception("Gagal membuka pengaturan"),
-            ""
-        )
         super.onDetach()
+        val act = activity ?: plugin.activity
+        if (act != null && !act.isFinishing && !act.isDestroyed && !act.supportFragmentManager.isStateSaved) {
+            try {
+                LiveEventSettings(plugin).show(act.supportFragmentManager, "LiveEventSettingsDialog")
+            } catch (e: Exception) {
+                Log.e("LiveEvent", "Failed to restore settings dialog: ${e.message}")
+            }
+        }
     }
 }
