@@ -74,6 +74,34 @@ object LiveEventStorageManager {
             }
         } catch (_: Throwable) {}
 
+        // 3. Fallback baca dari ULTIMA_EXTENSIONS_LIST jika data dipulihkan lewat Ultima Sync
+        try {
+            val ultimaExts = ctx.getKey<Array<ExtensionInfo>>("ULTIMA_EXTENSIONS_LIST")
+            val liveEntry = ultimaExts?.find { it.name == "🔴 Live Event" || it.name == "Live Event" }
+            if (liveEntry != null && !liveEntry.sections.isNullOrEmpty()) {
+                val list = mutableListOf<SectionInfo>()
+                liveEntry.sections?.forEach { sec ->
+                    val parts = sec.url.split("||")
+                    if (parts.size >= 3) {
+                        list.add(
+                            SectionInfo(
+                                name = parts[1].trim(),
+                                url = parts[2].trim(),
+                                pluginName = parts[0].trim(),
+                                enabled = sec.enabled,
+                                priority = sec.priority
+                            )
+                        )
+                    } else {
+                        list.add(sec)
+                    }
+                }
+                if (list.isNotEmpty()) {
+                    return list
+                }
+            }
+        } catch (_: Throwable) {}
+
         return emptyList()
     }
 
@@ -91,6 +119,29 @@ object LiveEventStorageManager {
                 ExtensionInfo(name = pName, sections = sList.toTypedArray())
             }.toTypedArray()
             ctx.setKey(KEY_LEGACY_EXTENSIONS, grouped)
+        } catch (_: Throwable) {}
+
+        // Sinkronisasi langsung ke ULTIMA_EXTENSIONS_LIST milik Ultima
+        try {
+            val ultimaExts = ctx.getKey<Array<ExtensionInfo>>("ULTIMA_EXTENSIONS_LIST")?.toMutableList() ?: mutableListOf()
+            val liveEventSections = sections.filter { it.enabled }.map { sec ->
+                SectionInfo(
+                    name = sec.name,
+                    url = "${sec.pluginName}||${sec.name}||${sec.url}",
+                    pluginName = "🔴 Live Event",
+                    enabled = true,
+                    priority = sec.priority
+                )
+            }.toTypedArray()
+
+            val existingIndex = ultimaExts.indexOfFirst { it.name == "🔴 Live Event" || it.name == "Live Event" }
+            val newEntry = ExtensionInfo(name = "🔴 Live Event", sections = liveEventSections)
+            if (existingIndex >= 0) {
+                ultimaExts[existingIndex] = newEntry
+            } else if (liveEventSections.isNotEmpty()) {
+                ultimaExts.add(newEntry)
+            }
+            ctx.setKey("ULTIMA_EXTENSIONS_LIST", ultimaExts.toTypedArray())
         } catch (_: Throwable) {}
     }
 
