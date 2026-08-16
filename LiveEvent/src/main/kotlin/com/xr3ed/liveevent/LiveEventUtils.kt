@@ -170,18 +170,21 @@ object LiveEventUtils {
     fun makeTvCompatible(view: android.view.View) {
         val ctx = view.context
         val strokeColor = getThemeTextColor(ctx)
-        val strokeWidth = (2 * ctx.resources.displayMetrics.density).toInt()
-        val cornerRadius = 4 * ctx.resources.displayMetrics.density
+        val strokeWidth = (3 * ctx.resources.displayMetrics.density).toInt()
+        val cornerRadius = 6 * ctx.resources.displayMetrics.density
+
+        val isLight = strokeColor == android.graphics.Color.BLACK ||
+            (android.graphics.Color.red(strokeColor) + android.graphics.Color.green(strokeColor) + android.graphics.Color.blue(strokeColor)) < 380
+        val focusFillColor = if (isLight) android.graphics.Color.parseColor("#28000000") else android.graphics.Color.parseColor("#38FFFFFF")
 
         val focusedDrawable = android.graphics.drawable.GradientDrawable().apply {
             setStroke(strokeWidth, strokeColor)
+            setColor(focusFillColor)
             setCornerRadius(cornerRadius)
         }
         val hoveredDrawable = android.graphics.drawable.GradientDrawable().apply {
-            val r = android.graphics.Color.red(strokeColor)
-            val g = android.graphics.Color.green(strokeColor)
-            val b = android.graphics.Color.blue(strokeColor)
-            setColor(android.graphics.Color.argb(35, r, g, b))
+            setStroke((1.5f * ctx.resources.displayMetrics.density).toInt(), strokeColor)
+            setColor(focusFillColor)
             setCornerRadius(cornerRadius)
         }
         val stateList = android.graphics.drawable.StateListDrawable().apply {

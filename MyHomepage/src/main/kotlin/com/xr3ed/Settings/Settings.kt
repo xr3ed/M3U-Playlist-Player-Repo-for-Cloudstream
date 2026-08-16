@@ -103,6 +103,7 @@ class MyHomepageSettings(val plugin: MyHomepagePlugin) : BottomSheetDialogFragme
         // Toggle Switch
         val extNameOnHomeBtn = settings.findView<android.widget.Switch>("ext_name_on_home_toggle")
         extNameOnHomeBtn.makeTvCompatible()
+        extNameOnHomeBtn.setTextColor(MyHomepageUtils.getThemeTextColor(requireContext()))
         extNameOnHomeBtn.isChecked = sm.getExtNameOnHome(requireContext())
         extNameOnHomeBtn.setOnCheckedChangeListener { _, isChecked ->
             sm.setExtNameOnHome(requireContext(), isChecked)
