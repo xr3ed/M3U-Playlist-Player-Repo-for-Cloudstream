@@ -129,14 +129,41 @@ object LiveEventUtils {
 
     fun getThemeTextColor(context: android.content.Context): Int {
         val typedValue = android.util.TypedValue()
-        val resolved = context.theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
-        if (resolved && typedValue.data != 0) {
-            return typedValue.data
+
+        // 1. Prioritaskan atribut CloudStream "textColor"
+        val textColorId = context.resources.getIdentifier("textColor", "attr", context.packageName)
+        if (textColorId != 0 && context.theme.resolveAttribute(textColorId, typedValue, true)) {
+            if (typedValue.type >= android.util.TypedValue.TYPE_FIRST_COLOR_INT && typedValue.type <= android.util.TypedValue.TYPE_LAST_COLOR_INT) {
+                return typedValue.data
+            }
+            if (typedValue.resourceId != 0) {
+                try {
+                    return androidx.core.content.ContextCompat.getColor(context, typedValue.resourceId)
+                } catch (_: Throwable) {}
+            }
         }
-        val fallbackId = context.resources.getIdentifier("textColor", "attr", context.packageName)
-        if (fallbackId != 0 && context.theme.resolveAttribute(fallbackId, typedValue, true)) {
-            return typedValue.data
+
+        // 2. Cek atribut CloudStream "white" (yang dibalik menjadi hitam pada tema terang)
+        val whiteId = context.resources.getIdentifier("white", "attr", context.packageName)
+        if (whiteId != 0 && context.theme.resolveAttribute(whiteId, typedValue, true)) {
+            if (typedValue.type >= android.util.TypedValue.TYPE_FIRST_COLOR_INT && typedValue.type <= android.util.TypedValue.TYPE_LAST_COLOR_INT) {
+                return typedValue.data
+            }
+            if (typedValue.resourceId != 0) {
+                try {
+                    return androidx.core.content.ContextCompat.getColor(context, typedValue.resourceId)
+                } catch (_: Throwable) {}
+            }
         }
+
+        // 3. Cek flag isLightTheme
+        val isLightId = context.resources.getIdentifier("isLightTheme", "attr", context.packageName)
+        if (isLightId != 0 && context.theme.resolveAttribute(isLightId, typedValue, true)) {
+            if (typedValue.data != 0) {
+                return android.graphics.Color.BLACK
+            }
+        }
+
         return android.graphics.Color.WHITE
     }
 
