@@ -113,7 +113,7 @@
         "name":  "OppadramaXR",
         "internalName":  "OppadramaXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/OppadramaXR.cs3",
-        "version":  19,
+        "version":  20,
         "description":  "Oppadrama",
         "authors":  [
                         "xr3ed"
@@ -123,7 +123,7 @@
                         "TvSeries",
                         "Movie"
                     ],
-        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://45.11.57.192&size=%size%",
+        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://oppa.biz&size=%size%",
         "apiVersion":  1,
         "status":  1,
         "language":  "id",
