@@ -38,14 +38,17 @@ __pycache__/
 !/build.gradle.kts
 !/settings.gradle.kts
 !/gradle.properties
-!/package.json
-!/package-lock.json
-!/tsconfig.json
-!/vite.config.ts
 !/recalculate_hashes.py
 
-# Node modules
+# Temp and scrap files
+*.db
+Cookies
+*.m3u8
+*_extracted/
+screenshot_*.png
+rbtv_local_debug.png
 node_modules/
+/*.cs3
 
 # Ignore source codes of prebuilt plugins
 /FilmBoxOffice/
