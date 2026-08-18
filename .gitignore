@@ -53,6 +53,7 @@ node_modules/
 # Ignore source codes of prebuilt plugins
 /FilmBoxOffice/
 /MovieBoXR/
+/DracinAioV2/
 /DubIndoXR/
 /WIFI-MOVIE/
 /idliXR/
