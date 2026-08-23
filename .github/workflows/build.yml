@@ -106,8 +106,6 @@ jobs:
           DRACINAIO_V2_PATH_CONSENT: ${{ secrets.DRACINAIO_V2_PATH_CONSENT }}
           DRACINAIO_V2_PATH_EDGE: ${{ secrets.DRACINAIO_V2_PATH_EDGE }}
           DRACINAIO_V2_PATH_REFRESH: ${{ secrets.DRACINAIO_V2_PATH_REFRESH }}
-          XR3EDTV_WORKER_URL: ${{ secrets.XR3EDTV_WORKER_URL }}
-          XR3EDTV_WORKER_TOKEN: ${{ secrets.XR3EDTV_WORKER_TOKEN }}
           FBOX_OAUTH_CLIENT_ID: ${{ secrets.FBOX_OAUTH_CLIENT_ID }}
           FBOX_OAUTH_CLIENT_SECRET: ${{ secrets.FBOX_OAUTH_CLIENT_SECRET }}
           MOVIEBOX_TOKEN_B64: ${{ secrets.MOVIEBOX_TOKEN_B64 }}
@@ -184,7 +182,7 @@ jobs:
           echo "Purging ALL files from jsDelivr cache..."
           
           # Purge semua file cs3 plugin
-          for plugin in idliXR RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV AnichinXR FilmBoxOffice MovieBoXR LayarKacaXR Support AnimeSailXR KlikXXiXR DracinAioV2 MyHomepage DubIndoXR WIFI-MOVIE OppadramaXR; do
+          for plugin in idliXR RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix AnichinXR FilmBoxOffice MovieBoXR LayarKacaXR Support AnimeSailXR KlikXXiXR DracinAioV2 MyHomepage DubIndoXR WIFI-MOVIE OppadramaXR; do
             echo "Purging $plugin.cs3..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$plugin.cs3"
             echo ""

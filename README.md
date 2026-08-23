@@ -60,9 +60,6 @@ Repositori resmi untuk memasang ekstensi pemutar M3U dan live streaming olahraga
 12. **`xr3edFlix`**  
     Ekstensi premium untuk menyaksikan berbagai film dan serial box office secara gratis.
 
-13. **`xr3edTV`**  
-    Ekstensi saluran siaran langsung televisi (Live TV) nasional maupun mancanegara.
-
 ---
 
 ## 📥 Cara Pemasangan di Cloudstream
