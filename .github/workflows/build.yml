@@ -106,6 +106,14 @@ jobs:
           DRACINAIO_V2_PATH_CONSENT: ${{ secrets.DRACINAIO_V2_PATH_CONSENT }}
           DRACINAIO_V2_PATH_EDGE: ${{ secrets.DRACINAIO_V2_PATH_EDGE }}
           DRACINAIO_V2_PATH_REFRESH: ${{ secrets.DRACINAIO_V2_PATH_REFRESH }}
+          XR3EDTV_API_BASE: ${{ secrets.XR3EDTV_API_BASE }}
+          XR3EDTV_XOR_KEY: ${{ secrets.XR3EDTV_XOR_KEY }}
+          XR3EDTV_SALT_KEY: ${{ secrets.XR3EDTV_SALT_KEY }}
+          XR3EDTV_ONDEMAND_API: ${{ secrets.XR3EDTV_ONDEMAND_API }}
+          XR3EDTV_ONDEMAND_REFERER: ${{ secrets.XR3EDTV_ONDEMAND_REFERER }}
+          WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+          WORKER_AUTH_KEY: ${{ secrets.WORKER_AUTH_KEY }}
+          NASIONAL_SOURCE_URL: ${{ secrets.NASIONAL_SOURCE_URL }}
           FBOX_OAUTH_CLIENT_ID: ${{ secrets.FBOX_OAUTH_CLIENT_ID }}
           FBOX_OAUTH_CLIENT_SECRET: ${{ secrets.FBOX_OAUTH_CLIENT_SECRET }}
           MOVIEBOX_TOKEN_B64: ${{ secrets.MOVIEBOX_TOKEN_B64 }}
@@ -182,7 +190,7 @@ jobs:
           echo "Purging ALL files from jsDelivr cache..."
           
           # Purge semua file cs3 plugin
-          for plugin in idliXR RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix AnichinXR FilmBoxOffice MovieBoXR LayarKacaXR Support AnimeSailXR KlikXXiXR DracinAioV2 MyHomepage DubIndoXR WIFI-MOVIE OppadramaXR; do
+          for plugin in idliXR RBTVPlus SportsurgeXR M3UPlaylistPlayer DracinAIO GudangFilmXR xr3edFlix xr3edTV AnichinXR FilmBoxOffice MovieBoXR LayarKacaXR Support AnimeSailXR KlikXXiXR DracinAioV2 MyHomepage DubIndoXR WIFI-MOVIE OppadramaXR; do
             echo "Purging $plugin.cs3..."
             curl -s "https://purge.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@builds/$plugin.cs3"
             echo ""
