@@ -1,7 +1,6 @@
 package com.lagradost
 
 import android.util.Base64
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
@@ -12,12 +11,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.URLEncoder
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
@@ -52,6 +48,8 @@ class Xr3edTVProvider : MainAPI() {
 
         const val DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
         const val MASK_PREFIX = "https://lynk.id/xr3ed#"
+        const val FALLBACK_MASTER_M3U = "https://raw.githubusercontent.com/xr3ed/xr3ed-tv/main/xr3dtv.m3u8"
+        const val FALLBACK_NASIONAL_M3U = "https://raw.githubusercontent.com/xr3ed/xr3ed-tv/main/nasional.m3u"
 
         val httpClient: OkHttpClient = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
@@ -60,13 +58,12 @@ class Xr3edTVProvider : MainAPI() {
             .followSslRedirects(true)
             .build()
 
-        // In-memory short caching to prevent hammering while browsing tabs
         private var kltraCache: Pair<Long, List<Xr3edTvItem>>? = null
         private var ondemandCache: Pair<Long, List<Xr3edTvItem>>? = null
-        private var dekotechCache: Pair<Long, Map<String, List<Xr3edTvItem>>>? = null
+        private var masterM3uCache: Pair<Long, Map<String, List<Xr3edTvItem>>>? = null
 
         private const val LIVE_CACHE_TTL = 30_000L // 30 detik untuk live sports
-        private const val CHANNEL_CACHE_TTL = 300_000L // 5 menit untuk 24/7 channels
+        private const val M3U_CACHE_TTL = 60_000L  // 60 detik untuk master M3U
     }
 
     override var mainUrl = "https://lynk.id/xr3ed"
@@ -77,10 +74,10 @@ class Xr3edTVProvider : MainAPI() {
     override val hasQuickSearch = true
 
     override val mainPage = listOf(
-        MainPageData("🔥 Hot Event", "HOT"),
-        MainPageData("🔴 Live Event", "LIVE"),
-        MainPageData("🥊 FIGHT & COMBAT", "FIGHT"),
-        MainPageData("⏳ Upcoming Event", "UPCOMING"),
+        MainPageData("🔥 Hot Event", "🔥 Hot Event"),
+        MainPageData("🔴 Live Event", "🔴 Live Event"),
+        MainPageData("🥊 FIGHT & COMBAT", "🥊 FIGHT & COMBAT"),
+        MainPageData("⏳ Upcoming Event", "⏳ Upcoming Event"),
         MainPageData("🇮🇩 NASIONAL", "🇮🇩 NASIONAL"),
         MainPageData("⚽ SPORTS", "⚽ SPORTS"),
         MainPageData("🎬 MOVIES & ENTERTAINMENT", "🎬 MOVIES & ENTERTAINMENT"),
@@ -118,20 +115,6 @@ class Xr3edTVProvider : MainAPI() {
             }
         } catch (_: Exception) {
             null
-        }
-    }
-
-    private fun xorDecrypt(encryptedB64: String, keyStr: String): String {
-        return try {
-            val rawData = Base64.decode(encryptedB64.trim(), Base64.DEFAULT)
-            val keyBytes = keyStr.toByteArray(Charsets.UTF_8)
-            val decrypted = ByteArray(rawData.size)
-            for (i in rawData.indices) {
-                decrypted[i] = (rawData[i].toInt() xor keyBytes[i % keyBytes.size].toInt()).toByte()
-            }
-            String(decrypted, Charsets.UTF_8)
-        } catch (_: Exception) {
-            ""
         }
     }
 
@@ -186,6 +169,18 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
+    private fun parseServerAndTitle(rawTitle: String): Pair<String, String> {
+        val serverRegex = Regex("""\s*-\s*(Server\s*\d+(?:\s*\([^)]*\))?)\s*""", RegexOption.IGNORE_CASE)
+        val match = serverRegex.find(rawTitle)
+        return if (match != null) {
+            val srvName = match.groupValues[1].trim()
+            val cleanTitle = rawTitle.removeRange(match.range).replace(Regex("""\s+"""), " ").trim()
+            Pair(cleanTitle, srvName)
+        } else {
+            Pair(rawTitle.trim(), "Server 1")
+        }
+    }
+
     // ─── Engine 1: Kltra Direct Fetcher ───────────────────────────────────────
 
     private fun fetchKltraItems(): List<Xr3edTvItem> {
@@ -195,9 +190,8 @@ class Xr3edTVProvider : MainAPI() {
         }
 
         val apiBase = BuildConfig.XR3EDTV_API_BASE.trimEnd('/')
-        val xorKey = BuildConfig.XR3EDTV_XOR_KEY
         val saltKey = BuildConfig.XR3EDTV_SALT_KEY
-        if (apiBase.isEmpty() || xorKey.isEmpty() || saltKey.isEmpty()) return emptyList()
+        if (apiBase.isEmpty() || saltKey.isEmpty()) return emptyList()
 
         val results = mutableListOf<Xr3edTvItem>()
         try {
@@ -251,7 +245,7 @@ class Xr3edTVProvider : MainAPI() {
                         id = "kltra_$evId",
                         title = title,
                         logo = logo,
-                        group = "LIVE",
+                        group = "🔴 Live Event",
                         servers = servers,
                         info = league
                     ))
@@ -315,9 +309,9 @@ class Xr3edTVProvider : MainAPI() {
                     }
 
                     val groupTag = when {
-                        isLive -> "LIVE"
-                        isUpcoming -> "UPCOMING"
-                        else -> "LIVE"
+                        isLive -> "🔴 Live Event"
+                        isUpcoming -> "⏳ Upcoming Event"
+                        else -> "🔴 Live Event"
                     }
 
                     results.add(Xr3edTvItem(
@@ -336,20 +330,31 @@ class Xr3edTVProvider : MainAPI() {
         return results
     }
 
-    // ─── Engine 3: DekoTech 24/7 Channels Direct Fetcher ──────────────────────
+    // ─── Engine 3: Master M3U Categorized Fetcher ─────────────────────────────
 
-    private fun fetchDekoTechCategories(): Map<String, List<Xr3edTvItem>> {
+    private fun fetchMasterM3uCategories(): Map<String, List<Xr3edTvItem>> {
         val now = System.currentTimeMillis()
-        dekotechCache?.let { (ts, data) ->
-            if (now - ts < CHANNEL_CACHE_TTL) return data
+        masterM3uCache?.let { (ts, data) ->
+            if (now - ts < M3U_CACHE_TTL && data.isNotEmpty()) return data
         }
 
-        val sourceUrl = BuildConfig.NASIONAL_SOURCE_URL.trim()
-        if (sourceUrl.isEmpty()) return emptyMap()
+        val primarySource = BuildConfig.NASIONAL_SOURCE_URL.trim()
+        val urlsToTry = if (primarySource.isNotEmpty()) {
+            listOf(FALLBACK_MASTER_M3U, primarySource, FALLBACK_NASIONAL_M3U)
+        } else {
+            listOf(FALLBACK_MASTER_M3U, FALLBACK_NASIONAL_M3U)
+        }
+
+        var content: String? = null
+        for (u in urlsToTry) {
+            content = httpGet(u)
+            if (!content.isNullOrEmpty() && content.contains("#EXTINF")) break
+        }
+
+        if (content.isNullOrEmpty()) return emptyMap()
 
         val categoryMap = mutableMapOf<String, MutableList<Xr3edTvItem>>()
         try {
-            val content = httpGet(sourceUrl) ?: return emptyMap()
             var currentTitle: String? = null
             var currentLogo: String = ""
             var currentGroup: String = "🇮🇩 NASIONAL"
@@ -386,10 +391,9 @@ class Xr3edTVProvider : MainAPI() {
                             }
                         }
                         !line.startsWith("#") && !line.startsWith("//") -> {
-                            val title = currentTitle
-                            if (!title.isNullOrEmpty() && (line.startsWith("http://") || line.startsWith("https://"))) {
-                                val cleanName = title.replace(Regex(""" - Server \d+"""), "").trim()
-                                val srvName = if (title.contains(" - Server ")) title.substringAfter(" - ") else "Server 1"
+                            val rawTitle = currentTitle
+                            if (!rawTitle.isNullOrEmpty() && (line.startsWith("http://") || line.startsWith("https://"))) {
+                                val (cleanName, srvName) = parseServerAndTitle(rawTitle)
 
                                 val list = categoryMap.getOrPut(currentGroup) { mutableListOf() }
                                 val existingItem = list.find { it.title.equals(cleanName, ignoreCase = true) }
@@ -401,7 +405,7 @@ class Xr3edTVProvider : MainAPI() {
                                     list[idx] = existingItem.copy(servers = updatedServers)
                                 } else {
                                     list.add(Xr3edTvItem(
-                                        id = "dt_${cleanName.hashCode()}",
+                                        id = "m3u_${cleanName.hashCode()}",
                                         title = cleanName,
                                         logo = currentLogo,
                                         group = currentGroup,
@@ -418,7 +422,7 @@ class Xr3edTVProvider : MainAPI() {
                 }
             }
 
-            dekotechCache = Pair(now, categoryMap)
+            masterM3uCache = Pair(now, categoryMap)
         } catch (_: Exception) {}
         return categoryMap
     }
@@ -428,29 +432,41 @@ class Xr3edTVProvider : MainAPI() {
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         val reqTag = request.data.trim()
 
-        val itemsToDisplay = when (reqTag) {
-            "HOT", "LIVE", "UPCOMING", "FIGHT" -> {
-                coroutineScope {
-                    val kltraDeferred = async { fetchKltraItems() }
-                    val odDeferred = async { fetchOnDemandItems() }
-                    val kltra = kltraDeferred.await()
-                    val od = odDeferred.await()
-                    val combined = kltra + od
+        val itemsToDisplay = coroutineScope {
+            val kltraDeferred = async { fetchKltraItems() }
+            val odDeferred = async { fetchOnDemandItems() }
+            val m3uDeferred = async { fetchMasterM3uCategories() }
 
-                    when (reqTag) {
-                        "HOT" -> combined.take(15)
-                        "FIGHT" -> combined.filter {
-                            val t = "${it.title} ${it.info}".lowercase()
-                            t.contains("ufc") || t.contains("fight") || t.contains("boxing") || t.contains("combat") || t.contains("mma")
-                        }
-                        "UPCOMING" -> combined.filter { it.group == "UPCOMING" }
-                        else -> combined.filter { it.group == "LIVE" || it.group == "HOT" }
-                    }
+            val kltra = kltraDeferred.await()
+            val od = odDeferred.await()
+            val m3uCategories = m3uDeferred.await()
+
+            when {
+                reqTag.contains("HOT", ignoreCase = true) || reqTag.contains("Hot Event", ignoreCase = true) -> {
+                    val directHot = (kltra + od).filter { it.group.contains("HOT", ignoreCase = true) || it.group.contains("LIVE", ignoreCase = true) }.take(15)
+                    if (directHot.isNotEmpty()) directHot else m3uCategories["🔥 Hot Event"] ?: m3uCategories["🔴 Live Event"] ?: emptyList()
                 }
-            }
-            else -> {
-                val categories = fetchDekoTechCategories()
-                categories[reqTag] ?: categories.entries.find { it.key.contains(reqTag, ignoreCase = true) }?.value ?: emptyList()
+                reqTag.contains("FIGHT", ignoreCase = true) -> {
+                    val directFight = (kltra + od).filter {
+                        val t = "${it.title} ${it.info}".lowercase()
+                        t.contains("ufc") || t.contains("fight") || t.contains("boxing") || t.contains("combat") || t.contains("mma")
+                    }
+                    if (directFight.isNotEmpty()) directFight else m3uCategories["🥊 FIGHT & COMBAT"] ?: emptyList()
+                }
+                reqTag.contains("UPCOMING", ignoreCase = true) -> {
+                    val directUpcoming = (kltra + od).filter { it.group.contains("UPCOMING", ignoreCase = true) }
+                    if (directUpcoming.isNotEmpty()) directUpcoming else m3uCategories["⏳ Upcoming Event"] ?: emptyList()
+                }
+                reqTag.contains("LIVE", ignoreCase = true) || reqTag.contains("Live Event", ignoreCase = true) -> {
+                    val directLive = (kltra + od).filter { it.group.contains("LIVE", ignoreCase = true) }
+                    if (directLive.isNotEmpty()) directLive else m3uCategories["🔴 Live Event"] ?: m3uCategories["🔥 Hot Event"] ?: emptyList()
+                }
+                else -> {
+                    // Match category by exact name or substring
+                    m3uCategories[reqTag]
+                        ?: m3uCategories.entries.find { it.key.contains(reqTag, ignoreCase = true) || reqTag.contains(it.key, ignoreCase = true) }?.value
+                        ?: emptyList()
+                }
             }
         }
 
@@ -471,10 +487,10 @@ class Xr3edTVProvider : MainAPI() {
         coroutineScope {
             val kltraDeferred = async { fetchKltraItems() }
             val odDeferred = async { fetchOnDemandItems() }
-            val dekoDeferred = async { fetchDekoTechCategories() }
+            val m3uDeferred = async { fetchMasterM3uCategories() }
             allItems.addAll(kltraDeferred.await())
             allItems.addAll(odDeferred.await())
-            dekoDeferred.await().values.forEach { allItems.addAll(it) }
+            m3uDeferred.await().values.forEach { allItems.addAll(it) }
         }
 
         return allItems.filter { it.title.lowercase().contains(cleanQuery) }.map { item ->
