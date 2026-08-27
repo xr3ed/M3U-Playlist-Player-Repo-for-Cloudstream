@@ -770,6 +770,7 @@ fun checkForUpdates(context: Context) {
                 val apkUrl = jsonObj.optString("apkUrl", "")
                 val changelog = jsonObj.optString("changelog", "")
                 val remoteBuildTime = jsonObj.optLong("buildTime", -1L)
+                val forceUpdate = jsonObj.optBoolean("forceUpdate", false)
 
                 if (apkUrl.isNotEmpty()) {
                     var hasUpdate = false
@@ -796,11 +797,11 @@ fun checkForUpdates(context: Context) {
                         Handler(Looper.getMainLooper()).post {
                             val activity = getResumedActivity()
                             if (activity != null) {
-                                showPremiumUpdateDialogSafe(activity, remoteName, apkUrl, changelog, remoteCode, remoteBuildTime)
+                                showPremiumUpdateDialogSafe(activity, remoteName, apkUrl, changelog, remoteCode, remoteBuildTime, forceUpdate)
                             }
                         }
+                    }
                 }
-            }
         } catch (e: Exception) {
             android.util.Log.e("SecurityHelper", "checkForUpdates network or general error", e)
         }
@@ -814,7 +815,8 @@ private fun showPremiumUpdateDialogSafe(
     apkUrl: String,
     changelog: String,
     remoteCode: Int,
-    remoteBuildTime: Long
+    remoteBuildTime: Long,
+    forceUpdate: Boolean = false
 ) {
     if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
 
@@ -823,7 +825,7 @@ private fun showPremiumUpdateDialogSafe(
         Handler(Looper.getMainLooper()).postDelayed({
             val resumed = getResumedActivity()
             if (resumed != null) {
-                showPremiumUpdateDialogSafe(resumed, versionName, apkUrl, changelog, remoteCode, remoteBuildTime)
+                showPremiumUpdateDialogSafe(resumed, versionName, apkUrl, changelog, remoteCode, remoteBuildTime, forceUpdate)
             } else {
                 isUpdateChecked = false // reset flag so next action triggers update
             }
@@ -831,7 +833,7 @@ private fun showPremiumUpdateDialogSafe(
         return
     }
 
-    showPremiumUpdateDialog(activity, versionName, apkUrl, changelog, remoteCode, remoteBuildTime)
+    showPremiumUpdateDialog(activity, versionName, apkUrl, changelog, remoteCode, remoteBuildTime, forceUpdate)
 }
 
 // Premium update dialog (TV/remote friendly, matching app-cloner styling)
@@ -841,7 +843,8 @@ private fun showPremiumUpdateDialog(
     apkUrl: String,
     changelog: String,
     remoteCode: Int,
-    remoteBuildTime: Long
+    remoteBuildTime: Long,
+    forceUpdate: Boolean = false
 ) {
     if (activity.isFinishing || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed)) return
 
@@ -1016,21 +1019,23 @@ private fun showPremiumUpdateDialog(
         }
     }
 
-    // Negative action is always Exit (Forced)
+    // Negative action: Abaikan if not forced, Keluar if forced
     val negBtn = Button(activity).apply {
-        text = "Keluar"
+        text = if (forceUpdate) "Keluar" else "Abaikan"
         setTextColor(Color.WHITE)
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         isFocusable = true
-        background = createButtonDrawable(activity, Color.parseColor("#D63031"))
+        background = createButtonDrawable(activity, if (forceUpdate) Color.parseColor("#D63031") else Color.parseColor("#7F8C8D"))
         layoutParams = LinearLayout.LayoutParams(0, dp(activity, 44), 1.0f).apply {
             rightMargin = dp(activity, 6)
         }
         setOnClickListener {
             dialog.dismiss()
-            activity.finishAffinity()
-            exitProcess(0)
+            if (forceUpdate) {
+                activity.finishAffinity()
+                exitProcess(0)
+            }
         }
     }
     buttonContainer.addView(negBtn)
