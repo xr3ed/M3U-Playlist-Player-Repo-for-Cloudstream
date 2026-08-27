@@ -3,7 +3,7 @@
         "name":  "FilmBoxOffice",
         "internalName":  "FilmBoxOffice",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/FilmBoxOffice.cs3",
-        "version":  36,
+        "version":  37,
         "description":  "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
         "authors":  [
                         "xr3ed"
@@ -20,7 +20,7 @@
         "name":  "MovieBoXR",
         "internalName":  "MovieBoXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
-        "version":  32,
+        "version":  33,
         "description":  "Multi Language Movies and Series Provider",
         "authors":  [
                         "xr3ed"
@@ -38,7 +38,7 @@
         "name":  "DracinAio V2",
         "internalName":  "DracinAioV2",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
-        "version":  66,
+        "version":  67,
         "description":  "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
         "authors":  [
                         "xr3ed"
@@ -55,7 +55,7 @@
         "name":  "DubIndoXR",
         "internalName":  "DubIndoXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
-        "version":  7,
+        "version":  8,
         "description":  "Dubbindo ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
         "authors":  [
                         "xr3ed"
@@ -77,7 +77,7 @@
                         "Movie"
                     ],
         "description":  "Menyediakan akses Film Box Office Baru Premium dengan Google Drive.",
-        "version":  41,
+        "version":  42,
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
         "apiVersion":  1,
         "name":  "WifiMovie",
@@ -92,7 +92,7 @@
         "name":  "idliXR",
         "internalName":  "idliXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/idliXR.cs3",
-        "version":  52,
+        "version":  53,
         "description":  "Idlix provider with active-domain API routing, detail URL normalization, provider session lifecycle, and session redeem playback flow.",
         "authors":  [
                         "xr3ed"
@@ -103,7 +103,7 @@
                         "Anime",
                         "AsianDrama"
                     ],
-        "iconUrl":  "https://www.google.com/s2/favicons?domain=z2.idlixku.com&sz=%size%",
+        "iconUrl":  "https://www.google.com/s2/favicons?domain=z2.idlixku.com\u0026sz=%size%",
         "apiVersion":  1,
         "status":  1,
         "language":  "id",
@@ -113,7 +113,7 @@
         "name":  "OppadramaXR",
         "internalName":  "OppadramaXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/OppadramaXR.cs3",
-        "version":  20,
+        "version":  21,
         "description":  "Oppadrama",
         "authors":  [
                         "xr3ed"
@@ -123,7 +123,7 @@
                         "TvSeries",
                         "Movie"
                     ],
-        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://oppa.biz&size=%size%",
+        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL\u0026type=FAVICON\u0026fallback_opts=TYPE,SIZE,URL\u0026url=https://oppa.biz\u0026size=%size%",
         "apiVersion":  1,
         "status":  1,
         "language":  "id",

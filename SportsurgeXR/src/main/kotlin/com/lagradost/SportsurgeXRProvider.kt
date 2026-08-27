@@ -31,8 +31,16 @@ data class SportsurgeStreamInfo(
 
 class SportsurgeXRProvider : MainAPI() {
     companion object {
-        val posterCache = java.util.concurrent.ConcurrentHashMap<String, String>()
-        val logoCache = java.util.concurrent.ConcurrentHashMap<String, android.graphics.Bitmap>()
+        val posterCache: MutableMap<String, String> = java.util.Collections.synchronizedMap(
+            object : java.util.LinkedHashMap<String, String>(32, 0.75f, true) {
+                override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>?): Boolean = size > 40
+            }
+        )
+        val logoCache: MutableMap<String, android.graphics.Bitmap> = java.util.Collections.synchronizedMap(
+            object : java.util.LinkedHashMap<String, android.graphics.Bitmap>(32, 0.75f, true) {
+                override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, android.graphics.Bitmap>?): Boolean = size > 40
+            }
+        )
         val cleanClient = okhttp3.OkHttpClient()
         
         const val DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"

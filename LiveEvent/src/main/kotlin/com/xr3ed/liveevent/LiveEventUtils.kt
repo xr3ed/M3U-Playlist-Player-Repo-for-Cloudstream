@@ -68,16 +68,16 @@ object LiveEventUtils {
         val providers = getAllProviders()
         if (providers.isEmpty()) return null
 
-        val cleanTarget = name.replace("🔴", "").replace("Live", "").trim()
+        val cleanTarget = name.replace("🔴", "").replace("📺", "").replace("Live", "").trim()
 
         return providers.find { it.name.equals(name, ignoreCase = true) }
             ?: providers.find { it.name.trim().equals(name.trim(), ignoreCase = true) }
             ?: providers.find {
-                val cleanP = it.name.replace("🔴", "").replace("Live", "").trim()
+                val cleanP = it.name.replace("🔴", "").replace("📺", "").replace("Live", "").trim()
                 cleanP.equals(cleanTarget, ignoreCase = true)
             }
             ?: providers.find {
-                val cleanP = it.name.replace("🔴", "").replace("Live", "").trim()
+                val cleanP = it.name.replace("🔴", "").replace("📺", "").replace("Live", "").trim()
                 cleanP.contains(cleanTarget, ignoreCase = true) || cleanTarget.contains(cleanP, ignoreCase = true)
             }
     }

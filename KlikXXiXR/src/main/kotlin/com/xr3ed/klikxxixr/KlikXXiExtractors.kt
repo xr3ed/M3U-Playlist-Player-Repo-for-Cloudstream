@@ -219,7 +219,7 @@ object KlikXXiExtractors {
         if (id.isBlank()) return emptyList()
         val apiUrl = "https://$host/api/v1/video?id=$id&w=1280&h=720&r=klikxxi.shop"
         val encrypted = try {
-            val client = okhttp3.OkHttpClient()
+            val client = com.lagradost.cloudstream3.app.baseClient
             val request = okhttp3.Request.Builder()
                 .url(apiUrl)
                 .header("Referer", mainUrl)
