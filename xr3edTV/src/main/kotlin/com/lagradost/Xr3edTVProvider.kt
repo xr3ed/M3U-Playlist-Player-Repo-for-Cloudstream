@@ -45,7 +45,12 @@ data class Xr3edMatch(
     val isHot: Boolean = false,
     val sortOrder: Int = 999,
     val timestampMs: Long = 0L,
-    val servers: List<StreamServer>
+    val servers: List<StreamServer>,
+    val homeTeam: String = "",
+    val awayTeam: String = "",
+    val homeLogo: String = "",
+    val awayLogo: String = "",
+    val matchDate: String = ""
 )
 
 data class SportHub(
@@ -82,9 +87,13 @@ class Xr3edTVProvider : MainAPI() {
             .followSslRedirects(true)
             .build()
 
+        val posterCache: MutableMap<String, String> = java.util.concurrent.ConcurrentHashMap()
+        val logoCache: MutableMap<String, android.graphics.Bitmap> = java.util.concurrent.ConcurrentHashMap()
+
         private var kltraCache: Pair<Long, List<Xr3edMatch>>? = null
         private var ondemandCache: Pair<Long, List<Xr3edMatch>>? = null
         private var channelCache: Pair<Long, Map<String, List<ChannelItem>>>? = null
+        private var cachedXorKey: String = ""
 
         private const val LIVE_CACHE_TTL = 30_000L // 30s
         private const val CHANNEL_CACHE_TTL = 300_000L // 5m
@@ -222,6 +231,42 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
+    private fun buildMatchPosterUrl(
+        home: String,
+        away: String,
+        homeLogo: String = "",
+        awayLogo: String = "",
+        league: String = "",
+        sport: String = "",
+        isLive: Boolean = true,
+        time: String = "",
+        date: String = "",
+        aspect: String = "landscape"
+    ): String {
+        val base = BuildConfig.XR3EDTV_POSTER_BASE.ifEmpty { "https://xr3edtv-poster.xr3ed-cdn.workers.dev/poster.png" }
+        val status = if (isLive) "live" else "upcoming"
+        val cleanTime = time.replace(" WIB", "").replace("Live", "").trim()
+        return "$base?v=17&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+    }
+
+    private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
+        if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
+            return buildMatchPosterUrl(
+                home = m.homeTeam,
+                away = m.awayTeam,
+                homeLogo = m.homeLogo,
+                awayLogo = m.awayLogo,
+                league = m.league,
+                sport = m.sportCategory,
+                isLive = m.isLive,
+                time = m.kickOffTime,
+                date = m.matchDate,
+                aspect = aspect
+            )
+        }
+        return m.logo.ifEmpty { "https://kltraid.pages.dev/images/sportsicon/Other.png" }
+    }
+
     // ─── Match & Sport Detection ──────────────────────────────────────────────
 
     private fun detectSportCategory(league: String, title: String, rawIconOrCat: String = ""): String {
@@ -294,6 +339,48 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
+    private fun xorDecrypt(encryptedBase64: String, key: String): String {
+        if (key.isEmpty() || encryptedBase64.isEmpty()) return encryptedBase64
+        return try {
+            val rawData = Base64.decode(encryptedBase64.trim(), Base64.DEFAULT)
+            val keyBytes = key.toByteArray(Charsets.UTF_8)
+            val keyLen = keyBytes.size
+            val decrypted = ByteArray(rawData.size)
+            for (i in rawData.indices) {
+                decrypted[i] = (rawData[i].toInt() xor keyBytes[i % keyLen].toInt()).toByte()
+            }
+            String(decrypted, Charsets.UTF_8)
+        } catch (_: Exception) {
+            encryptedBase64
+        }
+    }
+
+    private suspend fun getDynamicXorKey(): String {
+        return try {
+            val js = httpGet("https://kltraid.pages.dev/js/testa.js") ?: return ""
+            val kPattern = Regex("""const\s+__K_[a-zA-Z0-9]+\s*=\s*\[([0-9,\s]+)\];""")
+            val sPattern = Regex("""const\s+__S_[a-zA-Z0-9]+\s*=\s*\[([^\]]+)\];""")
+            val kMatch = kPattern.find(js)
+            val sMatch = sPattern.find(js)
+            if (kMatch != null && sMatch != null) {
+                val kArr = kMatch.groupValues[1].split(",").mapNotNull { it.trim().toIntOrNull() }
+                val sMatches = Regex(""""([^"]+)"""").findAll(sMatch.groupValues[1]).map { it.groupValues[1] }.toList()
+                if (sMatches.size > 2) {
+                    val rawB = Base64.decode(sMatches[2], Base64.DEFAULT)
+                    val n = 2
+                    val resBytes = ByteArray(rawB.size)
+                    for (i in rawB.indices) {
+                        resBytes[i] = (rawB[i].toInt() xor kArr[(i + n) % kArr.size] xor ((n * 31 + i * 17) and 255)).toByte()
+                    }
+                    return String(resBytes, Charsets.UTF_8)
+                }
+            }
+            ""
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
     // ─── Engine 1: Kltra Realtime Fetcher ──────────────────────────────────────
 
     private suspend fun fetchKltraMatches(): List<Xr3edMatch> {
@@ -304,6 +391,12 @@ class Xr3edTVProvider : MainAPI() {
 
         val apiBase = BuildConfig.XR3EDTV_API_BASE.trimEnd('/').ifEmpty { "https://apiweb.filmmania.click" }
         val saltKey = BuildConfig.XR3EDTV_SALT_KEY.ifEmpty { "xR7#kLt_vI9\$pZw2@mN5" }
+        var xorKey = BuildConfig.XR3EDTV_XOR_KEY.ifEmpty {
+            if (cachedXorKey.isEmpty()) {
+                cachedXorKey = getDynamicXorKey()
+            }
+            cachedXorKey
+        }
 
         val results = mutableListOf<Xr3edMatch>()
         try {
@@ -311,20 +404,48 @@ class Xr3edTVProvider : MainAPI() {
             val eventsRaw = httpGet("$apiBase/vip/eventweb.json?v=$ts") ?: return emptyList()
             val playersRaw = httpGet("$apiBase/vip/sdplayer.json?v=$ts") ?: "{}"
 
-            val eventsNode = mapper.readTree(eventsRaw)
-            val playersNode = mapper.readTree(playersRaw)
+            var decEvents = if (eventsRaw.trim().startsWith("[")) eventsRaw else xorDecrypt(eventsRaw, xorKey)
+            var decPlayers = if (playersRaw.trim().startsWith("[")) playersRaw else xorDecrypt(playersRaw, xorKey)
+
+            if (!decEvents.trim().startsWith("[")) {
+                val dyn = getDynamicXorKey()
+                if (dyn.isNotEmpty() && dyn != xorKey) {
+                    xorKey = dyn
+                    cachedXorKey = dyn
+                    decEvents = xorDecrypt(eventsRaw, xorKey)
+                    decPlayers = xorDecrypt(playersRaw, xorKey)
+                }
+            }
+
+            val eventsNode = try { mapper.readTree(decEvents) } catch (_: Exception) { null }
+            val playersNode = try { mapper.readTree(decPlayers) } catch (_: Exception) { null }
 
             val playerMap = mutableMapOf<String, List<StreamServer>>()
-            if (playersNode.isArray) {
+            if (playersNode != null && playersNode.isArray) {
                 for (p in playersNode) {
-                    val id = p.get("id")?.asText() ?: continue
+                    val pKey = p.get("r")?.asText() ?: p.get("id")?.asText() ?: continue
                     val serversNode = p.get("servers")
                     val serverList = mutableListOf<StreamServer>()
                     if (serversNode != null && serversNode.isArray) {
                         for ((idx, s) in serversNode.withIndex()) {
-                            val url = s.get("url")?.asText()?.trim() ?: continue
-                            if (url.isEmpty()) continue
-                            val sName = s.get("name")?.asText() ?: s.get("label")?.asText() ?: "Server ${idx + 1}"
+                            var url = s.get("url")?.asText()?.trim() ?: continue
+                            if (url.isEmpty() || url.startsWith("javascript:")) continue
+                            if (url.contains("liveUrl=")) {
+                                try {
+                                    val parsed = Uri.parse(url)
+                                    val liveParam = parsed.getQueryParameter("liveUrl")
+                                    if (!liveParam.isNullOrEmpty()) {
+                                        url = liveParam
+                                    }
+                                } catch (_: Exception) {}
+                            }
+                            val rawLabel = s.get("label")?.asText() ?: s.get("name")?.asText() ?: "Server ${idx + 1}"
+                            val sName = when {
+                                rawLabel.contains("W", ignoreCase = true) -> "Server ${idx + 1} (SD)"
+                                rawLabel.contains("Vivo", ignoreCase = true) -> "Server ${idx + 1} (SD Vivo)"
+                                rawLabel.contains("Yalla", ignoreCase = true) -> "Server ${idx + 1} (SD Yalla)"
+                                else -> "Server ${idx + 1} ($rawLabel)"
+                            }
                             val kodiProps = mutableMapOf<String, String>()
                             s.get("key")?.asText()?.trim()?.let { k ->
                                 if (k.isNotEmpty() && (k.contains(":") || (k.length == 32 && k.all { c -> c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F' }))) {
@@ -336,17 +457,21 @@ class Xr3edTVProvider : MainAPI() {
                         }
                     }
                     if (serverList.isNotEmpty()) {
-                        playerMap[id] = serverList
+                        playerMap[pKey] = serverList
                     }
                 }
             }
 
-            if (eventsNode.isArray) {
+            if (eventsNode != null && eventsNode.isArray) {
                 for (ev in eventsNode) {
-                    val evId = ev.get("id")?.asText() ?: continue
-                    val hiddenId = getEventHiddenId(evId, saltKey)
-                    val servers = playerMap[hiddenId] ?: continue
-                    if (servers.isEmpty()) continue
+                    val evId = ev.get("id")?.asText() ?: ""
+                    val rKey = ev.get("r")?.asText() ?: evId
+                    var servers = playerMap[rKey]
+                    if (servers.isNullOrEmpty() && saltKey.isNotEmpty() && evId.isNotEmpty()) {
+                        val hiddenId = getEventHiddenId(evId, saltKey)
+                        servers = playerMap[hiddenId]
+                    }
+                    if (servers.isNullOrEmpty()) continue
 
                     val league = ev.get("league")?.asText()?.trim() ?: "Sports Event"
                     val t1 = ev.get("team1")?.get("name")?.asText()?.trim() ?: ""
@@ -366,13 +491,13 @@ class Xr3edTVProvider : MainAPI() {
 
                     val rawIcon = ev.get("icon")?.asText() ?: ""
                     val rawFirstRow = ev.get("firstRow")?.asInt() ?: 999
-                    val isHot = rawIcon.contains("main_", ignoreCase = true) || rawFirstRow <= 3
+                    val isHot = rawIcon.contains("main_", ignoreCase = true) || rawFirstRow <= 120 || rawFirstRow <= 10
 
                     val (isLive, isUpcoming, matchTimeMs) = computeMatchStatus(kickDate, kickTime, duration)
                     val cat = detectSportCategory(league, title, rawIcon)
 
                     results.add(Xr3edMatch(
-                        id = "kltra_$evId",
+                        id = "kltra_${if (evId.isNotEmpty()) evId else rKey}",
                         title = title,
                         sportCategory = cat,
                         league = league,
@@ -384,7 +509,12 @@ class Xr3edTVProvider : MainAPI() {
                         isHot = isHot,
                         sortOrder = rawFirstRow,
                         timestampMs = matchTimeMs,
-                        servers = servers
+                        servers = servers,
+                        homeTeam = t1,
+                        awayTeam = t2,
+                        homeLogo = ev.get("team1")?.get("logo")?.asText()?.trim() ?: "",
+                        awayLogo = ev.get("team2")?.get("logo")?.asText()?.trim() ?: "",
+                        matchDate = kickDate
                     ))
                 }
             }
@@ -508,6 +638,11 @@ class Xr3edTVProvider : MainAPI() {
                     val viewers = m.get("viewers")?.asInt() ?: 0
                     val isHot = isPopular || viewers > 500
 
+                    val odDateStr = if (dateMs > 0) {
+                        val sdfDate = SimpleDateFormat("dd MMMM yyyy", Locale.US).apply { timeZone = tz }
+                        sdfDate.format(Date(dateMs))
+                    } else "Hari Ini"
+
                     results.add(Xr3edMatch(
                         id = "od_$mid",
                         title = cleanTitle,
@@ -521,7 +656,12 @@ class Xr3edTVProvider : MainAPI() {
                         isHot = isHot,
                         sortOrder = 1000 + results.size,
                         timestampMs = dateMs,
-                        servers = servers
+                        servers = servers,
+                        homeTeam = homeName,
+                        awayTeam = awayName,
+                        homeLogo = m.get("teams")?.get("home")?.get("badge")?.asText()?.trim() ?: "",
+                        awayLogo = m.get("teams")?.get("away")?.get("badge")?.asText()?.trim() ?: "",
+                        matchDate = odDateStr
                     ))
                 }
             }
@@ -587,7 +727,9 @@ class Xr3edTVProvider : MainAPI() {
                 mergedResults.add(km.copy(
                     servers = combinedServers,
                     isHot = km.isHot || matchedOd.isHot,
-                    logo = km.logo.ifEmpty { matchedOd.logo }
+                    logo = km.logo.ifEmpty { matchedOd.logo },
+                    homeLogo = km.homeLogo.ifEmpty { matchedOd.homeLogo },
+                    awayLogo = km.awayLogo.ifEmpty { matchedOd.awayLogo }
                 ))
             } else {
                 mergedResults.add(km)
@@ -711,7 +853,7 @@ class Xr3edTVProvider : MainAPI() {
                 val matchPayload = mapper.writeValueAsString(m)
                 val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                 newLiveSearchResponse(m.title, maskedData, TvType.Live) {
-                    this.posterUrl = m.logo.ifEmpty { "https://kltraid.pages.dev/images/sportsicon/Other.png" }
+                    this.posterUrl = getMatchPoster(m, "landscape")
                 }
             }
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
@@ -742,7 +884,7 @@ class Xr3edTVProvider : MainAPI() {
                 val matchPayload = mapper.writeValueAsString(m)
                 val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                 newLiveSearchResponse("${m.kickOffTime} • ${m.title}", maskedData, TvType.Live) {
-                    this.posterUrl = m.logo.ifEmpty { "https://kltraid.pages.dev/images/sportsicon/Other.png" }
+                    this.posterUrl = getMatchPoster(m, "landscape")
                 }
             }
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
@@ -775,7 +917,7 @@ class Xr3edTVProvider : MainAPI() {
                 val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                 val titleWithBadge = if (m.isUpcoming) "${m.kickOffTime} • ${m.title}" else m.title
                 newLiveSearchResponse(titleWithBadge, maskedData, TvType.Live) {
-                    this.posterUrl = m.logo.ifEmpty { sportMatch.poster }
+                    this.posterUrl = getMatchPoster(m, "landscape")
                 }
             }
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
@@ -820,7 +962,7 @@ class Xr3edTVProvider : MainAPI() {
             val matchPayload = mapper.writeValueAsString(m)
             val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
             results.add(newLiveSearchResponse(m.title, maskedData, TvType.Live) {
-                this.posterUrl = m.logo.ifEmpty { "https://kltraid.pages.dev/images/sportsicon/Other.png" }
+                this.posterUrl = getMatchPoster(m, "landscape")
             })
         }
 
@@ -867,7 +1009,7 @@ class Xr3edTVProvider : MainAPI() {
             val statusText = if (match.isLive) "🔴 SEDANG BERLANGSUNG (LIVE)" else "⏳ JADWAL (${match.kickOffTime})"
 
             return newTvSeriesLoadResponse(match.title, url, TvType.Live, episodes) {
-                this.posterUrl = match.logo.ifEmpty { "https://kltraid.pages.dev/images/sportsicon/Other.png" }
+                this.posterUrl = getMatchPoster(match, "portrait")
                 this.plot = "Status: $statusText\nLiga: ${match.league} | Jadwal: ${match.kickOffTime} | Tersedia ${match.servers.size} Server Pilihan."
                 this.seasonNames = listOf(SeasonData(1, "📡 Siaran Langsung (${match.servers.size} Server)"))
             }
@@ -903,7 +1045,7 @@ class Xr3edTVProvider : MainAPI() {
                     this.name = "${m.kickOffTime} • ${m.title}"
                     this.season = 1
                     this.episode = idx + 1
-                    this.posterUrl = m.logo.ifEmpty { hubInfo.poster }
+                    this.posterUrl = getMatchPoster(m, "landscape")
                     this.description = "Liga: ${m.league} | Jadwal: ${m.kickOffTime} | Status: LIVE | Tersedia ${m.servers.size} Server"
                 })
             }
@@ -917,7 +1059,7 @@ class Xr3edTVProvider : MainAPI() {
                     this.name = "${m.kickOffTime} • ${m.title}"
                     this.season = 2
                     this.episode = idx + 1
-                    this.posterUrl = m.logo.ifEmpty { hubInfo.poster }
+                    this.posterUrl = getMatchPoster(m, "landscape")
                     this.description = "Liga: ${m.league} | Jadwal: ${m.kickOffTime} | Status: UPCOMING | Tersedia ${m.servers.size} Server"
                 })
             }

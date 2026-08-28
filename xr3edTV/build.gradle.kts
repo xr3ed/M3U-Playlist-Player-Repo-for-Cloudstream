@@ -1,6 +1,6 @@
 import java.util.Properties
 
-version = 2
+version = 3
 
 val localProps = Properties().also { p ->
     val f = rootProject.file("local.properties")
@@ -24,6 +24,7 @@ android {
         buildConfigField("String", "WORKER_BASE_URL",  "\"${secret("WORKER_BASE_URL")}\"")
         buildConfigField("String", "WORKER_AUTH_KEY",  "\"${secret("WORKER_AUTH_KEY")}\"")
         buildConfigField("String", "NASIONAL_SOURCE_URL", "\"${secret("NASIONAL_SOURCE_URL")}\"")
+        buildConfigField("String", "XR3EDTV_POSTER_BASE",  "\"${secret("XR3EDTV_POSTER_BASE")}\"")
     }
     sourceSets {
         getByName("main").java.srcDirs("src/main/kotlin", "${project.rootDir}/shared/src/main/kotlin")
