@@ -246,7 +246,7 @@ class Xr3edTVProvider : MainAPI() {
         val base = BuildConfig.XR3EDTV_POSTER_BASE.ifEmpty { "https://xr3edtv-poster.xr3ed-cdn.workers.dev/poster.png" }
         val status = if (isLive) "live" else "upcoming"
         val cleanTime = time.replace(" WIB", "").replace("Live", "").trim()
-        return "$base?v=20&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+        return "$base?v=21&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
     }
 
     private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
