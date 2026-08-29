@@ -530,7 +530,11 @@ class Xr3edTVProvider : MainAPI() {
                         }
                     }
                     if (serverList.isNotEmpty()) {
-                        playerMap[pKey] = serverList
+                        val sortedServers = serverList.sortedWith(
+                            compareByDescending<StreamServer> { it.url.contains(".m3u8", ignoreCase = true) || it.name.contains("IOS", ignoreCase = true) }
+                                .thenBy { it.name }
+                        )
+                        playerMap[pKey] = sortedServers
                     }
                 }
             }
@@ -705,15 +709,33 @@ class Xr3edTVProvider : MainAPI() {
                         "Referer" to "https://damitv.st/"
                     )
 
-                    // 1. Server 1 HD (Worker Stream)
+                    // 1. TV Channels (Primary for PPV, Motorsport, Tennis, Fight)
+                    val tvChannelsNode = m.get("tvChannels")
+                    val tvServers = mutableListOf<StreamServer>()
+                    if (tvChannelsNode != null && tvChannelsNode.isArray) {
+                        for ((idx, tv) in tvChannelsNode.withIndex()) {
+                            val tvId = tv.get("id")?.asText()?.replace("dlhd-", "") ?: continue
+                            val tvName = tv.get("name")?.asText() ?: "TV"
+                            val encTv = encryptMatchId(tvId, workerKey)
+                            val srvName = "Ondemand-${tvName.replace(" ", "-")}"
+                            tvServers.add(StreamServer(srvName, "$workerBase/live/$encTv.m3u8", odHeaders))
+                        }
+                    }
+
+                    // 2. Server 1 HD & Server 2 SD (Worker Stream)
                     val encPrimary = encryptMatchId(mid, workerKey)
                     val primaryUrl = "$workerBase/live/$encPrimary.m3u8"
-                    servers.add(StreamServer("Ondemand-HD", primaryUrl, odHeaders))
-
-                    // 2. Server 2 SD (Worker Stream)
                     val encSd = encryptMatchId("$mid:sd", workerKey)
                     val sdUrl = "$workerBase/live/$encSd.m3u8"
-                    servers.add(StreamServer("Ondemand-SD", sdUrl, odHeaders))
+
+                    if (tvServers.isNotEmpty()) {
+                        servers.addAll(tvServers)
+                        servers.add(StreamServer("Ondemand-HD", primaryUrl, odHeaders))
+                        servers.add(StreamServer("Ondemand-SD", sdUrl, odHeaders))
+                    } else {
+                        servers.add(StreamServer("Ondemand-HD", primaryUrl, odHeaders))
+                        servers.add(StreamServer("Ondemand-SD", sdUrl, odHeaders))
+                    }
 
                     // 3. Substreams (Alternative streams jika ada)
                     val substreamsNode = m.get("substreams")
@@ -725,18 +747,6 @@ class Xr3edTVProvider : MainAPI() {
                             val label = if (subLocale.isNotEmpty()) "Ondemand-${subName.replace(" ", "-")}-${subLocale.uppercase()}" else "Ondemand-${subName.replace(" ", "-")}"
                             val encSub = encryptMatchId(subId, workerKey)
                             servers.add(StreamServer(label, "$workerBase/live/$encSub.m3u8", odHeaders))
-                        }
-                    }
-
-                    // 4. TV Channels
-                    val tvChannelsNode = m.get("tvChannels")
-                    if (tvChannelsNode != null && tvChannelsNode.isArray) {
-                        for ((idx, tv) in tvChannelsNode.withIndex()) {
-                            val tvId = tv.get("id")?.asText()?.replace("dlhd-", "") ?: continue
-                            val tvName = tv.get("name")?.asText() ?: "TV"
-                            val encTv = encryptMatchId(tvId, workerKey)
-                            val srvName = "Ondemand-${tvName.replace(" ", "-")}"
-                            servers.add(StreamServer(srvName, "$workerBase/live/$encTv.m3u8", odHeaders))
                         }
                     }
 
