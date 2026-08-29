@@ -1765,6 +1765,8 @@ class Xr3edTVProvider : MainAPI() {
                     val parts = trimmed.split(":", limit = 2)
                     clearkeyKid = hexToBase64Url(parts[0].trim())
                     clearkeyKey = hexToBase64Url(parts[1].trim())
+                    val workerBase = BuildConfig.WORKER_BASE_URL.trimEnd('/').ifEmpty { "https://stream-cdn-box.xr3ed-edge.workers.dev" }
+                    finalLicenseUrl = "$workerBase/drm/clearkey?k=${parts[0].trim()}:${parts[1].trim()}"
                 } else {
                     isClearkey = true
                     clearkeyKey = hexToBase64Url(trimmed)
