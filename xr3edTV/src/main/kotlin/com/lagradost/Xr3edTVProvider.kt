@@ -530,10 +530,18 @@ class Xr3edTVProvider : MainAPI() {
                         }
                     }
                     if (serverList.isNotEmpty()) {
-                        val sortedServers = serverList.sortedWith(
-                            compareByDescending<StreamServer> { it.url.contains(".m3u8", ignoreCase = true) || it.name.contains("IOS", ignoreCase = true) }
-                                .thenBy { it.name }
-                        )
+                        val hlsServers = serverList.filter { it.url.contains(".m3u8", ignoreCase = true) || it.name.contains("IOS", ignoreCase = true) }
+                        val sortedServers = if (hlsServers.isNotEmpty()) {
+                            hlsServers.map { srv ->
+                                val cleanName = if (srv.name.contains("IOS", ignoreCase = true)) "Kltra-HD" else srv.name
+                                StreamServer(cleanName, srv.url, srv.headers, srv.kodiProps)
+                            }
+                        } else {
+                            serverList.sortedWith(
+                                compareByDescending<StreamServer> { it.url.contains(".m3u8", ignoreCase = true) }
+                                    .thenBy { it.name }
+                            )
+                        }
                         playerMap[pKey] = sortedServers
                     }
                 }
