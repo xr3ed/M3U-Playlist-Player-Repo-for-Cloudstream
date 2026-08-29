@@ -1057,12 +1057,18 @@ class Xr3edTVProvider : MainAPI() {
 
             val combinedIsLive = km.isLive || (matchedOd?.isLive == true) || (matchedBs?.isLive == true)
             val combinedIsUpcoming = if (combinedIsLive) false else (km.isUpcoming || (matchedOd?.isUpcoming == true) || (matchedBs?.isUpcoming == true))
+            val bestTimestamp = if (km.timestampMs > 0) km.timestampMs else (matchedOd?.timestampMs ?: (matchedBs?.timestampMs ?: 0L))
+            val bestKickOff = if (km.kickOffTime.isNotEmpty() && km.kickOffTime != "Live") km.kickOffTime else (matchedOd?.kickOffTime ?: (matchedBs?.kickOffTime ?: km.kickOffTime))
+            val bestDate = km.matchDate.ifEmpty { matchedOd?.matchDate ?: (matchedBs?.matchDate ?: "") }
 
             mergedResults.add(km.copy(
                 servers = combinedServers,
                 isHot = combinedIsHot,
                 isLive = combinedIsLive,
                 isUpcoming = combinedIsUpcoming,
+                timestampMs = bestTimestamp,
+                kickOffTime = bestKickOff,
+                matchDate = bestDate,
                 homeLogo = combinedHomeLogo,
                 awayLogo = combinedAwayLogo,
                 logo = km.logo.ifEmpty { matchedOd?.logo ?: "" }.ifEmpty { matchedBs?.logo ?: "" }
@@ -1087,12 +1093,18 @@ class Xr3edTVProvider : MainAPI() {
 
             val combinedIsLive = od.isLive || (matchedBs?.isLive == true)
             val combinedIsUpcoming = if (combinedIsLive) false else (od.isUpcoming || (matchedBs?.isUpcoming == true))
+            val bestTimestamp = if (od.timestampMs > 0) od.timestampMs else (matchedBs?.timestampMs ?: 0L)
+            val bestKickOff = if (od.kickOffTime.isNotEmpty() && od.kickOffTime != "Jadwal N/A") od.kickOffTime else (matchedBs?.kickOffTime ?: od.kickOffTime)
+            val bestDate = od.matchDate.ifEmpty { matchedBs?.matchDate ?: "" }
 
             mergedResults.add(od.copy(
                 servers = combinedServers,
                 isHot = combinedIsHot,
                 isLive = combinedIsLive,
                 isUpcoming = combinedIsUpcoming,
+                timestampMs = bestTimestamp,
+                kickOffTime = bestKickOff,
+                matchDate = bestDate,
                 homeLogo = od.homeLogo.ifEmpty { matchedBs?.homeLogo ?: "" },
                 awayLogo = od.awayLogo.ifEmpty { matchedBs?.awayLogo ?: "" },
                 logo = od.logo.ifEmpty { matchedBs?.logo ?: "" }
@@ -1206,14 +1218,23 @@ class Xr3edTVProvider : MainAPI() {
         val reqTag = (if (request.data.isNotBlank()) request.data else request.name).trim()
         val lowerTag = "${request.data} ${request.name}".lowercase()
 
-        // 1. Hot Event — Live isHot dari semua sumber + live beesport
+        // 1. Hot Event — Live & Upcoming Hot Matches (Live paling depan, urutan kick-off terdekat)
         if (lowerTag.contains("hot")) {
             val matches = fetchMergedMatches()
             val hotMatches = matches.filter { m ->
-                m.isLive && m.isHot &&
+                m.isHot &&
                 !m.title.contains("Rally TV", ignoreCase = true) &&
                 !m.title.contains("24/7", ignoreCase = true)
-            }.sortedBy { it.sortOrder }
+            }.sortedWith(
+                compareBy<Xr3edMatch> { !it.isLive }
+                    .thenBy { m ->
+                        if (m.isLive) {
+                            if (m.timestampMs > 0) -m.timestampMs else 0L
+                        } else {
+                            if (m.timestampMs > 0) m.timestampMs else Long.MAX_VALUE
+                        }
+                    }
+            )
 
             val directCards = hotMatches.map { m ->
                 val matchPayload = mapper.writeValueAsString(m)
@@ -1226,14 +1247,14 @@ class Xr3edTVProvider : MainAPI() {
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
         }
 
-        // 1b. Live Olahraga — Semua live non-hot (viewers=0, liga biasa)
+        // 1b. Live Olahraga — Semua live non-hot (diurutkan dari waktu mulai terbaru/terdekat)
         if (reqTag == "LIVE_REGULAR" || lowerTag.contains("live regular") || lowerTag.contains("live olahraga")) {
             val matches = fetchMergedMatches()
             val liveRegular = matches.filter { m ->
                 m.isLive &&
                 !m.title.contains("Rally TV", ignoreCase = true) &&
                 !m.title.contains("24/7", ignoreCase = true)
-            }.sortedBy { it.sortOrder }
+            }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
             val directCards = liveRegular.map { m ->
                 val matchPayload = mapper.writeValueAsString(m)
@@ -1261,7 +1282,7 @@ class Xr3edTVProvider : MainAPI() {
             return newHomePageResponse(HomePageList(request.name, hubCards, isHorizontalImages = true), hasNext = false)
         }
 
-        // 3. Upcoming Event (Jadwal Pertandingan Berikutnya)
+        // 3. Upcoming Event (Jadwal Pertandingan Berikutnya — kick-off paling dekat di posisi pertama)
         if (lowerTag.contains("upcoming")) {
             val matches = fetchMergedMatches()
             val upcomingMatches = matches.filter { it.isUpcoming }
@@ -1293,11 +1314,20 @@ class Xr3edTVProvider : MainAPI() {
 
         if (sportMatch != null) {
             val matches = fetchMergedMatches()
-            val categoryMatches = if (sportMatch.key == "all") {
+            val categoryMatches = (if (sportMatch.key == "all") {
                 matches.filter { !it.title.contains("Rally TV", ignoreCase = true) }
             } else {
                 matches.filter { it.sportCategory.equals(sportMatch.key, ignoreCase = true) }
-            }
+            }).sortedWith(
+                compareBy<Xr3edMatch> { !it.isLive }
+                    .thenBy { m ->
+                        if (m.isLive) {
+                            if (m.timestampMs > 0) -m.timestampMs else 0L
+                        } else {
+                            if (m.timestampMs > 0) m.timestampMs else Long.MAX_VALUE
+                        }
+                    }
+            )
             val directCards = categoryMatches.map { m ->
                 val matchPayload = mapper.writeValueAsString(m)
                 val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
