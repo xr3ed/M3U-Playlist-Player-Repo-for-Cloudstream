@@ -2,6 +2,7 @@ package com.lagradost
 
 import android.net.Uri
 import android.util.Base64
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.lagradost.cloudstream3.*
@@ -92,11 +93,27 @@ class Xr3edTVProvider : MainAPI() {
 
         private var kltraCache: Pair<Long, List<Xr3edMatch>>? = null
         private var ondemandCache: Pair<Long, List<Xr3edMatch>>? = null
+        private var beesportCache: Pair<Long, List<Xr3edMatch>>? = null
         private var channelCache: Pair<Long, Map<String, List<ChannelItem>>>? = null
+        private var channelsJsonCache: Pair<Long, Map<String, JsonNode>>? = null
         private var cachedXorKey: String = ""
 
         private const val LIVE_CACHE_TTL = 30_000L // 30s
         private const val CHANNEL_CACHE_TTL = 300_000L // 5m
+        private const val BEESPORT_CACHE_TTL = 120_000L // 2m
+
+        // Liga premium untuk logika hot event ondemand (viewers=0 tapi liga besar)
+        val PREMIUM_LEAGUES = setOf(
+            "premier league", "la liga", "bundesliga", "serie a", "ligue 1",
+            "champions league", "europa league", "conference league",
+            "nfl", "nba", "nhl", "mlb", "mls",
+            "f1", "formula 1", "motogp", "moto2", "moto3",
+            "ufc", "boxing", "one championship",
+            "us open", "wimbledon", "australian open", "roland garros", "french open",
+            "copa america", "world cup", "euro", "asia cup",
+            "primera liga", "primeira liga", "eredivisie", "jupiler",
+            "fiba", "nba", "euroleague"
+        )
 
         val SPORT_HUBS = listOf(
             SportHub("all", "Semua Pertandingan (Live & Today)", "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&q=80", "Semua siaran langsung olahraga hari ini multi-server"),
@@ -126,7 +143,7 @@ class Xr3edTVProvider : MainAPI() {
 
     override val mainPage = listOf(
         MainPageData("🔥 Hot Event", "HOT_EVENT", horizontalImages = true),
-        MainPageData("🔴 Live Sports Hub (Pilih Cabang Olahraga)", "SPORTS_HUB", horizontalImages = true),
+        MainPageData("🔴 Live", "LIVE_REGULAR", horizontalImages = true),
         MainPageData("⏳ Upcoming Event", "UPCOMING_EVENT", horizontalImages = true),
         MainPageData("🇮🇩 TV NASIONAL 24/7", "🇮🇩 NASIONAL"),
         MainPageData("⚽ TV SPORTS 24/7", "⚽ SPORTS"),
@@ -232,10 +249,12 @@ class Xr3edTVProvider : MainAPI() {
     }
 
     private fun buildMatchPosterUrl(
-        home: String,
-        away: String,
+        home: String = "",
+        away: String = "",
         homeLogo: String = "",
         awayLogo: String = "",
+        title: String = "",
+        logo: String = "",
         league: String = "",
         sport: String = "",
         isLive: Boolean = true,
@@ -246,12 +265,20 @@ class Xr3edTVProvider : MainAPI() {
         val base = BuildConfig.XR3EDTV_POSTER_BASE.ifEmpty { "https://xr3edtv-poster.xr3ed-cdn.workers.dev/poster.png" }
         val status = if (isLive) "live" else "upcoming"
         val cleanTime = time.replace(" WIB", "").replace("Live", "").trim()
-        return "$base?v=21&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+        val hasTeams = home.isNotEmpty() && away.isNotEmpty()
+        return if (hasTeams) {
+            // VS layout
+            "$base?v=23&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+        } else {
+            // Single event layout
+            "$base?v=23&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+        }
     }
 
     private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
-        if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
-            return buildMatchPosterUrl(
+        return if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
+            // VS layout — ada kedua tim
+            buildMatchPosterUrl(
                 home = m.homeTeam,
                 away = m.awayTeam,
                 homeLogo = m.homeLogo,
@@ -263,8 +290,19 @@ class Xr3edTVProvider : MainAPI() {
                 date = m.matchDate,
                 aspect = aspect
             )
+        } else {
+            // Single event layout — motorsport, UFC, tennis event dll
+            buildMatchPosterUrl(
+                title = m.title,
+                logo = m.logo,
+                league = m.league,
+                sport = m.sportCategory,
+                isLive = m.isLive,
+                time = m.kickOffTime,
+                date = m.matchDate,
+                aspect = aspect
+            )
         }
-        return m.logo.ifEmpty { "https://kltraid.pages.dev/images/sportsicon/Other.png" }
     }
 
     // ─── Match & Sport Detection ──────────────────────────────────────────────
@@ -381,6 +419,34 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
+    private suspend fun fetchKltraChannelsMap(): Map<String, JsonNode> {
+        val now = System.currentTimeMillis()
+        channelsJsonCache?.let { (ts, data) ->
+            if (now - ts < LIVE_CACHE_TTL && data.isNotEmpty()) return data
+        }
+        val apiBase = BuildConfig.XR3EDTV_API_BASE.trimEnd('/').ifEmpty { "https://apiweb.filmmania.click" }
+        var xorKey = BuildConfig.XR3EDTV_XOR_KEY.ifEmpty {
+            if (cachedXorKey.isEmpty()) {
+                cachedXorKey = getDynamicXorKey()
+            }
+            cachedXorKey
+        }
+        val map = mutableMapOf<String, JsonNode>()
+        try {
+            val ts = System.currentTimeMillis()
+            val raw = httpGet("$apiBase/vip/channels.json?v=$ts") ?: return emptyMap()
+            val dec = if (raw.trim().startsWith("{")) raw else xorDecrypt(raw, xorKey)
+            val root = mapper.readTree(dec)
+            if (root != null && root.isObject) {
+                root.fields().forEach { (k, v) ->
+                    map[k] = v
+                }
+            }
+            channelsJsonCache = Pair(now, map)
+        } catch (_: Exception) {}
+        return map
+    }
+
     // ─── Engine 1: Kltra Realtime Fetcher ──────────────────────────────────────
 
     private suspend fun fetchKltraMatches(): List<Xr3edMatch> {
@@ -440,12 +506,7 @@ class Xr3edTVProvider : MainAPI() {
                                 } catch (_: Exception) {}
                             }
                             val rawLabel = s.get("label")?.asText() ?: s.get("name")?.asText() ?: "Server ${idx + 1}"
-                            val sName = when {
-                                rawLabel.contains("W", ignoreCase = true) -> "Server ${idx + 1} (SD)"
-                                rawLabel.contains("Vivo", ignoreCase = true) -> "Server ${idx + 1} (SD Vivo)"
-                                rawLabel.contains("Yalla", ignoreCase = true) -> "Server ${idx + 1} (SD Yalla)"
-                                else -> "Server ${idx + 1} ($rawLabel)"
-                            }
+                            val sName = rawLabel.trim().ifEmpty { "Server ${idx + 1}" }
                             val kodiProps = mutableMapOf<String, String>()
                             s.get("key")?.asText()?.trim()?.let { k ->
                                 if (k.isNotEmpty() && (k.contains(":") || (k.length == 32 && k.all { c -> c in '0'..'9' || c in 'a'..'f' || c in 'A'..'F' }))) {
@@ -478,6 +539,8 @@ class Xr3edTVProvider : MainAPI() {
                     val t2 = ev.get("team2")?.get("name")?.asText()?.trim() ?: ""
                     val title = if (t1.isNotEmpty() && t2.isNotEmpty()) {
                         "$t1 vs $t2"
+                    } else if (t1.isNotEmpty() && league.isNotEmpty() && league != "Sports Event") {
+                        "$t1 - $league"
                     } else if (league.isNotEmpty() && league != "Sports Event") {
                         league
                     } else {
@@ -490,8 +553,9 @@ class Xr3edTVProvider : MainAPI() {
                     val duration = ev.get("duration")?.asDouble() ?: 3.0
 
                     val rawIcon = ev.get("icon")?.asText() ?: ""
+                    val iconFilename = rawIcon.substringAfterLast("/").lowercase()
                     val rawFirstRow = ev.get("firstRow")?.asInt() ?: 999
-                    val isHot = rawIcon.contains("main_", ignoreCase = true) || rawFirstRow <= 120 || rawFirstRow <= 10
+                    val isHot = iconFilename.startsWith("main_")
 
                     val (isLive, isUpcoming, matchTimeMs) = computeMatchStatus(kickDate, kickTime, duration)
                     val cat = detectSportCategory(league, title, rawIcon)
@@ -545,6 +609,32 @@ class Xr3edTVProvider : MainAPI() {
             val jsonStr = httpGet(ondemandApi, referer = ondemandReferer) ?: return emptyList()
             val rootNode = mapper.readTree(jsonStr)
 
+            // Ambil daftar trending resmi dari endpoint top & popular DamiTV
+            val topMatchIds = mutableSetOf<String>()
+            try {
+                val topJson = httpGet("https://ondemand.st/papi/matches/top", referer = ondemandReferer)
+                if (!topJson.isNullOrEmpty()) {
+                    val topNode = mapper.readTree(topJson)
+                    val arr = if (topNode.isArray) topNode else topNode.get("matches")
+                    arr?.forEach { item ->
+                        item.get("id")?.asText()?.let { topMatchIds.add(it) }
+                        item.get("match_id")?.asText()?.let { topMatchIds.add(it) }
+                    }
+                }
+            } catch (_: Exception) {}
+
+            try {
+                val popJson = httpGet("https://ondemand.st/papi/matches/all/popular", referer = ondemandReferer)
+                if (!popJson.isNullOrEmpty()) {
+                    val popNode = mapper.readTree(popJson)
+                    val arr = if (popNode.isArray) popNode else popNode.get("matches")
+                    arr?.forEach { item ->
+                        item.get("id")?.asText()?.let { topMatchIds.add(it) }
+                        item.get("match_id")?.asText()?.let { topMatchIds.add(it) }
+                    }
+                }
+            } catch (_: Exception) {}
+
             val matchesNode = if (rootNode.isArray) rootNode else rootNode.get("matches") ?: rootNode.get("data")
             if (matchesNode != null && matchesNode.isArray) {
                 val tz = TimeZone.getTimeZone("Asia/Jakarta")
@@ -562,9 +652,11 @@ class Xr3edTVProvider : MainAPI() {
                         m.get("title")?.asText()?.trim() ?: m.get("name")?.asText()?.trim() ?: "Sports Match"
                     }
 
-                    val logo = m.get("poster")?.asText() 
-                        ?: m.get("teams")?.get("home")?.get("badge")?.asText() 
-                        ?: m.get("ppvPoster")?.asText() ?: ""
+                    val rawPoster = m.get("poster")?.asText()?.takeIf { it != "null" && it.isNotBlank() } ?: ""
+                    val homeBadge = m.get("teams")?.get("home")?.get("badge")?.asText()?.takeIf { it != "null" && it.isNotBlank() } ?: ""
+                    val awayBadge = m.get("teams")?.get("away")?.get("badge")?.asText()?.takeIf { it != "null" && it.isNotBlank() } ?: ""
+                    val ppvPoster = m.get("ppvPoster")?.asText()?.takeIf { it != "null" && it.isNotBlank() } ?: ""
+                    val logo = rawPoster.ifEmpty { ppvPoster }.ifEmpty { homeBadge }
 
                     val rawCat = m.get("category")?.asText()?.lowercase() ?: ""
                     val is247 = rawCat.contains("24/7") || league.contains("24/7", ignoreCase = true) || title.contains("24/7", ignoreCase = true)
@@ -601,32 +693,37 @@ class Xr3edTVProvider : MainAPI() {
                         "Referer" to "https://damitv.st/"
                     )
 
-                    // 1. Primary Worker HLS stream
+                    // 1. Server 1 HD (Worker Stream)
                     val encPrimary = encryptMatchId(mid, workerKey)
                     val primaryUrl = "$workerBase/live/$encPrimary.m3u8"
-                    servers.add(StreamServer("Server 1 (Worker HLS)", primaryUrl, odHeaders))
+                    servers.add(StreamServer("Ondemand-HD", primaryUrl, odHeaders))
 
-                    // 2. Substreams
+                    // 2. Server 2 SD (Worker Stream)
+                    val encSd = encryptMatchId("$mid:sd", workerKey)
+                    val sdUrl = "$workerBase/live/$encSd.m3u8"
+                    servers.add(StreamServer("Ondemand-SD", sdUrl, odHeaders))
+
+                    // 3. Substreams (Alternative streams jika ada)
                     val substreamsNode = m.get("substreams")
                     if (substreamsNode != null && substreamsNode.isArray) {
                         for ((idx, sub) in substreamsNode.withIndex()) {
                             val subId = sub.get("id")?.asText() ?: continue
-                            val subName = sub.get("name")?.asText() ?: "Alt Stream ${idx + 2}"
+                            val subName = sub.get("name")?.asText() ?: "Alt ${idx + 2}"
                             val subLocale = sub.get("locale")?.asText() ?: ""
-                            val label = if (subLocale.isNotEmpty()) "Server ${servers.size + 1} ($subName ${subLocale.uppercase()})" else "Server ${servers.size + 1} ($subName)"
+                            val label = if (subLocale.isNotEmpty()) "Ondemand-${subName.replace(" ", "-")}-${subLocale.uppercase()}" else "Ondemand-${subName.replace(" ", "-")}"
                             val encSub = encryptMatchId(subId, workerKey)
                             servers.add(StreamServer(label, "$workerBase/live/$encSub.m3u8", odHeaders))
                         }
                     }
 
-                    // 3. TV Channels
+                    // 4. TV Channels
                     val tvChannelsNode = m.get("tvChannels")
                     if (tvChannelsNode != null && tvChannelsNode.isArray) {
                         for ((idx, tv) in tvChannelsNode.withIndex()) {
                             val tvId = tv.get("id")?.asText()?.replace("dlhd-", "") ?: continue
-                            val tvName = tv.get("name")?.asText() ?: "TV Channel"
+                            val tvName = tv.get("name")?.asText() ?: "TV"
                             val encTv = encryptMatchId(tvId, workerKey)
-                            val srvName = "Server ${servers.size + 1} ($tvName HD)"
+                            val srvName = "Ondemand-${tvName.replace(" ", "-")}"
                             servers.add(StreamServer(srvName, "$workerBase/live/$encTv.m3u8", odHeaders))
                         }
                     }
@@ -636,7 +733,7 @@ class Xr3edTVProvider : MainAPI() {
 
                     val isPopular = m.get("popular")?.asBoolean() ?: false
                     val viewers = m.get("viewers")?.asInt() ?: 0
-                    val isHot = isPopular || viewers > 500
+                    val isHot = topMatchIds.contains(mid) || isPopular || viewers > 100 || PREMIUM_LEAGUES.any { league.lowercase().contains(it) }
 
                     val odDateStr = if (dateMs > 0) {
                         val sdfDate = SimpleDateFormat("dd MMMM yyyy", Locale.US).apply { timeZone = tz }
@@ -659,8 +756,8 @@ class Xr3edTVProvider : MainAPI() {
                         servers = servers,
                         homeTeam = homeName,
                         awayTeam = awayName,
-                        homeLogo = m.get("teams")?.get("home")?.get("badge")?.asText()?.trim() ?: "",
-                        awayLogo = m.get("teams")?.get("away")?.get("badge")?.asText()?.trim() ?: "",
+                        homeLogo = homeBadge,
+                        awayLogo = awayBadge,
                         matchDate = odDateStr
                     ))
                 }
@@ -671,8 +768,154 @@ class Xr3edTVProvider : MainAPI() {
         return results
     }
 
+    // ─── Engine 3: Beesport Hot Matches Fetcher ────────────────────────────────
+
+    private suspend fun fetchBeesportHotMatches(): List<Xr3edMatch> {
+        val now = System.currentTimeMillis()
+        beesportCache?.let { (ts, data) ->
+            if (now - ts < BEESPORT_CACHE_TTL && data.isNotEmpty()) return data
+        }
+
+        val results = mutableListOf<Xr3edMatch>()
+        try {
+            val html = httpGet(
+                "https://beesport.site/hot-matches",
+                referer = "https://beesport.site/"
+            ) ?: return emptyList()
+
+            // Decode HTML entities
+            val decoded = html
+                .replace("&quot;", "\"")
+                .replace("&amp;", "&")
+                .replace("&#039;", "'")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+
+            // Extract Inertia data-page JSON
+            val appIdx = decoded.indexOf("id=\"app\" data-page=")
+            if (appIdx < 0) return emptyList()
+            val sub = decoded.substring(appIdx)
+            val jsonStart = sub.indexOf("data-page=\"") + 11
+            if (jsonStart < 11) return emptyList()
+            val jsonSub = sub.substring(jsonStart)
+
+            // Find balanced JSON end
+            var depth = 0
+            var inStr = false
+            var escaped = false
+            var endPos = -1
+            for (i in jsonSub.indices) {
+                val c = jsonSub[i]
+                if (escaped) { escaped = false; continue }
+                if (c == '\\') { escaped = true; continue }
+                if (c == '"') { inStr = !inStr }
+                if (!inStr) {
+                    if (c == '{') depth++
+                    else if (c == '}') {
+                        depth--
+                        if (depth == 0) { endPos = i; break }
+                    }
+                }
+            }
+            if (endPos < 0) return emptyList()
+
+            val jsonStr = jsonSub.substring(0, endPos + 1)
+            val rootNode = mapper.readTree(jsonStr)
+            val hotMatchesNode = rootNode.path("props").path("hotMatches")
+            if (!hotMatchesNode.isArray) return emptyList()
+
+            val tz = TimeZone.getTimeZone("Asia/Jakarta")
+            val sdfTime = SimpleDateFormat("HH:mm", Locale.US).apply { timeZone = tz }
+            val sdfDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = tz }
+
+            for (m in hotMatchesNode) {
+                val slug = m.get("slug")?.asText() ?: continue
+                val matchName = m.get("name")?.asText()?.trim() ?: ""
+                val leagueName = m.path("league").get("name")?.asText()?.trim() ?: "Sport"
+                val leagueLogo = m.path("league").get("logo")?.asText() ?: ""
+                val homeName = m.path("homeTeam").get("name")?.asText()?.trim() ?: ""
+                val awayName = m.path("awayTeam").get("name")?.asText()?.trim() ?: ""
+                val homeLogo = m.path("homeTeam").get("logo")?.asText()?.trim() ?: ""
+                val awayLogo = m.path("awayTeam").get("logo")?.asText()?.trim() ?: ""
+
+                val title = if (homeName.isNotEmpty() && awayName.isNotEmpty()) {
+                    "$homeName vs $awayName"
+                } else {
+                    matchName.ifEmpty { leagueName }
+                }
+
+                val startAtSec = m.get("start_at")?.asLong() ?: 0L
+                val startAtMs = startAtSec * 1000L
+                val isLiveFlag = m.get("is_live")?.asInt() ?: 0
+                val isLive = isLiveFlag == 1
+                val isUpcoming = !isLive && startAtMs > now
+
+                val kickOffStr = if (isLive) "Live Sekarang"
+                    else if (startAtMs > 0) sdfTime.format(Date(startAtMs)) + " WIB"
+                    else "Jadwal N/A"
+
+                val matchDateStr = if (startAtMs > 0) sdfDate.format(Date(startAtMs)) else ""
+
+                // Channels: array URL langsung (m3u8)
+                val channelsNode = m.get("channels")
+                val servers = mutableListOf<StreamServer>()
+                if (channelsNode != null && channelsNode.isArray) {
+                    for ((idx, ch) in channelsNode.withIndex()) {
+                        val chUrl = ch.asText()?.trim() ?: continue
+                        if (chUrl.isEmpty()) continue
+                        // Ekstrak nama channel dari URL path: /Fox-Soccer-Plus/index.m3u8 -> Fox-Soccer-Plus
+                        val chName = Regex("/([^/]+)/index\\.m3u8").find(chUrl)?.groupValues?.get(1)
+                            ?.replace("-", " ")
+                            ?.trim()
+                            ?: "Server ${idx + 1}"
+                        val label = "Beesport-${chName.replace(" ", "-")}"
+                        servers.add(StreamServer(
+                            name = label,
+                            url = chUrl,
+                            headers = mapOf("User-Agent" to DESKTOP_UA, "Referer" to "https://beesport.site/")
+                        ))
+                    }
+                }
+                if (servers.isEmpty()) continue // skip jika tidak ada channel
+
+                val cat = detectSportCategory(leagueName, title, "soccer")
+                val logo = homeLogo.ifEmpty { leagueLogo }
+
+                results.add(Xr3edMatch(
+                    id = "bs_$slug",
+                    title = title,
+                    sportCategory = cat,
+                    league = leagueName,
+                    kickOffTime = kickOffStr,
+                    durationHours = 2.0,
+                    logo = logo,
+                    isLive = isLive,
+                    isUpcoming = isUpcoming,
+                    isHot = true, // semua beesport hot-matches adalah hot editorial
+                    sortOrder = 500,
+                    timestampMs = startAtMs,
+                    servers = servers,
+                    homeTeam = homeName,
+                    awayTeam = awayName,
+                    homeLogo = homeLogo,
+                    awayLogo = awayLogo,
+                    matchDate = matchDateStr
+                ))
+            }
+
+            beesportCache = Pair(now, results)
+        } catch (_: Exception) {}
+        return results
+    }
+
+    private fun stripAccents(s: String): String {
+        val normalized = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD)
+        return Regex("\\p{InCombiningDiacriticalMarks}+").replace(normalized, "")
+    }
+
     private fun normalizeName(s: String): String {
-        return s.lowercase()
+        val noAccents = stripAccents(s.lowercase())
+        return noAccents
             .replace(Regex("[^a-z0-9\\s]"), " ")
             .replace(" fc", "")
             .replace(" sc", "")
@@ -687,65 +930,186 @@ class Xr3edTVProvider : MainAPI() {
         return normalizeName(s).split(" ").filter { it.length > 2 }.toSet()
     }
 
+    private fun isSameTeam(t1: String, t2: String): Boolean {
+        if (t1.isEmpty() || t2.isEmpty()) return false
+        val n1 = normalizeName(t1)
+        val n2 = normalizeName(t2)
+        if (n1 == n2) return true
+        if (n1.contains(n2) || n2.contains(n1)) return true
+        val tok1 = n1.split(" ").filter { it.length > 2 }.toSet()
+        val tok2 = n2.split(" ").filter { it.length > 2 }.toSet()
+        if (tok1.isEmpty() || tok2.isEmpty()) return false
+        val intersect = tok1.intersect(tok2).size
+        val minSize = minOf(tok1.size, tok2.size)
+        return intersect > 0 && (intersect.toDouble() / minSize.toDouble()) >= 0.5
+    }
+
     private fun isSameMatch(m1: Xr3edMatch, m2: Xr3edMatch): Boolean {
-        val tok1 = nameTokens(m1.title)
-        val tok2 = nameTokens(m2.title)
+        // Skenario A: Kedua match punya Home & Away Team (Sepak Bola, Basket, Tenis, dll)
+        val m1HasTeams = m1.homeTeam.isNotEmpty() && m1.awayTeam.isNotEmpty()
+        val m2HasTeams = m2.homeTeam.isNotEmpty() && m2.awayTeam.isNotEmpty()
+
+        if (m1HasTeams && m2HasTeams) {
+            val direct = isSameTeam(m1.homeTeam, m2.homeTeam) && isSameTeam(m1.awayTeam, m2.awayTeam)
+            val swapped = isSameTeam(m1.homeTeam, m2.awayTeam) && isSameTeam(m1.awayTeam, m2.homeTeam)
+            if (direct || swapped) return true
+        }
+
+        // Skenario B: Single Event / Non-Team / Judul Lengkap (Motorsport, UFC, Tenis, dll)
+        val full1 = "${m1.title} ${m1.league}"
+        val full2 = "${m2.title} ${m2.league}"
+        val tok1 = nameTokens(full1)
+        val tok2 = nameTokens(full2)
         if (tok1.isEmpty() || tok2.isEmpty()) return false
 
-        val intersect = tok1.intersect(tok2).size
+        val intersectTokens = tok1.intersect(tok2)
+        val intersect = intersectTokens.size
         val minSize = minOf(tok1.size, tok2.size)
         if (minSize == 0) return false
 
-        return (intersect.toDouble() / minSize.toDouble()) >= 0.5
+        // Khusus Motorsport / Combat / Event Balapan
+        val isMotorsportOrCombat = m1.sportCategory in listOf("motorsport", "combat") || m2.sportCategory in listOf("motorsport", "combat")
+        if (isMotorsportOrCombat) {
+            // Jika ada 2 token inti cocok (contoh: "motogp" + "aragon") -> match sama!
+            if (intersect >= 2) return true
+        }
+
+        return (intersect.toDouble() / minSize.toDouble()) >= 0.4
     }
 
     private suspend fun fetchMergedMatches(): List<Xr3edMatch> = coroutineScope {
-        val kltra = async { fetchKltraMatches() }
-        val od = async { fetchOnDemandMatches() }
-        val kltraMatches = kltra.await()
-        val onDemandMatches = od.await()
+        val kltraDeferred = async { fetchKltraMatches() }
+        val odDeferred = async { fetchOnDemandMatches() }
+        val bsDeferred = async { fetchBeesportHotMatches() }
 
-        val mergedResults = mutableListOf<Xr3edMatch>()
-        val usedOnDemandIds = mutableSetOf<String>()
+        val kltraMatches = kltraDeferred.await()
+        val odMatches = odDeferred.await()
+        val bsMatches = bsDeferred.await()
 
-        for (km in kltraMatches) {
-            val matchedOd = onDemandMatches.firstOrNull { odMatch ->
-                !usedOnDemandIds.contains(odMatch.id) && isSameMatch(km, odMatch)
+        // Hitung threshold viewers dinamis dari ondemand
+        val viewersAboveZero = odMatches.filter { it.isLive }
+            .mapNotNull { m ->
+                // viewers disimpan di sortOrder sementara kita pakai cara lain —
+                // ambil dari field asli, tapi sudah disimpan? Perlu re-evaluate.
+                // Gunakan isHot flag dari ondemand (popular || viewers>500)
+                null
             }
-
-            if (matchedOd != null) {
-                usedOnDemandIds.add(matchedOd.id)
-                val combinedServers = km.servers.toMutableList()
-                matchedOd.servers.forEachIndexed { idx, srv ->
-                    val serverName = if (srv.name.contains("Worker") || srv.name.contains("Server 1")) {
-                        "Server ${combinedServers.size + 1} (OnDemand Backup)"
-                    } else {
-                        "Server ${combinedServers.size + 1} (${srv.name.substringAfter("Server ")})"
-                    }
-                    combinedServers.add(srv.copy(name = serverName))
-                }
-                mergedResults.add(km.copy(
-                    servers = combinedServers,
-                    isHot = km.isHot || matchedOd.isHot,
-                    logo = km.logo.ifEmpty { matchedOd.logo },
-                    homeLogo = km.homeLogo.ifEmpty { matchedOd.homeLogo },
-                    awayLogo = km.awayLogo.ifEmpty { matchedOd.awayLogo }
-                ))
-            } else {
-                mergedResults.add(km)
-            }
+        // isHot ondemand sudah dihitung di fetchOnDemandMatches via popular || viewers>500
+        // Tambah: liga premium juga masuk hot
+        fun isOdHot(m: Xr3edMatch): Boolean {
+            if (m.isHot) return true
+            val leagueLower = m.league.lowercase()
+            return PREMIUM_LEAGUES.any { leagueLower.contains(it) }
         }
 
-        for (od in onDemandMatches) {
-            if (!usedOnDemandIds.contains(od.id)) {
-                mergedResults.add(od)
+        val mergedResults = mutableListOf<Xr3edMatch>()
+        val usedOdIds = mutableSetOf<String>()
+        val usedBsIds = mutableSetOf<String>()
+
+        // Step 1: Kltra sebagai anchor — rename server label ke Kltra-* (dengan nomor urut jika nama sama)
+        for (km in kltraMatches) {
+            val serverNameCounts = mutableMapOf<String, Int>()
+            val renamedKltraServers = km.servers.mapIndexed { idx, srv ->
+                val cleanName = srv.name.trim()
+                    .replace(Regex("[^a-zA-Z0-9\\s]"), "")
+                    .trim()
+                    .replace(Regex("\\s+"), "-")
+                    .take(20)
+                    .ifEmpty { "Server" }
+                val count = serverNameCounts.getOrDefault(cleanName, 0) + 1
+                serverNameCounts[cleanName] = count
+                val finalName = if (count > 1) "Kltra-$cleanName-$count" else "Kltra-$cleanName"
+                srv.copy(name = finalName)
             }
+
+            val combinedServers = renamedKltraServers.toMutableList()
+            var combinedIsHot = km.isHot
+            var combinedHomeLogo = km.homeLogo
+            var combinedAwayLogo = km.awayLogo
+
+            // Merge OnDemand
+            val matchedOd = odMatches.firstOrNull { od ->
+                !usedOdIds.contains(od.id) && isSameMatch(km, od)
+            }
+            if (matchedOd != null) {
+                usedOdIds.add(matchedOd.id)
+                combinedIsHot = combinedIsHot || isOdHot(matchedOd)
+                combinedHomeLogo = combinedHomeLogo.ifEmpty { matchedOd.homeLogo }
+                combinedAwayLogo = combinedAwayLogo.ifEmpty { matchedOd.awayLogo }
+                matchedOd.servers.forEach { srv ->
+                    combinedServers.add(srv)
+                }
+            }
+
+            // Merge Beesport
+            val matchedBs = bsMatches.firstOrNull { bs ->
+                !usedBsIds.contains(bs.id) && isSameMatch(km, bs)
+            }
+            if (matchedBs != null) {
+                usedBsIds.add(matchedBs.id)
+                combinedIsHot = true // beesport selalu hot editorial
+                combinedHomeLogo = combinedHomeLogo.ifEmpty { matchedBs.homeLogo }
+                combinedAwayLogo = combinedAwayLogo.ifEmpty { matchedBs.awayLogo }
+                matchedBs.servers.forEach { srv ->
+                    combinedServers.add(srv)
+                }
+            }
+
+            val combinedIsLive = km.isLive || (matchedOd?.isLive == true) || (matchedBs?.isLive == true)
+            val combinedIsUpcoming = if (combinedIsLive) false else (km.isUpcoming || (matchedOd?.isUpcoming == true) || (matchedBs?.isUpcoming == true))
+
+            mergedResults.add(km.copy(
+                servers = combinedServers,
+                isHot = combinedIsHot,
+                isLive = combinedIsLive,
+                isUpcoming = combinedIsUpcoming,
+                homeLogo = combinedHomeLogo,
+                awayLogo = combinedAwayLogo,
+                logo = km.logo.ifEmpty { matchedOd?.logo ?: "" }.ifEmpty { matchedBs?.logo ?: "" }
+            ))
+        }
+
+        // Step 2: OnDemand yang tidak ada di kltra
+        for (od in odMatches) {
+            if (usedOdIds.contains(od.id)) continue
+            val combinedServers = od.servers.toMutableList()
+            var combinedIsHot = isOdHot(od)
+
+            // Cek beesport match juga
+            val matchedBs = bsMatches.firstOrNull { bs ->
+                !usedBsIds.contains(bs.id) && isSameMatch(od, bs)
+            }
+            if (matchedBs != null) {
+                usedBsIds.add(matchedBs.id)
+                combinedIsHot = true
+                matchedBs.servers.forEach { srv -> combinedServers.add(srv) }
+            }
+
+            val combinedIsLive = od.isLive || (matchedBs?.isLive == true)
+            val combinedIsUpcoming = if (combinedIsLive) false else (od.isUpcoming || (matchedBs?.isUpcoming == true))
+
+            mergedResults.add(od.copy(
+                servers = combinedServers,
+                isHot = combinedIsHot,
+                isLive = combinedIsLive,
+                isUpcoming = combinedIsUpcoming,
+                homeLogo = od.homeLogo.ifEmpty { matchedBs?.homeLogo ?: "" },
+                awayLogo = od.awayLogo.ifEmpty { matchedBs?.awayLogo ?: "" },
+                logo = od.logo.ifEmpty { matchedBs?.logo ?: "" }
+            ))
+        }
+
+        // Step 3: Beesport yang tidak ada di kltra/ondemand (unik beesport)
+        for (bs in bsMatches) {
+            if (usedBsIds.contains(bs.id)) continue
+            mergedResults.add(bs) // sudah berlabel Beesport-*
         }
 
         mergedResults.sortedBy { it.sortOrder }
     }
 
-    // ─── Engine 3: DekoTech Realtime 24/7 Channels ────────────────────────────
+    // ─── Engine 4: DekoTech Realtime 24/7 Channels ────────────────────────────
+
 
     private suspend fun fetch247Channels(): Map<String, List<ChannelItem>> {
         val now = System.currentTimeMillis()
@@ -842,14 +1206,36 @@ class Xr3edTVProvider : MainAPI() {
         val reqTag = (if (request.data.isNotBlank()) request.data else request.name).trim()
         val lowerTag = "${request.data} ${request.name}".lowercase()
 
-        // 1. Hot Event (Hanya Pertandingan yang SEDANG LIVE Saat Ini)
+        // 1. Hot Event — Live isHot dari semua sumber + live beesport
         if (lowerTag.contains("hot")) {
             val matches = fetchMergedMatches()
-            val hotMatches = matches.filter { it.isLive && it.isHot && !it.title.contains("Rally TV", ignoreCase = true) }
-                .ifEmpty { matches.filter { it.isLive && !it.title.contains("Rally TV", ignoreCase = true) } }
-                .sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
+            val hotMatches = matches.filter { m ->
+                m.isLive && m.isHot &&
+                !m.title.contains("Rally TV", ignoreCase = true) &&
+                !m.title.contains("24/7", ignoreCase = true)
+            }.sortedBy { it.sortOrder }
 
             val directCards = hotMatches.map { m ->
+                val matchPayload = mapper.writeValueAsString(m)
+                val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+                val displayTitle = if (m.isUpcoming) "${m.kickOffTime} • ${m.title}" else m.title
+                newLiveSearchResponse(displayTitle, maskedData, TvType.Live) {
+                    this.posterUrl = getMatchPoster(m, "landscape")
+                }
+            }
+            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
+        }
+
+        // 1b. Live Olahraga — Semua live non-hot (viewers=0, liga biasa)
+        if (reqTag == "LIVE_REGULAR" || lowerTag.contains("live regular") || lowerTag.contains("live olahraga")) {
+            val matches = fetchMergedMatches()
+            val liveRegular = matches.filter { m ->
+                m.isLive &&
+                !m.title.contains("Rally TV", ignoreCase = true) &&
+                !m.title.contains("24/7", ignoreCase = true)
+            }.sortedBy { it.sortOrder }
+
+            val directCards = liveRegular.map { m ->
                 val matchPayload = mapper.writeValueAsString(m)
                 val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                 newLiveSearchResponse(m.title, maskedData, TvType.Live) {
@@ -1180,6 +1566,47 @@ class Xr3edTVProvider : MainAPI() {
         if (!headers.containsKey("User-Agent")) {
             headers["User-Agent"] = DESKTOP_UA
         }
+        val kodiProps = srv.kodiProps.toMutableMap()
+
+        // 0b. Resolve Kltra embedindia.st embed URL to ondemand worker stream
+        if (streamUrl.contains("embedindia.st/embed/")) {
+            val mid = streamUrl.substringAfter("embedindia.st/embed/").substringBefore("?").trim()
+            if (mid.isNotEmpty()) {
+                val workerBase = BuildConfig.WORKER_BASE_URL.trimEnd('/').ifEmpty { "https://stream-cdn-box.xr3ed-edge.workers.dev" }
+                val workerKey = BuildConfig.WORKER_AUTH_KEY.ifEmpty { "kltra-auth-secret-2024" }
+                val enc = encryptMatchId(mid, workerKey)
+                streamUrl = "$workerBase/live/$enc.m3u8"
+            }
+        }
+
+        // 0c. Resolve Kltra playerkltratv.pages.dev to channels.json direct stream & DRM
+        if (streamUrl.contains("playerkltratv.pages.dev") || streamUrl.contains("playerhd?channel=")) {
+            try {
+                val parsed = Uri.parse(streamUrl)
+                val chParam = parsed.getQueryParameter("channel")?.trim() ?: ""
+                if (chParam.isNotEmpty()) {
+                    val chMap = fetchKltraChannelsMap()
+                    val node = chMap[chParam] ?: chMap[chParam.uppercase()] ?: chMap.entries.firstOrNull { it.key.contains(chParam, ignoreCase = true) }?.value
+                    if (node != null) {
+                        val direct = node.get("url")?.asText()
+                        if (!direct.isNullOrEmpty()) {
+                            streamUrl = direct
+                            val drm = node.get("drm")
+                            if (drm != null && drm.isObject) {
+                                val it = drm.fields()
+                                if (it.hasNext()) {
+                                    val entry = it.next()
+                                    val kid = entry.key
+                                    val kVal = entry.value.asText()
+                                    kodiProps["inputstream.adaptive.license_type"] = "clearkey"
+                                    kodiProps["inputstream.adaptive.license_key"] = "$kid:$kVal"
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+        }
 
         // 1. Resolve redirect for worker / resolve-web to direct m3u8
         if (streamUrl.contains("resolve-web") || streamUrl.contains("livevent.elutuna.workers.dev")) {
@@ -1199,22 +1626,30 @@ class Xr3edTVProvider : MainAPI() {
             } catch (_: Exception) {}
         }
 
-        // 2. Resolve ondemand.st / damitv.st extract-url (Main / Substreams)
+        // 2. Resolve ondemand.st / damitv.st extract-url (Main / Substreams / SD)
         if (streamUrl.contains("/papi/extract-url/")) {
             try {
+                val isSdRequested = streamUrl.endsWith("#sd")
+                val cleanExtractUrl = streamUrl.removeSuffix("#sd")
                 val req = Request.Builder()
-                    .url(streamUrl)
+                    .url(cleanExtractUrl)
                     .header("User-Agent", DESKTOP_UA)
-                    .header("Referer", "https://ondemand.st/")
+                    .header("Referer", "https://damitv.st/")
                     .header("Accept", "application/json")
                     .build()
                 val resp = app.baseClient.newCall(req).execute()
                 val bodyStr = resp.body?.string() ?: ""
                 val jsonTree = mapper.readTree(bodyStr)
-                val hlsUrl = jsonTree.get("hlsUrl")?.asText()
-                if (!hlsUrl.isNullOrEmpty() && !hlsUrl.contains("tv/dlhd") && !hlsUrl.contains("tv/playlist")) {
-                    streamUrl = hlsUrl
+                val targetUrl = if (isSdRequested) {
+                    val sd = jsonTree.get("sdUrl")?.asText()
+                    if (!sd.isNullOrEmpty() && !sd.contains("not available")) sd else jsonTree.get("hlsUrl")?.asText()
+                } else {
+                    jsonTree.get("hlsUrl")?.asText()
+                }
+                if (!targetUrl.isNullOrEmpty() && !targetUrl.contains("tv/dlhd") && !targetUrl.contains("tv/playlist") && !targetUrl.contains("not available")) {
+                    streamUrl = targetUrl
                     headers["Referer"] = "https://messi.damitv.st/"
+                    headers["User-Agent"] = DESKTOP_UA
                 } else {
                     return@withContext
                 }
@@ -1223,10 +1658,11 @@ class Xr3edTVProvider : MainAPI() {
             }
         }
 
-        // 2. Inject precise Referer required by CDN anti-hotlink
+        // 3. Inject precise Referer required by CDN anti-hotlink
         val lower = streamUrl.lowercase()
         if (!headers.containsKey("Referer")) {
             when {
+                lower.contains("messi.damitv.st") -> headers["Referer"] = "https://messi.damitv.st/"
                 lower.contains("vivo200.com") || lower.contains("online909.com") -> headers["Referer"] = "https://player.online909.com/"
                 lower.contains("elutuna.workers.dev") || lower.contains("resolve-web") -> headers["Referer"] = "https://playerkltratv.pages.dev/"
                 lower.contains("stream-cdn-box") || lower.contains("damitv") || lower.contains("ondemand.st") -> headers["Referer"] = "https://damitv.st/"
@@ -1247,8 +1683,6 @@ class Xr3edTVProvider : MainAPI() {
             isM3u8 -> ExtractorLinkType.M3U8
             else -> ExtractorLinkType.VIDEO
         }
-
-        val kodiProps = srv.kodiProps
         val licenseType = kodiProps["inputstream.adaptive.license_type"]
         val licenseKey = kodiProps["inputstream.adaptive.license_key"]
         val isDrm = (licenseKey != null && (licenseKey.contains(":") || licenseKey.startsWith("http"))) || (licenseType != null && isMpd)
