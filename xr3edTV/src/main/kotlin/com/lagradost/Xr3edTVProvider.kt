@@ -377,6 +377,64 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
+    private var cachedEventsXorKey: ByteArray? = null
+    private var cachedChannelsXorKey: ByteArray? = null
+
+    private suspend fun getDynamicXorKeyFromJs(jsUrl: String): ByteArray? {
+        return try {
+            val js = httpGet(jsUrl) ?: return null
+            val kPattern = Regex("""const\s+__K_[a-zA-Z0-9]+\s*=\s*\[([0-9,\s]+)\];""")
+            val sPattern = Regex("""const\s+__S_[a-zA-Z0-9]+\s*=\s*\[([^\]]+)\];""")
+            val kMatch = kPattern.find(js)
+            val sMatch = sPattern.find(js)
+            if (kMatch != null && sMatch != null) {
+                val kArr = kMatch.groupValues[1].split(",").mapNotNull { it.trim().toIntOrNull() }
+                val sMatches = Regex(""""([^"]+)"""").findAll(sMatch.groupValues[1]).map { it.groupValues[1] }.toList()
+                if (sMatches.size > 2) {
+                    val rawB = Base64.decode(sMatches[2], Base64.DEFAULT)
+                    val n = 2
+                    val resBytes = ByteArray(rawB.size)
+                    for (i in rawB.indices) {
+                        resBytes[i] = (rawB[i].toInt() xor kArr[(i + n) % kArr.size] xor ((n * 31 + i * 17) and 255)).toByte()
+                    }
+                    return resBytes
+                }
+            }
+            null
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private suspend fun getEventsXorKey(): ByteArray? {
+        cachedEventsXorKey?.let { return it }
+        val k = getDynamicXorKeyFromJs("https://kltraid.pages.dev/js/testa.js")
+        if (k != null) cachedEventsXorKey = k
+        return k
+    }
+
+    private suspend fun getChannelsXorKey(): ByteArray? {
+        cachedChannelsXorKey?.let { return it }
+        val k = getDynamicXorKeyFromJs("https://kltraid.pages.dev/js/playermpd.js")
+        if (k != null) cachedChannelsXorKey = k
+        return k
+    }
+
+    private fun xorDecryptWithBytes(encryptedBase64: String, keyBytes: ByteArray?): String {
+        if (keyBytes == null || keyBytes.isEmpty() || encryptedBase64.isEmpty()) return encryptedBase64
+        return try {
+            val rawData = Base64.decode(encryptedBase64.trim(), Base64.DEFAULT)
+            val keyLen = keyBytes.size
+            val decrypted = ByteArray(rawData.size)
+            for (i in rawData.indices) {
+                decrypted[i] = (rawData[i].toInt() xor keyBytes[i % keyLen].toInt()).toByte()
+            }
+            String(decrypted, Charsets.UTF_8)
+        } catch (_: Exception) {
+            encryptedBase64
+        }
+    }
+
     private fun xorDecrypt(encryptedBase64: String, key: String): String {
         if (key.isEmpty() || encryptedBase64.isEmpty()) return encryptedBase64
         return try {
@@ -393,49 +451,18 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
-    private suspend fun getDynamicXorKey(): String {
-        return try {
-            val js = httpGet("https://kltraid.pages.dev/js/testa.js") ?: return ""
-            val kPattern = Regex("""const\s+__K_[a-zA-Z0-9]+\s*=\s*\[([0-9,\s]+)\];""")
-            val sPattern = Regex("""const\s+__S_[a-zA-Z0-9]+\s*=\s*\[([^\]]+)\];""")
-            val kMatch = kPattern.find(js)
-            val sMatch = sPattern.find(js)
-            if (kMatch != null && sMatch != null) {
-                val kArr = kMatch.groupValues[1].split(",").mapNotNull { it.trim().toIntOrNull() }
-                val sMatches = Regex(""""([^"]+)"""").findAll(sMatch.groupValues[1]).map { it.groupValues[1] }.toList()
-                if (sMatches.size > 2) {
-                    val rawB = Base64.decode(sMatches[2], Base64.DEFAULT)
-                    val n = 2
-                    val resBytes = ByteArray(rawB.size)
-                    for (i in rawB.indices) {
-                        resBytes[i] = (rawB[i].toInt() xor kArr[(i + n) % kArr.size] xor ((n * 31 + i * 17) and 255)).toByte()
-                    }
-                    return String(resBytes, Charsets.UTF_8)
-                }
-            }
-            ""
-        } catch (_: Exception) {
-            ""
-        }
-    }
-
     private suspend fun fetchKltraChannelsMap(): Map<String, JsonNode> {
         val now = System.currentTimeMillis()
         channelsJsonCache?.let { (ts, data) ->
             if (now - ts < LIVE_CACHE_TTL && data.isNotEmpty()) return data
         }
         val apiBase = BuildConfig.XR3EDTV_API_BASE.trimEnd('/').ifEmpty { "https://apiweb.filmmania.click" }
-        var xorKey = BuildConfig.XR3EDTV_XOR_KEY.ifEmpty {
-            if (cachedXorKey.isEmpty()) {
-                cachedXorKey = getDynamicXorKey()
-            }
-            cachedXorKey
-        }
         val map = mutableMapOf<String, JsonNode>()
         try {
             val ts = System.currentTimeMillis()
             val raw = httpGet("$apiBase/vip/channels.json?v=$ts") ?: return emptyMap()
-            val dec = if (raw.trim().startsWith("{")) raw else xorDecrypt(raw, xorKey)
+            val keyBytes = getChannelsXorKey()
+            val dec = if (raw.trim().startsWith("{")) raw else xorDecryptWithBytes(raw, keyBytes)
             val root = mapper.readTree(dec)
             if (root != null && root.isObject) {
                 root.fields().forEach { (k, v) ->
@@ -457,12 +484,6 @@ class Xr3edTVProvider : MainAPI() {
 
         val apiBase = BuildConfig.XR3EDTV_API_BASE.trimEnd('/').ifEmpty { "https://apiweb.filmmania.click" }
         val saltKey = BuildConfig.XR3EDTV_SALT_KEY.ifEmpty { "xR7#kLt_vI9\$pZw2@mN5" }
-        var xorKey = BuildConfig.XR3EDTV_XOR_KEY.ifEmpty {
-            if (cachedXorKey.isEmpty()) {
-                cachedXorKey = getDynamicXorKey()
-            }
-            cachedXorKey
-        }
 
         val results = mutableListOf<Xr3edMatch>()
         try {
@@ -470,18 +491,9 @@ class Xr3edTVProvider : MainAPI() {
             val eventsRaw = httpGet("$apiBase/vip/eventweb.json?v=$ts") ?: return emptyList()
             val playersRaw = httpGet("$apiBase/vip/sdplayer.json?v=$ts") ?: "{}"
 
-            var decEvents = if (eventsRaw.trim().startsWith("[")) eventsRaw else xorDecrypt(eventsRaw, xorKey)
-            var decPlayers = if (playersRaw.trim().startsWith("[")) playersRaw else xorDecrypt(playersRaw, xorKey)
-
-            if (!decEvents.trim().startsWith("[")) {
-                val dyn = getDynamicXorKey()
-                if (dyn.isNotEmpty() && dyn != xorKey) {
-                    xorKey = dyn
-                    cachedXorKey = dyn
-                    decEvents = xorDecrypt(eventsRaw, xorKey)
-                    decPlayers = xorDecrypt(playersRaw, xorKey)
-                }
-            }
+            val keyBytes = getEventsXorKey()
+            val decEvents = if (eventsRaw.trim().startsWith("[")) eventsRaw else xorDecryptWithBytes(eventsRaw, keyBytes)
+            val decPlayers = if (playersRaw.trim().startsWith("[")) playersRaw else xorDecryptWithBytes(playersRaw, keyBytes)
 
             val eventsNode = try { mapper.readTree(decEvents) } catch (_: Exception) { null }
             val playersNode = try { mapper.readTree(decPlayers) } catch (_: Exception) { null }
@@ -1623,13 +1635,25 @@ class Xr3edTVProvider : MainAPI() {
                             streamUrl = direct
                             val drm = node.get("drm")
                             if (drm != null && drm.isObject) {
-                                val it = drm.fields()
-                                if (it.hasNext()) {
-                                    val entry = it.next()
-                                    val kid = entry.key
-                                    val kVal = entry.value.asText()
-                                    kodiProps["inputstream.adaptive.license_type"] = "clearkey"
-                                    kodiProps["inputstream.adaptive.license_key"] = "$kid:$kVal"
+                                val clearKeyNode = drm.get("clearkey")
+                                if (clearKeyNode != null && clearKeyNode.isObject) {
+                                    val kid = clearKeyNode.get("keyId")?.asText() ?: ""
+                                    val kVal = clearKeyNode.get("key")?.asText() ?: ""
+                                    if (kid.isNotEmpty() && kVal.isNotEmpty()) {
+                                        kodiProps["inputstream.adaptive.license_type"] = "clearkey"
+                                        kodiProps["inputstream.adaptive.license_key"] = "$kid:$kVal"
+                                    }
+                                } else {
+                                    val it = drm.fields()
+                                    if (it.hasNext()) {
+                                        val entry = it.next()
+                                        val kid = entry.key
+                                        val kVal = entry.value.asText()
+                                        if (kid.isNotEmpty() && kVal.isNotEmpty()) {
+                                            kodiProps["inputstream.adaptive.license_type"] = "clearkey"
+                                            kodiProps["inputstream.adaptive.license_key"] = "$kid:$kVal"
+                                        }
+                                    }
                                 }
                             }
                         }
