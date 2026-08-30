@@ -46,7 +46,7 @@ class SportsurgeXRProvider : MainAPI() {
         const val DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
-    override var mainUrl = "https://sportsurge.st"
+    override var mainUrl = "https://ww1.sportsurge.st"
     override var name = "⚽ SportsurgeXR"
     override val supportedTypes = setOf(TvType.Live)
     override var lang = "id"
@@ -200,40 +200,65 @@ class SportsurgeXRProvider : MainAPI() {
     }
 
     private fun parseStreams(html: String): List<SportsurgeStreamInfo> {
+        val streams = ArrayList<SportsurgeStreamInfo>()
+        
+        // 1. Coba parse dari standard HTML Table via Jsoup
+        try {
+            val doc = org.jsoup.Jsoup.parse(html)
+            val rows = doc.select("table tr")
+            for (row in rows) {
+                val tds = row.select("td")
+                if (tds.isEmpty()) continue
+                val cols = tds.map { it.text().trim() }
+                val aTag = row.selectFirst("a[href]")
+                val href = aTag?.attr("href")
+                if (!href.isNullOrEmpty() && href.startsWith("http")) {
+                    val channel = if (cols.size > 1 && cols[1].isNotEmpty()) cols[1] else (cols.getOrNull(0) ?: "Stream")
+                    val language = if (cols.size > 5 && cols[5].isNotEmpty()) cols[5] else "English"
+                    streams.add(SportsurgeStreamInfo(channel, language, href))
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        
+        if (streams.isNotEmpty()) return streams
+
+        // 2. Fallback ke Next.js self.__next_f.push parser
         val pushes = Regex("""self\.__next_f\.push\(\[\d+,\s*"(.*?)"\]\)""")
             .findAll(html)
             .map { it.groupValues[1] }
             .joinToString("")
             
-        val combined = unescapeNextF(pushes)
-        val rows = combined.split(Regex(""""tr","\d+""""))
-        val streams = ArrayList<SportsurgeStreamInfo>()
-        
-        for (i in 1 until rows.size) {
-            val r = rows[i]
-            val children = Regex(""""children":"([^"]+)"""").findAll(r).map { it.groupValues[1] }.toList()
-            
-            var channel = "Unknown Channel"
-            for (c in children) {
-                if (c !in listOf("Yes", "No", "English", "Watch", "Live Now!", "Upcoming", "Live HD") && !c.all { it.isDigit() }) {
-                    channel = c
-                    break
+        if (pushes.isNotEmpty()) {
+            val combined = unescapeNextF(pushes)
+            val rows = combined.split(Regex(""""tr","\d+""""))
+            for (i in 1 until rows.size) {
+                val r = rows[i]
+                val children = Regex(""""children":"([^"]+)"""").findAll(r).map { it.groupValues[1] }.toList()
+                
+                var channel = "Unknown Channel"
+                for (c in children) {
+                    if (c !in listOf("Yes", "No", "English", "Watch", "Live Now!", "Upcoming", "Live HD") && !c.all { it.isDigit() }) {
+                        channel = c
+                        break
+                    }
                 }
-            }
-            
-            var language = "English"
-            for (c in children) {
-                if (c in listOf("English", "Spanish", "French", "German", "Portuguese", "Italian", "Arabic", "Russian")) {
-                    language = c
-                    break
+                
+                var language = "English"
+                for (c in children) {
+                    if (c in listOf("English", "Spanish", "French", "German", "Portuguese", "Italian", "Arabic", "Russian")) {
+                        language = c
+                        break
+                    }
                 }
-            }
-            
-            val hrefMatch = Regex(""""href":"(https?://[^"]+)"""").find(r)
-            val href = hrefMatch?.groupValues?.get(1)
-            
-            if (href != null) {
-                streams.add(SportsurgeStreamInfo(channel, language, href))
+                
+                val hrefMatch = Regex(""""href":"(https?://[^"]+)"""").find(r)
+                val href = hrefMatch?.groupValues?.get(1)
+                
+                if (href != null) {
+                    streams.add(SportsurgeStreamInfo(channel, language, href))
+                }
             }
         }
         return streams
@@ -841,7 +866,7 @@ class SportsurgeXRProvider : MainAPI() {
                                         val charArrayRegex = Regex("""\["h","t","t","p","s",.*?\]""")
                                         val match = charArrayRegex.find(html)?.value
                                         if (match != null) {
-                                            val cleanUrl = match.replace("[", "").replace("]", "").replace("\"", "").split(",").joinToString("")
+                                            val cleanUrl = match.replace("[", "").replace("]", "").replace("\"", "").split(",").joinToString("").replace("\\/", "/")
                                             callback.invoke(
                                                 ExtractorLink(
                                                     source = this@SportsurgeXRProvider.name,
@@ -947,9 +972,10 @@ class SportsurgeXRProvider : MainAPI() {
                                                 val embedUrlMatch = Regex(""""url":"([^"]+)"""").find(apiJson)
                                                 val embedUrl = embedUrlMatch?.groupValues?.get(1)?.replace("\\/", "/")
                                                 if (embedUrl != null) {
+                                                    val host = if (embedUrl.contains("/embed.php")) embedUrl.substringBefore("/embed.php") else "https://gerfred.com"
                                                     val code = embedUrl.substringAfter("code=", "")
                                                     if (code.isNotEmpty()) {
-                                                        val configUrl = "https://gerfred.com/embed.php?code=$code&ppcfg=1"
+                                                        val configUrl = "$host/embed.php?code=$code&ppcfg=1"
                                                         val reqConfig = okhttp3.Request.Builder()
                                                             .url(configUrl)
                                                             .header("Referer", "https://s3.vertex.st/")
@@ -966,11 +992,11 @@ class SportsurgeXRProvider : MainAPI() {
                                                                             source = this@SportsurgeXRProvider.name,
                                                                             name = name,
                                                                             url = srcUrl,
-                                                                            referer = "https://gerfred.com/",
+                                                                            referer = "$host/",
                                                                             quality = Qualities.P720.value,
                                                                             type = ExtractorLinkType.M3U8,
                                                                             headers = mapOf(
-                                                                                "Referer" to "https://gerfred.com/",
+                                                                                "Referer" to "$host/",
                                                                                 "User-Agent" to DESKTOP_UA
                                                                             )
                                                                         )
