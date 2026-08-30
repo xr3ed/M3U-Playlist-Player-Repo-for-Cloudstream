@@ -33,7 +33,7 @@ import kotlin.concurrent.thread
 
 class DracinAIOProvider : MainAPI() {
     companion object {
-        private val networkSemaphore = java.util.concurrent.Semaphore(3)
+        private val networkSemaphore = java.util.concurrent.Semaphore(12)
         var appContext: Context? = null
         private val BASE_URL = String(Base64.decode(BuildConfig.DRACINAIO_URL, Base64.DEFAULT), Charsets.UTF_8)
         private val API_URL = "$BASE_URL/api"
@@ -44,14 +44,30 @@ class DracinAIOProvider : MainAPI() {
         private val cache = HashMap<String, Pair<Long, String>>()
         private val cacheMutex = Mutex()
 
+        fun prefetchCookie() {
+            thread(isDaemon = true, name = "DracinCookiePrefetch") {
+                try {
+                    val req = Request.Builder()
+                        .url(BASE_URL)
+                        .headers(headers.toHeaders())
+                        .build()
+                    val response = cleanClient.newCall(req).execute()
+                    val setCookie = response.header("set-cookie")
+                    if (setCookie != null) {
+                        sessionCookie = setCookie.substringBefore(";")
+                    }
+                } catch (_: Exception) {}
+            }
+        }
+
         private val headers = mapOf(
             "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Referer" to "$BASE_URL/"
         )
 
         private val cleanClient = com.lagradost.cloudstream3.app.baseClient.newBuilder()
-            .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+            .connectTimeout(8, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
             .build()
 
         private val unsafeClient: OkHttpClient by lazy {
@@ -100,7 +116,7 @@ class DracinAIOProvider : MainAPI() {
 
         val htmlCategoryProviders = setOf("shortwave")
 
-        val homepageProviders = setOf("shortmax", "dramabox", "melolo", "dotdrama", "shortwave")
+        val homepageProviders = setOf("dotdrama", "dramabox", "shortmax", "melolo")
 
         val providersWithDub = setOf("reelshort", "shortmax", "dramabox", "dramarush", "melolo", "starshort", "netshort", "cubetv")
 
