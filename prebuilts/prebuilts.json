@@ -128,5 +128,26 @@
         "status":  1,
         "language":  "id",
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "#Donghua AnichinXR",
+        "internalName":  "AnichinXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnichinXR.cs3",
+        "version":  73,
+        "description":  "Anichin Moe modifikasi oleh XR3ED",
+        "authors":  [
+                        "sad25kag",
+                        "XR3ED"
+                    ],
+        "tvTypes":  [
+                        "AnimeMovie",
+                        "Anime",
+                        "Cartoon"
+                    ],
+        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL\u0026type=FAVICON\u0026fallback_opts=TYPE,SIZE,URL\u0026url=https://anichin.club\u0026size=%size%",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
     }
 ]
