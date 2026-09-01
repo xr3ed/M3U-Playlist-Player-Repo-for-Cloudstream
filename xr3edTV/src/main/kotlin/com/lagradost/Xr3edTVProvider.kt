@@ -1541,21 +1541,22 @@ class Xr3edTVProvider : MainAPI() {
                 ChannelItem("ch", "Live TV", "", "TV", emptyList())
             }
 
-            val episodes = channel.servers.mapIndexed { idx, srv ->
-                val srvPayload = mapper.writeValueAsString(srv)
-                val epData = "${MASK_PREFIX}srv::" + Base64.encodeToString(srvPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+            val serversPayload = mapper.writeValueAsString(channel.servers)
+            val epData = "${MASK_PREFIX}match::" + Base64.encodeToString(serversPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+
+            val episodes = listOf(
                 newEpisode(epData) {
-                    this.name = srv.name
+                    this.name = channel.title
                     this.season = 1
-                    this.episode = idx + 1
-                    this.description = "Kategori: ${channel.group} | Server: ${srv.name}"
+                    this.episode = 1
+                    this.description = "Kategori: ${channel.group} | Tersedia ${channel.servers.size} Sumber Server Pilihan."
                 }
-            }
+            )
 
             return newTvSeriesLoadResponse(channel.title, url, TvType.Live, episodes) {
                 this.posterUrl = channel.logo.ifEmpty { "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png" }
-                this.plot = "Siaran TV 24/7 ${channel.title} (${channel.group}) • Multi-Server Failover"
-                this.seasonNames = listOf(SeasonData(1, "Pilihan Server TV"))
+                this.plot = "Siaran TV 24/7 ${channel.title} (${channel.group}) • ${channel.servers.size} Sumber Tersedia (Auto-Failover)"
+                this.seasonNames = listOf(SeasonData(1, "📡 Siaran TV 24/7 (${channel.servers.size} Sumber)"))
             }
         }
 
