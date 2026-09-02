@@ -1,8 +1,0 @@
-{
-  "pluginClassName": "com.xr3ed.kepalabergetar.KepalaBergetarPlugin",
-  "displayName": "KepalaBergetarXR",
-  "description": "Kepala Bergetar — Tonton Drama Melayu, Telefilem & Filem Online",
-  "author": "xr3ed",
-  "version": 1,
-  "tvTypes": ["AsianDrama", "TvSeries", "Movie"]
-}

@@ -1,5 +1,25 @@
 [
     {
+        "name":  "KepalaBergetarXR",
+        "internalName":  "KepalaBergetarXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KepalaBergetarXR.cs3",
+        "version":  1,
+        "description":  "Kepala Bergetar — Tonton Drama Melayu, Telefilem & Filem Online",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "AsianDrama",
+                        "TvSeries",
+                        "Movie"
+                    ],
+        "iconUrl":  "https://kepalabergetar.cfd/wp-content/uploads/2023/08/fav.png",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "ms",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
         "name":  "FilmBoxOffice",
         "internalName":  "FilmBoxOffice",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/FilmBoxOffice.cs3",
