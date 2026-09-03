@@ -268,10 +268,10 @@ class Xr3edTVProvider : MainAPI() {
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=23&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=26&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=23&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=26&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
