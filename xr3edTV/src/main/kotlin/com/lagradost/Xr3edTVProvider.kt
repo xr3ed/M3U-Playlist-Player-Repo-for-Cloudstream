@@ -142,7 +142,7 @@ class Xr3edTVProvider : MainAPI() {
     override val hasQuickSearch = true
 
     override val mainPage = listOf(
-        MainPageData("🇮🇩 TV NASIONAL 24/7", "🇮🇩 NASIONAL"),
+        MainPageData("🇮🇩 TV NASIONAL 24/7", "🇮🇩 NASIONAL", horizontalImages = true),
         MainPageData("🔥 Hot Event", "HOT_EVENT", horizontalImages = true),
         MainPageData("🔴 Live", "LIVE_REGULAR", horizontalImages = true),
         MainPageData("⏳ Upcoming Event", "UPCOMING_EVENT", horizontalImages = true),
