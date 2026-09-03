@@ -142,10 +142,10 @@ class Xr3edTVProvider : MainAPI() {
     override val hasQuickSearch = true
 
     override val mainPage = listOf(
+        MainPageData("🇮🇩 TV NASIONAL 24/7", "🇮🇩 NASIONAL"),
         MainPageData("🔥 Hot Event", "HOT_EVENT", horizontalImages = true),
         MainPageData("🔴 Live", "LIVE_REGULAR", horizontalImages = true),
         MainPageData("⏳ Upcoming Event", "UPCOMING_EVENT", horizontalImages = true),
-        MainPageData("🇮🇩 TV NASIONAL 24/7", "🇮🇩 NASIONAL"),
         MainPageData("⚽ TV SPORTS 24/7", "⚽ SPORTS"),
         MainPageData("🎬 MOVIES & ENTERTAINMENT", "🎬 MOVIES & ENTERTAINMENT"),
         MainPageData("👫 KIDS & ANIME", "👫 KIDS & ANIME"),
@@ -1162,8 +1162,11 @@ class Xr3edTVProvider : MainAPI() {
 
         val sourceUrl = BuildConfig.NASIONAL_SOURCE_URL.trim().ifEmpty { "https://raw.githubusercontent.com/xr3ed/xr3ed-tv/main/xr3dtv.m3u8" }
         var content = httpGet(sourceUrl)
-        if (content.isNullOrEmpty() || !content.contains("#EXTINF")) {
+        if (content.isNullOrEmpty() || !content.contains("NASIONAL", ignoreCase = true)) {
             content = httpGet("https://raw.githubusercontent.com/xr3ed/xr3ed-tv/main/xr3dtv.m3u8")
+        }
+        if (content.isNullOrEmpty() || !content.contains("NASIONAL", ignoreCase = true)) {
+            content = httpGet("https://raw.githubusercontent.com/xr3ed/xr3ed-tv/main/nasional.m3u")
         }
         if (content.isNullOrEmpty() || !content.contains("#EXTINF")) return emptyMap()
 
@@ -1283,7 +1286,7 @@ class Xr3edTVProvider : MainAPI() {
                     val groupPayload = mapper.writeValueAsString(sameTourCourts)
                     val maskedData = "${MASK_PREFIX}court_group::" + Base64.encodeToString(groupPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                     val groupTitle = "🎾 $tourName • All Courts Live (${sameTourCourts.size} Lapangan)"
-                    cards.add(newLiveSearchResponse(groupTitle, maskedData, TvType.Live) {
+                    cards.add(newTvSeriesSearchResponse(groupTitle, maskedData, TvType.TvSeries) {
                         this.posterUrl = getMatchPoster(sameTourCourts.first(), "landscape")
                     })
                     continue
@@ -1508,7 +1511,7 @@ class Xr3edTVProvider : MainAPI() {
             }
 
             val groupPoster = courts.firstOrNull()?.let { getMatchPoster(it, "portrait") } ?: ""
-            return newTvSeriesLoadResponse(tournament, url, TvType.Live, episodes) {
+            return newTvSeriesLoadResponse(tournament, url, TvType.TvSeries, episodes) {
                 this.posterUrl = groupPoster
                 this.plot = "Siaran Langsung Semua Lapangan/Court $tournament • Tersedia ${courts.size} Lapangan. Pilihlah lapangan yang ingin ditonton."
                 this.seasonNames = listOf(SeasonData(1, "🎾 Pilihan Court / Lapangan ($tournament)"))
