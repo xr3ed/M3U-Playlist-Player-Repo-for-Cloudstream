@@ -277,19 +277,25 @@ class Xr3edTVProvider : MainAPI() {
 
     private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
         // 1. Jika event single memiliki logo/thumbnail resmi yang valid, gunakan langsung tanpa beban worker
-        if (m.logo.isNotEmpty() && (m.logo.startsWith("http://") || m.logo.startsWith("https://")) && !m.logo.contains("xr3edtv-poster")) {
+        if (m.logo.isNotEmpty() && (m.logo.startsWith("http://") || m.logo.startsWith("https://")) && !m.logo.contains("xr3edtv-poster") && !m.logo.contains("q5qo.com")) {
             if (m.homeTeam.isEmpty() || m.awayTeam.isEmpty()) {
                 return m.logo
             }
         }
+
+        // Icon q5qo.com (80x80 palette mini) merusak decoder Skia Android jika di-embed dalam SVG.
+        // Dengan mengosongkannya, worker otomatis merender banner vektor profesional seperti Zion & Mansi Singh.
+        val cleanHomeLogo = if (m.homeLogo.contains("q5qo.com")) "" else m.homeLogo
+        val cleanAwayLogo = if (m.awayLogo.contains("q5qo.com")) "" else m.awayLogo
+        val cleanLogo = if (m.logo.contains("q5qo.com")) "" else m.logo
 
         return if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
             // VS layout — ada kedua tim
             buildMatchPosterUrl(
                 home = m.homeTeam,
                 away = m.awayTeam,
-                homeLogo = m.homeLogo,
-                awayLogo = m.awayLogo,
+                homeLogo = cleanHomeLogo,
+                awayLogo = cleanAwayLogo,
                 league = m.league,
                 sport = m.sportCategory,
                 isLive = m.isLive,
@@ -301,7 +307,7 @@ class Xr3edTVProvider : MainAPI() {
             // Single event layout — motorsport, UFC, tennis event dll
             buildMatchPosterUrl(
                 title = m.title,
-                logo = m.logo,
+                logo = cleanLogo,
                 league = m.league,
                 sport = m.sportCategory,
                 isLive = m.isLive,
