@@ -1243,38 +1243,79 @@ class Xr3edTVProvider : MainAPI() {
         return categoryMap
     }
 
+    private fun isTennisCourtFeed(m: Xr3edMatch): Boolean {
+        val t = m.title.lowercase()
+        val isCourtName = t.contains("court") || t.contains("stadium") || t.contains("grandstand") || 
+                          t.contains("multi feed") || t.contains("red zone")
+        val isTennis = m.sportCategory.equals("tennis", ignoreCase = true) || 
+                       m.league.lowercase().contains("open") || 
+                       m.league.lowercase().contains("tennis") || 
+                       m.league.lowercase().contains("wta") || 
+                       m.league.lowercase().contains("atp")
+        return isTennis && isCourtName
+    }
+
+    private fun getTournamentName(m: Xr3edMatch): String {
+        val cleanLeague = m.league.replace(Regex("[^a-zA-Z0-9\\s]"), " ").trim()
+        val lower = cleanLeague.lowercase()
+        return when {
+            lower.contains("us open") -> "US Open 2026"
+            lower.contains("wimbledon") -> "Wimbledon"
+            lower.contains("roland") || lower.contains("french open") -> "Roland Garros"
+            lower.contains("australian") -> "Australian Open"
+            cleanLeague.isNotEmpty() -> cleanLeague
+            else -> "Tennis Tournament"
+        }
+    }
+
+    private fun buildMatchCards(matches: List<Xr3edMatch>): List<SearchResponse> {
+        val cards = mutableListOf<SearchResponse>()
+        val processedCourtTournaments = mutableSetOf<String>()
+
+        for (m in matches) {
+            if (isTennisCourtFeed(m)) {
+                val tourName = getTournamentName(m)
+                if (processedCourtTournaments.contains(tourName)) continue
+
+                val sameTourCourts = matches.filter { isTennisCourtFeed(it) && getTournamentName(it) == tourName }
+                if (sameTourCourts.size >= 2) {
+                    processedCourtTournaments.add(tourName)
+                    val groupPayload = mapper.writeValueAsString(sameTourCourts)
+                    val maskedData = "${MASK_PREFIX}court_group::" + Base64.encodeToString(groupPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+                    val groupTitle = "🎾 $tourName • All Courts Live (${sameTourCourts.size} Lapangan)"
+                    cards.add(newLiveSearchResponse(groupTitle, maskedData, TvType.Live) {
+                        this.posterUrl = getMatchPoster(sameTourCourts.first(), "landscape")
+                    })
+                    continue
+                }
+            }
+
+            val matchPayload = mapper.writeValueAsString(m)
+            val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+            val displayTitle = if (m.isUpcoming) "${m.kickOffTime} • ${m.title}" else m.title
+            cards.add(newLiveSearchResponse(displayTitle, maskedData, TvType.Live) {
+                this.posterUrl = getMatchPoster(m, "landscape")
+            })
+        }
+        return cards
+    }
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse? {
         if (page > 1) return null
 
         val reqTag = (if (request.data.isNotBlank()) request.data else request.name).trim()
         val lowerTag = "${request.data} ${request.name}".lowercase()
 
-        // 1. Hot Event — Live & Upcoming Hot Matches (Live paling depan, urutan kick-off terdekat)
+        // 1. Hot Event — Hanya Match LIVE yang Hot (Tidak Ada Upcoming)
         if (lowerTag.contains("hot")) {
             val matches = fetchMergedMatches()
             val hotMatches = matches.filter { m ->
-                m.isHot &&
+                m.isLive && m.isHot &&
                 !m.title.contains("Rally TV", ignoreCase = true) &&
                 !m.title.contains("24/7", ignoreCase = true)
-            }.sortedWith(
-                compareBy<Xr3edMatch> { !it.isLive }
-                    .thenBy { m ->
-                        if (m.isLive) {
-                            if (m.timestampMs > 0) -m.timestampMs else 0L
-                        } else {
-                            if (m.timestampMs > 0) m.timestampMs else Long.MAX_VALUE
-                        }
-                    }
-            )
+            }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
-            val directCards = hotMatches.map { m ->
-                val matchPayload = mapper.writeValueAsString(m)
-                val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-                val displayTitle = if (m.isUpcoming) "${m.kickOffTime} • ${m.title}" else m.title
-                newLiveSearchResponse(displayTitle, maskedData, TvType.Live) {
-                    this.posterUrl = getMatchPoster(m, "landscape")
-                }
-            }
+            val directCards = buildMatchCards(hotMatches)
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
         }
 
@@ -1287,13 +1328,7 @@ class Xr3edTVProvider : MainAPI() {
                 !m.title.contains("24/7", ignoreCase = true)
             }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
-            val directCards = liveRegular.map { m ->
-                val matchPayload = mapper.writeValueAsString(m)
-                val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-                newLiveSearchResponse(m.title, maskedData, TvType.Live) {
-                    this.posterUrl = getMatchPoster(m, "landscape")
-                }
-            }
+            val directCards = buildMatchCards(liveRegular)
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
         }
 
@@ -1318,13 +1353,7 @@ class Xr3edTVProvider : MainAPI() {
             val matches = fetchMergedMatches()
             val upcomingMatches = matches.filter { it.isUpcoming }
                 .sortedBy { if (it.timestampMs > 0) it.timestampMs else Long.MAX_VALUE }
-            val directCards = upcomingMatches.map { m ->
-                val matchPayload = mapper.writeValueAsString(m)
-                val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-                newLiveSearchResponse("${m.kickOffTime} • ${m.title}", maskedData, TvType.Live) {
-                    this.posterUrl = getMatchPoster(m, "landscape")
-                }
-            }
+            val directCards = buildMatchCards(upcomingMatches)
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
         }
 
@@ -1359,14 +1388,7 @@ class Xr3edTVProvider : MainAPI() {
                         }
                     }
             )
-            val directCards = categoryMatches.map { m ->
-                val matchPayload = mapper.writeValueAsString(m)
-                val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
-                val titleWithBadge = if (m.isUpcoming) "${m.kickOffTime} • ${m.title}" else m.title
-                newLiveSearchResponse(titleWithBadge, maskedData, TvType.Live) {
-                    this.posterUrl = getMatchPoster(m, "landscape")
-                }
-            }
+            val directCards = buildMatchCards(categoryMatches)
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
         }
 
@@ -1459,6 +1481,37 @@ class Xr3edTVProvider : MainAPI() {
                 this.posterUrl = getMatchPoster(match, "portrait")
                 this.plot = "Status: $statusText\nLiga: ${match.league} | Jadwal: ${match.kickOffTime} | Tersedia ${match.servers.size} Server Pilihan."
                 this.seasonNames = listOf(SeasonData(1, "📡 Siaran Langsung (${match.servers.size} Server)"))
+            }
+        }
+
+        // ── 1b. Tennis Court Group Clicked (Daftar Lapangan / Stadium Sebagai Episode) ──
+        if (cleanUrl.startsWith("court_group::")) {
+            val jsonBase64 = cleanUrl.substringAfter("court_group::")
+            val courts: List<Xr3edMatch> = try {
+                val json = String(Base64.decode(jsonBase64, Base64.DEFAULT), Charsets.UTF_8)
+                mapper.readValue(json)
+            } catch (_: Exception) {
+                emptyList()
+            }
+
+            val tournament = courts.firstOrNull()?.let { getTournamentName(it) } ?: "Tennis Tournament"
+            val episodes = courts.mapIndexed { idx, court ->
+                val serversPayload = mapper.writeValueAsString(court.servers)
+                val epData = "${MASK_PREFIX}match::" + Base64.encodeToString(serversPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+                newEpisode(epData) {
+                    this.name = court.title
+                    this.season = 1
+                    this.episode = idx + 1
+                    this.posterUrl = getMatchPoster(court, "landscape")
+                    this.description = "${court.league} • ${court.title} | Tersedia ${court.servers.size} Server Pilihan"
+                }
+            }
+
+            val groupPoster = courts.firstOrNull()?.let { getMatchPoster(it, "portrait") } ?: ""
+            return newTvSeriesLoadResponse(tournament, url, TvType.Live, episodes) {
+                this.posterUrl = groupPoster
+                this.plot = "Siaran Langsung Semua Lapangan/Court $tournament • Tersedia ${courts.size} Lapangan. Pilihlah lapangan yang ingin ditonton."
+                this.seasonNames = listOf(SeasonData(1, "🎾 Pilihan Court / Lapangan ($tournament)"))
             }
         }
 
