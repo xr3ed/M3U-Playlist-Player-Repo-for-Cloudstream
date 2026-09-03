@@ -9,8 +9,7 @@ import com.lagradost.cloudstream3.utils.Qualities
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import com.lagradost.DracinAIO.BuildConfig
 import android.content.Context
-import com.lagradost.cloudstream3.utils.DataStore.getKey
-import com.lagradost.cloudstream3.utils.DataStore.setKey
+import java.io.File
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Headers.Companion.toHeaders
@@ -479,17 +478,22 @@ class DracinAIOProvider : MainAPI() {
 
             val context = appContext
             if (context != null) {
-                val cachedJson = context.getKey<String>("dracin_aio_home_cache_v10")
-                val cachedTime = context.getKey<Long>("dracin_aio_home_cache_time_v10") ?: 0L
-                val now = System.currentTimeMillis()
-                // Cache TTL: 3 hours (10.800.000 ms)
-                if (cachedJson != null && now - cachedTime < 10800000) {
-                    val cachedLists = deserializeHomeCache(cachedJson)
-                    if (cachedLists.isNotEmpty()) {
-                        Log.d("DracinAIO", "Loading homepage from local DataStore cache (Age: ${(now - cachedTime)/1000}s)")
-                        return newHomePageResponse(cachedLists, hasNext = false)
+                try {
+                    val cacheDir = File(context.cacheDir, "dracin_cache")
+                    val cacheFile = File(cacheDir, "dracin_aio_home_v10.json")
+                    if (cacheFile.exists()) {
+                        val age = System.currentTimeMillis() - cacheFile.lastModified()
+                        // Cache TTL: 3 hours (10.800.000 ms)
+                        if (age < 10800000) {
+                            val cachedJson = cacheFile.readText()
+                            val cachedLists = deserializeHomeCache(cachedJson)
+                            if (cachedLists.isNotEmpty()) {
+                                Log.d("DracinAIO", "Loading homepage from cacheDir file (Age: ${age/1000}s)")
+                                return newHomePageResponse(cachedLists, hasNext = false)
+                            }
+                        }
                     }
-                }
+                } catch (_: Exception) {}
             }
 
             val homePageLists = ArrayList<HomePageList>()
@@ -586,9 +590,10 @@ class DracinAIOProvider : MainAPI() {
                 try {
                     val jsonStr = serializeHomeCache(homePageLists)
                     if (jsonStr.isNotEmpty()) {
-                        context.setKey("dracin_aio_home_cache_v10", jsonStr)
-                        context.setKey("dracin_aio_home_cache_time_v10", System.currentTimeMillis())
-                        Log.d("DracinAIO", "Saved homepage data to local DataStore cache")
+                        val cacheDir = File(context.cacheDir, "dracin_cache").apply { if (!exists()) mkdirs() }
+                        val cacheFile = File(cacheDir, "dracin_aio_home_v10.json")
+                        cacheFile.writeText(jsonStr)
+                        Log.d("DracinAIO", "Saved homepage data to cacheDir file")
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
