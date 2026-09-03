@@ -269,14 +269,21 @@ class Xr3edTVProvider : MainAPI() {
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=25&$widthParam&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=23&$widthParam&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=25&$widthParam&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=23&$widthParam&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
     private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
+        // 1. Jika event single memiliki logo/thumbnail resmi yang valid, gunakan langsung tanpa beban worker
+        if (m.logo.isNotEmpty() && (m.logo.startsWith("http://") || m.logo.startsWith("https://")) && !m.logo.contains("xr3edtv-poster")) {
+            if (m.homeTeam.isEmpty() || m.awayTeam.isEmpty()) {
+                return m.logo
+            }
+        }
+
         return if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
             // VS layout — ada kedua tim
             buildMatchPosterUrl(
@@ -738,7 +745,12 @@ class Xr3edTVProvider : MainAPI() {
                     val sdUrl = "$workerBase/live/$encSd.m3u8"
 
                     if (tvServers.isNotEmpty()) {
-                        servers.addAll(tvServers)
+                        val broadcastKeywords = listOf("bein", "sky", "espn", "tnt", "eurosport", "dazn", "super", "astro", "spotv", "fox")
+                        val sortedTvServers = tvServers.sortedWith(compareByDescending { srv ->
+                            val lower = srv.name.lowercase()
+                            broadcastKeywords.any { lower.contains(it) }
+                        })
+                        servers.addAll(sortedTvServers)
                         servers.add(StreamServer("Ondemand-HD", primaryUrl, odHeaders))
                         servers.add(StreamServer("Ondemand-SD", sdUrl, odHeaders))
                     } else {
