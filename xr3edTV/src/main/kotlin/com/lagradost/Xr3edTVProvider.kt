@@ -265,14 +265,13 @@ class Xr3edTVProvider : MainAPI() {
         val base = BuildConfig.XR3EDTV_POSTER_BASE.ifEmpty { "https://xr3edtv-poster.xr3ed-cdn.workers.dev/poster.png" }
         val status = if (isLive) "live" else "upcoming"
         val cleanTime = time.replace(" WIB", "").replace("Live", "").trim()
-        val widthParam = if (aspect == "landscape") "w=480" else "w=360"
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=23&$widthParam&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=23&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=23&$widthParam&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=23&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
