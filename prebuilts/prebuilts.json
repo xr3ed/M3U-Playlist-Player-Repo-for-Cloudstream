@@ -169,5 +169,26 @@
         "status":  1,
         "language":  "id",
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "LayarKacaXR",
+        "internalName":  "LayarKacaXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LayarKacaXR.cs3",
+        "version":  11,
+        "description":  "LayarKaca — provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "Movie",
+                        "TvSeries",
+                        "AsianDrama"
+                    ],
+        "iconUrl":  "https://assets.lk21.party/favicons/apple-icon-144x144.png",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
     }
 ]
+

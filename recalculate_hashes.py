@@ -13,7 +13,7 @@ def main():
 
     updated = 0
     for p in plugins:
-        name = p.get("internalName", "")
+        name = p.get("internalName") or p.get("name") or ""
         cs3_path = f"build-out/{name}.cs3"
         if os.path.exists(cs3_path):
             with open(cs3_path, "rb") as f:

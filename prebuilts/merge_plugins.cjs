@@ -35,9 +35,9 @@ try {
   process.exit(1);
 }
 
-// 2. Merge without duplication by name
+// 2. Merge without duplication by internalName or name
 const pluginMap = new Map();
-plugins.forEach(p => pluginMap.set(p.name, p));
+plugins.forEach(p => pluginMap.set(p.internalName || p.name, p));
 
 prebuilts.forEach(p => {
   // Also copy the .cs3 file to build-out
@@ -66,7 +66,7 @@ prebuilts.forEach(p => {
     console.warn(`Warning: prebuilt file ${srcCs3} not found!`);
   }
   
-  pluginMap.set(p.name, p);
+  pluginMap.set(p.internalName || p.name, p);
 });
 
 const mergedPlugins = Array.from(pluginMap.values());
