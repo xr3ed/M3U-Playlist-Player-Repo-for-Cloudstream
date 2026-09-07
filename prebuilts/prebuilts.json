@@ -189,6 +189,26 @@
         "status":  1,
         "language":  "id",
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "KlikXXiXR",
+        "internalName":  "KlikXXiXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KlikXXiXR.cs3",
+        "version":  6,
+        "description":  "KlikXXI — provider film terbaru subtitle Indonesia dengan kategori lengkap.",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "Movie",
+                        "TvSeries",
+                        "AsianDrama"
+                    ],
+        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://klikxxi.shop&size=%size%",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
     }
 ]
 
