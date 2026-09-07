@@ -54,19 +54,25 @@ class TurnstileInterceptor(private val targetCookie: String = "_as_turnstile") :
         cookieManager.setCookie(domainUrl, "_as_ipin_ct=ID; path=/; SameSite=Strict")
         cookieManager.flush()
 
+        val userAgent = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36"
         val existingCookies = cookieManager.getCookie(domainUrl) ?: ""
-        if (existingCookies.contains(targetCookie)) {
-            val response = chain.proceed(
-                originalRequest.newBuilder()
-                    .header("Cookie", existingCookies)
-                    .build()
-            )
-            if (response.code != 403 && response.code != 503) return response
 
-            response.close()
-            cookieManager.setCookie(domainUrl, "$targetCookie=; Max-Age=0; path=/; Secure")
-            cookieManager.flush()
+        val requestBuilder = originalRequest.newBuilder()
+            .header("User-Agent", userAgent)
+        if (existingCookies.isNotBlank()) {
+            requestBuilder.header("Cookie", existingCookies)
         }
+
+        val initialResponse = chain.proceed(requestBuilder.build())
+        if (initialResponse.code != 403 && initialResponse.code != 503) {
+            return initialResponse
+        }
+
+        initialResponse.close()
+
+        cookieManager.setCookie(domainUrl, "$targetCookie=; Max-Age=0; path=/; Secure")
+        cookieManager.setCookie(domainUrl, "cf_clearance=; Max-Age=0; path=/; Secure")
+        cookieManager.flush()
 
         val resumedActivity = getResumedActivity() as? FragmentActivity
         if (resumedActivity != null) {
@@ -86,13 +92,13 @@ class TurnstileInterceptor(private val targetCookie: String = "_as_turnstile") :
         }
 
         val finalCookies = cookieManager.getCookie(domainUrl) ?: ""
-        val userAgent = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36"
 
-        return chain.proceed(
-            originalRequest.newBuilder()
-                .header("User-Agent", userAgent)
-                .header("Cookie", finalCookies)
-                .build()
-        )
+        val finalRequestBuilder = originalRequest.newBuilder()
+            .header("User-Agent", userAgent)
+        if (finalCookies.isNotBlank()) {
+            finalRequestBuilder.header("Cookie", finalCookies)
+        }
+
+        return chain.proceed(finalRequestBuilder.build())
     }
 }

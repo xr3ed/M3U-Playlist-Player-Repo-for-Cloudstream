@@ -55,7 +55,7 @@ class AnimeSailTurnstileDialog(
             CookieManager.getInstance().flush()
             val cookieStr = CookieManager.getInstance().getCookie(targetHost) ?: ""
 
-            if (cookieStr.contains(targetCookie)) {
+            if (cookieStr.contains(targetCookie) || cookieStr.contains("cf_clearance")) {
                 saveCookiesAndDismiss()
             } else if (pollElapsedMs >= POLL_TIMEOUT_MS) {
                 updateStatus("⏱️ Waktu verifikasi habis. Silakan tutup dan coba lagi.")
@@ -213,6 +213,8 @@ class AnimeSailTurnstileDialog(
         wv.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
+            javaScriptCanOpenWindowsAutomatically = false
+            setSupportMultipleWindows(false)
             @Suppress("DEPRECATION")
             mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             allowContentAccess = true
@@ -232,7 +234,24 @@ class AnimeSailTurnstileDialog(
         wv.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView?, request: WebResourceRequest?
-            ): Boolean = false
+            ): Boolean {
+                val reqUri = request?.url ?: return false
+                val reqHost = reqUri.host?.lowercase() ?: ""
+                val targetUriHost = try {
+                    android.net.Uri.parse(targetUrl).host?.lowercase() ?: ""
+                } catch (_: Exception) {
+                    ""
+                }
+
+                if (reqHost.isEmpty() ||
+                    reqHost == targetUriHost ||
+                    reqHost.endsWith(".animesail.xyz") ||
+                    reqHost.contains("cloudflare")) {
+                    return false
+                }
+
+                return true
+            }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
@@ -243,8 +262,8 @@ class AnimeSailTurnstileDialog(
                         style = document.createElement('style');
                         style.id = 'cf-custom-style';
                         style.innerHTML = ' \
-                            * { background: #151624 !important; background-color: #151624 !important; color: #151624 !important; text-shadow: none !important; } \
-                            #logo, .logo, #zone-name, .zone-name, img { display: none !important; } \
+                            body, html { background: #151624 !important; } \
+                            #logo, .logo, #zone-name, .zone-name { display: none !important; } \
                         ';
                         document.head.appendChild(style);
                     }
@@ -254,7 +273,7 @@ class AnimeSailTurnstileDialog(
                 if (cookiesSaved) return
 
                 val currentHostCookies = CookieManager.getInstance().getCookie(targetHost) ?: ""
-                if (currentHostCookies.contains(targetCookie)) {
+                if (currentHostCookies.contains(targetCookie) || currentHostCookies.contains("cf_clearance")) {
                     saveCookiesAndDismiss()
                     return
                 }
