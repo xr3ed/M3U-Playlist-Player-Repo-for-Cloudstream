@@ -23,25 +23,17 @@ object EmbedExtractors {
         val isMovie = season == null || episode == null
         val embedUrls = if (isMovie) {
             listOf(
-                "https://vidlink.pro/movie/$tmdbId",
-                "https://player.autoembed.cc/embed/movie/$tmdbId",
-                "https://vidsrc.xyz/embed/movie/$tmdbId",
-                "https://vidsrc.in/embed/movie/$tmdbId",
+                "https://vidsrc.me/embed/movie?tmdb=$tmdbId",
                 "https://vidsrc.pm/embed/movie/$tmdbId",
-                "https://vidsrc.net/embed/movie/$tmdbId",
-                "https://www.2embed.cc/embed/$tmdbId",
-                "https://player.smashy.stream/movie/$tmdbId"
+                "https://vidsrc.in/embed/movie/$tmdbId",
+                "https://vidsrc.rip/embed/movie/$tmdbId"
             )
         } else {
             listOf(
-                "https://vidlink.pro/tv/$tmdbId/$season/$episode",
-                "https://player.autoembed.cc/embed/tv/$tmdbId/$season/$episode",
-                "https://vidsrc.xyz/embed/tv/$tmdbId/$season-$episode",
-                "https://vidsrc.in/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.me/embed/tv?tmdb=$tmdbId&season=$season&episode=$episode",
                 "https://vidsrc.pm/embed/tv/$tmdbId/$season/$episode",
-                "https://vidsrc.net/embed/tv/$tmdbId/$season/$episode",
-                "https://www.2embed.cc/embed/$tmdbId?s=$season&e=$episode",
-                "https://player.smashy.stream/tv/$tmdbId?s=$season&e=$episode"
+                "https://vidsrc.in/embed/tv/$tmdbId/$season/$episode",
+                "https://vidsrc.rip/embed/tv/$tmdbId/$season/$episode"
             )
         }
 
@@ -53,10 +45,25 @@ object EmbedExtractors {
                         var resolved = false
                         var hops = 0
                         while (hops < 3 && !resolved) {
-                            resolved = loadExtractor(currentUrl, subCallback, callback)
+                            if (currentUrl.contains("2embed.cc") || currentUrl.contains("streamcash")) break
+
+                            resolved = runCatching {
+                                loadExtractor(currentUrl, subCallback) { link ->
+                                    val isDeadStreamcash = link.name.contains("streamcash", ignoreCase = true) ||
+                                            link.url.contains("streamcash", ignoreCase = true) ||
+                                            link.url.contains("cdn.streamcash.to", ignoreCase = true)
+                                    if (!isDeadStreamcash) {
+                                        callback(link)
+                                    }
+                                }
+                            }.getOrDefault(false)
+
                             if (resolved) break
 
-                            val response = app.get(currentUrl, timeout = 6)
+                            val response = runCatching {
+                                app.get(currentUrl, timeout = 5)
+                            }.getOrNull() ?: break
+
                             if (response.code != 200) break
 
                             val html = response.text
@@ -72,6 +79,7 @@ object EmbedExtractors {
                                 }
                                 else -> iframeSrc
                             }
+                            if (currentUrl.contains("2embed.cc") || currentUrl.contains("streamcash")) break
                             hops++
                         }
                     } catch (e: Exception) {

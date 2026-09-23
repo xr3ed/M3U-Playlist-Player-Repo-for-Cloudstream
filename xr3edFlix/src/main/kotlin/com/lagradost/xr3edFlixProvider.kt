@@ -7,6 +7,9 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.Actor
 import com.lagradost.cloudstream3.ActorData
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTMDbId
+import com.lagradost.cloudstream3.LoadResponse.Companion.addImdbId
 import com.lagradost.cloudstream3.extractors.Filesim
 import com.lagradost.cloudstream3.extractors.StreamSB
 import com.lagradost.cloudstream3.extractors.StreamWishExtractor
@@ -140,12 +143,30 @@ class xr3edFlixProvider : MainAPI() {
             }
             val isMovie = media.title != null || media.mediaType == "movie"
             val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
-            newMovieSearchResponse(
-                name = title,
-                url = if (isMovie) "https://lynk.id/xr3ed#movie::${media.id}" else "https://lynk.id/xr3ed#tv::${media.id}",
-                type = if (isMovie) TvType.Movie else TvType.TvSeries
-            ) {
-                this.posterUrl = poster
+            val year = (media.releaseDate ?: media.firstAirDate)?.take(4)?.toIntOrNull()
+            val score = media.voteAverage?.let { Score.from10(it) }
+            if (isMovie) {
+                newMovieSearchResponse(
+                    name = title,
+                    url = "https://lynk.id/xr3ed#movie::${media.id}",
+                    type = TvType.Movie
+                ) {
+                    this.posterUrl = poster
+                    this.year = year
+                    this.score = score
+                    this.quality = SearchQuality.HD
+                }
+            } else {
+                newTvSeriesSearchResponse(
+                    name = title,
+                    url = "https://lynk.id/xr3ed#tv::${media.id}",
+                    type = TvType.TvSeries
+                ) {
+                    this.posterUrl = poster
+                    this.year = year
+                    this.score = score
+                    this.quality = SearchQuality.HD
+                }
             }
         } ?: emptyList()
         if (result.isNotEmpty()) {
@@ -223,6 +244,8 @@ class xr3edFlixProvider : MainAPI() {
                                 media.title ?: media.name ?: title
                             }
                             val poster = "https://image.tmdb.org/t/p/w500${media.posterPath}"
+                            val year = (media.releaseDate ?: media.firstAirDate)?.take(4)?.toIntOrNull()
+                            val score = media.voteAverage?.let { Score.from10(it) }
                             val res = if (isMovie) {
                                 newMovieSearchResponse(
                                     name = titleName,
@@ -230,6 +253,9 @@ class xr3edFlixProvider : MainAPI() {
                                     type = TvType.Movie
                                 ) {
                                     this.posterUrl = poster
+                                    this.year = year
+                                    this.score = score
+                                    this.quality = SearchQuality.HD
                                 }
                             } else {
                                 newTvSeriesSearchResponse(
@@ -238,6 +264,9 @@ class xr3edFlixProvider : MainAPI() {
                                     type = TvType.TvSeries
                                 ) {
                                     this.posterUrl = poster
+                                    this.year = year
+                                    this.score = score
+                                    this.quality = SearchQuality.HD
                                 }
                             }
                             titleSearchCache[searchCacheKey] = res
@@ -396,6 +425,8 @@ class xr3edFlixProvider : MainAPI() {
             }
             val isMovie = media.mediaType == "movie"
             val poster = media.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
+            val year = (media.releaseDate ?: media.firstAirDate)?.take(4)?.toIntOrNull()
+            val score = media.voteAverage?.let { Score.from10(it) }
             if (isMovie) {
                 newMovieSearchResponse(
                     name = title,
@@ -403,6 +434,9 @@ class xr3edFlixProvider : MainAPI() {
                     type = TvType.Movie
                 ) {
                     this.posterUrl = poster
+                    this.year = year
+                    this.score = score
+                    this.quality = SearchQuality.HD
                 }
             } else {
                 newTvSeriesSearchResponse(
@@ -411,6 +445,9 @@ class xr3edFlixProvider : MainAPI() {
                     type = TvType.TvSeries
                 ) {
                     this.posterUrl = poster
+                    this.year = year
+                    this.score = score
+                    this.quality = SearchQuality.HD
                 }
             }
         } ?: emptyList()
@@ -436,7 +473,8 @@ class xr3edFlixProvider : MainAPI() {
         val id = parts[1]
 
         if (type == "movie") {
-            val detailUrlId = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits"
+            val appendParams = "credits,videos,recommendations,release_dates,images"
+            val detailUrlId = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=id&append_to_response=$appendParams&include_image_language=en,null&include_video_language=en,null,id"
             val resId = parsedGet<TMDBDetailResponse>(detailUrlId)
 
             val needsEnglishFallback = resId?.let {
@@ -445,7 +483,7 @@ class xr3edFlixProvider : MainAPI() {
             } ?: false
 
             val res = if (resId?.title.isNullOrEmpty() || needsEnglishFallback) {
-                val detailUrlEn = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits"
+                val detailUrlEn = "$TMDB_API_BASE/movie/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=$appendParams&include_image_language=en,null&include_video_language=en,null,id"
                 parsedGet<TMDBDetailResponse>(detailUrlEn) ?: resId
             } else resId
             res ?: return null
@@ -457,7 +495,39 @@ class xr3edFlixProvider : MainAPI() {
 
             val poster = res.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             val backdrop = res.backdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" }
-            val actors = res.credits?.cast?.take(10)?.mapNotNull { cast ->
+            val logo = res.images?.logos?.firstOrNull { !it.filePath.isNullOrBlank() }?.filePath?.let { "https://image.tmdb.org/t/p/w500$it" }
+            var trailer = res.videos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && it.official == true && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                ?: res.videos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                ?: res.videos?.results?.firstOrNull { it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+
+            if (trailer == null) {
+                val fallbackVideos = parsedGet<TMDBVideos>("$TMDB_API_BASE/movie/$id/videos?api_key=${getTmdbKey()}")
+                trailer = fallbackVideos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && it.official == true && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                    ?: fallbackVideos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                    ?: fallbackVideos?.results?.firstOrNull { it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+            }
+
+            val tags = res.genres?.mapNotNull { it.name } ?: emptyList()
+            val score = res.voteAverage?.let { Score.from10(it) }
+
+            val cert = res.releaseDates?.results?.firstOrNull { it.iso3166_1 == "ID" }?.releaseDates?.firstOrNull { !it.certification.isNullOrBlank() }?.certification
+                ?: res.releaseDates?.results?.firstOrNull { it.iso3166_1 == "US" }?.releaseDates?.firstOrNull { !it.certification.isNullOrBlank() }?.certification
+
+            val recs = res.recommendations?.results?.mapNotNull { rec ->
+                val recId = rec.id ?: return@mapNotNull null
+                val recTitle = rec.title ?: rec.name ?: return@mapNotNull null
+                val recPoster = rec.posterPath?.let { "https://image.tmdb.org/t/p/w342$it" }
+                val recYear = (rec.releaseDate ?: rec.firstAirDate)?.take(4)?.toIntOrNull()
+                val recScore = rec.voteAverage?.let { Score.from10(it) }
+                newMovieSearchResponse(recTitle, "https://lynk.id/xr3ed#movie::$recId", TvType.Movie) {
+                    this.posterUrl = recPoster
+                    this.year = recYear
+                    this.score = recScore
+                    this.quality = SearchQuality.HD
+                }
+            } ?: emptyList()
+
+            val actors = res.credits?.cast?.take(15)?.mapNotNull { cast ->
                 if (cast.name != null) ActorData(
                     actor = Actor(
                         name = cast.name,
@@ -478,12 +548,24 @@ class xr3edFlixProvider : MainAPI() {
             ) {
                 this.posterUrl = poster
                 this.backgroundPosterUrl = backdrop
+                this.logoUrl = logo
                 this.plot = plot
                 this.year = res.releaseDate?.take(4)?.toIntOrNull()
+                this.duration = res.runtime
+                this.tags = tags
+                this.score = score
+                this.contentRating = cert
                 this.actors = actors
+                this.recommendations = recs
+                trailer?.let { addTrailer(it) }
+                addTMDbId(id)
+                if (imdbId.isNotBlank()) {
+                    addImdbId(imdbId)
+                }
             }
         } else {
-            val detailUrlId = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=id&append_to_response=credits,external_ids"
+            val appendParams = "credits,videos,recommendations,content_ratings,images,external_ids"
+            val detailUrlId = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=id&append_to_response=$appendParams&include_image_language=en,null&include_video_language=en,null,id"
             val resId = parsedGet<TMDBDetailResponse>(detailUrlId)
 
             val needsEnglishFallback = resId?.let {
@@ -492,7 +574,7 @@ class xr3edFlixProvider : MainAPI() {
             } ?: false
 
             val res = if (resId?.name.isNullOrEmpty() || needsEnglishFallback) {
-                val detailUrlEn = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=credits,external_ids"
+                val detailUrlEn = "$TMDB_API_BASE/tv/$id?api_key=${getTmdbKey()}&language=en-US&append_to_response=$appendParams&include_image_language=en,null&include_video_language=en,null,id"
                 parsedGet<TMDBDetailResponse>(detailUrlEn) ?: resId
             } else resId
             res ?: return null
@@ -504,7 +586,39 @@ class xr3edFlixProvider : MainAPI() {
 
             val poster = res.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" }
             val backdrop = res.backdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" }
-            val actors = res.credits?.cast?.take(10)?.mapNotNull { cast ->
+            val logo = res.images?.logos?.firstOrNull { !it.filePath.isNullOrBlank() }?.filePath?.let { "https://image.tmdb.org/t/p/w500$it" }
+            var trailer = res.videos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && it.official == true && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                ?: res.videos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                ?: res.videos?.results?.firstOrNull { it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+
+            if (trailer == null) {
+                val fallbackVideos = parsedGet<TMDBVideos>("$TMDB_API_BASE/tv/$id/videos?api_key=${getTmdbKey()}")
+                trailer = fallbackVideos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && it.official == true && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                    ?: fallbackVideos?.results?.firstOrNull { it.type == "Trailer" && it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+                    ?: fallbackVideos?.results?.firstOrNull { it.site == "YouTube" && !it.key.isNullOrBlank() }?.key?.let { "https://www.youtube.com/watch?v=$it" }
+            }
+
+            val tags = res.genres?.mapNotNull { it.name } ?: emptyList()
+            val score = res.voteAverage?.let { Score.from10(it) }
+
+            val cert = res.contentRatings?.results?.firstOrNull { it.iso3166_1 == "ID" }?.rating
+                ?: res.contentRatings?.results?.firstOrNull { it.iso3166_1 == "US" }?.rating
+
+            val recs = res.recommendations?.results?.mapNotNull { rec ->
+                val recId = rec.id ?: return@mapNotNull null
+                val recTitle = rec.name ?: rec.title ?: return@mapNotNull null
+                val recPoster = rec.posterPath?.let { "https://image.tmdb.org/t/p/w342$it" }
+                val recYear = (rec.firstAirDate ?: rec.releaseDate)?.take(4)?.toIntOrNull()
+                val recScore = rec.voteAverage?.let { Score.from10(it) }
+                newTvSeriesSearchResponse(recTitle, "https://lynk.id/xr3ed#tv::$recId", TvType.TvSeries) {
+                    this.posterUrl = recPoster
+                    this.year = recYear
+                    this.score = recScore
+                    this.quality = SearchQuality.HD
+                }
+            } ?: emptyList()
+
+            val actors = res.credits?.cast?.take(15)?.mapNotNull { cast ->
                 if (cast.name != null) ActorData(
                     actor = Actor(
                         name = cast.name,
@@ -533,6 +647,10 @@ class xr3edFlixProvider : MainAPI() {
                                 this.episode = ep.episodeNumber
                                 this.season = ep.seasonNumber
                                 this.description = ep.overview
+                                this.posterUrl = ep.stillPath?.let { "https://image.tmdb.org/t/p/w300$it" }
+                                ep.voteAverage?.let { this.score = Score.from10(it) }
+                                this.runTime = ep.runtime
+                                ep.airDate?.let { addDate(it) }
                             }
                         } ?: emptyList()
                     }
@@ -547,8 +665,19 @@ class xr3edFlixProvider : MainAPI() {
             ) {
                 this.posterUrl = poster
                 this.backgroundPosterUrl = backdrop
+                this.logoUrl = logo
                 this.plot = plot
+                this.year = (res.firstAirDate ?: res.releaseDate)?.take(4)?.toIntOrNull()
+                this.tags = tags
+                this.score = score
+                this.contentRating = cert
                 this.actors = actors
+                this.recommendations = recs
+                trailer?.let { addTrailer(it) }
+                addTMDbId(id)
+                if (imdbId.isNotBlank()) {
+                    addImdbId(imdbId)
+                }
             }
         }
     }
@@ -593,7 +722,15 @@ class xr3edFlixProvider : MainAPI() {
         }
 
         val wrappedCallback = { link: ExtractorLink ->
-            if (addedUrls.add(link.url)) {
+            val isDeadOrWarning = link.name.contains("streamcash", ignoreCase = true) ||
+                    link.url.contains("streamcash", ignoreCase = true) ||
+                    link.url.contains("cdn.streamcash.to", ignoreCase = true) ||
+                    link.url.contains("macdn.aoneroom.com/other/") ||
+                    link.url.contains("b164fbfb4347792950bdfbfb563d39d9") ||
+                    link.url.contains("movieboxdownload", ignoreCase = true) ||
+                    (link.url.contains("update", ignoreCase = true) && link.url.contains(".mp4", ignoreCase = true))
+
+            if (!isDeadOrWarning && addedUrls.add(link.url)) {
                 foundAny = true
                 val updatedLink = if (link.quality == Qualities.Unknown.value || link.quality == 0) {
                     val inferredQuality = when {
@@ -726,7 +863,10 @@ class xr3edFlixProvider : MainAPI() {
         @JsonProperty("media_type") val mediaType: String? = null,
         @JsonProperty("original_title") val originalTitle: String? = null,
         @JsonProperty("original_name") val originalName: String? = null,
-        @JsonProperty("original_language") val originalLanguage: String? = null
+        @JsonProperty("original_language") val originalLanguage: String? = null,
+        @JsonProperty("release_date") val releaseDate: String? = null,
+        @JsonProperty("first_air_date") val firstAirDate: String? = null,
+        @JsonProperty("vote_average") val voteAverage: Double? = null
     )
 
     data class TMDBCastMember(
@@ -743,6 +883,54 @@ class xr3edFlixProvider : MainAPI() {
         @JsonProperty("imdb_id") val imdbId: String? = null
     )
 
+    data class TMDBGenre(
+        val id: Int? = null,
+        val name: String? = null
+    )
+
+    data class TMDBVideoItem(
+        val id: String? = null,
+        val key: String? = null,
+        val site: String? = null,
+        val type: String? = null,
+        @JsonProperty("official") val official: Boolean? = null
+    )
+
+    data class TMDBVideos(
+        val results: List<TMDBVideoItem>? = null
+    )
+
+    data class TMDBImageItem(
+        @JsonProperty("file_path") val filePath: String? = null,
+        @JsonProperty("iso_639_1") val iso6391: String? = null
+    )
+
+    data class TMDBImages(
+        val logos: List<TMDBImageItem>? = null
+    )
+
+    data class TMDBReleaseDateItem(
+        val certification: String? = null
+    )
+
+    data class TMDBReleaseDateResult(
+        @JsonProperty("iso_3166_1") val iso3166_1: String? = null,
+        @JsonProperty("release_dates") val releaseDates: List<TMDBReleaseDateItem>? = null
+    )
+
+    data class TMDBReleaseDates(
+        val results: List<TMDBReleaseDateResult>? = null
+    )
+
+    data class TMDBContentRatingItem(
+        @JsonProperty("iso_3166_1") val iso3166_1: String? = null,
+        val rating: String? = null
+    )
+
+    data class TMDBContentRatings(
+        val results: List<TMDBContentRatingItem>? = null
+    )
+
     data class TMDBDetailResponse(
         val id: Int? = null,
         val title: String? = null,
@@ -755,6 +943,14 @@ class xr3edFlixProvider : MainAPI() {
         val overview: String? = null,
         @JsonProperty("release_date") val releaseDate: String? = null,
         @JsonProperty("first_air_date") val firstAirDate: String? = null,
+        @JsonProperty("vote_average") val voteAverage: Double? = null,
+        val runtime: Int? = null,
+        val genres: List<TMDBGenre>? = null,
+        val videos: TMDBVideos? = null,
+        val images: TMDBImages? = null,
+        val recommendations: TMDBDiscoverResponse? = null,
+        @JsonProperty("release_dates") val releaseDates: TMDBReleaseDates? = null,
+        @JsonProperty("content_ratings") val contentRatings: TMDBContentRatings? = null,
         val seasons: List<TMDBSeason>? = null,
         val credits: TMDBCredits? = null,
         @JsonProperty("imdb_id") val imdbId: String? = null,
@@ -773,7 +969,11 @@ class xr3edFlixProvider : MainAPI() {
         @JsonProperty("episode_number") val episodeNumber: Int? = null,
         val name: String? = null,
         val overview: String? = null,
-        @JsonProperty("season_number") val seasonNumber: Int? = null
+        @JsonProperty("season_number") val seasonNumber: Int? = null,
+        @JsonProperty("still_path") val stillPath: String? = null,
+        @JsonProperty("vote_average") val voteAverage: Double? = null,
+        @JsonProperty("air_date") val airDate: String? = null,
+        val runtime: Int? = null
     )
 }
 

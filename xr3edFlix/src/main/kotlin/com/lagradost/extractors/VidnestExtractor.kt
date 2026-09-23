@@ -29,6 +29,14 @@ object VidnestExtractor {
         "Origin" to "https://vidnest.fun"
     )
 
+    private fun isWarningVideo(url: String): Boolean {
+        return url.contains("macdn.aoneroom.com/other/") ||
+               url.contains("b164fbfb4347792950bdfbfb563d39d9") ||
+               url.contains("movieboxdownload", ignoreCase = true) ||
+               (url.contains("update", ignoreCase = true) && url.contains(".mp4", ignoreCase = true)) ||
+               url.contains("streamcash", ignoreCase = true)
+    }
+
     fun decrypt(cipherText: String): String {
         val charMap = IntArray(256) { 64 }
         for (i in ALPHABET.indices) {
@@ -106,7 +114,7 @@ object VidnestExtractor {
                                     if (urlNode != null && urlNode.isArray) {
                                         urlNode.forEach { item ->
                                             val link = item.get("link")?.asText() ?: return@forEach
-                                            if (link.isBlank()) return@forEach
+                                            if (link.isBlank() || isWarningVideo(link)) return@forEach
                                             val res = item.get("resolution")?.asText() ?: ""
                                             val typ = item.get("type")?.asText() ?: ""
                                             val lang = item.get("lang")?.asText() ?: ""
@@ -139,7 +147,7 @@ object VidnestExtractor {
                                     if (streamsNode != null && streamsNode.isArray) {
                                         streamsNode.forEach { str ->
                                             val streamUrl = str.get("url")?.asText() ?: return@forEach
-                                            if (streamUrl.isBlank()) return@forEach
+                                            if (streamUrl.isBlank() || isWarningVideo(streamUrl)) return@forEach
                                             val lang = str.get("language")?.asText()
                                             val typ = str.get("type")?.asText() ?: ""
                                             val isPrimeMain = serverName == "Prime" && (lang == "MAIN" || lang.isNullOrEmpty())
