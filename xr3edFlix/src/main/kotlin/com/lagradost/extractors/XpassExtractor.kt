@@ -23,22 +23,25 @@ object XpassExtractor {
 
     suspend fun invoke(
         tmdbId: Int?,
+        imdbId: String? = null,
         season: Int?,
         episode: Int?,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        if (tmdbId == null) return
-        try {
-            val embedUrl = if (season == null || episode == null) {
-                "$BASE_URL/e/movie/$tmdbId"
-            } else {
-                "$BASE_URL/e/tv/$tmdbId/$season/$episode"
-            }
+        if (tmdbId == null && imdbId.isNullOrEmpty()) return
+        val targetIds = listOfNotNull(tmdbId?.toString(), imdbId).distinct()
+        for (id in targetIds) {
+            try {
+                val embedUrl = if (season == null || episode == null) {
+                    "$BASE_URL/e/movie/$id"
+                } else {
+                    "$BASE_URL/e/tv/$id/$season/$episode"
+                }
 
-            val htmlResponse = app.get(embedUrl, headers = headers, timeout = 8)
-            if (htmlResponse.code != 200) return
-            val html = htmlResponse.text
+                val htmlResponse = app.get(embedUrl, headers = headers, timeout = 8)
+                if (htmlResponse.code != 200) continue
+                val html = htmlResponse.text
 
             // Subtitles dari script suburl
             val subUrlMatch = Regex("""var\s+suburl\s*=\s*["']([^"']+)["']""").find(html)?.groupValues?.get(1)
@@ -128,8 +131,9 @@ object XpassExtractor {
                     }
                 }.awaitAll()
             }
-        } catch (e: Exception) {
-            Log.e("XpassExtractor", "Xpass invoke failed", e)
+            } catch (e: Exception) {
+                Log.e("XpassExtractor", "Xpass invoke failed", e)
+            }
         }
     }
 }

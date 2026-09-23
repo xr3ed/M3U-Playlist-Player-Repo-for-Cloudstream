@@ -25,6 +25,7 @@ import com.lagradost.cloudstream3.utils.loadExtractor
 import com.lagradost.cloudstream3.utils.newExtractorLink
 import com.lagradost.extractors.EmbedExtractors
 import com.lagradost.extractors.MovieBoxExtractor
+import com.lagradost.extractors.NxshaExtractor
 import com.lagradost.extractors.VaplayerExtractor
 import com.lagradost.extractors.VidnestExtractor
 import com.lagradost.extractors.XpassExtractor
@@ -777,7 +778,10 @@ class xr3edFlixProvider : MainAPI() {
         coroutineScope {
             val jobs = listOf(
                 async {
-                    XpassExtractor.invoke(tmdbId, seasonNum, episodeNum, subCallback, wrappedCallback)
+                    NxshaExtractor.invoke(tmdbId, imdbId, seasonNum, episodeNum, subCallback, wrappedCallback)
+                },
+                async {
+                    XpassExtractor.invoke(tmdbId, imdbId, seasonNum, episodeNum, subCallback, wrappedCallback)
                 },
                 async {
                     MovieBoxExtractor.invoke(title, seasonNum, episodeNum, subCallback, wrappedCallback)
