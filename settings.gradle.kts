@@ -2,7 +2,12 @@ rootProject.name = "xr3ed"
 
 // This file sets what projects are included. All new projects should get automatically included unless specified in "disabled" variable.
 
-val disabled = listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "xr3edTV")
+val isCI = System.getenv("CI") == "true"
+val disabled = if (isCI) {
+    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "xr3edTV")
+} else {
+    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR")
+}
 
 File(rootDir, ".").eachDir { dir ->
     if (!disabled.contains(dir.name) && File(dir, "build.gradle.kts").exists()) {
