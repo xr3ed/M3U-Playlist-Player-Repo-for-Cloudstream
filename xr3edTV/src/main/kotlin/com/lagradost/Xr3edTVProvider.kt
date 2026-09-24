@@ -134,42 +134,143 @@ class Xr3edTVProvider : MainAPI() {
         )
 
         val CLEAN_CHANNEL_LOGOS = mapOf(
-            "rcti" to "https://www.visionplus.id/images/repository/581/581-LOGO-l.png",
-            "mnc tv" to "https://www.visionplus.id/images/repository/582/582-LOGO-l.png",
-            "gtv" to "https://www.visionplus.id/images/repository/583/583-LOGO-l.png",
-            "sctv" to "https://www.visionplus.id/images/repository/584/584-LOGO-l.png",
+            // MNC Group
+            "rcti" to "https://www.visionplus.id/images/repository/580/580-LOGO-l.png",
+            "mnc tv" to "https://www.visionplus.id/images/repository/581/581-LOGO-l.png",
+            "mnctv" to "https://www.visionplus.id/images/repository/581/581-LOGO-l.png",
+            "gtv" to "https://www.visionplus.id/images/repository/582/582-LOGO-l.png",
+            "global tv" to "https://www.visionplus.id/images/repository/582/582-LOGO-l.png",
+            "inews" to "https://www.visionplus.id/images/repository/583/583-LOGO-l.png",
+            "inews tv" to "https://www.visionplus.id/images/repository/583/583-LOGO-l.png",
+            "sindonews tv" to "https://www.visionplus.id/images/repository/584/584-LOGO-l.png",
+            "sindonews" to "https://www.visionplus.id/images/repository/584/584-LOGO-l.png",
+            "celebrities tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Celebrities_TV_%282023%29.svg/960px-Celebrities_TV_%282023%29.svg.png",
+
+            // Emtek Group
+            "sctv" to "https://www.visionplus.id/images/repository/062/569062-LOGO-l.png",
+            "indosiar" to "https://www.visionplus.id/images/repository/066/569066-LOGO-l.png",
+            "moji" to "https://www.visionplus.id/images/repository/070/569070-LOGO-l.png",
+            "mentari tv" to "https://www.visionplus.id/images/repository/074/569074-LOGO-l.png",
+            "mentari" to "https://www.visionplus.id/images/repository/074/569074-LOGO-l.png",
+
+            // Trans Media
             "trans tv" to "https://www.visionplus.id/images/repository/585/585-LOGO-l.png",
             "trans 7" to "https://www.visionplus.id/images/repository/586/586-LOGO-l.png",
-            "indosiar" to "https://www.visionplus.id/images/repository/587/587-LOGO-l.png",
-            "inews" to "https://www.visionplus.id/images/repository/588/588-LOGO-l.png",
-            "antv" to "https://www.visionplus.id/images/repository/589/589-LOGO-l.png",
-            "rtv" to "https://www.visionplus.id/images/repository/590/590-LOGO-l.png",
-            "btv" to "https://www.visionplus.id/images/repository/591/591-LOGO-l.png",
-            "daai tv" to "https://www.visionplus.id/images/repository/595/595-LOGO-l.png",
-            "imc" to "https://www.visionplus.id/images/repository/598/598-LOGO-l.png",
-            "bali tv" to "https://www.visionplus.id/images/repository/599/599-LOGO-l.png",
-            "bandung tv" to "https://www.visionplus.id/images/repository/600/600-LOGO-m.png",
-            "idx channel" to "https://www.visionplus.id/images/repository/603/603-LOGO-m.png",
-            "sindonews tv" to "https://www.visionplus.id/images/repository/605/605-LOGO-l.png",
-            "metro tv" to "https://www.visionplus.id/images/repository/606/606-LOGO-l.png",
-            "kompas tv" to "https://www.visionplus.id/images/repository/607/607-LOGO-l.png",
-            "jtv" to "https://www.visionplus.id/images/repository/856/856-LOGO-m.png",
-            "bioskop indonesia" to "https://www.visionplus.id/images/repository/585/585-LOGO-l.png",
-            "tvone" to "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/TvOne_2023.svg/960px-TvOne_2023.svg.png",
-            "tvri nasional" to "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/TVRILogo2019.svg/960px-TVRILogo2019.svg.png",
-            "tvri world" to "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/TVRILogo2019.svg/960px-TVRILogo2019.svg.png",
-            "nusantara tv" to "https://i.imgur.com/viun5hj.png",
-            "garuda tv" to "https://i.imgur.com/sXsAcZ3.png",
-            "cnn indonesia" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/CNN_Indonesia_logo_%282023%29.svg/960px-CNN_Indonesia_logo_%282023%29.svg.png",
-            "cnbc indonesia" to "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/CNBC_Indonesia_2025.svg/960px-CNBC_Indonesia_2025.svg.png",
-            "tv9 nu" to "https://upload.wikimedia.org/wikipedia/id/e/ed/TV9_Nusantara.png",
-            "antara tv" to "https://upload.wikimedia.org/wikipedia/commons/a/a0/Antara.png",
+            "trans7" to "https://www.visionplus.id/images/repository/586/586-LOGO-l.png",
+            "cnn indonesia" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/CNN_Indonesia_logo_%282023%29.svg/960px-CNN_Indonesia_logo_%282023%29.svg.png?v=png1",
+            "cnn" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/CNN_Indonesia_logo_%282023%29.svg/960px-CNN_Indonesia_logo_%282023%29.svg.png?v=png1",
+            "cnbc indonesia" to "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Logo_of_CNBC_Indonesia.svg/960px-Logo_of_CNBC_Indonesia.svg.png?v=png1",
+            "cnbc" to "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Logo_of_CNBC_Indonesia.svg/960px-Logo_of_CNBC_Indonesia.svg.png?v=png1",
+
+            // Viva Group
+            "antv" to "https://www.visionplus.id/images/repository/587/587-LOGO-l.png",
+            "tvone" to "https://www.visionplus.id/images/repository/589/589-LOGO-l.png",
+            "tv one" to "https://www.visionplus.id/images/repository/589/589-LOGO-l.png",
+            "vtv" to "https://upload.wikimedia.org/wikipedia/commons/7/7b/VTV_Indonesia_red.png",
+
+            // National & News TV
+            "kompas tv" to "https://www.visionplus.id/images/repository/590/590-LOGO-l.png",
+            "kompastv" to "https://www.visionplus.id/images/repository/590/590-LOGO-l.png",
+            "metro tv" to "https://www.visionplus.id/images/repository/591/591-LOGO-l.png",
+            "metrotv" to "https://www.visionplus.id/images/repository/591/591-LOGO-l.png",
             "bn channel" to "https://upload.wikimedia.org/wikipedia/commons/5/54/BN_Channel.png",
-            "jawa pos tv" to "https://upload.wikimedia.org/wikipedia/id/3/3b/Logo_Jawapos_TV.png",
-            "vtv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/VTV_Indonesia_2023.svg/960px-VTV_Indonesia_2023.svg.png",
-            "moji" to "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Moji_logo_2022.svg/960px-Moji_logo_2022.svg.png",
-            "mentari tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Mentari_TV_logo.svg/960px-Mentari_TV_logo.svg.png",
-            "sea today" to "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/SEA_Today_logo.svg/960px-SEA_Today_logo.svg.png"
+            "rtv" to "https://www.visionplus.id/images/repository/588/588-LOGO-l.png",
+            "tvri nasional" to "https://www.visionplus.id/images/repository/593/593-LOGO-l.png",
+            "tvri world" to "https://www.visionplus.id/images/repository/593/593-LOGO-l.png",
+            "tvri" to "https://www.visionplus.id/images/repository/593/593-LOGO-l.png",
+            "sea today" to "https://www.visionplus.id/images/repository/594/594-LOGO-l.png",
+            "btv" to "https://www.visionplus.id/images/repository/357/273357-LOGO-l.png",
+            "garuda tv" to "https://i.imgur.com/sXsAcZ3.png",
+            "garuda" to "https://i.imgur.com/sXsAcZ3.png",
+            "nusantara tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Nusantara_TV_Logo.svg/960px-Nusantara_TV_Logo.svg.png?v=png1",
+            "nusantara" to "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Nusantara_TV_Logo.svg/960px-Nusantara_TV_Logo.svg.png?v=png1",
+            "antara tv" to "https://upload.wikimedia.org/wikipedia/commons/e/ed/Logo_Antara_TV.png",
+            "antara" to "https://upload.wikimedia.org/wikipedia/commons/e/ed/Logo_Antara_TV.png",
+            "sin po tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Sin_Po_TV.svg/960px-Sin_Po_TV.svg.png?v=png1",
+            "jawa pos" to "https://upload.wikimedia.org/wikipedia/commons/8/84/Jawa_Pos_TV_%282024%29.png",
+            "jawa pos tv" to "https://upload.wikimedia.org/wikipedia/commons/8/84/Jawa_Pos_TV_%282024%29.png",
+
+            // Regional & Community TV
+            "banten tv" to "https://i.imgur.com/tbtF40p.png",
+            "bantentv" to "https://i.imgur.com/tbtF40p.png",
+            "banjar tv" to "https://i.imgur.com/TA76a10.png",
+            "banjartv" to "https://i.imgur.com/TA76a10.png",
+            "bms tv" to "https://i.imgur.com/snMxng5.png",
+            "bmstv" to "https://i.imgur.com/snMxng5.png",
+            "banyumas tv" to "https://i.imgur.com/snMxng5.png",
+            "banyumastv" to "https://i.imgur.com/snMxng5.png",
+            "celebes tv" to "https://upload.wikimedia.org/wikipedia/commons/6/65/Celebes_tv.png",
+            "caruban tv" to "https://upload.wikimedia.org/wikipedia/commons/3/3a/CarubanTV%28Low-res%29.png",
+            "carubantv" to "https://upload.wikimedia.org/wikipedia/commons/3/3a/CarubanTV%28Low-res%29.png",
+            "brtv" to "https://upload.wikimedia.org/wikipedia/id/1/1f/Logo_BRTV.png",
+            "daai tv" to "https://www.visionplus.id/images/repository/595/595-LOGO-l.png",
+            "daai" to "https://www.visionplus.id/images/repository/595/595-LOGO-l.png",
+            "jak tv" to "https://www.visionplus.id/images/repository/598/598-LOGO-l.png",
+            "bali tv" to "https://www.visionplus.id/images/repository/599/599-LOGO-l.png",
+            "bandung tv" to "https://www.visionplus.id/images/repository/600/600-LOGO-l.png",
+            "tv9 nu" to "https://www.visionplus.id/images/repository/601/601-LOGO-l.png",
+            "tv9" to "https://www.visionplus.id/images/repository/601/601-LOGO-l.png",
+            "tvmu" to "https://www.visionplus.id/images/repository/603/603-LOGO-l.png",
+            "tv mu" to "https://www.visionplus.id/images/repository/603/603-LOGO-l.png",
+            "jtv" to "https://www.visionplus.id/images/repository/856/856-LOGO-m.png",
+            "tv tabalong" to "https://upload.wikimedia.org/wikipedia/id/d/d9/Logo_TV_Tabalong.png",
+            "sakti tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Logo-saktitv.png/960px-Logo-saktitv.png",
+
+            // Entertainment / Movies Channels (VisionPlus Premium)
+            "thrill" to "https://www.visionplus.id/images/repository/609/609-LOGO-l.png",
+            "hits movies" to "https://www.visionplus.id/images/repository/610/610-LOGO-l.png",
+            "cinemaworld" to "https://www.visionplus.id/images/repository/611/611-LOGO-l.png",
+            "celestial classic movies" to "https://www.visionplus.id/images/repository/612/612-LOGO-l.png",
+            "celestial movies" to "https://www.visionplus.id/images/repository/613/613-LOGO-l.png",
+            "tvn movies" to "https://www.visionplus.id/images/repository/614/614-LOGO-l.png",
+            "zee bioskop" to "https://www.visionplus.id/images/repository/616/616-LOGO-l.png",
+            "kix" to "https://www.visionplus.id/images/repository/617/617-LOGO-l.png",
+            "animax" to "https://www.visionplus.id/images/repository/619/619-LOGO-l.png",
+            "dreamworks" to "https://www.visionplus.id/images/repository/620/620-LOGO-l.png",
+            "cartoon network" to "https://www.visionplus.id/images/repository/621/621-LOGO-l.png",
+            "nickelodeon" to "https://www.visionplus.id/images/repository/622/622-LOGO-l.png",
+            "nick jr" to "https://www.visionplus.id/images/repository/623/623-LOGO-l.png",
+            "warner tv" to "https://www.visionplus.id/images/repository/626/626-LOGO-l.png",
+            "axn" to "https://www.visionplus.id/images/repository/627/627-LOGO-l.png",
+            "hits" to "https://www.visionplus.id/images/repository/628/628-LOGO-l.png",
+            "one" to "https://www.visionplus.id/images/repository/629/629-LOGO-l.png",
+            "astha tv" to "https://upload.wikimedia.org/wikipedia/id/1/1e/Logo_Astha_TV.png",
+            "astha" to "https://upload.wikimedia.org/wikipedia/id/1/1e/Logo_Astha_TV.png",
+            "citra drama" to "https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Citra_Drama.png",
+            "bioskop indonesia" to "https://www.visionplus.id/images/repository/616/616-LOGO-l.png",
+            "id bioskop indonesia" to "https://www.visionplus.id/images/repository/616/616-LOGO-l.png",
+            "entertainment" to "https://www.visionplus.id/images/repository/628/628-LOGO-l.png",
+            "dmi" to "https://upload.wikimedia.org/wikipedia/id/6/68/Logo_DMI.png",
+            "dmi tv" to "https://upload.wikimedia.org/wikipedia/id/6/68/Logo_DMI.png",
+            "food travel" to "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/assets/clean_logos/foodtravel.png",
+            "hanacaraka" to "https://upload.wikimedia.org/wikipedia/id/7/72/Logo_Hanacaraka_TV.png",
+            "hanacaraka tv" to "https://upload.wikimedia.org/wikipedia/id/7/72/Logo_Hanacaraka_TV.png",
+            "asian food network" to "https://upload.wikimedia.org/wikipedia/commons/e/e9/Asian_Food_Network.svg",
+            "afn" to "https://upload.wikimedia.org/wikipedia/commons/e/e9/Asian_Food_Network.svg",
+            "balikpapan tv" to "https://upload.wikimedia.org/wikipedia/commons/1/1e/New_Logo_Balikpapan_Televisi.png",
+            "balikpapan" to "https://upload.wikimedia.org/wikipedia/commons/1/1e/New_Logo_Balikpapan_Televisi.png",
+            "citra dangdut" to "https://upload.wikimedia.org/wikipedia/commons/5/53/Logo_Citra_Dangdut.png",
+            "dunia lain" to "https://upload.wikimedia.org/wikipedia/commons/c/c3/Logo_Dunia_Lain.svg",
+            "ent" to "https://www.visionplus.id/images/repository/628/628-LOGO-l.png",
+            "fashion tv" to "https://upload.wikimedia.org/wikipedia/commons/7/7a/Fashion_TV_logo.svg",
+            "fashiontv" to "https://upload.wikimedia.org/wikipedia/commons/7/7a/Fashion_TV_logo.svg",
+            "gem" to "https://upload.wikimedia.org/wikipedia/commons/d/d8/Gem_TV_logo_2020.png",
+            "imc" to "https://1.bp.blogspot.com/-MD7NLrr2qzQ/YJZOlT00-DI/AAAAAAAAEsM/t0-uyjVuPMsc0-PDGaWXextkXqmIYKslQCLcBGAsYHQ/s720/imc-pos.png",
+            "insert" to "https://upload.wikimedia.org/wikipedia/commons/9/9d/Insert_logo.svg",
+            "izzah tv" to "https://izzah.tv/img/logo_izzah.png",
+            "izzah" to "https://izzah.tv/img/logo_izzah.png",
+            "jambi tv" to "https://upload.wikimedia.org/wikipedia/id/1/15/Jambi_TV.png",
+            "jambi" to "https://upload.wikimedia.org/wikipedia/id/1/15/Jambi_TV.png",
+            "jogja istimewa tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Jogja_Istimewa_Wordmark.svg/512px-Jogja_Istimewa_Wordmark.svg.png",
+            "jitv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Jogja_Istimewa_Wordmark.svg/512px-Jogja_Istimewa_Wordmark.svg.png",
+            "lifestyle fashion" to "https://upload.wikimedia.org/wikipedia/commons/1/11/MNCLifestyleFashion.png",
+            "lifestyle" to "https://upload.wikimedia.org/wikipedia/commons/1/11/MNCLifestyleFashion.png",
+            "madu tv" to "https://upload.wikimedia.org/wikipedia/id/a/a8/Logo_Madu_TV_2021.png",
+            "madu" to "https://upload.wikimedia.org/wikipedia/id/a/a8/Logo_Madu_TV_2021.png",
+            "mnc news" to "https://upload.wikimedia.org/wikipedia/commons/0/03/MNC_News.png",
+            "mncnews" to "https://upload.wikimedia.org/wikipedia/commons/0/03/MNC_News.png",
+            "mqtv" to "https://upload.wikimedia.org/wikipedia/id/8/81/Logo_MQTV.png",
+            "mq tv" to "https://upload.wikimedia.org/wikipedia/id/8/81/Logo_MQTV.png"
         )
     }
 
@@ -184,7 +285,6 @@ class Xr3edTVProvider : MainAPI() {
         MainPageData("🇮🇩 TV NASIONAL 24/7", "🇮🇩 NASIONAL", horizontalImages = true),
         MainPageData("🔥 Hot Event", "HOT_EVENT", horizontalImages = true),
         MainPageData("🔴 Live", "LIVE_REGULAR", horizontalImages = true),
-        MainPageData("⏳ Upcoming Event", "UPCOMING_EVENT", horizontalImages = true),
         MainPageData("⚽ TV SPORTS 24/7", "⚽ SPORTS", horizontalImages = true),
         MainPageData("🎬 MOVIES & ENTERTAINMENT", "🎬 MOVIES & ENTERTAINMENT"),
         MainPageData("👫 KIDS & ANIME", "👫 KIDS & ANIME"),
@@ -307,10 +407,10 @@ class Xr3edTVProvider : MainAPI() {
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=40&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=50&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=40&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=50&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
@@ -346,14 +446,17 @@ class Xr3edTVProvider : MainAPI() {
 
     private fun getChannelPoster(ch: ChannelItem): String {
         val posterBase = BuildConfig.XR3EDTV_POSTER_BASE.trim()
-        val logoUrl = CLEAN_CHANNEL_LOGOS[ch.title.lowercase()] ?: ch.logo
+        val lowerName = ch.title.lowercase().trim()
+        val logoUrl = CLEAN_CHANNEL_LOGOS[lowerName]
+            ?: CLEAN_CHANNEL_LOGOS.entries.sortedByDescending { it.key.length }.firstOrNull { lowerName.contains(it.key) }?.value
+            ?: ch.logo
         if (posterBase.isEmpty()) return logoUrl.ifEmpty { "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png" }
         val workerBase = posterBase.substringBeforeLast("/")
         val encodedName = Uri.encode(ch.title)
         val encodedLogo = Uri.encode(logoUrl)
         val encodedGroup = Uri.encode(ch.group)
         val serversCount = ch.servers.size
-        return "$workerBase/channel.png?v=42&name=$encodedName&logo=$encodedLogo&group=$encodedGroup&servers=$serversCount"
+        return "$workerBase/channel.png?v=78&name=$encodedName&logo=$encodedLogo&group=$encodedGroup&servers=$serversCount"
     }
 
     // ─── Match & Sport Detection ──────────────────────────────────────────────
@@ -1214,15 +1317,19 @@ class Xr3edTVProvider : MainAPI() {
     // ─── Engine 4: DekoTech Realtime 24/7 Channels ────────────────────────────
 
     private fun pickBestLogo(channelTitle: String, currentLogo: String, existingLogo: String = ""): String {
-        val lowerName = channelTitle.lowercase()
+        val lowerName = channelTitle.lowercase().trim()
         val mapped = CLEAN_CHANNEL_LOGOS[lowerName]
+            ?: CLEAN_CHANNEL_LOGOS.entries.sortedByDescending { it.key.length }.firstOrNull { lowerName.contains(it.key) }?.value
         if (mapped != null) return mapped
 
         fun isOpaqueTile(url: String): Boolean {
             return url.contains("indihometv.com") ||
                    url.contains("1.bp.blogspot.com") ||
                    url.contains("blogger.googleusercontent.com") ||
-                   url.contains("i3ns.net")
+                   url.contains("i3ns.net") ||
+                   url.contains("iili.io") ||
+                   url.contains("i.ytimg.com") ||
+                   url.contains("encrypted-tbn")
         }
 
         if (existingLogo.isNotEmpty() && !isOpaqueTile(existingLogo)) {

@@ -1,8 +1,8 @@
 {
   "pluginClassName": "com.sad25kag.gudangfilmxr.GudangFilmXRPlugin",
   "displayName": "GudangFilmXR",
-  "description": "GudangFilmXR provider modifikasi oleh XR3ED dengan resolver player Morencius dan Turbovidhls.",
+  "description": "GudangFilmXR provider modifikasi oleh XR3ED dengan resolver Playsobat dan AsiaStream.",
   "author": "sad25kag, XR3ED",
-  "version": 21,
+  "version": 26,
   "tvTypes": ["Movie", "TvSeries", "AsianDrama"]
 }
