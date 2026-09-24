@@ -48,8 +48,9 @@ class GudangFilmXR : MainAPI() {
 
     override val mainPage = mainPageOf(
         "$mainUrl/" to "Update Terbaru",
-        "$mainUrl/series-update/" to "Series Terbaru",
         "$mainUrl/movie/" to "Movie",
+        "$mainUrl/series-update/" to "Series",
+        "$mainUrl/drama-korea/" to "Drama Korea",
         "$mainUrl/drama-china/" to "Drama China",
         "$mainUrl/west-series/" to "West Series",
         "$mainUrl/film-action-terbaru/" to "Action",

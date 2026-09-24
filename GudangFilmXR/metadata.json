@@ -3,6 +3,6 @@
   "displayName": "GudangFilmXR",
   "description": "GudangFilmXR provider modifikasi oleh XR3ED dengan resolver Playsobat dan AsiaStream.",
   "author": "sad25kag, XR3ED",
-  "version": 27,
+  "version": 28,
   "tvTypes": ["Movie", "TvSeries", "AsianDrama"]
 }
