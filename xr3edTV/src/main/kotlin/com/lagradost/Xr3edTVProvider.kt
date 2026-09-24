@@ -521,9 +521,14 @@ class Xr3edTVProvider : MainAPI() {
                         for ((idx, s) in serversNode.withIndex()) {
                             var url = s.get("url")?.asText()?.trim() ?: continue
                             if (url.isEmpty() || url.startsWith("javascript:")) continue
+                            var referer = "https://playerkltratv.pages.dev/"
                             if (url.contains("liveUrl=")) {
                                 try {
                                     val parsed = Uri.parse(url)
+                                    val host = parsed.host
+                                    if (!host.isNullOrEmpty()) {
+                                        referer = "${parsed.scheme ?: "https"}://$host/"
+                                    }
                                     val liveParam = parsed.getQueryParameter("liveUrl")
                                     if (!liveParam.isNullOrEmpty()) {
                                         url = liveParam
@@ -539,7 +544,7 @@ class Xr3edTVProvider : MainAPI() {
                                     kodiProps["inputstream.adaptive.license_key"] = k
                                 }
                             }
-                            serverList.add(StreamServer(sName, url, mapOf("User-Agent" to DESKTOP_UA), kodiProps))
+                            serverList.add(StreamServer(sName, url, mapOf("User-Agent" to DESKTOP_UA, "Referer" to referer), kodiProps))
                         }
                     }
                     if (serverList.isNotEmpty()) {
@@ -1680,21 +1685,27 @@ class Xr3edTVProvider : MainAPI() {
         var streamUrl = srv.url
         if (streamUrl.isEmpty()) return@withContext
 
+        val headers = srv.headers.toMutableMap()
+        if (!headers.containsKey("User-Agent")) {
+            headers["User-Agent"] = DESKTOP_UA
+        }
+
         // 0. Unpack direct liveUrl if wrapped in web player query param
         if (streamUrl.contains("liveUrl=")) {
             try {
                 val parsed = Uri.parse(streamUrl)
+                val host = parsed.host
+                if (!host.isNullOrEmpty() && !headers.containsKey("Referer")) {
+                    headers["Referer"] = "${parsed.scheme ?: "https"}://$host/"
+                }
                 val liveParam = parsed.getQueryParameter("liveUrl")
                 if (!liveParam.isNullOrEmpty()) {
                     streamUrl = liveParam
                 }
             } catch (_: Exception) {}
         }
+        streamUrl = streamUrl.replace(" ", "%20")
 
-        val headers = srv.headers.toMutableMap()
-        if (!headers.containsKey("User-Agent")) {
-            headers["User-Agent"] = DESKTOP_UA
-        }
         val kodiProps = srv.kodiProps.toMutableMap()
 
         // 0b. Resolve Kltra embedindia.st embed URL to ondemand worker stream
@@ -1801,11 +1812,11 @@ class Xr3edTVProvider : MainAPI() {
 
         // 3. Inject precise Referer required by CDN anti-hotlink
         val lower = streamUrl.lowercase()
-        if (!headers.containsKey("Referer")) {
+        if (!headers.containsKey("Referer") || headers["Referer"].isNullOrEmpty()) {
             when {
                 lower.contains("messi.damitv.st") -> headers["Referer"] = "https://messi.damitv.st/"
-                lower.contains("vivo200.com") || lower.contains("online909.com") -> headers["Referer"] = "https://player.online909.com/"
-                lower.contains("elutuna.workers.dev") || lower.contains("resolve-web") -> headers["Referer"] = "https://playerkltratv.pages.dev/"
+                lower.contains("vivo") || lower.contains("online909.com") -> headers["Referer"] = "https://player.online909.com/"
+                lower.contains("elutuna.workers.dev") || lower.contains("resolve-web") || lower.contains("playkltratv") -> headers["Referer"] = "https://playerkltratv.pages.dev/"
                 lower.contains("stream-cdn-box") || lower.contains("damitv") || lower.contains("ondemand.st") -> headers["Referer"] = "https://damitv.st/"
                 lower.contains("weibisai") || lower.contains("smtcdns") -> headers["Referer"] = "https://play.cbalive.weibisai.com/"
                 lower.contains("quickscoreboardz") || lower.contains("100ycdn") -> headers["Referer"] = "https://live1.quickscoreboardz.com/"
