@@ -47,9 +47,9 @@ class GudangFilmXR : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/movie/" to "Movie Terbaru",
+        "$mainUrl/" to "Update Terbaru",
         "$mainUrl/series-update/" to "Series Terbaru",
-        "$mainUrl/drama-korea/" to "Drama Korea",
+        "$mainUrl/movie/" to "Movie",
         "$mainUrl/drama-china/" to "Drama China",
         "$mainUrl/west-series/" to "West Series",
         "$mainUrl/film-action-terbaru/" to "Action",
@@ -184,8 +184,9 @@ class GudangFilmXR : MainAPI() {
 
     override suspend fun load(url: String): LoadResponse? {
         val (finalPageUrl, document) = requestPage(url) ?: return null
-        val rawTitle = document.selectFirst("h1.entry-title, .entry-title, meta[property='og:title']")
-            ?.let { if (it.tagName().equals("meta", true)) it.attr("content") else it.text() }
+        val rawTitle = document.selectFirst(".gmr-movie-data h1.entry-title, h1.entry-title, h1")?.text()
+            ?: document.selectFirst(".entry-title")?.text()
+            ?: document.selectFirst("meta[property='og:title']")?.attr("content")
         val titleYear = rawTitle?.let { Regex("""\b(19|20\d{2})\b""").find(it)?.value?.toIntOrNull() }
         val pageYear = document.selectFirst(".gmr-moviedata time[itemprop='dateCreated']")?.text()
             ?.let { Regex("""(19|20\d{2})""").find(it)?.value?.toIntOrNull() }
@@ -621,32 +622,40 @@ class GudangFilmXR : MainAPI() {
             .replace(Regex("(?i)\\s*[-–|/]\\s*gudangfilm.*$"), "")
             .replace(Regex("(?i)\\s*[-–|/]\\s*sohib21.*$"), "")
             .replace(Regex("(?i)\\s*[-–|/]\\s*huazai6.*$"), "")
-            .replace(Regex("(?i)\\s*[-–|/]\\s*lk21.*$"), "")
-            .replace(Regex("(?i)\\s*[-–|/]\\s*layarkaca21.*$"), "")
+            .replace(Regex("(?i)\\s*\\b(?:lk21|layarkaca21|rebahin|bioskopkeren|indoxxi)\\b.*$"), "")
             .replace(Regex("(?i)\\s*[-–|/]?\\s*(?:sub(?:title)?\\s*indo(?:nesia)?|indo\\s*sub).*$"), "")
             .replace(Regex("(?i)\\s*[-–|/]?\\s*download\\s+.*$"), "")
 
         // Hapus tahun di dalam kurung: e.g. (2024), (2025), (2026), (NaN)
-        t = t.replace(Regex("""\s*\((?:19|20)\d{2}|NaN\)\s*"""), " ")
+        t = t.replace(Regex("""\s*\(\s*(?:(?:19|20)\d{2}|NaN)\s*\)"""), " ")
         // Hapus tahun 4 digit di ujung jika tanpa kurung: e.g. "Movie Name 2025"
         t = t.replace(Regex("""\s+\b(?:19|20)\d{2}\b\s*$"""), " ")
 
         // Hapus Season / Series / S di ujung:
         // e.g. "Season 1", "Season 01", "Series", "S1", "S01", "Season 1 Part 2"
-        t = t.replace(Regex("""(?i)\s*[-–:]?\s*\bseason\s*\d+(?:\s*part\s*\d+)?\b\s*$"""), " ")
+        t = t.replace(Regex("""(?i)\s*[-–:]?\s*\b(?:season|series|s)\s*\d+(?:\s*part\s*\d+)?\b\s*$"""), " ")
         t = t.replace(Regex("""(?i)\s*[-–:]?\s*\bseries\b\s*$"""), " ")
-        t = t.replace(Regex("""(?i)\s*[-–:]?\s*\bS\d{1,2}\b\s*$"""), " ")
+        t = t.replace(Regex("""(?i)\s*[-–:]?\s*\bepisode\s*\d+\b\s*$"""), " ")
 
-        // Bersihkan tanda baca gantung di akhir (seperti :, -, –, /)
-        t = t.replace(Regex("""[\s\-–:/,|]+$"""), "")
+        // Bersihkan tanda baca gantung di akhir (seperti :, -, –, /, (, ))
+        t = t.replace(Regex("""[\s\-–:/,|()]+$"""), "")
         return t.replace(Regex("\\s+"), " ").trim()
     }
 
-    private fun cleanDescription(value: String?): String = cleanText(value)
-        .replace(Regex("(?i)^nonton\\s+"), "")
-        .replace(Regex("(?i)\\s*[-–|]\\s*gudang\\s*film\\s*$"), "")
-        .replace(Regex("\\s+"), " ")
-        .trim()
+    private fun cleanDescription(value: String?): String? {
+        val text = cleanText(value)
+        if (text.isBlank() ||
+            text.contains("Website streaming film", ignoreCase = true) ||
+            text.contains("Hanya di GUDANGFILM", ignoreCase = true) ||
+            text.contains("Gabung bersama grup Telegram", ignoreCase = true) ||
+            text.contains("Tips Nonton Film", ignoreCase = true)
+        ) return null
+        return text
+            .replace(Regex("(?i)^nonton\\s+"), "")
+            .replace(Regex("(?i)\\s*[-–|]\\s*gudang\\s*film\\s*$"), "")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+    }
 
     private fun cleanText(value: String?): String = value.orEmpty()
         .replace("\u00a0", " ")

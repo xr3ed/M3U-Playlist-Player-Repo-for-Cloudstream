@@ -1,6 +1,6 @@
 import java.util.Properties as JavaProperties
 
-version = 33
+version = 34
 
 android {
     namespace = "com.sad25kag.gudangfilmxr"
