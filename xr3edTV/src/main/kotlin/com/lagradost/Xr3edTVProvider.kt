@@ -307,21 +307,14 @@ class Xr3edTVProvider : MainAPI() {
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=34&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=40&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=34&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=40&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
     private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
-        // 1. Jika event single memiliki logo/thumbnail resmi yang valid, gunakan langsung tanpa beban worker
-        if (m.logo.isNotEmpty() && (m.logo.startsWith("http://") || m.logo.startsWith("https://")) && !m.logo.contains("xr3edtv-poster") && !m.logo.contains("q5qo.com")) {
-            if (m.homeTeam.isEmpty() || m.awayTeam.isEmpty()) {
-                return m.logo
-            }
-        }
-
         return if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
             // VS layout — ada kedua tim
             buildMatchPosterUrl(
@@ -337,7 +330,7 @@ class Xr3edTVProvider : MainAPI() {
                 aspect = aspect
             )
         } else {
-            // Single event layout — motorsport, UFC, tennis event dll
+            // Single event layout — motorsport, UFC, tennis event dll (100% seragam DAZN Editorial)
             buildMatchPosterUrl(
                 title = m.title,
                 logo = m.logo,
