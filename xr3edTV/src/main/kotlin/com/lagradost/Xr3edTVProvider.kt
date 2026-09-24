@@ -185,7 +185,7 @@ class Xr3edTVProvider : MainAPI() {
         MainPageData("🔥 Hot Event", "HOT_EVENT", horizontalImages = true),
         MainPageData("🔴 Live", "LIVE_REGULAR", horizontalImages = true),
         MainPageData("⏳ Upcoming Event", "UPCOMING_EVENT", horizontalImages = true),
-        MainPageData("⚽ TV SPORTS 24/7", "⚽ SPORTS"),
+        MainPageData("⚽ TV SPORTS 24/7", "⚽ SPORTS", horizontalImages = true),
         MainPageData("🎬 MOVIES & ENTERTAINMENT", "🎬 MOVIES & ENTERTAINMENT"),
         MainPageData("👫 KIDS & ANIME", "👫 KIDS & ANIME"),
         MainPageData("🏆 LIGA CHAMPION", "🏆 LIGA CHAMPION"),
@@ -1463,6 +1463,31 @@ class Xr3edTVProvider : MainAPI() {
         return categoryMap
     }
 
+    private fun isLinearSportsChannel(m: Xr3edMatch): Boolean {
+        val cleanId = m.id.removePrefix("od_").removePrefix("kltra_").removePrefix("bs_")
+        val lowerTitle = m.title.lowercase()
+        val lowerLeague = m.league.lowercase()
+
+        if (cleanId.startsWith("247-")) return true
+        if (cleanId == "nfl-network" || cleanId.startsWith("sky-sports-") || cleanId == "rally-tv") return true
+        if (lowerTitle.contains("24/7") || lowerLeague.contains("24/7")) return true
+        if (lowerTitle.contains("rally tv")) return true
+
+        // Linear TV channels that have no opposing teams
+        val hasNoTeams = m.homeTeam.isEmpty() && m.awayTeam.isEmpty()
+        if (hasNoTeams) {
+            val isKnownLinear = lowerTitle.contains("network") ||
+                                lowerTitle.contains("fox footy") ||
+                                lowerTitle.contains("fox cricket") ||
+                                lowerTitle.contains("fox league") ||
+                                lowerTitle.contains("sky sports") ||
+                                lowerTitle.contains("willow")
+            if (isKnownLinear) return true
+        }
+
+        return false
+    }
+
     private fun isTennisCourtFeed(m: Xr3edMatch): Boolean {
         val t = m.title.lowercase()
         val isCourtName = t.contains("court") || t.contains("stadium") || t.contains("grandstand") || 
@@ -1526,26 +1551,24 @@ class Xr3edTVProvider : MainAPI() {
         val reqTag = (if (request.data.isNotBlank()) request.data else request.name).trim()
         val lowerTag = "${request.data} ${request.name}".lowercase()
 
-        // 1. Hot Event — Hanya Match LIVE yang Hot (Tidak Ada Upcoming)
+        // 1. Hot Event — Hanya Match LIVE yang Hot (Tidak Ada Upcoming dan Bukan Channel Linear 24/7)
         if (lowerTag.contains("hot")) {
             val matches = fetchMergedMatches()
             val hotMatches = matches.filter { m ->
                 m.isLive && m.isHot &&
-                !m.title.contains("Rally TV", ignoreCase = true) &&
-                !m.title.contains("24/7", ignoreCase = true)
+                !isLinearSportsChannel(m)
             }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
             val directCards = buildMatchCards(hotMatches, "landscape")
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
         }
 
-        // 1b. Live Olahraga — Semua live non-hot (diurutkan dari waktu mulai terbaru/terdekat)
+        // 1b. Live Olahraga — Semua live non-hot (diurutkan dari waktu mulai terbaru/terdekat, tanpa channel linear)
         if (reqTag == "LIVE_REGULAR" || lowerTag.contains("live regular") || lowerTag.contains("live olahraga")) {
             val matches = fetchMergedMatches()
             val liveRegular = matches.filter { m ->
                 m.isLive &&
-                !m.title.contains("Rally TV", ignoreCase = true) &&
-                !m.title.contains("24/7", ignoreCase = true)
+                !isLinearSportsChannel(m)
             }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
             val directCards = buildMatchCards(liveRegular, "landscape")
@@ -1571,7 +1594,7 @@ class Xr3edTVProvider : MainAPI() {
         // 3. Upcoming Event (Jadwal Pertandingan Berikutnya — kick-off paling dekat di posisi pertama)
         if (lowerTag.contains("upcoming")) {
             val matches = fetchMergedMatches()
-            val upcomingMatches = matches.filter { it.isUpcoming }
+            val upcomingMatches = matches.filter { it.isUpcoming && !isLinearSportsChannel(it) }
                 .sortedBy { if (it.timestampMs > 0) it.timestampMs else Long.MAX_VALUE }
             val directCards = buildMatchCards(upcomingMatches, "landscape")
             return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
@@ -1595,9 +1618,9 @@ class Xr3edTVProvider : MainAPI() {
         if (sportMatch != null) {
             val matches = fetchMergedMatches()
             val categoryMatches = (if (sportMatch.key == "all") {
-                matches.filter { !it.title.contains("Rally TV", ignoreCase = true) }
+                matches.filter { !isLinearSportsChannel(it) }
             } else {
-                matches.filter { it.sportCategory.equals(sportMatch.key, ignoreCase = true) }
+                matches.filter { it.sportCategory.equals(sportMatch.key, ignoreCase = true) && !isLinearSportsChannel(it) }
             }).sortedWith(
                 compareBy<Xr3edMatch> { !it.isLive }
                     .thenBy { m ->
@@ -1614,13 +1637,41 @@ class Xr3edTVProvider : MainAPI() {
 
         // 6. 24/7 Linear TV Channels
         val channelsMap = fetch247Channels()
-        val channels = channelsMap[reqTag]
+        var channels = (channelsMap[reqTag]
             ?: channelsMap.entries.find { 
                 it.key.contains(reqTag, ignoreCase = true) || 
                 reqTag.contains(it.key, ignoreCase = true) ||
                 lowerTag.contains(it.key.lowercase().replace(Regex("[^a-z0-9]"), ""))
             }?.value
-            ?: emptyList()
+            ?: emptyList()).toMutableList()
+
+        if (reqTag == "⚽ SPORTS" || lowerTag.contains("sports")) {
+            val allMatches = fetchMergedMatches()
+            val linearSports = allMatches.filter { isLinearSportsChannel(it) }
+            for (lm in linearSports) {
+                val isCartoon = lm.title.contains("south park", ignoreCase = true) || 
+                                lm.title.contains("family guy", ignoreCase = true) || 
+                                lm.title.contains("simpsons", ignoreCase = true) || 
+                                lm.title.contains("spongebob", ignoreCase = true) || 
+                                lm.title.contains("cows", ignoreCase = true)
+                if (isCartoon) continue
+
+                val existing = channels.find { it.title.equals(lm.title, ignoreCase = true) }
+                if (existing != null) {
+                    val updatedServers = existing.servers + lm.servers
+                    val idx = channels.indexOf(existing)
+                    channels[idx] = existing.copy(servers = updatedServers)
+                } else {
+                    channels.add(ChannelItem(
+                        id = "ch_${lm.id}",
+                        title = lm.title,
+                        logo = lm.logo,
+                        group = "⚽ SPORTS",
+                        servers = lm.servers
+                    ))
+                }
+            }
+        }
 
         val searchResponses = channels.map { ch ->
             val payloadJson = mapper.writeValueAsString(ch)
