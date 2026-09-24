@@ -268,10 +268,10 @@ class Xr3edTVProvider : MainAPI() {
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=26&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=32&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=26&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=32&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
@@ -283,19 +283,13 @@ class Xr3edTVProvider : MainAPI() {
             }
         }
 
-        // Icon q5qo.com (80x80 palette mini) merusak decoder Skia Android jika di-embed dalam SVG.
-        // Dengan mengosongkannya, worker otomatis merender banner vektor profesional seperti Zion & Mansi Singh.
-        val cleanHomeLogo = if (m.homeLogo.contains("q5qo.com")) "" else m.homeLogo
-        val cleanAwayLogo = if (m.awayLogo.contains("q5qo.com")) "" else m.awayLogo
-        val cleanLogo = if (m.logo.contains("q5qo.com")) "" else m.logo
-
         return if (m.homeTeam.isNotEmpty() && m.awayTeam.isNotEmpty()) {
             // VS layout — ada kedua tim
             buildMatchPosterUrl(
                 home = m.homeTeam,
                 away = m.awayTeam,
-                homeLogo = cleanHomeLogo,
-                awayLogo = cleanAwayLogo,
+                homeLogo = m.homeLogo,
+                awayLogo = m.awayLogo,
                 league = m.league,
                 sport = m.sportCategory,
                 isLive = m.isLive,
@@ -307,7 +301,7 @@ class Xr3edTVProvider : MainAPI() {
             // Single event layout — motorsport, UFC, tennis event dll
             buildMatchPosterUrl(
                 title = m.title,
-                logo = cleanLogo,
+                logo = m.logo,
                 league = m.league,
                 sport = m.sportCategory,
                 isLive = m.isLive,
