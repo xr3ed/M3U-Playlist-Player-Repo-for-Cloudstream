@@ -539,13 +539,14 @@ class xr3edFlixProvider : MainAPI() {
             }
 
             val imdbId = res.imdbId ?: ""
-            val cleanTitle = (res.originalTitle ?: res.title ?: "Unknown").replace("::", ":")
+            val cleanTitle = (res.title ?: "Unknown").replace("::", ":")
+            val origTitle = (res.originalTitle ?: "").replace("::", ":")
 
             return newMovieLoadResponse(
                 name = res.title ?: "Unknown",
                 url = "https://lynk.id/xr3ed#movie::$id",
                 type = TvType.Movie,
-                dataUrl = "movie::$id::$imdbId::$cleanTitle"
+                dataUrl = "movie::$id::$imdbId::$cleanTitle::$origTitle"
             ) {
                 this.posterUrl = poster
                 this.backgroundPosterUrl = backdrop
@@ -630,7 +631,8 @@ class xr3edFlixProvider : MainAPI() {
             }
 
             val imdbId = res.imdbId ?: res.externalIds?.imdbId ?: ""
-            val cleanTitle = (res.originalName ?: res.name ?: "Unknown").replace("::", ":")
+            val cleanTitle = (res.name ?: "Unknown").replace("::", ":")
+            val origTitle = (res.originalName ?: "").replace("::", ":")
 
             val episodes = coroutineScope {
                 res.seasons?.map { season ->
@@ -643,7 +645,7 @@ class xr3edFlixProvider : MainAPI() {
                             parsedGet<TMDBSeasonDetailResponse>(seasonUrlEn) ?: seasonResId
                         } else seasonResId
                         seasonRes?.episodes?.map { ep ->
-                            newEpisode("tv::$id::${ep.seasonNumber}::${ep.episodeNumber}::$imdbId::$cleanTitle") {
+                            newEpisode("tv::$id::${ep.seasonNumber}::${ep.episodeNumber}::$imdbId::$cleanTitle::$origTitle") {
                                 this.name = ep.name ?: "Episode ${ep.episodeNumber}"
                                 this.episode = ep.episodeNumber
                                 this.season = ep.seasonNumber
@@ -705,6 +707,7 @@ class xr3edFlixProvider : MainAPI() {
         val tmdbId = id.toIntOrNull()
         val imdbId = if (type == "movie") parts.getOrNull(2) else parts.getOrNull(4)
         val title = if (type == "movie") parts.getOrNull(3) else parts.getOrNull(5)
+        val altTitle = if (type == "movie") parts.getOrNull(4) else parts.getOrNull(6)
         val seasonNum = if (type == "movie") null else parts.getOrNull(2)?.toIntOrNull()
         val episodeNum = if (type == "movie") null else parts.getOrNull(3)?.toIntOrNull()
 
@@ -782,7 +785,7 @@ class xr3edFlixProvider : MainAPI() {
                     XpassExtractor.invoke(tmdbId, imdbId, seasonNum, episodeNum, subCallback, wrappedCallback)
                 },
                 async {
-                    MovieBoxExtractor.invoke(title, seasonNum, episodeNum, subCallback, wrappedCallback)
+                    MovieBoxExtractor.invoke(title, seasonNum, episodeNum, subCallback, wrappedCallback, altTitle)
                 },
                 async {
                     VaplayerExtractor.invoke(tmdbId, seasonNum, episodeNum, subCallback, wrappedCallback)

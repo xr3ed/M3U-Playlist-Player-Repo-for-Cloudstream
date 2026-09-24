@@ -80,6 +80,44 @@ object MovieBoxExtractor {
         return "$timestamp|2|$signature"
     }
 
+    private fun extractDashUrlFromSignCookie(cookie: String?): String? {
+        if (cookie.isNullOrEmpty()) return null
+
+        // 1. CloudFront-Policy format (Fast CloudFront CDN - cdnThrottleLevel 0)
+        if (cookie.contains("CloudFront-Policy=")) {
+            try {
+                val b64 = cookie.substringAfter("CloudFront-Policy=").substringBefore(";")
+                val padded = b64 + "=".repeat((4 - b64.length % 4) % 4)
+                val json = String(Base64.decode(padded, Base64.DEFAULT), Charsets.UTF_8)
+                val matcher = Regex(""""Resource"\s*:\s*"([^"]+)"""").find(json)
+                val resource = matcher?.groupValues?.get(1)?.trimEnd('*')
+                if (!resource.isNullOrEmpty()) {
+                    val cleanBase = if (resource.endsWith("/")) resource else "$resource/"
+                    return "${cleanBase}index.mpd"
+                }
+            } catch (e: Exception) {
+                Log.e("MovieBoxExtractor", "Error parsing CloudFront-Policy", e)
+            }
+        }
+
+        // 2. urlprefix format (Akamai / Edge-Cache)
+        if (cookie.contains("urlprefix=")) {
+            try {
+                val b64 = cookie.substringAfter("urlprefix=").substringBefore(":").substringBefore(";")
+                val padded = b64 + "=".repeat((4 - b64.length % 4) % 4)
+                val prefix = String(Base64.decode(padded, Base64.DEFAULT), Charsets.UTF_8)
+                if (prefix.startsWith("http")) {
+                    val cleanBase = if (prefix.endsWith("/")) prefix else "$prefix/"
+                    return "${cleanBase}index.mpd"
+                }
+            } catch (e: Exception) {
+                Log.e("MovieBoxExtractor", "Error parsing urlprefix", e)
+            }
+        }
+
+        return null
+    }
+
     private fun getHeaders(url: String, body: String? = null, method: String = "GET"): Map<String, String> {
         val timestamp = System.currentTimeMillis()
         val xClientToken = generateXClientToken(timestamp)
@@ -91,10 +129,12 @@ object MovieBoxExtractor {
             "content-type" to contentType,
             "x-client-token" to xClientToken,
             "x-tr-signature" to xTrSignature,
-            "x-client-info" to """{"package_name":"com.community.oneroom","version_name":"3.0.13.0325.03","version_code":50020088,"os":"android","os_version":"13","install_ch":"ps","device_id":"da2b99c821e6ea023e4be55b54d5f7d8","install_store":"ps","gaid":"1b2212c1-dadf-43c3-a0c8-bd6ce48ae22d","brand":"Windows","model":"Subsystem for Android(TM)","system_language":"en","net":"NETWORK_WIFI","region":"US","timezone":"Asia/Calcutta","sp_code":"","X-Play-Mode":"1","X-Idle-Data":"1","X-Family-Mode":"0","X-Content-Mode":"0"}""",
+            "x-client-info" to """{"package_name":"com.community.oneroom","version_name":"3.0.13.0325.03","version_code":50020088,"os":"android","os_version":"13","install_ch":"ps","device_id":"da2b99c821e6ea023e4be55b54d5f7d8","install_store":"ps","gaid":"1b2212c1-dadf-43c3-a0c8-bd6ce48ae22d","brand":"Windows","model":"Subsystem for Android(TM)","system_language":"en","net":"NETWORK_WIFI","region":"US","timezone":"Asia/Calcutta","sp_code":"","X-Play-Mode":"2","X-Idle-Data":"1","X-Family-Mode":"0","X-Content-Mode":"0"}""",
             "x-client-status" to "0",
             "Authorization" to "Bearer $MOVIEBOX_BEARER_TOKEN",
-            "x-user" to MOVIEBOX_BEARER_TOKEN
+            "x-user" to MOVIEBOX_BEARER_TOKEN,
+            "X-Play-Mode" to "2",
+            "X-M-Version" to "3.0.13.0325.03"
         )
     }
 
@@ -105,6 +145,8 @@ object MovieBoxExtractor {
 
         if (cleanName == cleanTitle) return true
         if (cleanName == "${cleanTitle}original") return true
+        if (cleanName.startsWith(cleanTitle) && (cleanName.removePrefix(cleanTitle).matches(Regex("""^(1080p?|720p?|480p?|2160p?|4k|hd|fhd|sd|original|part\d+)?$""")))) return true
+        if (cleanTitle.startsWith(cleanName) && (cleanTitle.removePrefix(cleanName).matches(Regex("""^(1080p?|720p?|480p?|2160p?|4k|hd|fhd|sd|original|part\d+)?$""")))) return true
 
         val nonOriginalDubs = listOf("tamil", "hindi", "telugu", "malayalam", "kannada")
         if (nonOriginalDubs.any { name.contains("[$it]", ignoreCase = true) } && !nonOriginalDubs.any { title.contains(it, ignoreCase = true) }) {
@@ -128,33 +170,45 @@ object MovieBoxExtractor {
         season: Int? = 0,
         episode: Int? = 0,
         subCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
+        callback: (ExtractorLink) -> Unit,
+        altTitle: String? = null
     ): Boolean {
         try {
-            if (title.isNullOrBlank()) return false
+            if (title.isNullOrBlank() && altTitle.isNullOrBlank()) return false
 
-            val searchUrl = "https://api.inmoviebox.com/wefeed-mobile-bff/subject-api/search/v2"
-            val jsonBody = """{"page":1,"perPage":10,"keyword":"$title"}"""
-            val searchHeaders = getHeaders(searchUrl, jsonBody, "POST")
-
-            val requestBody = jsonBody.toRequestBody("application/json".toMediaTypeOrNull())
-            val response = app.post(searchUrl, headers = searchHeaders, requestBody = requestBody)
-            if (response.code != 200) return false
-
-            val root = mapper.readTree(response.text)
-            val results = root["data"]?.get("results") ?: return false
-
+            val searchQueries = listOfNotNull(title?.trim()?.takeIf { it.isNotEmpty() }, altTitle?.trim()?.takeIf { it.isNotEmpty() }).distinct()
             var bestSubjectId: String? = null
-            for (result in results) {
-                val subjects = result["subjects"] ?: continue
-                for (subject in subjects) {
-                    val name = subject["title"]?.asText() ?: continue
-                    val subjectId = subject["subjectId"]?.asText() ?: continue
-                    val type = subject["subjectType"]?.asInt() ?: 0
-                    if (isTitleMatch(name, title) && (type == 1 || type == 2)) {
-                        bestSubjectId = subjectId
-                        break
+
+            for (query in searchQueries) {
+                val searchUrl = "https://api.inmoviebox.com/wefeed-mobile-bff/subject-api/search/v2"
+                val jsonBody = """{"page":1,"perPage":10,"keyword":"$query"}"""
+                val searchHeaders = getHeaders(searchUrl, jsonBody, "POST")
+
+                val requestBody = jsonBody.toRequestBody("application/json".toMediaTypeOrNull())
+                val response = app.post(searchUrl, headers = searchHeaders, requestBody = requestBody)
+                if (response.code != 200) continue
+
+                val root = mapper.readTree(response.text)
+                val results = root["data"]?.get("results") ?: continue
+
+                for (result in results) {
+                    val subjects = result["subjects"] ?: continue
+                    for (subject in subjects) {
+                        val name = subject["title"]?.asText() ?: continue
+                        val postTitle = subject["postTitle"]?.asText() ?: ""
+                        val subjectId = subject["subjectId"]?.asText() ?: continue
+                        val type = subject["subjectType"]?.asInt() ?: 0
+
+                        val matches = (type == 1 || type == 2) && (
+                            searchQueries.any { isTitleMatch(name, it) || (postTitle.isNotEmpty() && isTitleMatch(postTitle, it)) }
+                        )
+
+                        if (matches) {
+                            bestSubjectId = subjectId
+                            break
+                        }
                     }
+                    if (bestSubjectId != null) break
                 }
                 if (bestSubjectId != null) break
             }
@@ -194,12 +248,12 @@ object MovieBoxExtractor {
             }
 
             for ((currentSubjectId, languageName) in subjectList) {
-                val allowedLangs = listOf("original", "indonesia")
+                val allowedLangs = listOf("original", "indonesia", "english")
                 val isAllowed = allowedLangs.any { languageName.contains(it, ignoreCase = true) }
                 if (!isAllowed) continue
 
                 var playInfoStreamsFound = false
-                val playHosts = listOf("https://api4.aoneroom.com", "https://api.inmoviebox.com")
+                val playHosts = listOf("https://api6.aoneroom.com", "https://api.inmoviebox.com", "https://api4.aoneroom.com")
 
                 for (host in playHosts) {
                     try {
@@ -215,7 +269,33 @@ object MovieBoxExtractor {
                                     val streamUrl = stream["url"]?.asText() ?: continue
                                     if (streamUrl.isBlank()) continue
 
-                                    // Filter video update / trailer / warning video
+                                    val signCookie = stream["signCookie"]?.asText()
+                                    val sourceName = "MovieBox ($languageName)"
+
+                                    // 1. Ekstrak stream DASH 1080p asli dari signCookie (CloudFront / Akamai)
+                                    val dashUrl = extractDashUrlFromSignCookie(signCookie)
+                                    if (!dashUrl.isNullOrEmpty()) {
+                                        val dashHeaders = mapOf(
+                                            "User-Agent" to "com.community.oneroom/50020088 (Linux; U; Android 13; en_US; Subsystem for Android(TM); Build/TQ3A.230901.001; Cronet/145.0.7582.0)",
+                                            "Cookie" to (signCookie ?: ""),
+                                            "Accept" to "*/*"
+                                        )
+                                        callback.invoke(
+                                            newExtractorLink(
+                                                source = sourceName,
+                                                name = sourceName,
+                                                url = dashUrl,
+                                                type = ExtractorLinkType.DASH
+                                            ) {
+                                                this.quality = Qualities.P1080.value
+                                                this.headers = dashHeaders
+                                            }
+                                        )
+                                        foundLinks = true
+                                        playInfoStreamsFound = true
+                                    }
+
+                                    // Filter video update / trailer / warning video untuk direct MP4
                                     val isWarningVideo = streamUrl.contains("macdn.aoneroom.com/other/") ||
                                             streamUrl.contains("b164fbfb4347792950bdfbfb563d39d9") ||
                                             streamUrl.contains("movieboxdownload", ignoreCase = true) ||
@@ -234,61 +314,15 @@ object MovieBoxExtractor {
                                         else -> Qualities.Unknown.value
                                     }
 
-                                    val signCookie = stream["signCookie"]?.asText()
-                                    val sourceName = "MovieBox ($languageName)"
+                                    val displayName = sourceName
+                                    val linkType = if (streamUrl.contains(".m3u8", ignoreCase = true)) ExtractorLinkType.M3U8 else INFER_TYPE
 
-                                    // 1. Ekstrak stream DASH 1080p asli dari signCookie jika tersedia
-                                    if (!signCookie.isNullOrEmpty() && signCookie.contains("urlprefix=")) {
-                                        try {
-                                            val prefixB64 = signCookie.substringAfter("urlprefix=").substringBefore(":")
-                                            val paddedB64 = prefixB64 + "=".repeat((4 - prefixB64.length % 4) % 4)
-                                            val decodedPrefix = String(
-                                                Base64.decode(paddedB64, Base64.DEFAULT),
-                                                Charsets.UTF_8
-                                            )
-                                            if (decodedPrefix.startsWith("http")) {
-                                                val dashUrl = if (decodedPrefix.endsWith("/")) "${decodedPrefix}index.mpd" else "$decodedPrefix/index.mpd"
-                                                val dashHeaders = getHeaders(dashUrl, null, "GET").toMutableMap()
-                                                dashHeaders["Cookie"] = signCookie
-                                                callback.invoke(
-                                                    newExtractorLink(
-                                                        source = sourceName,
-                                                        name = "$sourceName 1080p (DASH)".trim(),
-                                                        url = dashUrl,
-                                                        type = ExtractorLinkType.DASH
-                                                    ) {
-                                                        this.quality = Qualities.P1080.value
-                                                        this.headers = dashHeaders
-                                                    }
-                                                )
-                                                foundLinks = true
-                                                playInfoStreamsFound = true
-                                            }
-                                        } catch (e: Exception) {
-                                            Log.e("MovieBoxExtractor", "Error extracting DASH MPD from signCookie", e)
-                                        }
-                                    }
-
-                                    // 2. Tambahkan streamUrl
                                     val streamHeaders = mutableMapOf(
                                         "User-Agent" to "com.community.oneroom/50020088 (Linux; U; Android 13; en_US; Subsystem for Android(TM); Build/TQ3A.230901.001; Cronet/145.0.7582.0)"
                                     )
-                                        if (!signCookie.isNullOrEmpty()) {
-                                            streamHeaders["Cookie"] = signCookie
-                                        }
-
-                                        val resolutionSuffix = when (quality) {
-                                            Qualities.P2160.value -> "2160p"
-                                            Qualities.P1440.value -> "1440p"
-                                            Qualities.P1080.value -> "1080p"
-                                            Qualities.P720.value -> "720p"
-                                            Qualities.P480.value -> "480p"
-                                            Qualities.P360.value -> "360p"
-                                            else -> ""
-                                        }
-
-                                        val displayName = "$sourceName $resolutionSuffix".trim()
-                                        val linkType = if (streamUrl.contains(".m3u8", ignoreCase = true)) ExtractorLinkType.M3U8 else INFER_TYPE
+                                    if (!signCookie.isNullOrEmpty()) {
+                                        streamHeaders["Cookie"] = signCookie
+                                    }
 
                                         callback.invoke(
                                             newExtractorLink(
@@ -382,20 +416,19 @@ object MovieBoxExtractor {
                                     }
 
                                     val sourceName = "MovieBox ($languageName)"
-                                    val resolutionSuffix = if (resolution != null) "${resolution}p" else ""
-                                    val displayName = "$sourceName $resolutionSuffix".trim()
                                     val linkType = if (streamUrl.contains(".m3u8", ignoreCase = true)) ExtractorLinkType.M3U8 else INFER_TYPE
 
                                     callback.invoke(
                                         newExtractorLink(
                                             source = sourceName,
-                                            name = displayName,
+                                            name = sourceName,
                                             url = streamUrl,
                                             type = linkType
                                         ) {
                                             this.quality = quality
                                             this.referer = "https://videodownloader.site/"
                                             this.headers = mapOf(
+                                                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
                                                 "Referer" to "https://videodownloader.site/",
                                                 "Origin" to "https://videodownloader.site"
                                             )
