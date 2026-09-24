@@ -132,6 +132,45 @@ class Xr3edTVProvider : MainAPI() {
             SportHub("rugby", "Rugbi & American Football", "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=800&q=80", "AFL, NFL, CFL, Rugby Championship, NRL"),
             SportHub("hockey", "Hoki Es (Hockey)", "https://images.unsplash.com/photo-1580748141549-71748dbe0bdc?w=800&q=80", "NHL, IIHF World Championship")
         )
+
+        val CLEAN_CHANNEL_LOGOS = mapOf(
+            "rcti" to "https://www.visionplus.id/images/repository/581/581-LOGO-l.png",
+            "mnc tv" to "https://www.visionplus.id/images/repository/582/582-LOGO-l.png",
+            "gtv" to "https://www.visionplus.id/images/repository/583/583-LOGO-l.png",
+            "sctv" to "https://www.visionplus.id/images/repository/584/584-LOGO-l.png",
+            "trans tv" to "https://www.visionplus.id/images/repository/585/585-LOGO-l.png",
+            "trans 7" to "https://www.visionplus.id/images/repository/586/586-LOGO-l.png",
+            "indosiar" to "https://www.visionplus.id/images/repository/587/587-LOGO-l.png",
+            "inews" to "https://www.visionplus.id/images/repository/588/588-LOGO-l.png",
+            "antv" to "https://www.visionplus.id/images/repository/589/589-LOGO-l.png",
+            "rtv" to "https://www.visionplus.id/images/repository/590/590-LOGO-l.png",
+            "btv" to "https://www.visionplus.id/images/repository/591/591-LOGO-l.png",
+            "daai tv" to "https://www.visionplus.id/images/repository/595/595-LOGO-l.png",
+            "imc" to "https://www.visionplus.id/images/repository/598/598-LOGO-l.png",
+            "bali tv" to "https://www.visionplus.id/images/repository/599/599-LOGO-l.png",
+            "bandung tv" to "https://www.visionplus.id/images/repository/600/600-LOGO-m.png",
+            "idx channel" to "https://www.visionplus.id/images/repository/603/603-LOGO-m.png",
+            "sindonews tv" to "https://www.visionplus.id/images/repository/605/605-LOGO-l.png",
+            "metro tv" to "https://www.visionplus.id/images/repository/606/606-LOGO-l.png",
+            "kompas tv" to "https://www.visionplus.id/images/repository/607/607-LOGO-l.png",
+            "jtv" to "https://www.visionplus.id/images/repository/856/856-LOGO-m.png",
+            "bioskop indonesia" to "https://www.visionplus.id/images/repository/585/585-LOGO-l.png",
+            "tvone" to "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/TvOne_2023.svg/960px-TvOne_2023.svg.png",
+            "tvri nasional" to "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/TVRILogo2019.svg/960px-TVRILogo2019.svg.png",
+            "tvri world" to "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/TVRILogo2019.svg/960px-TVRILogo2019.svg.png",
+            "nusantara tv" to "https://i.imgur.com/viun5hj.png",
+            "garuda tv" to "https://i.imgur.com/sXsAcZ3.png",
+            "cnn indonesia" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/CNN_Indonesia_logo_%282023%29.svg/960px-CNN_Indonesia_logo_%282023%29.svg.png",
+            "cnbc indonesia" to "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/CNBC_Indonesia_2025.svg/960px-CNBC_Indonesia_2025.svg.png",
+            "tv9 nu" to "https://upload.wikimedia.org/wikipedia/id/e/ed/TV9_Nusantara.png",
+            "antara tv" to "https://upload.wikimedia.org/wikipedia/commons/a/a0/Antara.png",
+            "bn channel" to "https://upload.wikimedia.org/wikipedia/commons/5/54/BN_Channel.png",
+            "jawa pos tv" to "https://upload.wikimedia.org/wikipedia/id/3/3b/Logo_Jawapos_TV.png",
+            "vtv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/VTV_Indonesia_2023.svg/960px-VTV_Indonesia_2023.svg.png",
+            "moji" to "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Moji_logo_2022.svg/960px-Moji_logo_2022.svg.png",
+            "mentari tv" to "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Mentari_TV_logo.svg/960px-Mentari_TV_logo.svg.png",
+            "sea today" to "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/SEA_Today_logo.svg/960px-SEA_Today_logo.svg.png"
+        )
     }
 
     override var mainUrl = "https://lynk.id/xr3ed"
@@ -314,13 +353,14 @@ class Xr3edTVProvider : MainAPI() {
 
     private fun getChannelPoster(ch: ChannelItem): String {
         val posterBase = BuildConfig.XR3EDTV_POSTER_BASE.trim()
-        if (posterBase.isEmpty()) return ch.logo.ifEmpty { "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png" }
+        val logoUrl = CLEAN_CHANNEL_LOGOS[ch.title.lowercase()] ?: ch.logo
+        if (posterBase.isEmpty()) return logoUrl.ifEmpty { "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png" }
         val workerBase = posterBase.substringBeforeLast("/")
         val encodedName = Uri.encode(ch.title)
-        val encodedLogo = Uri.encode(ch.logo)
+        val encodedLogo = Uri.encode(logoUrl)
         val encodedGroup = Uri.encode(ch.group)
         val serversCount = ch.servers.size
-        return "$workerBase/channel.png?name=$encodedName&logo=$encodedLogo&group=$encodedGroup&servers=$serversCount"
+        return "$workerBase/channel.png?v=42&name=$encodedName&logo=$encodedLogo&group=$encodedGroup&servers=$serversCount"
     }
 
     // ─── Match & Sport Detection ──────────────────────────────────────────────
@@ -1180,8 +1220,30 @@ class Xr3edTVProvider : MainAPI() {
 
     // ─── Engine 4: DekoTech Realtime 24/7 Channels ────────────────────────────
 
-    private fun normalizeChannelInfo(raw: String): Pair<String, String> {
+    private fun pickBestLogo(channelTitle: String, currentLogo: String, existingLogo: String = ""): String {
+        val lowerName = channelTitle.lowercase()
+        val mapped = CLEAN_CHANNEL_LOGOS[lowerName]
+        if (mapped != null) return mapped
+
+        fun isOpaqueTile(url: String): Boolean {
+            return url.contains("indihometv.com") ||
+                   url.contains("1.bp.blogspot.com") ||
+                   url.contains("blogger.googleusercontent.com") ||
+                   url.contains("i3ns.net")
+        }
+
+        if (existingLogo.isNotEmpty() && !isOpaqueTile(existingLogo)) {
+            return existingLogo
+        }
+        if (currentLogo.isNotEmpty() && !isOpaqueTile(currentLogo)) {
+            return currentLogo
+        }
+        return existingLogo.ifEmpty { currentLogo }
+    }
+
+    private fun normalizeChannelInfo(raw: String): Triple<String, String, String> {
         var text = raw.trim()
+
         var srvTag = ""
         val srvMatch = Regex("""\s*-\s*(Server\s*\d+(?:\s*\([^)]*\))?)""", RegexOption.IGNORE_CASE).find(text)
         if (srvMatch != null) {
@@ -1189,27 +1251,38 @@ class Xr3edTVProvider : MainAPI() {
             text = text.removeRange(srvMatch.range).trim()
         }
 
-        var feedTag = ""
+        var originTag = ""
         val feedMatch = Regex("""\s+(channelfeed|channel\s*feed|denstv|dens|vip|ott\s*nav|feed|backup)\b""", RegexOption.IGNORE_CASE).find(text)
         if (feedMatch != null) {
-            feedTag = feedMatch.groupValues[1].trim()
+            val feedWord = feedMatch.groupValues[1].trim()
+            originTag = when {
+                feedWord.contains("dens", ignoreCase = true) -> "DensTV"
+                feedWord.contains("vip", ignoreCase = true) -> "VIP"
+                feedWord.contains("feed", ignoreCase = true) -> "Channel Feed"
+                else -> feedWord
+            }
             text = text.removeRange(feedMatch.range).trim()
         }
 
-        // Strip "Id " / "ID " prefix
-        text = text.replace(Regex("""^(?i)id\s+"""), "").trim()
+        // Detect "Id " / "ID " prefix
+        val hasIdPrefix = text.startsWith("Id ", ignoreCase = true) || text.startsWith("ID ", ignoreCase = true)
+        if (hasIdPrefix) {
+            val rawPrefix = raw.substringBefore("-").trim()
+            originTag = rawPrefix.ifEmpty { "ID Stream" }
+            text = text.replace(Regex("""^(?i)id\s+"""), "").trim()
+        }
 
-        // Strip single trailing 'V'
-        text = text.replace(Regex("""(?i)\s+v$"""), "").trim()
+        // Strip single trailing 'V' (Vision+)
+        if (text.endsWith(" V", ignoreCase = true) || text.endsWith(" v", ignoreCase = true)) {
+            if (originTag.isEmpty()) originTag = "Vision+"
+            text = text.replace(Regex("""(?i)\s+v$"""), "").trim()
+        }
 
-        // Fix concatenated "tv" at end (e.g. Banjartv -> Banjar Tv, Bantentv -> Banten Tv)
-        val tvEndMatch = Regex("""^([a-zA-Z]+)tv$""", RegexOption.IGNORE_CASE).find(text)
+        // Fix concatenated "tv" at end for regional channels (e.g. Banjartv -> Banjar Tv, Bantentv -> Banten Tv)
+        val tvEndMatch = Regex("""^([a-zA-Z]{4,})tv$""", RegexOption.IGNORE_CASE).find(text)
         if (tvEndMatch != null) {
             val stem = tvEndMatch.groupValues[1]
-            val sLower = stem.lowercase()
-            if (sLower !in listOf("rtv", "gtv", "jtv", "vtv", "ugtv", "rctv", "btv")) {
-                text = "$stem Tv"
-            }
+            text = "$stem Tv"
         }
 
         text = text.replace(Regex("""\s+"""), " ").trim()
@@ -1218,28 +1291,29 @@ class Xr3edTVProvider : MainAPI() {
         val canonical = when {
             lower == "rcti" -> "RCTI"
             lower in listOf("mnc tv", "mnctv") -> "MNC TV"
-            lower in listOf("gtv", "global tv") -> "GTV"
+            lower in listOf("gtv", "g tv", "global tv") -> "GTV"
             lower in listOf("inews", "inews tv") -> "iNews"
             lower in listOf("sindonews", "sindonews tv") -> "SindoNews TV"
-            lower == "sctv" -> "SCTV"
+            lower in listOf("sctv", "sc tv") -> "SCTV"
             lower == "indosiar" -> "Indosiar"
             lower in listOf("moji", "moji tv") -> "Moji"
             lower in listOf("mentari", "mentari tv") -> "Mentari TV"
             lower == "trans tv" -> "Trans TV"
             lower in listOf("trans 7", "trans7") -> "Trans 7"
-            lower == "antv" -> "ANTV"
+            lower in listOf("antv", "an tv") -> "ANTV"
             lower in listOf("tv one", "tvone") -> "tvOne"
             lower == "metro tv" -> "Metro TV"
             lower in listOf("kompas tv", "kompastv") -> "Kompas TV"
-            lower in listOf("rtv", "rajawali tv") -> "RTV"
-            lower in listOf("btv", "berita satu", "berita satu world") -> "BTV"
+            lower in listOf("rtv", "r tv", "rajawali tv") -> "RTV"
+            lower in listOf("btv", "b tv", "berita satu", "berita satu world") -> "BTV"
+            lower in listOf("jtv", "j tv") -> "JTV"
+            lower in listOf("vtv", "v tv") -> "VTV"
             lower == "nusantara tv" -> "Nusantara TV"
             lower == "garuda tv" -> "Garuda TV"
             lower == "tvri nasional" -> "TVRI Nasional"
             lower == "tvri world" -> "TVRI World"
             lower == "cnn indonesia" -> "CNN Indonesia"
             lower == "cnbc indonesia" -> "CNBC Indonesia"
-            lower == "jtv" -> "JTV"
             lower == "bali tv" -> "Bali TV"
             lower == "bandung tv" -> "Bandung TV"
             lower in listOf("banjar tv", "banjartv") -> "Banjar TV"
@@ -1260,7 +1334,6 @@ class Xr3edTVProvider : MainAPI() {
             lower in listOf("hanacaraka", "hanacaraka tv") -> "Hanacaraka TV"
             lower in listOf("jitv", "jitv jogja") -> "JITV Jogja"
             lower in listOf("dhoho tv", "dhoho tv kediri") -> "Dhoho TV"
-            lower == "vtv" -> "VTV"
             lower == "ugtv" -> "UGTV"
             else -> {
                 text.split(" ").joinToString(" ") { w ->
@@ -1271,13 +1344,11 @@ class Xr3edTVProvider : MainAPI() {
         }
 
         val tag = when {
-            srvTag.isNotEmpty() && feedTag.isNotEmpty() -> "$srvTag ($feedTag)"
             srvTag.isNotEmpty() -> srvTag
-            feedTag.isNotEmpty() -> "Server 1 ($feedTag)"
             else -> "Server 1"
         }
 
-        return Pair(canonical, tag)
+        return Triple(canonical, tag, originTag)
     }
 
     private suspend fun fetch247Channels(): Map<String, List<ChannelItem>> {
@@ -1336,34 +1407,43 @@ class Xr3edTVProvider : MainAPI() {
                         !line.startsWith("#") && !line.startsWith("//") -> {
                             val rawTitle = currentTitle
                             if (!rawTitle.isNullOrEmpty() && (line.startsWith("http://") || line.startsWith("https://"))) {
-                                val (cleanName, srvTag) = normalizeChannelInfo(rawTitle)
+                                val (cleanName, srvTag, originTag) = normalizeChannelInfo(rawTitle)
                                 val list = categoryMap.getOrPut(currentGroup) { mutableListOf() }
                                 val existingItem = list.find { it.title.equals(cleanName, ignoreCase = true) }
 
                                 val serverLabel = if (existingItem != null) {
                                     val existingCount = existingItem.servers.size
                                     val alreadyHasName = existingItem.servers.any { it.name.equals(srvTag, ignoreCase = true) }
+                                    val tagSuffix = if (originTag.isNotEmpty()) " ($originTag)" else ""
                                     if (alreadyHasName) {
-                                        val extraTag = if (srvTag.contains("(")) " " + srvTag.substringAfter("(").substringBeforeLast(")") else ""
-                                        "Server ${existingCount + 1}${if (extraTag.isNotEmpty()) " ($extraTag)" else ""}"
+                                        "Server ${existingCount + 1}$tagSuffix"
+                                    } else {
+                                        if (originTag.isNotEmpty() && !srvTag.contains(originTag, ignoreCase = true)) {
+                                            "$srvTag$tagSuffix"
+                                        } else {
+                                            srvTag
+                                        }
+                                    }
+                                } else {
+                                    if (originTag.isNotEmpty() && !srvTag.contains(originTag, ignoreCase = true)) {
+                                        "$srvTag ($originTag)"
                                     } else {
                                         srvTag
                                     }
-                                } else {
-                                    srvTag
                                 }
 
                                 val srv = StreamServer(serverLabel, line, currentHeaders.toMap(), currentKodiProps.toMap())
                                 if (existingItem != null) {
-                                    val bestLogo = if (existingItem.logo.isEmpty() && currentLogo.isNotEmpty()) currentLogo else existingItem.logo
+                                    val bestLogo = pickBestLogo(cleanName, currentLogo, existingItem.logo)
                                     val updatedServers = existingItem.servers + srv
                                     val idx = list.indexOf(existingItem)
                                     list[idx] = existingItem.copy(logo = bestLogo, servers = updatedServers)
                                 } else {
+                                    val bestLogo = pickBestLogo(cleanName, currentLogo)
                                     list.add(ChannelItem(
                                         id = "ch_${cleanName.hashCode()}",
                                         title = cleanName,
-                                        logo = currentLogo,
+                                        logo = bestLogo,
                                         group = currentGroup,
                                         servers = listOf(srv)
                                     ))
