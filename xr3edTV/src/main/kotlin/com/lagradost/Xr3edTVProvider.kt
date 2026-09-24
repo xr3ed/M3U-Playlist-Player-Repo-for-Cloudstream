@@ -260,7 +260,7 @@ class Xr3edTVProvider : MainAPI() {
         isLive: Boolean = true,
         time: String = "",
         date: String = "",
-        aspect: String = "landscape"
+        aspect: String = "portrait"
     ): String {
         val base = BuildConfig.XR3EDTV_POSTER_BASE.ifEmpty { "https://xr3edtv-poster.xr3ed-cdn.workers.dev/poster.png" }
         val status = if (isLive) "live" else "upcoming"
@@ -268,14 +268,14 @@ class Xr3edTVProvider : MainAPI() {
         val hasTeams = home.isNotEmpty() && away.isNotEmpty()
         return if (hasTeams) {
             // VS layout
-            "$base?v=32&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=33&aspect=$aspect&home=${Uri.encode(home)}&away=${Uri.encode(away)}&home_logo=${Uri.encode(homeLogo)}&away_logo=${Uri.encode(awayLogo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         } else {
             // Single event layout
-            "$base?v=32&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
+            "$base?v=33&aspect=$aspect&title=${Uri.encode(title.ifEmpty { league })}&logo=${Uri.encode(logo)}&league=${Uri.encode(league)}&sport=${Uri.encode(sport)}&status=$status&time=${Uri.encode(cleanTime)}&date=${Uri.encode(date)}"
         }
     }
 
-    private fun getMatchPoster(m: Xr3edMatch, aspect: String = "landscape"): String {
+    private fun getMatchPoster(m: Xr3edMatch, aspect: String = "portrait"): String {
         // 1. Jika event single memiliki logo/thumbnail resmi yang valid, gunakan langsung tanpa beban worker
         if (m.logo.isNotEmpty() && (m.logo.startsWith("http://") || m.logo.startsWith("https://")) && !m.logo.contains("xr3edtv-poster") && !m.logo.contains("q5qo.com")) {
             if (m.homeTeam.isEmpty() || m.awayTeam.isEmpty()) {
@@ -1287,7 +1287,7 @@ class Xr3edTVProvider : MainAPI() {
         }
     }
 
-    private fun buildMatchCards(matches: List<Xr3edMatch>): List<SearchResponse> {
+    private fun buildMatchCards(matches: List<Xr3edMatch>, aspect: String = "portrait"): List<SearchResponse> {
         val cards = mutableListOf<SearchResponse>()
         val processedCourtTournaments = mutableSetOf<String>()
 
@@ -1303,7 +1303,7 @@ class Xr3edTVProvider : MainAPI() {
                     val maskedData = "${MASK_PREFIX}court_group::" + Base64.encodeToString(groupPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                     val groupTitle = "🎾 $tourName • All Courts Live (${sameTourCourts.size} Lapangan)"
                     cards.add(newTvSeriesSearchResponse(groupTitle, maskedData, TvType.TvSeries) {
-                        this.posterUrl = getMatchPoster(sameTourCourts.first(), "landscape")
+                        this.posterUrl = getMatchPoster(sameTourCourts.first(), aspect)
                     })
                     continue
                 }
@@ -1313,7 +1313,7 @@ class Xr3edTVProvider : MainAPI() {
             val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
             val displayTitle = if (m.isUpcoming) "${m.kickOffTime} • ${m.title}" else m.title
             cards.add(newLiveSearchResponse(displayTitle, maskedData, TvType.Live) {
-                this.posterUrl = getMatchPoster(m, "landscape")
+                this.posterUrl = getMatchPoster(m, aspect)
             })
         }
         return cards
@@ -1334,8 +1334,8 @@ class Xr3edTVProvider : MainAPI() {
                 !m.title.contains("24/7", ignoreCase = true)
             }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
-            val directCards = buildMatchCards(hotMatches)
-            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
+            val directCards = buildMatchCards(hotMatches, "portrait")
+            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = false), hasNext = false)
         }
 
         // 1b. Live Olahraga — Semua live non-hot (diurutkan dari waktu mulai terbaru/terdekat)
@@ -1347,8 +1347,8 @@ class Xr3edTVProvider : MainAPI() {
                 !m.title.contains("24/7", ignoreCase = true)
             }.sortedByDescending { if (it.timestampMs > 0) it.timestampMs else 0L }
 
-            val directCards = buildMatchCards(liveRegular)
-            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
+            val directCards = buildMatchCards(liveRegular, "portrait")
+            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = false), hasNext = false)
         }
 
         // 2. Live Sports Hub (Pilih Cabang Olahraga - Hub Utama)
@@ -1372,8 +1372,8 @@ class Xr3edTVProvider : MainAPI() {
             val matches = fetchMergedMatches()
             val upcomingMatches = matches.filter { it.isUpcoming }
                 .sortedBy { if (it.timestampMs > 0) it.timestampMs else Long.MAX_VALUE }
-            val directCards = buildMatchCards(upcomingMatches)
-            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
+            val directCards = buildMatchCards(upcomingMatches, "portrait")
+            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = false), hasNext = false)
         }
 
         // 5. Specific Sport Category (Badminton, Soccer, Cricket, Combat, etc.)
@@ -1407,8 +1407,8 @@ class Xr3edTVProvider : MainAPI() {
                         }
                     }
             )
-            val directCards = buildMatchCards(categoryMatches)
-            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = true), hasNext = false)
+            val directCards = buildMatchCards(categoryMatches, "portrait")
+            return newHomePageResponse(HomePageList(request.name, directCards, isHorizontalImages = false), hasNext = false)
         }
 
         // 6. 24/7 Linear TV Channels
@@ -1429,7 +1429,7 @@ class Xr3edTVProvider : MainAPI() {
             }
         }
 
-        return newHomePageResponse(request.name, searchResponses, hasNext = false)
+        return newHomePageResponse(HomePageList(request.name, searchResponses, isHorizontalImages = true), hasNext = false)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -1450,7 +1450,7 @@ class Xr3edTVProvider : MainAPI() {
             val matchPayload = mapper.writeValueAsString(m)
             val maskedData = "${MASK_PREFIX}direct::" + Base64.encodeToString(matchPayload.toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
             results.add(newLiveSearchResponse(m.title, maskedData, TvType.Live) {
-                this.posterUrl = getMatchPoster(m, "landscape")
+                this.posterUrl = getMatchPoster(m, "portrait")
             })
         }
 
