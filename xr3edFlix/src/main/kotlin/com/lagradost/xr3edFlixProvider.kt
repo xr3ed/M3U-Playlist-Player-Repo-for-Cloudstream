@@ -710,15 +710,23 @@ class xr3edFlixProvider : MainAPI() {
 
         var foundAny = false
         val indonesianCount = java.util.concurrent.atomic.AtomicInteger(0)
+        val englishCount = java.util.concurrent.atomic.AtomicInteger(0)
 
         val subCallback = { subFile: SubtitleFile ->
             val lang = subFile.lang.lowercase().trim()
-            if (lang.contains("indonesia") || lang.contains("indo") || lang == "ind" || lang == "id" || lang == "in" || lang.startsWith("ind-") || lang.startsWith("id-") || lang.startsWith("in-")) {
+            val isIndo = lang.contains("indonesia") || lang.contains("indo") || lang == "ind" || lang == "id" || lang == "in" ||
+                    lang.startsWith("ind-") || lang.startsWith("id-") || lang.startsWith("in-") || lang.contains("bahasa")
+            val isEng = lang.contains("english") || lang.contains("inggris") || lang == "eng" || lang == "en" ||
+                    lang.startsWith("eng-") || lang.startsWith("en-") || lang.startsWith("eng_") || lang.startsWith("en_")
+
+            if (isIndo) {
                 val count = indonesianCount.getAndIncrement()
                 val label = if (count == 0) "Indonesia" else "Indonesia ${count + 1}"
                 subtitleCallback.invoke(subFile.copy(lang = label))
-            } else {
-                subtitleCallback.invoke(subFile)
+            } else if (isEng) {
+                val count = englishCount.getAndIncrement()
+                val label = if (count == 0) "English" else "English ${count + 1}"
+                subtitleCallback.invoke(subFile.copy(lang = label))
             }
         }
 
@@ -731,7 +739,9 @@ class xr3edFlixProvider : MainAPI() {
                     link.url.contains("movieboxdownload", ignoreCase = true) ||
                     (link.url.contains("update", ignoreCase = true) && link.url.contains(".mp4", ignoreCase = true))
 
-            if (!isDeadOrWarning && addedUrls.add(link.url)) {
+            val isForeign = NxshaExtractor.isForeignLanguage(link.name)
+
+            if (!isDeadOrWarning && !isForeign && addedUrls.add(link.url)) {
                 foundAny = true
                 val updatedLink = if (link.quality == Qualities.Unknown.value || link.quality == 0) {
                     val inferredQuality = when {
@@ -742,22 +752,10 @@ class xr3edFlixProvider : MainAPI() {
                         else -> Qualities.P1080.value
                     }
 
-                    val qualityLabel = when (inferredQuality) {
-                        Qualities.P1080.value -> "1080p"
-                        Qualities.P720.value -> "720p"
-                        Qualities.P480.value -> "480p"
-                        Qualities.P360.value -> "360p"
-                        else -> "1080p"
-                    }
-                    val newName = if (!link.name.contains("p", ignoreCase = true) && !link.name.contains("1080") && !link.name.contains("720")) {
-                        "${link.name} - $qualityLabel"
-                    } else {
-                        link.name
-                    }
                     @Suppress("DEPRECATION")
                     ExtractorLink(
                         source = link.source,
-                        name = newName,
+                        name = link.name,
                         url = link.url,
                         referer = link.referer,
                         quality = inferredQuality,

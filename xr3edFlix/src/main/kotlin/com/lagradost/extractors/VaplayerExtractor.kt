@@ -110,7 +110,7 @@ object VaplayerExtractor {
                                     if (addedUrls.add(dedupKey)) {
                                         val q = currentRes.replace("p", "").toIntOrNull() ?: Qualities.Unknown.value
                                         val link = newExtractorLink(
-                                            name = "Vaplayer - $currentRes",
+                                            name = "Vaplayer",
                                             source = "Vaplayer",
                                             url = absoluteUrl,
                                             type = ExtractorLinkType.M3U8

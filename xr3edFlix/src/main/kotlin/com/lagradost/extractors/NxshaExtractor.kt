@@ -127,6 +127,46 @@ object NxshaExtractor {
         return encrypt(obj.toString())
     }
 
+    fun isForeignLanguage(text: String): Boolean {
+        val t = text.lowercase()
+        val hasAllowed = t.contains("english") || t.contains("inggris") ||
+                t.contains("indonesia") || t.contains("indo") ||
+                t.contains("original audio") || t.contains("orig audio")
+        if (hasAllowed) return false
+
+        val foreignKeywords = listOf(
+            "hindi", "tamil", "telugu", "french", "français", "arabic",
+            "spanish", "español", "esla", "portuguese", "português", "ptbr",
+            "russian", "русский", "kurdish", "vietsub", "thuyết minh",
+            "german", "deutsch", "italian", "italiano", "bengali", "malayalam",
+            "kannada", "marathi", "punjabi", "urdu", "korean dub", "japanese dub"
+        )
+
+        return foreignKeywords.any { t.contains(it) }
+    }
+
+    private fun cleanStreamLabel(rawLabel: String, rawQuality: String): String {
+        var l = rawLabel.trim()
+        if (l.isEmpty() || l.equals("undefined", ignoreCase = true) || l.equals("null", ignoreCase = true)) {
+            l = rawQuality.trim()
+        }
+        if (l.isEmpty() || l.equals("Auto", ignoreCase = true) || l.equals("undefined", ignoreCase = true) || l.equals("null", ignoreCase = true)) {
+            return ""
+        }
+
+        val isPureResolution = l.matches(Regex("""^(?i)(2160p?|4k|1080p?|720p?|480p?|360p?|hd|fhd|sd)$"""))
+        if (isPureResolution) {
+            return ""
+        }
+
+        l = l.replace(Regex("""(?i)\s*[:|-]\s*\d{3,4}(p)?(,\d{3,4}(p)?)*\s*$"""), "")
+        l = l.replace(Regex("""(?i)^\s*\d{3,4}p?\s*\|\s*"""), "")
+        l = l.trim()
+
+        if (l.isEmpty() || l.equals("Original audio", ignoreCase = true)) return ""
+        return " - $l"
+    }
+
     suspend fun invoke(
         tmdbId: Int?,
         imdbId: String?,
@@ -192,7 +232,6 @@ object NxshaExtractor {
                     "yomovies" to "StreamX",
                     "nitro" to "Nitro",
                     "mbox" to "MovieBox",
-                    "em-8" to "VidHindi",
                     "bdxs" to "Multi-blue",
                     "watchout" to "Multi-bill",
                     "stvv" to "Stvvid",
@@ -240,6 +279,9 @@ object NxshaExtractor {
                             val isEmbed = srcObj.optBoolean("isEmbed", false)
                             val typeStr = srcObj.optString("type", "")
 
+                            val checkTarget = "$providerName $label $qualityStr"
+                            if (isForeignLanguage(checkTarget)) continue
+
                             if (isEmbed || typeStr == "embed") {
                                 loadExtractor(streamUrl, "$BASE_URL/", subtitleCallback, callback)
                             } else {
@@ -261,12 +303,7 @@ object NxshaExtractor {
                                     ExtractorLinkType.VIDEO
                                 }
 
-                                val cleanLabel = if (label.isNotBlank() && label != "Auto" && label != "Original audio") {
-                                    " - $label"
-                                } else if (qualityStr.isNotBlank() && qualityStr != "Auto") {
-                                    " - $qualityStr"
-                                } else ""
-
+                                val cleanLabel = cleanStreamLabel(label, qualityStr)
                                 val displayName = "$providerName$cleanLabel"
 
                                 callback.invoke(
@@ -325,7 +362,16 @@ object NxshaExtractor {
                                     val sub = subsArr.optJSONObject(i) ?: continue
                                     val uri = sub.optString("uri")
                                     val title = sub.optString("title", sub.optString("language", "Unknown"))
-                                    if (uri.isNotBlank()) {
+                                    val langLower = (title + " " + sub.optString("language", "")).lowercase()
+                                    val isIndo = langLower.contains("indonesia") || langLower.contains("bahasa") ||
+                                            langLower == "id" || langLower.startsWith("id-") || langLower.startsWith("id_") ||
+                                            langLower == "ind" || langLower.startsWith("ind-") || langLower.startsWith("ind_") ||
+                                            langLower == "in" || langLower.contains("indo")
+                                    val isEng = langLower.contains("english") || langLower.contains("inggris") ||
+                                            langLower == "en" || langLower.startsWith("en-") || langLower.startsWith("en_") ||
+                                            langLower == "eng" || langLower.startsWith("eng-") || langLower.startsWith("eng_")
+
+                                    if (uri.isNotBlank() && (isIndo || isEng)) {
                                         subtitleCallback.invoke(newSubtitleFile(title, uri))
                                     }
                                 }
