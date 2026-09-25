@@ -247,6 +247,26 @@
         "status":  1,
         "language":  "id",
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    },
+    {
+        "name":  "#Anime OtakudesuXR",
+        "internalName":  "OtakudesuXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/OtakudesuXR.cs3",
+        "version":  15,
+        "description":  "Otakudesu — Streaming Anime Subtitle Indonesia (#Anime OtakudesuXR)",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "Anime",
+                        "AnimeMovie",
+                        "OVA"
+                    ],
+        "iconUrl":  "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://otakudesu.blog&size=%size%",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
     }
 ]
 
