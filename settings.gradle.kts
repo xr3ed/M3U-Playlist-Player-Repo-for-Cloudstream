@@ -6,7 +6,7 @@ val isCI = System.getenv("CI") == "true"
 val disabled = if (isCI) {
     listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "GudangFilmXR", "OtakudesuXR")
 } else {
-    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "GudangFilmXR", "OtakudesuXR")
+    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "OtakudesuXR")
 }
 
 File(rootDir, ".").eachDir { dir ->

@@ -232,7 +232,7 @@
         "name":  "GudangFilmXR",
         "internalName":  "GudangFilmXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/GudangFilmXR.cs3",
-        "version":  46,
+        "version":  47,
         "description":  "GudangFilmXR provider modifikasi oleh XR3ED dengan resolver Playsobat dan AsiaStream.",
         "authors":  [
                         "XR3ED"
