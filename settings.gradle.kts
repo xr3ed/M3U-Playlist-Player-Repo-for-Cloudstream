@@ -4,7 +4,7 @@ rootProject.name = "xr3ed"
 
 val isCI = System.getenv("CI") == "true"
 val disabled = if (isCI) {
-    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "xr3edTV")
+    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "xr3edTV", "GudangFilmXR")
 } else {
     listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR")
 }

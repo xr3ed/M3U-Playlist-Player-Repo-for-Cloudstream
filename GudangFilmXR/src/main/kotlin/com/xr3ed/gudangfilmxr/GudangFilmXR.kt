@@ -1,7 +1,8 @@
-package com.sad25kag.gudangfilmxr
+package com.xr3ed.gudangfilmxr
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addImdbId
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTMDbId
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.utils.*
@@ -39,10 +40,6 @@ class GudangFilmXR : MainAPI() {
         "User-Agent" to USER_AGENT,
         "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language" to "id,en-US;q=0.7,en;q=0.3",
-        "Sec-Fetch-Dest" to "document",
-        "Sec-Fetch-Mode" to "navigate",
-        "Sec-Fetch-Site" to "none",
-        "Sec-Fetch-User" to "?1",
         "Upgrade-Insecure-Requests" to "1"
     )
 
@@ -68,17 +65,16 @@ class GudangFilmXR : MainAPI() {
         "$mainUrl/country/usa/" to "USA"
     )
 
-    private suspend fun requestPage(url: String): Pair<String, Document>? {
-        val target = fixTargetUrl(url)
-        val res = try {
-            app.get(target, headers = headers, referer = "$currentHost/", timeout = 10)
+    private suspend fun tryRequest(target: String): com.lagradost.nicehttp.NiceResponse? {
+        return try {
+            app.get(target, headers = headers, referer = "$currentHost/", timeout = 15)
         } catch (_: Throwable) {
             var fallback: com.lagradost.nicehttp.NiceResponse? = null
             for (gw in fallbackGateways) {
                 if (gw == currentHost) continue
                 try {
                     val replaced = target.replace(currentHost, gw)
-                    val r = app.get(replaced, headers = headers, referer = "$gw/", timeout = 10)
+                    val r = app.get(replaced, headers = headers, referer = "$gw/", timeout = 15)
                     if (r.code in 200..399) {
                         currentHost = gw
                         fallback = r
@@ -87,7 +83,30 @@ class GudangFilmXR : MainAPI() {
                 } catch (_: Throwable) {}
             }
             fallback
-        } ?: return null
+        }
+    }
+
+    private suspend fun requestPage(url: String): Pair<String, Document>? {
+        val target = fixTargetUrl(url)
+        val res = tryRequest(target) ?: return null
+
+        val isRedirectToHome = res.url.trimEnd('/') == currentHost.trimEnd('/') ||
+                res.url.contains("rebahin") ||
+                res.url.endsWith(".xyz/") ||
+                res.url.endsWith(".auction/") ||
+                res.url.endsWith(".lol/") ||
+                res.url.trimEnd('/') == "https://154.203.167.147"
+
+        if (isRedirectToHome && !target.contains("/tv/") && !target.contains("/eps/")) {
+            val slug = target.trimEnd('/').substringAfterLast('/')
+            if (slug.isNotBlank() && slug != "movie" && slug != "tv") {
+                val tvTarget = "$currentHost/tv/$slug/"
+                val tvRes = tryRequest(tvTarget)
+                if (tvRes != null && !tvRes.url.contains("rebahin") && tvRes.url.trimEnd('/') != currentHost.trimEnd('/')) {
+                    return Pair(tvRes.url, tvRes.document)
+                }
+            }
+        }
 
         return Pair(res.url, res.document)
     }
@@ -139,10 +158,29 @@ class GudangFilmXR : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val searchUrl = "$currentHost/?s=${URLEncoder.encode(query, "UTF-8")}"
+        val q = query.trim()
+        if (q.isBlank()) return emptyList()
+        val searchUrl = "$currentHost/?s=${URLEncoder.encode(q, "UTF-8")}"
         val (_, document) = requestPage(searchUrl) ?: return emptyList()
         return parseListing(document)
     }
+
+    override suspend fun search(query: String, page: Int): SearchResponseList? {
+        val q = query.trim()
+        if (q.isBlank()) return null
+        val encoded = URLEncoder.encode(q, "UTF-8")
+        val searchUrl = if (page <= 1) {
+            "$currentHost/?s=$encoded"
+        } else {
+            "$currentHost/page/$page/?s=$encoded"
+        }
+        val (_, document) = requestPage(searchUrl) ?: return null
+        val results = parseListing(document)
+        val hasNext = hasNextPage(document, page)
+        return results.toNewSearchResponseList(hasNext = hasNext)
+    }
+
+    override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     private fun parseListing(document: Document): List<SearchResponse> {
         return document.select("article.item-infinite, article.item, .gmr-module-posts .item, .grid-container article")
@@ -151,11 +189,20 @@ class GudangFilmXR : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val linkElem = selectFirst(".item-article .entry-title a, .content-thumbnail a, .entry-title a, a[rel='bookmark']") ?: return null
-        val href = fixUrl(linkElem.attr("href")) ?: return null
-        val rawTitle = linkElem.text().ifBlank { linkElem.attr("title") }
+        val titleElem = selectFirst(".entry-title a, .item-article .entry-title a, h2.entry-title a, a[rel='bookmark']")
+            ?: selectFirst(".content-thumbnail a, a") ?: return null
+        val href = fixUrl(titleElem.attr("href")) ?: return null
+        val rawTitle = titleElem.text().ifBlank {
+            titleElem.attr("title").ifBlank {
+                selectFirst(".entry-title, h2, h3")?.text().orEmpty()
+            }
+        }.ifBlank {
+            selectFirst(".content-thumbnail img, img")?.attr("alt").orEmpty()
+        }.ifBlank {
+            titleFromUrl(href)
+        }
         val titleYear = Regex("""\b(19|20\d{2})\b""").find(rawTitle)?.value?.toIntOrNull()
-        val title = cleanTitle(rawTitle)
+        val title = cleanTitle(rawTitle).ifBlank { titleFromUrl(href) }
         if (title.isBlank() || isNsfw(title, href)) return null
 
         val imgElem = selectFirst(".content-thumbnail img, img")
@@ -164,21 +211,47 @@ class GudangFilmXR : MainAPI() {
         }?.takeIf { it.isNotBlank() }
 
         val typeBadge = selectFirst(".gmr-posttype-item")?.text().orEmpty()
-        val isTv = typeBadge.contains("TV", ignoreCase = true) || href.contains("/tv/")
+        val isTv = typeBadge.contains("TV", ignoreCase = true) ||
+                href.contains("/tv/") ||
+                href.contains("season-", ignoreCase = true) ||
+                rawTitle.contains("season", ignoreCase = true) ||
+                rawTitle.contains("series", ignoreCase = true)
 
-        val quality = selectFirst(".gmr-quality-item")?.text()?.trim()
+        val fixedHref = if (isTv && !href.contains("/tv/") && !href.contains("/eps/")) {
+            val slug = href.trimEnd('/').substringAfterLast('/')
+            "$currentHost/tv/$slug/"
+        } else {
+            href
+        }
+
+        val rating = selectFirst(".gmr-rating-item")?.text()
+            ?.replace(",", ".")
+            ?.replace(Regex("[^0-9.]"), "")
+            ?.toDoubleOrNull()
+
+        val qualityBadge = selectFirst(".gmr-quality-item")?.text()?.trim()
+        val inferredQuality = qualityBadge ?: when {
+            rawTitle.contains("4k", true) -> "4K"
+            rawTitle.contains("bluray", true) || rawTitle.contains("blu-ray", true) -> "Bluray"
+            rawTitle.contains("web-dl", true) || rawTitle.contains("webrip", true) -> "WebRip"
+            rawTitle.contains("hd", true) -> "HD"
+            rawTitle.contains("cam", true) -> "CAM"
+            else -> null
+        }
 
         return if (isTv) {
-            newTvSeriesSearchResponse(title, href, TvType.TvSeries) {
+            newTvSeriesSearchResponse(title, fixedHref, TvType.TvSeries) {
                 this.posterUrl = poster
                 this.year = titleYear
-                getSearchQuality(quality)?.let { this.quality = it }
+                rating?.let { this.score = Score.from10(it) }
+                getSearchQuality(inferredQuality)?.let { this.quality = it }
             }
         } else {
-            newMovieSearchResponse(title, href, TvType.Movie) {
+            newMovieSearchResponse(title, fixedHref, TvType.Movie) {
                 this.posterUrl = poster
                 this.year = titleYear
-                getSearchQuality(quality)?.let { this.quality = it }
+                rating?.let { this.score = Score.from10(it) }
+                getSearchQuality(inferredQuality)?.let { this.quality = it }
             }
         }
     }
@@ -210,7 +283,7 @@ class GudangFilmXR : MainAPI() {
         val isSeries = finalPageUrl.contains("/tv/") || episodes.isNotEmpty()
         val type = if (isSeries) TvType.TvSeries else TvType.Movie
 
-        val recommendations = parseRecommendations(document, finalPageUrl)
+        val recommendations = parseRecommendations(document, finalPageUrl, isSeries)
 
         // TMDB Enrichment
         val tmdb = fetchTmdbMetadata(title, year, isSeries)
@@ -218,10 +291,36 @@ class GudangFilmXR : MainAPI() {
         val finalBackdrop = tmdb?.backdropUrl
         val finalPlot = tmdb?.overview ?: cleanDescription(document.selectFirst(".entry-content p")?.text())
         val finalYear = tmdb?.year ?: year
-        val finalTags = if (!tmdb?.genres.isNullOrEmpty()) tmdb.genres else tags
-        val finalDuration = tmdb?.duration ?: 0
+
+        val webDuration = document.selectFirst(".gmr-duration-item, [property='duration'], .gmr-moviedata:contains(Duration), .gmr-moviedata:contains(Durasi)")?.text()
+            ?.let { Regex("""(\d+)\s*(?:min|menit)""").find(it)?.groupValues?.get(1)?.toIntOrNull() }
+
+        val imdbId = document.selectFirst("a[href*='imdb.com/title/tt']")?.attr("href")
+            ?.let { Regex("""(tt\d+)""").find(it)?.groupValues?.get(1) }
+            ?: Regex("""(tt\d+)""").find(poster ?: "")?.groupValues?.get(1)
+            ?: Regex("""(tt\d+)""").find(finalPageUrl)?.groupValues?.get(1)
+
+        val country = document.selectFirst("[itemprop='contentLocation'] a, a[href*='/country/']")?.text()?.trim()
+        val allTags = (if (!tmdb?.genres.isNullOrEmpty()) tmdb.genres else tags).toMutableList()
+        if (!country.isNullOrBlank() && !allTags.any { it.equals(country, ignoreCase = true) }) {
+            allTags.add(country)
+        }
+        val finalTags = allTags
+
+        val director = document.selectFirst("[itemprop='director'] [itemprop='name'], [itemprop='director'] a")?.text()?.trim()
+        val finalActors = when {
+            !tmdb?.actors.isNullOrEmpty() -> tmdb.actors
+            !director.isNullOrBlank() -> listOf(ActorData(actor = Actor(director), roleString = "Director"))
+            else -> emptyList()
+        }
+
+        val finalDuration = tmdb?.duration?.takeIf { it > 0 } ?: webDuration ?: 0
         val finalScore = tmdb?.score ?: rating
         val finalTrailer = tmdb?.trailer
+
+        val isFuture = (finalYear != null && finalYear > 2026)
+        val hasPlayer = document.selectFirst("iframe[src], .gmr-embed-responsive, #muviprowp-player, .muvipro-player") != null
+        val comingSoonFlag = isFuture && !hasPlayer
 
         return if (isSeries) {
             newTvSeriesLoadResponse(title, finalPageUrl, type, episodes) {
@@ -232,12 +331,13 @@ class GudangFilmXR : MainAPI() {
                 this.tags = finalTags
                 this.duration = finalDuration
                 this.recommendations = recommendations
-                if (!tmdb?.actors.isNullOrEmpty()) {
-                    this.actors = tmdb.actors
+                if (finalActors.isNotEmpty()) {
+                    this.actors = finalActors
                 }
                 finalTrailer?.let { addTrailer(it) }
                 finalScore?.let { this.score = Score.from10(it) }
                 tmdb?.tmdbId?.let { addTMDbId(it) }
+                imdbId?.let { addImdbId(it) }
             }
         } else {
             newMovieLoadResponse(title, finalPageUrl, type, finalPageUrl) {
@@ -248,19 +348,29 @@ class GudangFilmXR : MainAPI() {
                 this.tags = finalTags
                 this.duration = finalDuration
                 this.recommendations = recommendations
-                if (!tmdb?.actors.isNullOrEmpty()) {
-                    this.actors = tmdb.actors
+                this.comingSoon = comingSoonFlag
+                if (finalActors.isNotEmpty()) {
+                    this.actors = finalActors
                 }
                 finalTrailer?.let { addTrailer(it) }
                 finalScore?.let { this.score = Score.from10(it) }
                 tmdb?.tmdbId?.let { addTMDbId(it) }
+                imdbId?.let { addImdbId(it) }
             }
         }
     }
 
     private fun parseEpisodes(document: Document, baseUrl: String): List<Episode> {
         val episodes = linkedMapOf<String, Episode>()
-        val episodeButtons = document.select(".gmr-listseries a[href]:not(.gmr-all-serie), .gmr-listseries a[href*='/eps/']")
+        val episodeButtons = document.select(".gmr-listseries a[href]").filter { a ->
+            val href = a.attr("href").trim()
+            val text = cleanText(a.text())
+            val isOverview = text.contains("Lihat Semua", ignoreCase = true) ||
+                             text.contains("Semua Episode", ignoreCase = true) ||
+                             a.hasClass("gmr-all-serie") ||
+                             !href.contains("/eps/")
+            !isOverview
+        }
 
         episodeButtons.forEachIndexed { index, element ->
             val href = fixUrl(element.attr("href"), baseUrl) ?: return@forEachIndexed
@@ -270,7 +380,7 @@ class GudangFilmXR : MainAPI() {
             val seasonNum = Regex("""(?i)(?:season|s)\s*[-:.]?\s*(\d+)""").find(href)?.groupValues?.getOrNull(1)?.toIntOrNull()
 
             episodes[href] = newEpisode(href) {
-                this.name = text.ifBlank { "Episode $epNum" }
+                this.name = "Episode $epNum"
                 this.episode = epNum
                 this.season = seasonNum
             }
@@ -286,8 +396,10 @@ class GudangFilmXR : MainAPI() {
     ): Boolean {
         val targetUrl = fixTargetUrl(data)
         val (_, document) = requestPage(targetUrl) ?: return false
-        val emitted = linkedSetOf<String>()
+
         var found = false
+        val emittedServers = mutableSetOf<String>()
+        val processedSlugs = mutableSetOf<String>()
 
         val iframes = document.select(".gmr-embed-responsive iframe, .player-wrap iframe, .gmr-pagi-player iframe, iframe[src]")
             .mapNotNull { it.attr("src").takeIf { src -> src.isNotBlank() } }
@@ -297,18 +409,21 @@ class GudangFilmXR : MainAPI() {
             val fixedIframe = fixUrl(iframeUrl, targetUrl) ?: continue
 
             if (fixedIframe.contains("playsobat") || fixedIframe.contains("/e/")) {
-                val ok = extractPlaysobat(fixedIframe, targetUrl, subtitleCallback, callback, emitted)
+                val slug = fixedIframe.substringAfter("/e/").substringBefore("?").substringBefore("/")
+                if (slug.isNotBlank()) processedSlugs.add(slug)
+                val ok = extractPlaysobat(fixedIframe, targetUrl, subtitleCallback, callback, emittedServers)
                 if (ok) found = true
             }
 
             if (fixedIframe.contains("asiastream")) {
-                val ok = extractAsiaStream(fixedIframe, targetUrl, subtitleCallback, callback, emitted)
+                val ok = extractAsiaStream(fixedIframe, targetUrl, subtitleCallback, callback, emittedServers)
                 if (ok) found = true
             }
 
             try {
                 val loaded = loadExtractor(fixedIframe, targetUrl, subtitleCallback) { link ->
-                    if (emitted.add(link.url.substringBefore("#"))) {
+                    val serverName = normalizeServerName(link.name)
+                    if (emittedServers.add(serverName)) {
                         callback(link)
                         found = true
                     }
@@ -321,12 +436,13 @@ class GudangFilmXR : MainAPI() {
             .mapNotNull { fixUrl(it.attr("href"), targetUrl) }
         for (dlUrl in downloadLinks) {
             if (dlUrl.contains("playsobat") && dlUrl.contains("slug=")) {
-                val slug = dlUrl.substringAfter("slug=", "")
-                if (slug.isNotBlank()) {
-                    val embedUrl = "https://playsobat.xyz/e/$slug"
-                    val ok = extractPlaysobat(embedUrl, targetUrl, subtitleCallback, callback, emitted)
-                    if (ok) found = true
+                val slug = dlUrl.substringAfter("slug=", "").substringBefore("&")
+                if (slug.isNotBlank() && !processedSlugs.add(slug)) {
+                    continue
                 }
+                val embedUrl = "https://playsobat.xyz/e/$slug"
+                val ok = extractPlaysobat(embedUrl, targetUrl, subtitleCallback, callback, emittedServers)
+                if (ok) found = true
             }
         }
 
@@ -338,7 +454,7 @@ class GudangFilmXR : MainAPI() {
         referer: String,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit,
-        emitted: MutableSet<String>
+        emittedServers: MutableSet<String>
     ): Boolean {
         var found = false
         val html = try {
@@ -347,63 +463,240 @@ class GudangFilmXR : MainAPI() {
             return false
         }
 
-        val payloadRaw = Regex("""window\.payload\s*=\s*"([^"]+)";""").find(html)?.groupValues?.getOrNull(1)
-            ?: Regex("""window\.payload\s*=\s*'([^']+)';""").find(html)?.groupValues?.getOrNull(1)
+        val payloadRaw = Regex("""window\.payload\s*=\s*"((?:\\.|[^"\\])*)";""").find(html)?.groupValues?.getOrNull(1)
+            ?: Regex("""window\.payload\s*=\s*'((?:\\.|[^'\\])*)';""").find(html)?.groupValues?.getOrNull(1)
+            ?: Regex("""window\.payload\s*=\s*(\{.*?\});""", RegexOption.DOT_MATCHES_ALL).find(html)?.groupValues?.getOrNull(1)
+            ?: Regex("""window\.payload\s*=\s*"([^"]+)";""").find(html)?.groupValues?.getOrNull(1)
             ?: return false
 
-        val cleanPayload = payloadRaw.replace("\\\"", "\"").replace("\\/", "/")
+        val cleanPayload = payloadRaw
+            .replace("\\\"", "\"")
+            .replace("\\/", "/")
+            .replace("\\\\", "\\")
+
         val playerJson = decryptPlaysobat(cleanPayload) ?: return false
 
         val keys = playerJson.keys()
         while (keys.hasNext()) {
             val serverName = keys.next()
-            var serverUrl = playerJson.optString(serverName).trim()
-            if (serverUrl.isBlank()) continue
+            val rawServerUrl = playerJson.optString(serverName).trim()
+            if (rawServerUrl.isBlank()) continue
 
-            if (serverName.equals("HYDRAX", ignoreCase = true)) {
-                serverUrl = serverUrl.replace(".ink", ".icu")
-            } else if (serverName.equals("VIDHIDE", ignoreCase = true)) {
-                val id = serverUrl.substringAfterLast("/")
-                if (id.isNotBlank()) serverUrl = "https://dintezuvio.com/embed/$id"
-            } else if (serverName.equals("TURBOVIP", ignoreCase = true)) {
-                val id = serverUrl.substringAfterLast("/")
-                if (id.isNotBlank()) serverUrl = "https://turbovidhls.com/t/$id"
-            } else if (serverName.equals("STREAMWISH", ignoreCase = true)) {
-                val id = serverUrl.substringAfterLast("/")
-                if (id.isNotBlank()) serverUrl = "https://hglink.to/e/$id"
+            val normalizedServer = normalizeServerName(serverName)
+            if (emittedServers.contains(normalizedServer)) {
+                continue
             }
 
-            try {
-                val loaded = loadExtractor(serverUrl, embedUrl, subtitleCallback) { link ->
-                    val key = link.url.substringBefore("#")
-                    if (emitted.add(key)) {
-                        callback(link)
-                        found = true
+            val urlsToTry = mutableListOf<String>()
+            urlsToTry.add(rawServerUrl)
+
+            val serverId = rawServerUrl.substringAfterLast("/")
+
+            when {
+                serverName.equals("HYDRAX", ignoreCase = true) -> {
+                    urlsToTry.add(rawServerUrl.replace(".ink", ".icu"))
+                    if (serverId.isNotBlank()) {
+                        urlsToTry.add("https://abyss.to/$serverId")
+                        urlsToTry.add("https://abyssplayer.com/$serverId")
                     }
                 }
-                if (loaded) found = true
-            } catch (_: Throwable) {}
+                serverName.equals("VIDHIDE", ignoreCase = true) -> {
+                    if (serverId.isNotBlank()) {
+                        urlsToTry.add("https://vidhidefast.com/v/$serverId")
+                        urlsToTry.add("https://vidhidepro.com/v/$serverId")
+                        urlsToTry.add("https://morencius.com/embed/$serverId")
+                        urlsToTry.add("https://turbovidhls.com/t/$serverId")
+                    }
+                }
+                serverName.equals("TURBOVIP", ignoreCase = true) -> {
+                    if (serverId.isNotBlank()) {
+                        urlsToTry.add("https://turbovidhls.com/t/$serverId")
+                    }
+                }
+                serverName.equals("STREAMWISH", ignoreCase = true) -> {
+                    if (serverId.isNotBlank()) {
+                        urlsToTry.add("https://streamwish.to/e/$serverId")
+                        urlsToTry.add("https://hglink.to/e/$serverId")
+                    }
+                }
+                serverName.equals("MIXDROP", ignoreCase = true) -> {
+                    if (serverId.isNotBlank()) {
+                        urlsToTry.add("https://mdfx9dc8n.net/e/$serverId")
+                        urlsToTry.add("https://mxdrop.top/e/$serverId")
+                        urlsToTry.add("https://mixdrop.co/e/$serverId")
+                        urlsToTry.add("https://mixdrop.to/e/$serverId")
+                    }
+                }
+                serverName.equals("DOODSTREAM", ignoreCase = true) -> {
+                    if (serverId.isNotBlank()) {
+                        urlsToTry.add("https://dood.la/e/$serverId")
+                        urlsToTry.add("https://playmogo.com/e/$serverId")
+                    }
+                }
+            }
+
+            if (serverName.equals("HYDRAX", ignoreCase = true) || rawServerUrl.contains("abyss") || rawServerUrl.contains("hydrax")) {
+                val hydraxLinks = mutableListOf<ExtractorLink>()
+                try {
+                    val abyssExtractor = AbyssExtractor()
+                    for (abyssUrl in urlsToTry.distinct()) {
+                        abyssExtractor.getUrl(abyssUrl, embedUrl, subtitleCallback) { link ->
+                            hydraxLinks.add(link)
+                        }
+                        if (hydraxLinks.isNotEmpty()) break
+                    }
+                } catch (_: Throwable) {}
+
+                if (hydraxLinks.isNotEmpty()) {
+                    for (link in hydraxLinks) {
+                        callback(link)
+                    }
+                    emittedServers.add("HYDRAX")
+                    found = true
+                    continue
+                }
+            }
+
+            val currentServerLinks = mutableListOf<ExtractorLink>()
+            for (serverUrl in urlsToTry.distinct()) {
+                try {
+                    val loaded = loadExtractor(serverUrl, embedUrl, subtitleCallback) { link ->
+                        currentServerLinks.add(link)
+                    }
+                    if (loaded && currentServerLinks.isNotEmpty()) {
+                        break
+                    }
+                } catch (_: Throwable) {}
+            }
+
+            if (currentServerLinks.isNotEmpty()) {
+                val hasM3u8 = currentServerLinks.any { it.isM3u8 }
+                if (hasM3u8) {
+                    val m3u8Links = currentServerLinks.filter { it.isM3u8 }
+                    val master = m3u8Links.firstOrNull { it.url.contains("master", ignoreCase = true) }
+                        ?: m3u8Links.maxByOrNull { it.quality }
+                        ?: m3u8Links.first()
+
+                    val finalUrl = if (master.url.contains("/index-") && master.url.endsWith(".txt")) {
+                        master.url.replace(Regex("""/index-[^/]+\.txt"""), "/master.txt")
+                    } else master.url
+
+                    if (emittedServers.add(normalizedServer)) {
+                        callback(
+                            ExtractorLink(
+                                source = normalizedServer,
+                                name = normalizedServer,
+                                url = finalUrl,
+                                referer = master.referer,
+                                quality = master.quality,
+                                type = ExtractorLinkType.M3U8,
+                                headers = master.headers
+                            )
+                        )
+                        found = true
+                    }
+                } else {
+                    for (link in currentServerLinks) {
+                        val displayName = if (link.name.startsWith(normalizedServer, ignoreCase = true)) {
+                            link.name
+                        } else {
+                            "$normalizedServer ${link.name}".trim()
+                        }
+                        callback(
+                            ExtractorLink(
+                                source = normalizedServer,
+                                name = displayName,
+                                url = link.url,
+                                referer = link.referer,
+                                quality = link.quality,
+                                type = link.type,
+                                headers = link.headers
+                            )
+                        )
+                        found = true
+                    }
+                    emittedServers.add(normalizedServer)
+                }
+            }
         }
         return found
     }
 
-    private fun decryptPlaysobat(payloadJson: String): JSONObject? {
+    private fun normalizeServerName(name: String): String {
+        return when {
+            name.contains("abyss", true) || name.contains("hydrax", true) -> "HYDRAX"
+            name.contains("streamwish", true) || name.contains("hglink", true) -> "STREAMWISH"
+            name.contains("dood", true) || name.contains("playmogo", true) -> "DOODSTREAM"
+            name.contains("mixdrop", true) || name.contains("mxdrop", true) -> "MIXDROP"
+            name.contains("vidhide", true) || name.contains("morencius", true) -> "VIDHIDE"
+            name.contains("turbovip", true) || name.contains("turbovid", true) -> "TURBOVIP"
+            name.contains("asiastream", true) -> "ASIASTREAM"
+            else -> name.trim().uppercase(Locale.ROOT)
+        }
+    }
+
+    private var cachedPlayerJsKey: String = "96fb393f57087e9333cc067bf4aa378e"
+
+    private suspend fun decryptPlaysobat(payload: String): JSONObject? {
         return try {
-            val json = JSONObject(payloadJson)
-            val ivB64 = json.getString("iv")
-            val dataB64 = json.getString("data")
-            val keyBytes = "96fb393f57087e9333cc067bf4aa378e".toByteArray(Charsets.UTF_8)
-            val ivBytes = Base64.getDecoder().decode(ivB64)
-            val cipherBytes = Base64.getDecoder().decode(dataB64)
+            val json = JSONObject(payload)
+            if (json.has("data") && json.has("iv")) {
+                val ivBase64 = json.getString("iv")
+                val dataBase64 = json.getString("data")
+                val ivBytes = Base64.getDecoder().decode(ivBase64)
+                val cipherBytes = Base64.getDecoder().decode(dataBase64)
 
+                var keyStr = cachedPlayerJsKey
+                var decryptedBytes = tryDecryptAes(keyStr.toByteArray(Charsets.UTF_8), ivBytes, cipherBytes)
+                if (decryptedBytes == null) {
+                    try {
+                        val js = app.get("https://playsobat.xyz/assets/player.js", timeout = 5).text
+                        val freshKey = Regex("""parse\(\s*["']([a-f0-9]{32})["']\s*\)""").find(js)?.groupValues?.getOrNull(1)
+                        if (!freshKey.isNullOrBlank()) {
+                            cachedPlayerJsKey = freshKey
+                            keyStr = freshKey
+                            decryptedBytes = tryDecryptAes(keyStr.toByteArray(Charsets.UTF_8), ivBytes, cipherBytes)
+                        }
+                    } catch (_: Throwable) {}
+                }
+
+                if (decryptedBytes != null) {
+                    JSONObject(String(decryptedBytes, Charsets.UTF_8))
+                } else null
+            } else if (json.has("ciphertext") && json.has("key") && json.has("iv")) {
+                val ivHex = json.getString("iv")
+                val keyHex = json.getString("key")
+                val cipherBase64 = json.getString("ciphertext")
+
+                fun hexStringToByteArray(s: String): ByteArray {
+                    val len = s.length
+                    val data = ByteArray(len / 2)
+                    for (i in 0 until len step 2) {
+                        data[i / 2] = ((Character.digit(s[i], 16) shl 4) + Character.digit(s[i + 1], 16)).toByte()
+                    }
+                    return data
+                }
+
+                val ivBytes = hexStringToByteArray(ivHex)
+                val keyBytes = hexStringToByteArray(keyHex)
+                val cipherBytes = Base64.getDecoder().decode(cipherBase64)
+                val decryptedBytes = tryDecryptAes(keyBytes, ivBytes, cipherBytes)
+                if (decryptedBytes != null) {
+                    JSONObject(String(decryptedBytes, Charsets.UTF_8))
+                } else null
+            } else null
+        } catch (_: Throwable) {
+            null
+        }
+    }
+
+    private fun tryDecryptAes(key: ByteArray, iv: ByteArray, ciphertext: ByteArray): ByteArray? {
+        return try {
             val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-            val secretKey = SecretKeySpec(keyBytes, "AES")
-            val ivSpec = IvParameterSpec(ivBytes)
+            val secretKey = SecretKeySpec(key, "AES")
+            val ivSpec = IvParameterSpec(iv)
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
-
-            val decryptedBytes = cipher.doFinal(cipherBytes)
-            val decryptedString = String(decryptedBytes, Charsets.UTF_8)
-            JSONObject(decryptedString)
+            cipher.doFinal(ciphertext)
         } catch (_: Throwable) {
             null
         }
@@ -414,7 +707,7 @@ class GudangFilmXR : MainAPI() {
         referer: String,
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit,
-        emitted: MutableSet<String>
+        emittedServers: MutableSet<String>
     ): Boolean {
         var found = false
         val html = try {
@@ -427,27 +720,17 @@ class GudangFilmXR : MainAPI() {
         if (sniffMatch != null) {
             val (_, uid, md5) = sniffMatch.destructured
             val masterUrl = "https://watch.asiastream.cc/m3u8/$uid/$md5/master.txt?s=1&cache=1"
-            val streamHeaders = mapOf(
-                "Referer" to "https://watch.asiastream.cc/",
-                "User-Agent" to USER_AGENT
-            )
             try {
-                val links = generateM3u8("AsiaStream", masterUrl, "https://watch.asiastream.cc/", headers = streamHeaders)
-                links.forEach { link ->
-                    if (emitted.add(link.url.substringBefore("#"))) {
-                        callback(link)
+                val testRes = app.get(masterUrl, headers = mapOf("Referer" to "https://watch.asiastream.cc/"), timeout = 5)
+                if (testRes.code == 200 && !testRes.text.contains("security error")) {
+                    if (emittedServers.add("AsiaStream")) {
+                        callback(newExtractorLink("AsiaStream", "AsiaStream", masterUrl, ExtractorLinkType.M3U8) {
+                            this.referer = "https://watch.asiastream.cc/"
+                        })
                         found = true
                     }
                 }
-                if (links.isNotEmpty()) return true
             } catch (_: Throwable) {}
-
-            if (emitted.add(masterUrl.substringBefore("#"))) {
-                callback(newExtractorLink("AsiaStream", "AsiaStream", masterUrl, ExtractorLinkType.M3U8) {
-                    this.referer = "https://watch.asiastream.cc/"
-                })
-                found = true
-            }
         }
         return found
     }
@@ -541,62 +824,60 @@ class GudangFilmXR : MainAPI() {
                 if (arr.length() > 0) arr.optInt(0, 0).takeIf { it > 0 } else null
             }
 
-        val voteAvg = dJson.optDouble("vote_average", 0.0).takeIf { it > 0.0 }
+        val voteAverage = dJson.optDouble("vote_average", 0.0).takeIf { it > 0.0 }
 
         val genres = mutableListOf<String>()
         val genresArr = dJson.optJSONArray("genres")
         if (genresArr != null) {
             for (i in 0 until genresArr.length()) {
-                val gName = genresArr.getJSONObject(i).optString("name").trim()
-                if (gName.isNotBlank()) genres.add(gName)
+                val g = genresArr.optJSONObject(i)?.optString("name")?.trim()
+                if (!g.isNullOrBlank()) genres.add(g)
             }
         }
 
         val actors = mutableListOf<ActorData>()
-        val castArr = dJson.optJSONObject("credits")?.optJSONArray("cast")
+        val credits = dJson.optJSONObject("credits")
+        val castArr = credits?.optJSONArray("cast")
         if (castArr != null) {
-            for (i in 0 until minOf(castArr.length(), 15)) {
-                val castObj = castArr.getJSONObject(i)
-                val cName = castObj.optString("name").trim()
-                val cChar = castObj.optString("character").trim().takeIf { it.isNotBlank() }
-                val cProf = castObj.optString("profile_path").trim().takeIf { it.isNotBlank() }
-                val profUrl = cProf?.let { "https://image.tmdb.org/t/p/w185$it" }
-                if (cName.isNotBlank()) {
-                    actors.add(ActorData(actor = Actor(cName, profUrl), roleString = cChar))
+            val limit = minOf(castArr.length(), 10)
+            for (i in 0 until limit) {
+                val member = castArr.optJSONObject(i) ?: continue
+                val name = member.optString("name").trim()
+                val character = member.optString("character").trim().takeIf { it.isNotBlank() }
+                val profilePath = member.optString("profile_path").trim().takeIf { it.isNotBlank() }
+                if (name.isNotBlank()) {
+                    val actorPoster = profilePath?.let { "https://image.tmdb.org/t/p/w500$it" }
+                    actors.add(ActorData(actor = Actor(name, actorPoster), roleString = character))
                 }
             }
         }
 
-        var trailerUrl: String? = null
-        val videoArr = dJson.optJSONObject("videos")?.optJSONArray("results")
-        if (videoArr != null) {
-            for (i in 0 until videoArr.length()) {
-                val vObj = videoArr.getJSONObject(i)
-                val site = vObj.optString("site")
-                val key = vObj.optString("key")
-                val vType = vObj.optString("type")
-                if (site.equals("YouTube", ignoreCase = true) && key.isNotBlank()) {
-                    if (vType.equals("Trailer", ignoreCase = true)) {
-                        trailerUrl = "https://www.youtube.com/watch?v=$key"
-                        break
-                    } else if (trailerUrl == null) {
-                        trailerUrl = "https://www.youtube.com/watch?v=$key"
-                    }
+        val videos = dJson.optJSONObject("videos")?.optJSONArray("results")
+        var youtubeTrailer: String? = null
+        if (videos != null) {
+            for (i in 0 until videos.length()) {
+                val v = videos.optJSONObject(i) ?: continue
+                val site = v.optString("site")
+                val type = v.optString("type")
+                val key = v.optString("key")
+                if (site.equals("YouTube", ignoreCase = true) && type.equals("Trailer", ignoreCase = true) && key.isNotBlank()) {
+                    youtubeTrailer = "https://www.youtube.com/watch?v=$key"
+                    break
                 }
             }
         }
 
         return TmdbMeta(
-            title = dJson.optString("title").ifBlank { dJson.optString("name") }.trim().takeIf { it.isNotBlank() },
+            title = dJson.optString("title").ifBlank { dJson.optString("name") },
             overview = overview,
             posterUrl = posterPath?.let { "https://image.tmdb.org/t/p/w500$it" },
-            backdropUrl = backdropPath?.let { "https://image.tmdb.org/t/p/original$it" },
+            backdropUrl = backdropPath?.let { "https://image.tmdb.org/t/p/w1280$it" },
             year = year,
-            score = voteAvg,
+            score = voteAverage,
             duration = runtime,
             genres = genres,
             actors = actors,
-            trailer = trailerUrl,
+            trailer = youtubeTrailer,
             tmdbId = tmdbId.toString()
         )
     }
@@ -633,12 +914,11 @@ class GudangFilmXR : MainAPI() {
         t = t.replace(Regex("""\s+\b(?:19|20)\d{2}\b\s*$"""), " ")
 
         // Hapus Season / Series / S di ujung:
-        // e.g. "Season 1", "Season 01", "Series", "S1", "S01", "Season 1 Part 2"
         t = t.replace(Regex("""(?i)\s*[-–:]?\s*\b(?:season|series|s)\s*\d+(?:\s*part\s*\d+)?\b\s*$"""), " ")
         t = t.replace(Regex("""(?i)\s*[-–:]?\s*\bseries\b\s*$"""), " ")
         t = t.replace(Regex("""(?i)\s*[-–:]?\s*\bepisode\s*\d+\b\s*$"""), " ")
 
-        // Bersihkan tanda baca gantung di akhir (seperti :, -, –, /, (, ))
+        // Bersihkan tanda baca gantung di akhir
         t = t.replace(Regex("""[\s\-–:/,|()]+$"""), "")
         return t.replace(Regex("\\s+"), " ").trim()
     }
@@ -680,14 +960,27 @@ class GudangFilmXR : MainAPI() {
         return titleLower.contains("semi") || urlLower.contains("/semi") || urlLower.contains("semi-")
     }
 
-    private fun parseRecommendations(document: Document, currentUrl: String): List<SearchResponse> {
-        return document.select(".related, .rekomendasi, .recommend, section, .gmr-module-posts, .grid-container")
+    private suspend fun parseRecommendations(document: Document, currentUrl: String, isSeries: Boolean): List<SearchResponse> {
+        val inPage = document.select(".related, .rekomendasi, .recommend, section.gmr-related-posts")
             .flatMap { section ->
                 section.select("article.item-infinite, article.item, .item")
                     .mapNotNull { it.toSearchResult() }
             }
             .filterNot { it.url == currentUrl }
             .distinctBy { it.url }
-            .take(16)
+
+        if (inPage.isNotEmpty()) return inPage.take(16)
+
+        val categoryLink = document.selectFirst(".gmr-moviedata a[rel='category tag'], .gmr-movie-on a[rel='category tag']")?.attr("href")
+        val targetCategory = fixUrl(categoryLink) ?: if (isSeries) "$currentHost/series-update/" else "$currentHost/movie/"
+
+        return try {
+            val (_, catDoc) = requestPage(targetCategory) ?: return emptyList()
+            parseListing(catDoc)
+                .filterNot { it.url == currentUrl }
+                .take(16)
+        } catch (_: Throwable) {
+            emptyList()
+        }
     }
 }

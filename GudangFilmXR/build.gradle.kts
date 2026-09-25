@@ -1,9 +1,9 @@
 import java.util.Properties as JavaProperties
 
-version = 35
+version = 44
 
 android {
-    namespace = "com.sad25kag.gudangfilmxr"
+    namespace = "com.xr3ed.gudangfilmxr"
     buildFeatures {
         buildConfig = true
     }
@@ -22,7 +22,7 @@ android {
 }
 
 cloudstream {
-    authors = listOf("sad25kag", "XR3ED")
+    authors = listOf("XR3ED")
     language = "id"
     description = "GudangFilmXR provider modifikasi oleh XR3ED untuk domain aktif 154.203.167.147 dengan resolver Playsobat dan AsiaStream."
     status = 1
