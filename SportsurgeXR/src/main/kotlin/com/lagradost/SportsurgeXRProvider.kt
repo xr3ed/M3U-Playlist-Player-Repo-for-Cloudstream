@@ -506,15 +506,7 @@ class SportsurgeXRProvider : MainAPI() {
         }
         if (html.isEmpty()) return null
         
-        val rawStreams = parseStreams(html)
-        val streams = rawStreams.sortedWith(compareBy<SportsurgeStreamInfo> {
-            val name = it.channel.lowercase()
-            when {
-                name.contains("fhd") || name.contains("1080p") || name.contains("1080") -> 0
-                name.contains("hd") || name.contains("720p") || name.contains("720") -> 1
-                else -> 2
-            }
-        }.thenBy { it.channel })
+        val streams = parseStreams(html)
         
         // Dapatkan nama tim dari URL event path
         val eventPath = cleanUrl.substringAfter("/events/", "")
@@ -564,7 +556,20 @@ class SportsurgeXRProvider : MainAPI() {
             streams.mapIndexed { index, item ->
                 async {
                     try {
-                        val name = "Source ${index + 1} (${item.channel})"
+                        val duplicateCount = streams.count { it.channel.equals(item.channel, ignoreCase = true) }
+                        val linkName = if (duplicateCount > 1) {
+                            "${item.channel} #${index + 1}"
+                        } else {
+                            item.channel
+                        }
+                        
+                        val quality = when {
+                            item.channel.contains("4k", ignoreCase = true) || item.channel.contains("uhd", ignoreCase = true) -> Qualities.P2160.value
+                            item.channel.contains("fhd", ignoreCase = true) || item.channel.contains("1080", ignoreCase = true) -> Qualities.P1080.value
+                            item.channel.contains("480", ignoreCase = true) || item.channel.contains("sd", ignoreCase = true) -> Qualities.P480.value
+                            else -> Qualities.P720.value
+                        }
+                        
                         val urlStr = item.url
                         
                         if (urlStr.contains("totwatch.php")) {
@@ -590,10 +595,10 @@ class SportsurgeXRProvider : MainAPI() {
                                             callback.invoke(
                                                 ExtractorLink(
                                                     source = this@SportsurgeXRProvider.name,
-                                                    name = name,
+                                                    name = linkName,
                                                     url = cleanUrl,
                                                     referer = "https://executeandship.com/",
-                                                    quality = Qualities.P720.value,
+                                                    quality = quality,
                                                     type = ExtractorLinkType.M3U8,
                                                     headers = mapOf(
                                                         "Referer" to "https://executeandship.com/",
@@ -609,7 +614,110 @@ class SportsurgeXRProvider : MainAPI() {
                         } else if (urlStr.contains("totview.php")) {
                             val targetUrl = urlStr.substringAfter("src=", "")
                             if (targetUrl.isNotEmpty()) {
-                                if (targetUrl.contains("daddylive") || targetUrl.contains("daddy")) {
+                                if (targetUrl.contains("trendy48")) {
+                                    val embedUrl = if (targetUrl.contains("ch=")) {
+                                        val ch = targetUrl.substringAfter("ch=", "")
+                                        "https://trendy48.site/embed/$ch"
+                                    } else {
+                                        targetUrl
+                                    }
+                                    val req1 = okhttp3.Request.Builder()
+                                        .url(embedUrl)
+                                        .header("Referer", "https://trendy48.online/")
+                                        .header("User-Agent", DESKTOP_UA)
+                                        .build()
+                                    cleanClient.newCall(req1).execute().use { res1 ->
+                                        if (res1.isSuccessful) {
+                                            val html1 = res1.body?.string() ?: ""
+                                            val iframeSrc = Regex("""<iframe[^>]+src=["']([^"']+)["']""").find(html1)?.groupValues?.get(1)
+                                            if (iframeSrc != null) {
+                                                val req2 = okhttp3.Request.Builder()
+                                                    .url(iframeSrc)
+                                                    .header("Referer", "https://trendy48.site/")
+                                                    .header("User-Agent", DESKTOP_UA)
+                                                    .build()
+                                                cleanClient.newCall(req2).execute().use { res2 ->
+                                                    val html2 = res2.body?.string() ?: ""
+                                                    val gi2Match = Regex("""_gi2=\[([0-9, ]+)\]""").find(html2)
+                                                    val jt4Match = Regex("""_jt4=(\d+)""").find(html2)
+                                                    val hu9Match = Regex("""_hu9=(\d+)""").find(html2)
+                                                    if (gi2Match != null && jt4Match != null && hu9Match != null) {
+                                                        val gi2 = gi2Match.groupValues[1].split(",").mapNotNull { it.trim().toIntOrNull() }
+                                                        val jt4 = jt4Match.groupValues[1].toInt()
+                                                        val hu9 = hu9Match.groupValues[1].toInt()
+                                                        val decodedChars = gi2.map { ((((it xor jt4) - hu9 + 256) % 256).toChar()) }
+                                                        val decodedStr = decodedChars.joinToString("")
+                                                        val m3u8Match = Regex("""var SIGNED_URL\s*=\s*"([^"]+\.m3u8[^"]*)"""").find(decodedStr)
+                                                        val streamUrl = m3u8Match?.groupValues?.get(1)
+                                                        if (streamUrl != null) {
+                                                            callback.invoke(
+                                                                ExtractorLink(
+                                                                    source = this@SportsurgeXRProvider.name,
+                                                                    name = linkName,
+                                                                    url = streamUrl,
+                                                                    referer = "https://exmxbxe.cfd/",
+                                                                    quality = quality,
+                                                                    type = ExtractorLinkType.M3U8,
+                                                                    headers = mapOf(
+                                                                        "Referer" to "https://exmxbxe.cfd/",
+                                                                        "User-Agent" to DESKTOP_UA
+                                                                    )
+                                                                )
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if (targetUrl.contains("streame.center")) {
+                                    val req1 = okhttp3.Request.Builder()
+                                        .url(targetUrl)
+                                        .header("Referer", "https://hitcast.st/")
+                                        .header("User-Agent", DESKTOP_UA)
+                                        .build()
+                                    cleanClient.newCall(req1).execute().use { res1 ->
+                                        if (res1.isSuccessful) {
+                                            val html1 = res1.body?.string() ?: ""
+                                            val iframeSrc = Regex("""<iframe[^>]+src=["']([^"']+)["']""").find(html1)?.groupValues?.get(1)
+                                            val hlsPageUrl = if (iframeSrc != null) {
+                                                if (iframeSrc.startsWith("//")) "https:$iframeSrc"
+                                                else if (iframeSrc.startsWith("http")) iframeSrc
+                                                else "https://streame.center$iframeSrc"
+                                            } else targetUrl
+
+                                            val req2 = okhttp3.Request.Builder()
+                                                .url(hlsPageUrl)
+                                                .header("Referer", targetUrl)
+                                                .header("User-Agent", DESKTOP_UA)
+                                                .build()
+                                            cleanClient.newCall(req2).execute().use { res2 ->
+                                                if (res2.isSuccessful) {
+                                                    val html2 = res2.body?.string() ?: ""
+                                                    val m3u8Match = Regex("""["'](https?://[^"']+\.m3u8[^"']*)["']""").find(html2)
+                                                    val rawM3u8 = m3u8Match?.groupValues?.get(1)?.replace("\\u0026", "&")?.replace("\\/", "/")
+                                                    if (rawM3u8 != null) {
+                                                        callback.invoke(
+                                                            ExtractorLink(
+                                                                source = this@SportsurgeXRProvider.name,
+                                                                name = linkName,
+                                                                url = rawM3u8,
+                                                                referer = "https://streame.center/",
+                                                                quality = quality,
+                                                                type = ExtractorLinkType.M3U8,
+                                                                headers = mapOf(
+                                                                    "Referer" to "https://streame.center/",
+                                                                    "Origin" to "https://streame.center",
+                                                                    "User-Agent" to DESKTOP_UA
+                                                                )
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else if (targetUrl.contains("daddylive") || targetUrl.contains("daddy")) {
                                     val id = targetUrl.substringAfter("stream-", "").substringBefore(".php", "")
                                     if (id.isNotEmpty()) {
                                         val iframeUrl = "https://hamis.romponalis.st/premiumtv/daddy2.php?id=$id"
@@ -628,10 +736,10 @@ class SportsurgeXRProvider : MainAPI() {
                                                     callback.invoke(
                                                         ExtractorLink(
                                                             source = this@SportsurgeXRProvider.name,
-                                                            name = name,
+                                                            name = linkName,
                                                             url = decodedUrl,
                                                             referer = "https://hamis.romponalis.st/",
-                                                            quality = Qualities.P720.value,
+                                                            quality = quality,
                                                             type = ExtractorLinkType.M3U8,
                                                             headers = mapOf(
                                                                 "Referer" to "https://hamis.romponalis.st/",
@@ -662,10 +770,10 @@ class SportsurgeXRProvider : MainAPI() {
                                                     callback.invoke(
                                                         ExtractorLink(
                                                             source = this@SportsurgeXRProvider.name,
-                                                            name = name,
+                                                            name = linkName,
                                                             url = cleanUrl,
                                                             referer = "https://universaltokenforall.st/",
-                                                            quality = Qualities.P720.value,
+                                                            quality = quality,
                                                             type = ExtractorLinkType.M3U8,
                                                             headers = mapOf(
                                                                 "Referer" to "https://universaltokenforall.st/",
@@ -710,10 +818,10 @@ class SportsurgeXRProvider : MainAPI() {
                                                                     callback.invoke(
                                                                         ExtractorLink(
                                                                             source = this@SportsurgeXRProvider.name,
-                                                                            name = name,
+                                                                            name = linkName,
                                                                             url = srcUrl,
                                                                             referer = "$host/",
-                                                                            quality = Qualities.P720.value,
+                                                                            quality = quality,
                                                                             type = ExtractorLinkType.M3U8,
                                                                             headers = mapOf(
                                                                                 "Referer" to "$host/",
@@ -739,16 +847,40 @@ class SportsurgeXRProvider : MainAPI() {
                                     cleanClient.newCall(request).execute().use { response ->
                                         if (response.isSuccessful) {
                                             val html = response.body?.string() ?: ""
-                                            val m3u8Match = Regex("""["'](https?://[^"']+\.m3u8[^"']*)["']""").find(html)
-                                            if (m3u8Match != null) {
-                                                val m3u8Url = m3u8Match.groupValues[1]
+                                            var m3u8Match = Regex("""["'](https?://[^"']+\.m3u8[^"']*)["']""").find(html)
+                                            var m3u8Url = m3u8Match?.groupValues?.get(1)
+                                            
+                                            if (m3u8Url == null) {
+                                                val iframeSrc = Regex("""<iframe[^>]+src=["']([^"']+)["']""").find(html)?.groupValues?.get(1)
+                                                if (iframeSrc != null && !iframeSrc.contains("ad.") && !iframeSrc.contains("histats")) {
+                                                    val nextUrl = if (iframeSrc.startsWith("//")) "https:$iframeSrc"
+                                                    else if (iframeSrc.startsWith("http")) iframeSrc
+                                                    else targetUrl.substringBeforeLast("/") + "/" + iframeSrc
+                                                    
+                                                    val reqNext = okhttp3.Request.Builder()
+                                                        .url(nextUrl)
+                                                        .header("Referer", targetUrl)
+                                                        .header("User-Agent", DESKTOP_UA)
+                                                        .build()
+                                                    cleanClient.newCall(reqNext).execute().use { resNext ->
+                                                        if (resNext.isSuccessful) {
+                                                            val nextHtml = resNext.body?.string() ?: ""
+                                                            m3u8Match = Regex("""["'](https?://[^"']+\.m3u8[^"']*)["']""").find(nextHtml)
+                                                            m3u8Url = m3u8Match?.groupValues?.get(1)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if (m3u8Url != null) {
+                                                val cleanM3u8 = m3u8Url.replace("\\u0026", "&").replace("\\/", "/")
                                                 callback.invoke(
                                                     ExtractorLink(
                                                         source = this@SportsurgeXRProvider.name,
-                                                        name = name,
-                                                        url = m3u8Url,
+                                                        name = linkName,
+                                                        url = cleanM3u8,
                                                         referer = targetUrl,
-                                                        quality = Qualities.P720.value,
+                                                        quality = quality,
                                                         type = ExtractorLinkType.M3U8,
                                                         headers = mapOf(
                                                             "Referer" to targetUrl,
