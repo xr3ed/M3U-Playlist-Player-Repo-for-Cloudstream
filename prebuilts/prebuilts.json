@@ -285,5 +285,23 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+  },
+  {
+    "name": "🏆 RBTV+",
+    "internalName": "RBTVPlus",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/RBTVPlus.cs3",
+    "version": 74,
+    "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari RBTV+",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Live"
+    ],
+    "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
+    "apiVersion": 1,
+    "status": 1,
+    "language": "id",
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
   }
 ]
