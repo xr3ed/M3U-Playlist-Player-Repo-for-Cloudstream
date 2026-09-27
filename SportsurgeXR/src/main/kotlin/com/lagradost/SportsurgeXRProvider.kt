@@ -15,11 +15,14 @@ import java.net.URLEncoder
 data class WebMatchInfo(
     val path: String,
     val status: String,
+    val timeStr: String,
+    val countdown: String,
     val team1: String,
     val logo1: String,
     val team2: String,
     val logo2: String,
-    val league: String
+    val league: String,
+    val isSolo: Boolean = false
 )
 
 // Data class untuk list stream yang di-serialize ke JSON loadData
@@ -31,19 +34,9 @@ data class SportsurgeStreamInfo(
 
 class SportsurgeXRProvider : MainAPI() {
     companion object {
-        val posterCache: MutableMap<String, String> = java.util.Collections.synchronizedMap(
-            object : java.util.LinkedHashMap<String, String>(32, 0.75f, true) {
-                override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>?): Boolean = size > 40
-            }
-        )
-        val logoCache: MutableMap<String, android.graphics.Bitmap> = java.util.Collections.synchronizedMap(
-            object : java.util.LinkedHashMap<String, android.graphics.Bitmap>(32, 0.75f, true) {
-                override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, android.graphics.Bitmap>?): Boolean = size > 40
-            }
-        )
-        val cleanClient = okhttp3.OkHttpClient()
-        
+        const val POSTER_WORKER_URL = "https://sportsurge-poster.xr3ed-cdn.workers.dev"
         const val DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        val cleanClient = okhttp3.OkHttpClient()
     }
 
     override var mainUrl = "https://ww1.sportsurge.st"
@@ -53,16 +46,92 @@ class SportsurgeXRProvider : MainAPI() {
     override val hasMainPage = true
     
     override val mainPage = listOf(
-        MainPageData("Sepak Bola", "/football"),
-        MainPageData("NFL", "/nfl"),
-        MainPageData("Basket", "/nba"),
-        MainPageData("Tinju", "/boxing"),
-        MainPageData("MMA", "/ufc"),
-        MainPageData("Bisbol", "/baseball"),
-        MainPageData("Hoki Es", "/nhl"),
-        MainPageData("Formula 1", "/f1"),
-        MainPageData("Rugby", "/rugby")
+        MainPageData("Sepak Bola", "/football", horizontalImages = true),
+        MainPageData("NFL", "/nfl", horizontalImages = true),
+        MainPageData("Basket", "/nba", horizontalImages = true),
+        MainPageData("Tinju", "/boxing", horizontalImages = true),
+        MainPageData("MMA", "/ufc", horizontalImages = true),
+        MainPageData("Bisbol", "/baseball", horizontalImages = true),
+        MainPageData("Hoki Es", "/nhl", horizontalImages = true),
+        MainPageData("Formula 1", "/f1", horizontalImages = true),
+        MainPageData("Rugby", "/rugby", horizontalImages = true)
     )
+
+    private fun formatStartTimeToWib(rawIso: String?): String {
+        if (rawIso.isNullOrEmpty()) return ""
+        return try {
+            val instant = java.time.Instant.parse(rawIso)
+            val zdt = instant.atZone(java.time.ZoneId.of("Asia/Jakarta"))
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm 'WIB'")
+            zdt.format(formatter)
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    private fun formatCountdown(raw: String): String {
+        val lower = raw.lowercase()
+        if (lower.contains("live")) return "LIVE STREAM"
+        if (lower.contains("starts in:")) {
+            val parts = raw.replace("Starts in:", "", ignoreCase = true).trim().split(":")
+            if (parts.size >= 2) {
+                val h = parts[0].toIntOrNull() ?: 0
+                val m = parts[1].toIntOrNull() ?: 0
+                return when {
+                    h > 0 && m > 0 -> "IN ${h}H ${m}M"
+                    h > 0 -> "IN $h HOURS"
+                    m > 0 -> "IN $m MIN"
+                    else -> "UPCOMING"
+                }
+            }
+        }
+        return "UPCOMING"
+    }
+
+    private fun buildPosterUrl(
+        sport: String,
+        league: String,
+        home: String,
+        away: String,
+        time: String,
+        countdown: String,
+        isLive: Boolean,
+        isSolo: Boolean,
+        logo1: String,
+        logo2: String
+    ): String {
+        return try {
+            fun enc(s: String) = URLEncoder.encode(s, "UTF-8")
+            val sb = StringBuilder(POSTER_WORKER_URL)
+            sb.append("?sport=").append(enc(sport))
+            sb.append("&league=").append(enc(league))
+            sb.append("&home=").append(enc(home))
+            if (!isSolo && away.isNotEmpty()) {
+                sb.append("&away=").append(enc(away))
+            }
+            if (time.isNotEmpty()) {
+                sb.append("&time=").append(enc(time))
+            }
+            if (countdown.isNotEmpty()) {
+                sb.append("&countdown=").append(enc(countdown))
+            }
+            if (isLive) {
+                sb.append("&live=1")
+            }
+            if (isSolo) {
+                sb.append("&solo=1")
+            }
+            if (logo1.isNotEmpty()) {
+                sb.append("&logo1=").append(enc(logo1))
+            }
+            if (logo2.isNotEmpty()) {
+                sb.append("&logo2=").append(enc(logo2))
+            }
+            sb.toString()
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     private fun unescapeNextF(text: String): String {
         return text
@@ -125,20 +194,39 @@ class SportsurgeXRProvider : MainAPI() {
                 val path = linkEl.attr("href")
                 if (path.isEmpty()) continue
                 
-                val status = linkEl.selectFirst("div.text-xs")?.text() ?: "Upcoming"
+                val countdownEl = linkEl.selectFirst("div.countdown-status, div.text-xs")
+                val statusText = countdownEl?.text()?.trim() ?: "Upcoming"
+                val rawStart = countdownEl?.attr("data-start")
+                
+                val timeWib = formatStartTimeToWib(rawStart)
+                val countdown = formatCountdown(statusText)
+                val isLive = statusText.contains("live", ignoreCase = true) || (countdownEl?.className()?.contains("text-red") == true)
                 
                 val teamDivs = linkEl.select("div.flex.gap-2.items-center, div.flex.items-center.gap-2")
                 val team1 = teamDivs.getOrNull(0)?.text()?.trim() ?: "Team A"
                 val logo1 = teamDivs.getOrNull(0)?.selectFirst("img")?.attr("src") ?: ""
-                val team2 = teamDivs.getOrNull(1)?.text()?.trim() ?: "Team B"
+                val team2 = teamDivs.getOrNull(1)?.text()?.trim() ?: ""
                 val logo2 = teamDivs.getOrNull(1)?.selectFirst("img")?.attr("src") ?: ""
                 
-                val isEnded = status.contains("ended", ignoreCase = true) ||
-                        status.contains("finished", ignoreCase = true) ||
-                        status.contains("completed", ignoreCase = true)
+                val isSolo = team2.isEmpty() || team2.equals("Live", ignoreCase = true) || team1.contains("redzone", ignoreCase = true) || team1.contains("grand prix", ignoreCase = true)
+                
+                val isEnded = statusText.contains("ended", ignoreCase = true) ||
+                        statusText.contains("finished", ignoreCase = true) ||
+                        statusText.contains("completed", ignoreCase = true)
                 
                 if (!isEnded) {
-                    matches.add(WebMatchInfo(path, status, team1, logo1, team2, logo2, leagueName))
+                    matches.add(WebMatchInfo(
+                        path = path,
+                        status = if (isLive) "LIVE NOW" else "Upcoming",
+                        timeStr = if (isLive) "LIVE NOW" else if (timeWib.isNotEmpty()) timeWib else statusText,
+                        countdown = countdown,
+                        team1 = team1,
+                        logo1 = logo1,
+                        team2 = team2,
+                        logo2 = logo2,
+                        league = leagueName,
+                        isSolo = isSolo
+                    ))
                 }
             }
         }
@@ -183,15 +271,28 @@ class SportsurgeXRProvider : MainAPI() {
                 
                 val t1Name = teams.getOrNull(0) ?: "Team A"
                 val t1Logo = logos.getOrNull(0) ?: ""
-                val t2Name = teams.getOrNull(1) ?: "Team B"
+                val t2Name = teams.getOrNull(1) ?: ""
                 val t2Logo = logos.getOrNull(1) ?: ""
                 
+                val isSolo = t2Name.isEmpty() || t2Name.equals("Live", ignoreCase = true) || t1Name.contains("redzone", ignoreCase = true)
+                val isLive = status.contains("live", ignoreCase = true)
                 val isEnded = status.contains("ended", ignoreCase = true) ||
                         status.contains("finished", ignoreCase = true) ||
                         status.contains("completed", ignoreCase = true)
                 
                 if (!isEnded) {
-                    matches.add(WebMatchInfo(path, status, t1Name, t1Logo, t2Name, t2Logo, "Live Match"))
+                    matches.add(WebMatchInfo(
+                        path = path,
+                        status = if (isLive) "LIVE NOW" else "Upcoming",
+                        timeStr = if (isLive) "LIVE NOW" else status,
+                        countdown = if (isLive) "LIVE STREAM" else "UPCOMING",
+                        team1 = t1Name,
+                        logo1 = t1Logo,
+                        team2 = t2Name,
+                        logo2 = t2Logo,
+                        league = "Live Match",
+                        isSolo = isSolo
+                    ))
                 }
             }
         }
@@ -264,355 +365,6 @@ class SportsurgeXRProvider : MainAPI() {
         return streams
     }
 
-    private fun downloadBitmap(url: String): android.graphics.Bitmap? {
-        return try {
-            logoCache[url]?.let { return it }
-            val request = okhttp3.Request.Builder()
-                .url(url)
-                .header("User-Agent", DESKTOP_UA)
-                .build()
-            cleanClient.newCall(request).execute().use { response ->
-                if (response.isSuccessful) {
-                    val bytes = response.body?.bytes()
-                    if (bytes != null) {
-                        val opts = android.graphics.BitmapFactory.Options().apply {
-                            inSampleSize = 2
-                            inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
-                        }
-                        val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
-                        if (bmp != null) {
-                            logoCache[url] = bmp
-                        }
-                        bmp
-                    } else null
-                } else null
-            }
-        } catch (e: Throwable) {
-            null
-        }
-    }
-
-
-    private fun wrapText(text: String, maxChars: Int): List<String> {
-        val words = text.split(" ")
-        val lines = ArrayList<String>()
-        var currentLine = ""
-        for (word in words) {
-            if (word.length > maxChars) {
-                if (currentLine.isNotEmpty()) {
-                    lines.add(currentLine)
-                    currentLine = ""
-                }
-                var tempWord = word
-                while (tempWord.length > maxChars) {
-                    lines.add(tempWord.substring(0, maxChars))
-                    tempWord = tempWord.substring(maxChars)
-                }
-                currentLine = tempWord
-            } else {
-                if (currentLine.isEmpty()) {
-                    currentLine = word
-                } else if (currentLine.length + 1 + word.length <= maxChars) {
-                    currentLine += " $word"
-                } else {
-                    lines.add(currentLine)
-                    currentLine = word
-                }
-            }
-        }
-        if (currentLine.isNotEmpty()) {
-            lines.add(currentLine)
-        }
-        return lines.take(2)
-    }
-
-    private fun generateDynamicJpegPoster(
-        sport: String,
-        league: String?,
-        team1: String?,
-        team2: String?,
-        timeStr: String,
-        sportType: Int,
-        isLive: Boolean,
-        logoUrl1: String?,
-        logoUrl2: String?,
-        preloadedLogos: Map<String, android.graphics.Bitmap?> = emptyMap()
-    ): String {
-        val cacheKey = "${sport}_${league ?: ""}_${team1 ?: ""}_${team2 ?: ""}_${timeStr}_${sportType}_${isLive}_${logoUrl1 ?: ""}_${logoUrl2 ?: ""}"
-        val cached = posterCache[cacheKey]
-        if (cached != null) return cached
-        return try {
-            val width = 400
-            val height = 600
-            val bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
-            val canvas = android.graphics.Canvas(bitmap)
-            val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
-
-            val sportLower = sport.lowercase()
-            val (baseColor, accentColor) = when {
-                sportLower.contains("sepak bola") || sportLower.contains("football") || sportLower.contains("soccer") -> Pair("#041c0e", "#00ff87")
-                sportLower.contains("basket") || sportLower.contains("nba") || sportLower.contains("basketball") -> Pair("#241105", "#ff5e00")
-                sportLower.contains("tenis") || sportLower.contains("tennis") || sportLower.contains("badminton") || sportLower.contains("bulutangkis") -> Pair("#1a2007", "#ccff00")
-                sportLower.contains("tinju") || sportLower.contains("mma") || sportLower.contains("boxing") || sportLower.contains("ufc") || sportLower.contains("fighting") -> Pair("#260d0d", "#ff3333")
-                sportLower.contains("motorsport") || sportLower.contains("formula 1") || sportLower.contains("f1") || sportLower.contains("motogp") -> Pair("#0d1e26", "#00d2ff")
-                sportLower.contains("nfl") || sportLower.contains("american football") -> Pair("#001e3d", "#ffb612") // NFL Navy + Gold
-                sportLower.contains("bisbol") || sportLower.contains("baseball") || sportLower.contains("mlb") -> Pair("#0c2340", "#ff3333") // MLB Navy + Red
-                sportLower.contains("nhl") || sportLower.contains("hockey") -> Pair("#00205b", "#a5acaf") // NHL Blue + Silver
-                else -> Pair("#16082c", "#00f2fe")
-            }
-
-            val bgGradient = android.graphics.LinearGradient(
-                0f, 0f, 0f, height.toFloat(),
-                android.graphics.Color.parseColor("#020202"),
-                android.graphics.Color.parseColor(baseColor),
-                android.graphics.Shader.TileMode.CLAMP
-            )
-            paint.shader = bgGradient
-            paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
-            paint.shader = null
-
-            paint.color = android.graphics.Color.parseColor(accentColor)
-            paint.alpha = 10
-            val diagPath = android.graphics.Path().apply {
-                moveTo(0f, height * 0.4f)
-                lineTo(width.toFloat(), height * 0.2f)
-                lineTo(width.toFloat(), height.toFloat())
-                lineTo(0f, height.toFloat())
-                close()
-            }
-            canvas.drawPath(diagPath, paint)
-            paint.alpha = 255
-
-            paint.color = android.graphics.Color.parseColor("#E6" + baseColor.replace("#", ""))
-            paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRoundRect(25f, 40f, 375f, 560f, 24f, 24f, paint)
-
-            val borderGradient = android.graphics.LinearGradient(
-                25f, 40f, 375f, 560f,
-                android.graphics.Color.parseColor(accentColor),
-                android.graphics.Color.parseColor("#44FFFFFF"),
-                android.graphics.Shader.TileMode.CLAMP
-            )
-            paint.shader = borderGradient
-            paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 3f
-            canvas.drawRoundRect(25f, 40f, 375f, 560f, 24f, 24f, paint)
-            paint.shader = null
-
-            paint.color = android.graphics.Color.parseColor(accentColor)
-            paint.alpha = 100
-            paint.strokeWidth = 3f
-            canvas.drawLine(40f, 55f, 60f, 55f, paint)
-            canvas.drawLine(40f, 55f, 40f, 75f, paint)
-            canvas.drawLine(360f, 55f, 340f, 55f, paint)
-            canvas.drawLine(360f, 55f, 360f, 75f, paint)
-            canvas.drawLine(40f, 545f, 60f, 545f, paint)
-            canvas.drawLine(40f, 545f, 40f, 525f, paint)
-            canvas.drawLine(360f, 545f, 340f, 545f, paint)
-            canvas.drawLine(360f, 545f, 360f, 525f, paint)
-            paint.alpha = 255
-
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.color = android.graphics.Color.parseColor("#a0a5c0")
-            paint.textSize = 24f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-
-            val cleanSportName = when {
-                sportLower.contains("sepak bola") || sportLower.contains("football") || sportLower.contains("soccer") -> "SEPAK BOLA"
-                sportLower.contains("nfl") || sportLower.contains("american football") -> "AMERICAN FOOTBALL"
-                sportLower.contains("basket") || sportLower.contains("nba") || sportLower.contains("basketball") -> "BASKET"
-                sportLower.contains("bisbol") || sportLower.contains("baseball") || sportLower.contains("mlb") -> "BISBOL"
-                sportLower.contains("hoki") || sportLower.contains("nhl") || sportLower.contains("hockey") -> "HOKI ES"
-                sportLower.contains("tinju") || sportLower.contains("boxing") -> "TINJU"
-                sportLower.contains("mma") || sportLower.contains("ufc") -> "MMA"
-                sportLower.contains("formula 1") || sportLower.contains("f1") || sportLower.contains("motogp") || sportLower.contains("motorsport") -> "FORMULA 1"
-                sportLower.contains("rugby") -> "RUGBY"
-                else -> sport.uppercase()
-            }
-            canvas.drawText(cleanSportName, 200f, 95f, paint)
-
-            paint.color = android.graphics.Color.parseColor(accentColor)
-            paint.textSize = 30f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            val cleanLeague = league ?: "Live Event"
-            val truncatedLeague = if (cleanLeague.length > 20) cleanLeague.substring(0, 17) + "..." else cleanLeague
-            canvas.drawText(truncatedLeague, 200f, 150f, paint)
-
-            paint.color = android.graphics.Color.parseColor("#26FFFFFF")
-            paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
-            paint.color = android.graphics.Color.parseColor("#40FFFFFF")
-            paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 1.5f
-            canvas.drawRoundRect(45f, 185f, 355f, 285f, 16f, 16f, paint)
-
-            var team1TextLeft = 65f
-            if (!logoUrl1.isNullOrEmpty()) {
-                val logoBmp = preloadedLogos[logoUrl1] ?: logoCache[logoUrl1]
-                if (logoBmp != null) {
-                    logoCache[logoUrl1] = logoBmp
-                    val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
-                    val path = android.graphics.Path().apply {
-                        addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
-                    }
-                    canvas.save()
-                    canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, null)
-                    canvas.restore()
-                    team1TextLeft = 155f
-                } else {
-                    val destRect = android.graphics.RectF(65f, 200f, 135f, 270f)
-                    paint.color = android.graphics.Color.parseColor("#33FFFFFF")
-                    paint.style = android.graphics.Paint.Style.FILL
-                    canvas.drawRoundRect(destRect, 12f, 12f, paint)
-                    
-                    paint.color = android.graphics.Color.WHITE
-                    paint.textSize = 32f
-                    paint.textAlign = android.graphics.Paint.Align.CENTER
-                    paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-                    val letter = team1?.firstOrNull()?.toString()?.uppercase() ?: "A"
-                    canvas.drawText(letter, 100f, 245f, paint)
-                    team1TextLeft = 155f
-                }
-            } else {
-                team1TextLeft = 200f
-            }
-
-            paint.color = android.graphics.Color.WHITE
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.textSize = 36f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            val t1 = team1 ?: "Team A"
-            val t1Lines = wrapText(t1, if (team1TextLeft == 200f) 14 else 8)
-            if (team1TextLeft == 200f) {
-                paint.textAlign = android.graphics.Paint.Align.CENTER
-                var currentY = if (t1Lines.size > 1) 225f else 245f
-                for (line in t1Lines) {
-                    canvas.drawText(line, 200f, currentY, paint)
-                    currentY += 42f
-                }
-            } else {
-                paint.textAlign = android.graphics.Paint.Align.LEFT
-                var currentY = if (t1Lines.size > 1) 225f else 245f
-                for (line in t1Lines) {
-                    canvas.drawText(line, team1TextLeft, currentY, paint)
-                    currentY += 42f
-                }
-            }
-
-            paint.color = android.graphics.Color.parseColor("#33FFFFFF")
-            paint.strokeWidth = 2f
-            canvas.drawLine(45f, 315f, 150f, 315f, paint)
-            canvas.drawLine(250f, 315f, 355f, 315f, paint)
-
-            paint.color = android.graphics.Color.parseColor(accentColor)
-            paint.textSize = 34f
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD_ITALIC)
-            canvas.drawText("VS", 200f, 326f, paint)
-
-            paint.color = android.graphics.Color.parseColor("#26FFFFFF")
-            paint.style = android.graphics.Paint.Style.FILL
-            canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
-            paint.color = android.graphics.Color.parseColor("#40FFFFFF")
-            paint.style = android.graphics.Paint.Style.STROKE
-            paint.strokeWidth = 1.5f
-            canvas.drawRoundRect(45f, 345f, 355f, 445f, 16f, 16f, paint)
-
-            var team2TextLeft = 65f
-            if (!logoUrl2.isNullOrEmpty()) {
-                val logoBmp = preloadedLogos[logoUrl2] ?: logoCache[logoUrl2]
-                if (logoBmp != null) {
-                    logoCache[logoUrl2] = logoBmp
-                    val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
-                    val path = android.graphics.Path().apply {
-                        addRoundRect(destRect, 12f, 12f, android.graphics.Path.Direction.CW)
-                    }
-                    canvas.save()
-                    canvas.clipPath(path)
-                    canvas.drawBitmap(logoBmp, null, destRect, null)
-                    canvas.restore()
-                    team2TextLeft = 155f
-                } else {
-                    val destRect = android.graphics.RectF(65f, 360f, 135f, 430f)
-                    paint.color = android.graphics.Color.parseColor("#33FFFFFF")
-                    paint.style = android.graphics.Paint.Style.FILL
-                    canvas.drawRoundRect(destRect, 12f, 12f, paint)
-                    
-                    paint.color = android.graphics.Color.WHITE
-                    paint.textSize = 32f
-                    paint.textAlign = android.graphics.Paint.Align.CENTER
-                    paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-                    val letter = team2?.firstOrNull()?.toString()?.uppercase() ?: "B"
-                    canvas.drawText(letter, 100f, 405f, paint)
-                    team2TextLeft = 155f
-                }
-            } else {
-                team2TextLeft = 200f
-            }
-
-            paint.color = android.graphics.Color.WHITE
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.textSize = 36f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            val t2 = team2 ?: "Team B"
-            val t2Lines = wrapText(t2, if (team2TextLeft == 200f) 14 else 8)
-            if (team2TextLeft == 200f) {
-                paint.textAlign = android.graphics.Paint.Align.CENTER
-                var currentY = if (t2Lines.size > 1) 385f else 405f
-                for (line in t2Lines) {
-                    canvas.drawText(line, 200f, currentY, paint)
-                    currentY += 42f
-                }
-            } else {
-                paint.textAlign = android.graphics.Paint.Align.LEFT
-                var currentY = if (t2Lines.size > 1) 385f else 405f
-                for (line in t2Lines) {
-                    canvas.drawText(line, team2TextLeft, currentY, paint)
-                    currentY += 42f
-                }
-            }
-
-            val isLiveReal = isLive || timeStr.contains("live", ignoreCase = true)
-            val badgeColor = if (isLiveReal) "#ff3333" else "#1a73e8"
-            val badgeText = if (isLiveReal) "LIVE NOW" else "UPCOMING"
-            paint.color = android.graphics.Color.parseColor(badgeColor)
-            paint.style = android.graphics.Paint.Style.FILL
-            paint.textAlign = android.graphics.Paint.Align.CENTER
-            canvas.drawRoundRect(100f, 475f, 300f, 520f, 22f, 22f, paint)
-
-            paint.color = android.graphics.Color.WHITE
-            paint.textSize = 24f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            if (isLiveReal) {
-                paint.color = android.graphics.Color.RED
-                canvas.drawCircle(145f, 497.5f, 7f, paint)
-                paint.color = android.graphics.Color.WHITE
-                canvas.drawText("LIVE NOW", 215f, 506f, paint)
-            } else {
-                canvas.drawText(badgeText, 200f, 506f, paint)
-            }
-
-            paint.color = android.graphics.Color.parseColor("#a0a5c0")
-            paint.textSize = 24f
-            paint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.BOLD)
-            canvas.drawText(timeStr, 200f, 550f, paint)
-
-            val baos = java.io.ByteArrayOutputStream()
-            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 80, baos)
-            val bytes = baos.toByteArray()
-            val base64 = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
-            val finalUrl = "data:image/jpeg;base64,$base64"
-            posterCache[cacheKey] = finalUrl
-            finalUrl
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
-        }
-    }
-
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
@@ -637,41 +389,26 @@ class SportsurgeXRProvider : MainAPI() {
         }
         
         val sortedMatches = matches.sortedByDescending { it.status.contains("live", ignoreCase = true) }
-        
-        // Unduh logo secara terkendali (Semaphore 3) agar hemat RAM di Android TV
-        val logoUrls = sortedMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct().take(25)
-        val logoSemaphore = Semaphore(3)
-        val logoBitmaps = coroutineScope {
-            logoUrls.map { url ->
-                async(kotlinx.coroutines.Dispatchers.IO) {
-                    logoSemaphore.withPermit {
-                        try {
-                            url to downloadBitmap(url)
-                        } catch (e: Throwable) {
-                            url to null
-                        }
-                    }
-                }
-            }.awaitAll().toMap()
-        }
 
         val searchResps = sortedMatches.map { m ->
             val isLive = m.status.contains("live", ignoreCase = true)
-            val poster = generateDynamicJpegPoster(
+            val poster = buildPosterUrl(
                 sport = categoryName,
                 league = m.league,
-                team1 = m.team1,
-                team2 = m.team2,
-                timeStr = m.status,
-                sportType = 1,
+                home = m.team1,
+                away = m.team2,
+                time = m.timeStr,
+                countdown = m.countdown,
                 isLive = isLive,
-                logoUrl1 = m.logo1,
-                logoUrl2 = m.logo2,
-                preloadedLogos = logoBitmaps
+                isSolo = m.isSolo,
+                logo1 = m.logo1,
+                logo2 = m.logo2
             )
             
             val detailUrl = "https://lynk.id/xr3ed#$mainUrl${m.path}"
-            val cardTitle = if (m.league.isNotEmpty()) {
+            val cardTitle = if (m.isSolo) {
+                "${m.team1} (${m.league})"
+            } else if (m.league.isNotEmpty()) {
                 "${m.team1} vs ${m.team2} (${m.league})"
             } else {
                 "${m.team1} vs ${m.team2}"
@@ -684,13 +421,9 @@ class SportsurgeXRProvider : MainAPI() {
                 this.posterUrl = poster
             }
         }
-        
-        if (posterCache.size > 100) {
-            posterCache.clear()
-        }
 
         return newHomePageResponse(
-            listOf(HomePageList(categoryName, searchResps)),
+            listOf(HomePageList(categoryName, searchResps, isHorizontalImages = true)),
             hasNext = false
         )
     }
@@ -714,39 +447,26 @@ class SportsurgeXRProvider : MainAPI() {
             val filteredMatches = allMatches.filter { m ->
                 m.team1.contains(query, ignoreCase = true) || m.team2.contains(query, ignoreCase = true)
             }.sortedByDescending { it.status.contains("live", ignoreCase = true) }
-            
-            // Unduh logo secara terkendali untuk hasil pencarian
-            val logoUrls = filteredMatches.flatMap { listOf(it.logo1, it.logo2) }.filter { it.isNotEmpty() }.distinct().take(25)
-            val searchLogoSemaphore = Semaphore(3)
-            val logoBitmaps = logoUrls.map { url ->
-                async(kotlinx.coroutines.Dispatchers.IO) {
-                    searchLogoSemaphore.withPermit {
-                        try {
-                            url to downloadBitmap(url)
-                        } catch (e: Throwable) {
-                            url to null
-                        }
-                    }
-                }
-            }.awaitAll().toMap()
 
             filteredMatches.map { m ->
                 val isLive = m.status.contains("live", ignoreCase = true)
-                val poster = generateDynamicJpegPoster(
+                val poster = buildPosterUrl(
                     sport = "Olahraga",
                     league = m.league,
-                    team1 = m.team1,
-                    team2 = m.team2,
-                    timeStr = m.status,
-                    sportType = 1,
+                    home = m.team1,
+                    away = m.team2,
+                    time = m.timeStr,
+                    countdown = m.countdown,
                     isLive = isLive,
-                    logoUrl1 = m.logo1,
-                    logoUrl2 = m.logo2,
-                    preloadedLogos = logoBitmaps
+                    isSolo = m.isSolo,
+                    logo1 = m.logo1,
+                    logo2 = m.logo2
                 )
                 
                 val detailUrl = "https://lynk.id/xr3ed#$mainUrl${m.path}"
-                val cardTitle = if (m.league.isNotEmpty()) {
+                val cardTitle = if (m.isSolo) {
+                    "${m.team1} (${m.league})"
+                } else if (m.league.isNotEmpty()) {
                     "${m.team1} vs ${m.team2} (${m.league})"
                 } else {
                     "${m.team1} vs ${m.team2}"
