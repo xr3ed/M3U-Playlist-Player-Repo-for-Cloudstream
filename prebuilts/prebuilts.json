@@ -303,5 +303,25 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+  },
+  {
+    "name": "HaruFilmXR",
+    "internalName": "HaruFilmXR",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/HaruFilmXR.cs3",
+    "version": 1,
+    "description": "HaruFilm — Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Movie",
+      "TvSeries",
+      "Anime"
+    ],
+    "iconUrl": "https://harufilm.eu.cc/images/apple-touch-icon.png",
+    "apiVersion": 1,
+    "status": 1,
+    "language": "id",
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
   }
 ]
