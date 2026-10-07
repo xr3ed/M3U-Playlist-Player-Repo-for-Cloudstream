@@ -194,8 +194,8 @@
     "name": "KlikXXiXR",
     "internalName": "KlikXXiXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KlikXXiXR.cs3",
-    "version": 6,
-    "description": "KlikXXI — provider film terbaru subtitle Indonesia dengan kategori lengkap.",
+    "version": 7,
+    "description": "KlikXXI — provider film & series subtitle Indonesia dengan pencarian akurat, integrasi TMDb lengkap (logo, backdrop, rating, aktor & episode).",
     "authors": [
       "xr3ed"
     ],
