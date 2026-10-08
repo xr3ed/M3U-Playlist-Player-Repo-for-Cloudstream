@@ -3,10 +3,13 @@ rootProject.name = "xr3ed"
 // This file sets what projects are included. All new projects should get automatically included unless specified in "disabled" variable.
 
 val isCI = System.getenv("CI") == "true"
+val targetTasks = gradle.startParameter.taskNames.joinToString(" ")
 val disabled = if (isCI) {
     listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "GudangFilmXR", "OtakudesuXR", "SportsurgeXR", "RBTVPlus", "HaruFilmXR")
 } else {
-    listOf<String>("AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "OtakudesuXR")
+    listOf<String>("AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "OtakudesuXR").filterNot {
+        targetTasks.contains(it, ignoreCase = true)
+    }
 }
 
 File(rootDir, ".").eachDir { dir ->
