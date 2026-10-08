@@ -174,7 +174,7 @@
     "name": "LayarKacaXR",
     "internalName": "LayarKacaXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LayarKacaXR.cs3",
-    "version": 13,
+    "version": 14,
     "description": "LayarKaca — provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
     "authors": [
       "xr3ed"
