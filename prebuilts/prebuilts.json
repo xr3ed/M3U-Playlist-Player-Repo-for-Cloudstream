@@ -72,6 +72,23 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
   },
   {
+    "name": "#Dracin All in One",
+    "internalName": "DracinAIO",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAIO.cs3",
+    "version": 30,
+    "description": "Ekstensi Cloudstream untuk menonton drama pendek dari berbagai provider",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "TvSeries"
+    ],
+    "apiVersion": 1,
+    "status": 1,
+    "language": "id",
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+  },
+  {
     "name": "DubIndoXR",
     "internalName": "DubIndoXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
