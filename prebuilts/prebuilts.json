@@ -40,7 +40,7 @@
     "name": "MovieBoXR",
     "internalName": "MovieBoXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
-    "version": 38,
+    "version": 39,
     "description": "Multi Language Movies and Series Provider",
     "authors": [
       "xr3ed"
@@ -52,7 +52,9 @@
     "apiVersion": 1,
     "status": 1,
     "language": "id",
-    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 129808,
+    "fileHash": "sha256-58c079773b4f79875762f8a8dd559a1201775689b3b12b85c1110dc7fd5be134"
   },
   {
     "name": "DracinAio V2",
