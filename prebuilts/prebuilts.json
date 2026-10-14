@@ -414,13 +414,12 @@
     "name": "vidioXR",
     "internalName": "vidioXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/vidioXR.cs3",
-    "version": 1,
-    "description": "Nonton Live TV FTA, Film, Sinetron & Series Vidio",
+    "version": 2,
+    "description": "Nonton Film, Sinetron & Series Vidio",
     "authors": [
       "xr3ed"
     ],
     "tvTypes": [
-      "Live",
       "Movie",
       "TvSeries"
     ],
@@ -429,7 +428,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 66540,
-    "fileHash": "sha256-166178add89fdc648d6ef77d2e23eec74e794d0240811991dd2d47527bf142ba"
+    "fileSize": 57033,
+    "fileHash": "sha256-2c240c83d556b4af23745c2fc2a964d6c7d8c65622dc9df86fe2fc0ba5346a45"
   }
 ]
