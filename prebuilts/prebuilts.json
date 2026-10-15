@@ -393,7 +393,7 @@
     "name": "xr3edFlix",
     "internalName": "xr3edFlix",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edFlix.cs3",
-    "version": 72,
+    "version": 73,
     "description": "Ekstensi Cloudstream untuk menonton Film dan TV Series gratis dari autoembed",
     "authors": [
       "xr3ed"
@@ -407,8 +407,8 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 185270,
-    "fileHash": "sha256-b90e7e037af0ba2bf3425a94351ea1f3b04581f394ce369e1478cd2e9a877992"
+    "fileSize": 187947,
+    "fileHash": "sha256-9f6cee9e9913ad707357d385844952bda2242101b2293d6ebf6377ecc407e0cf"
   },
   {
     "name": "vidioXR",
