@@ -47,7 +47,11 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
             try {
                 val sectionKey = "${section.pluginName}||${section.name}||${section.url}"
                 val sectionName = buildSectionName(section, tempSectionNames, extNameOnHome)
-                result += mainPageOf(sectionKey to sectionName)
+                val provider = LiveEventUtils.findProvider(section.pluginName)
+                val isHorizontal = provider?.mainPage
+                    ?.find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                    ?.horizontalImages ?: true
+                result.add(MainPageData(name = sectionName, data = sectionKey, horizontalImages = isHorizontal))
             } catch (e: Exception) {
                 Log.e("LiveEvent", "Failed to load section ${section.name}: ${e.message}")
             }
@@ -101,18 +105,22 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
                 sectionUrl
             }
 
+            val isHorizontalSection = provider.mainPage
+                .find { it.name.trim().equals(sectionName.trim(), ignoreCase = true) }
+                ?.horizontalImages ?: request.horizontalImages
+
             val response = provider.getMainPage(
                 page,
                 MainPageRequest(
                     name = sectionName,
                     data = liveData,
-                    horizontalImages = request.horizontalImages
+                    horizontalImages = isHorizontalSection
                 )
             ) ?: return null
 
             newHomePageResponse(
                 response.items.map { list ->
-                    HomePageList(request.name, list.list, list.isHorizontalImages)
+                    HomePageList(request.name, list.list, isHorizontalImages = list.isHorizontalImages || isHorizontalSection)
                 },
                 response.hasNext
             )
@@ -138,18 +146,22 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
                     section.url
                 }
 
+                val isHorizontalSection = provider.mainPage
+                    .find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                    ?.horizontalImages ?: request.horizontalImages
+
                 val response = provider.getMainPage(
                     page,
                     MainPageRequest(
                         name = section.name,
                         data = liveData,
-                        horizontalImages = request.horizontalImages
+                        horizontalImages = isHorizontalSection
                     )
                 ) ?: return null
 
                 newHomePageResponse(
                     response.items.map { list ->
-                        HomePageList(request.name, list.list, list.isHorizontalImages)
+                        HomePageList(request.name, list.list, isHorizontalImages = list.isHorizontalImages || isHorizontalSection)
                     },
                     response.hasNext
                 )
