@@ -31,6 +31,8 @@ class MyHomepage(val plugin: MyHomepagePlugin) : MainAPI() {
 
     private val mapper = jacksonObjectMapper()
     private var sectionNamesList: List<String> = emptyList()
+    private val firstCategoryUrls = java.util.Collections.synchronizedSet(mutableSetOf<String>())
+    private var firstSectionRawName: String? = null
 
     private fun loadSections(): List<MainPageData> {
         val tempSectionNames = mutableListOf<String>()
@@ -44,6 +46,8 @@ class MyHomepage(val plugin: MyHomepagePlugin) : MainAPI() {
             .flatMap { it.sections?.asList() ?: emptyList() }
             .filter { it.enabled }
             .sortedByDescending { it.priority }
+
+        firstSectionRawName = enabledSections.firstOrNull()?.name
 
         enabledSections.forEach { section ->
             try {
@@ -98,6 +102,12 @@ class MyHomepage(val plugin: MyHomepagePlugin) : MainAPI() {
                 )
             ) ?: return null
 
+            if (section.name.equals(firstSectionRawName, ignoreCase = true)) {
+                val urls = response.items.flatMap { it.list }.map { it.url }
+                firstCategoryUrls.clear()
+                firstCategoryUrls.addAll(urls)
+            }
+
             newHomePageResponse(
                 response.items.map { list ->
                     HomePageList(request.name, list.list, list.isHorizontalImages)
@@ -148,6 +158,19 @@ class MyHomepage(val plugin: MyHomepagePlugin) : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse {
+        val isHomePreviewCall = try {
+            Throwable().stackTrace.any { element ->
+                element.className.contains("HomeViewModel") ||
+                element.methodName.contains("updatePreviewResponses")
+            }
+        } catch (_: Throwable) {
+            false
+        }
+
+        if (isHomePreviewCall && firstCategoryUrls.isNotEmpty() && !firstCategoryUrls.contains(url)) {
+            throw ErrorLoadingException("Skip non-first-category item for home banner")
+        }
+
         val context = CloudStreamApp.context ?: plugin.activity
         val enabledPluginNames = if (context != null) {
             MyHomepageStorageManager.getCurrentExtensions(context)
@@ -168,11 +191,19 @@ class MyHomepage(val plugin: MyHomepagePlugin) : MainAPI() {
                     response.name.isNotBlank() &&
                     !response.posterUrl.isNullOrBlank()
                 ) {
+                    if (isHomePreviewCall && (response.type == TvType.Live || response is com.lagradost.cloudstream3.LiveStreamLoadResponse)) {
+                        throw ErrorLoadingException("Skip live stream for home banner")
+                    }
                     return response
                 }
-            } catch (_: Throwable) {
+            } catch (e: Throwable) {
+                if (isHomePreviewCall && e is ErrorLoadingException) throw e
                 Log.e("MyHomepage", "Failed loading from ${provider.name}")
             }
+        }
+
+        if (isHomePreviewCall) {
+            throw ErrorLoadingException("Unable to load home banner item")
         }
 
         return newMovieLoadResponse("Welcome to My Homepage", "", TvType.Others, "")
