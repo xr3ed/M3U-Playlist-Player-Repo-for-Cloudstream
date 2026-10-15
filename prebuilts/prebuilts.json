@@ -433,5 +433,27 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
     "fileSize": 133704,
     "fileHash": "sha256-7bfe27b91e117a1c43a3e7addcafd080696f9dbfde5d90847053af2276c61f68"
+  },
+  {
+    "name": "MyHomepage",
+    "internalName": "MyHomepage",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MyHomepage.cs3",
+    "version": 16,
+    "description": "Beranda Kustom Tanpa Sync",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Movie",
+      "TvSeries",
+      "Anime"
+    ],
+    "apiVersion": 1,
+    "status": 1,
+    "language": "id",
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 58704,
+    "fileHash": "sha256-c1348ce53d880b3ee82073a69bb7a8f582466ccc46e574d24d06193070df94d8"
   }
 ]
+
