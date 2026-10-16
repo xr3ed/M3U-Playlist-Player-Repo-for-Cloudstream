@@ -414,7 +414,7 @@
     "name": "vidioXR",
     "internalName": "vidioXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/vidioXR.cs3",
-    "version": 42,
+    "version": 43,
     "description": "Nonton Film, Sinetron, Anime, Kartun & Live TV Sports Vidio",
     "authors": [
       "xr3ed"
@@ -431,8 +431,8 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 136034,
-    "fileHash": "sha256-8379b3ddf4feef8a432b85ca08161f709d258fbf7253341000e615217746a0f3"
+    "fileSize": 136867,
+    "fileHash": "sha256-813332c9a7e3440b63bae27e18589ec9c47fec8cb38434e8eb7a74a5682f20d7"
   },
   {
     "name": "MyHomepage",
@@ -459,7 +459,7 @@
     "name": "wetvXR",
     "internalName": "wetvXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/wetvXR.cs3",
-    "version": 1,
+    "version": 2,
     "description": "Nonton Serial Drama, Anime & Film WeTV (VIP Supported)",
     "authors": [
       "xr3ed"
@@ -475,8 +475,8 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 81483,
-    "fileHash": "sha256-2e26e6f515e743061c2e5cf3a82b84da4bd039ec743082ae879f7e0887020ee5"
+    "fileSize": 83563,
+    "fileHash": "sha256-79c4031823bbb0ba8b51fe66572432c0b4c6c1b5b3ef5878b22a8cc7bb68b67f"
   }
 ]
 
