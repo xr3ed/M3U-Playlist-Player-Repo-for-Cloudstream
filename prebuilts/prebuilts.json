@@ -459,7 +459,7 @@
     "name": "wetvXR",
     "internalName": "wetvXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/wetvXR.cs3",
-    "version": 3,
+    "version": 4,
     "description": "Nonton Serial Drama, Anime & Film WeTV (VIP Supported)",
     "authors": [
       "xr3ed"
@@ -475,7 +475,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 107314,
-    "fileHash": "sha256-eb84fd2d0e3079794e4b31d744e19cfb97b70057b16e1b08b58c60102966c882"
+    "fileSize": 108048,
+    "fileHash": "sha256-f5f2279b4eff1e14fdf0edf13dc73a1973424b6171c07aaddbb7e9b913bee2ac"
   }
 ]
