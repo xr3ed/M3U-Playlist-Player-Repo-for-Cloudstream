@@ -40,7 +40,7 @@
         "name": "MovieBoXR",
         "internalName": "MovieBoXR",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
-        "version": 39,
+        "version": 40,
         "description": "Multi Language Movies and Series Provider",
         "authors": [
             "xr3ed"
@@ -53,8 +53,8 @@
         "status": 1,
         "language": "id",
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 129808,
-        "fileHash": "sha256-58c079773b4f79875762f8a8dd559a1201775689b3b12b85c1110dc7fd5be134"
+        "fileSize": 130591,
+        "fileHash": "sha256-89b551c2f310259a1c4882a6d7af0f68ff597e38da90569a95075134989f4188"
     },
     {
         "name": "DracinAio V2",
@@ -393,7 +393,7 @@
         "name": "xr3edFlix",
         "internalName": "xr3edFlix",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edFlix.cs3",
-        "version": 73,
+        "version": 74,
         "description": "Ekstensi Cloudstream untuk menonton Film dan TV Series gratis dari autoembed",
         "authors": [
             "xr3ed"
@@ -407,14 +407,14 @@
         "status": 1,
         "language": "id",
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 187947,
-        "fileHash": "sha256-9f6cee9e9913ad707357d385844952bda2242101b2293d6ebf6377ecc407e0cf"
+        "fileSize": 189217,
+        "fileHash": "sha256-2c6a4fd0dcbd0489258a07da16d2d3d9dad4717ffc55892f9f389e8d6739cce7"
     },
     {
         "name": "vidioXR",
         "internalName": "vidioXR",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/vidioXR.cs3",
-        "version": 50,
+        "version": 51,
         "description": "Nonton Film, Sinetron, Anime, Kartun & Live TV Sports Vidio",
         "authors": [
             "xr3ed"
@@ -431,8 +431,8 @@
         "status": 1,
         "language": "id",
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 144451,
-        "fileHash": "sha256-c65507b718224656cb4fd49ee0ad45cb5a9c1d0ce6b51ab9a17709e022218cfa"
+        "fileSize": 144427,
+        "fileHash": "sha256-7e33a8df3fde1c44f43eec8444c7ddbfd4aa2df790189e59afbd2d2d311a7bc4"
     },
     {
         "name": "MyHomepage",
