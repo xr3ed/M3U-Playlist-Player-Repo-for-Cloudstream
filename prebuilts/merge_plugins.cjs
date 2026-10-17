@@ -21,7 +21,7 @@ if (!fs.existsSync(prebuiltsPath)) {
 // 1. Read files
 let plugins = [];
 try {
-  plugins = JSON.parse(fs.readFileSync(pluginsPath, 'utf8'));
+  plugins = JSON.parse(fs.readFileSync(pluginsPath, 'utf8').replace(/^\uFEFF/, ''));
 } catch (e) {
   console.error('Failed to parse build-out/plugins.json', e);
   process.exit(1);
@@ -29,7 +29,7 @@ try {
 
 let prebuilts = [];
 try {
-  prebuilts = JSON.parse(fs.readFileSync(prebuiltsPath, 'utf8'));
+  prebuilts = JSON.parse(fs.readFileSync(prebuiltsPath, 'utf8').replace(/^\uFEFF/, ''));
 } catch (e) {
   console.error('Failed to parse prebuilts/prebuilts.json', e);
   process.exit(1);
