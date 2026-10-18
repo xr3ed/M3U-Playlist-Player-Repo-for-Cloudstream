@@ -414,7 +414,7 @@
     "name": "vidioXR",
     "internalName": "vidioXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/vidioXR.cs3",
-    "version": 61,
+    "version": 62,
     "description": "Nonton Film, Sinetron, Anime, Kartun & Live TV Sports Vidio",
     "authors": [
       "xr3ed"
@@ -430,8 +430,8 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 162628,
-    "fileHash": "sha256-0b182f4d47d52b060ce3b100fa7514b10d8ab84628ff49e0d062ae5833f446d1"
+    "fileSize": 162670,
+    "fileHash": "sha256-d12003b2a3515eb2ff430159380ec3301be6ef0bf4d36137d26965e3ef9bcb7e"
   },
   {
     "name": "MyHomepage",
