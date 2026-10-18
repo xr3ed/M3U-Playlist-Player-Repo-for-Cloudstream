@@ -60,7 +60,7 @@
     "name": "DracinAio V2",
     "internalName": "DracinAioV2",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
-    "version": 81,
+    "version": 82,
     "description": "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
     "authors": [
       "xr3ed"
@@ -414,7 +414,7 @@
     "name": "vidioXR",
     "internalName": "vidioXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/vidioXR.cs3",
-    "version": 63,
+    "version": 64,
     "description": "Nonton Film, Sinetron, Anime, Kartun & Live TV Sports Vidio",
     "authors": [
       "xr3ed"
@@ -430,8 +430,8 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 160166,
-    "fileHash": "sha256-2aa27b79cca28328c075dd7164c53a1e9e9110c62085cf0d22204ff7c6c4ec23"
+    "fileSize": 160470,
+    "fileHash": "sha256-c7d6759d78da9a5ebda52d5b7bc9df3cd57f6cdea815977c4c1ec58bdce65750"
   },
   {
     "name": "MyHomepage",
