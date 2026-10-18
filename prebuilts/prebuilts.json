@@ -4,7 +4,7 @@
     "internalName": "KepalaBergetarXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KepalaBergetarXR.cs3",
     "version": 3,
-    "description": "Kepala Bergetar â€” Tonton Drama Melayu, Telefilem & Filem Online",
+    "description": "Kepala Bergetar — Tonton Drama Melayu, Telefilem & Filem Online",
     "authors": [
       "xr3ed"
     ],
@@ -194,7 +194,7 @@
     "internalName": "LayarKacaXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LayarKacaXR.cs3",
     "version": 15,
-    "description": "LayarKaca â€” provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
+    "description": "LayarKaca — provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
     "authors": [
       "xr3ed"
     ],
@@ -214,7 +214,7 @@
     "internalName": "KlikXXiXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KlikXXiXR.cs3",
     "version": 8,
-    "description": "KlikXXI â€” provider film & series subtitle Indonesia dengan pencarian akurat, integrasi TMDb lengkap (logo, backdrop, rating, aktor & episode).",
+    "description": "KlikXXI — provider film & series subtitle Indonesia dengan pencarian akurat, integrasi TMDb lengkap (logo, backdrop, rating, aktor & episode).",
     "authors": [
       "xr3ed"
     ],
@@ -230,7 +230,7 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
   },
   {
-    "name": "ðŸ“º xr3edTV",
+    "name": "📺 xr3edTV",
     "internalName": "xr3edTV",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
     "version": 52,
@@ -274,7 +274,7 @@
     "internalName": "OtakudesuXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/OtakudesuXR.cs3",
     "version": 21,
-    "description": "Otakudesu â€” Streaming Anime Subtitle Indonesia (#Anime OtakudesuXR)",
+    "description": "Otakudesu — Streaming Anime Subtitle Indonesia (#Anime OtakudesuXR)",
     "authors": [
       "xr3ed"
     ],
@@ -290,7 +290,7 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
   },
   {
-    "name": "âš½ SportsurgeXR",
+    "name": "⚽ SportsurgeXR",
     "internalName": "SportsurgeXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/SportsurgeXR.cs3",
     "version": 18,
@@ -308,7 +308,7 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
   },
   {
-    "name": "ðŸ† RBTV+",
+    "name": "🏆 RBTV+",
     "internalName": "RBTVPlus",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/RBTVPlus.cs3",
     "version": 76,
@@ -332,7 +332,7 @@
     "internalName": "HaruFilmXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/HaruFilmXR.cs3",
     "version": 4,
-    "description": "HaruFilm â€” Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
+    "description": "HaruFilm — Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
     "authors": [
       "xr3ed"
     ],
@@ -352,7 +352,7 @@
     "internalName": "SamehadakuXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/SamehadakuXR.cs3",
     "version": 42,
-    "description": "Samehadaku â€” Streaming & Download Anime Subtitle Indonesia (#Anime SamehadakuXR)",
+    "description": "Samehadaku — Streaming & Download Anime Subtitle Indonesia (#Anime SamehadakuXR)",
     "authors": [
       "xr3ed"
     ],
@@ -372,7 +372,7 @@
     "internalName": "NontonAnimeIDXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/NontonAnimeIDXR.cs3",
     "version": 43,
-    "description": "NontonAnimeID â€” Streaming Anime Subtitle Indonesia (#Anime NontonAnimeIDXR)",
+    "description": "NontonAnimeID — Streaming Anime Subtitle Indonesia (#Anime NontonAnimeIDXR)",
     "authors": [
       "xr3ed"
     ],
