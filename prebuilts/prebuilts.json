@@ -60,7 +60,7 @@
     "name": "DracinAio V2",
     "internalName": "DracinAioV2",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
-    "version": 80,
+    "version": 81,
     "description": "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
     "authors": [
       "xr3ed"
@@ -430,8 +430,8 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 162670,
-    "fileHash": "sha256-d12003b2a3515eb2ff430159380ec3301be6ef0bf4d36137d26965e3ef9bcb7e"
+    "fileSize": 159684,
+    "fileHash": "sha256-7745c06bd780c51c13d0bf812f200a56e6391449f2c871c21e4c1634c16c167a"
   },
   {
     "name": "MyHomepage",
