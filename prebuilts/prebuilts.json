@@ -233,7 +233,7 @@
     "name": "📺 xr3edTV",
     "internalName": "xr3edTV",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
-    "version": 52,
+    "version": 62,
     "description": "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
     "authors": [
       "xr3ed"
@@ -246,8 +246,8 @@
     "status": 1,
     "language": "live",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 168117,
-    "fileHash": "sha256-408da0ee6b296e607e4117ff49e4078138efc90b22a98982122c58dd82f42401"
+    "fileSize": 190046,
+    "fileHash": "sha256-8e5b77324c75deda69fab6dabfc0667bc8b9762db6ea70d8f8a09a5e7136da51"
   },
   {
     "name": "GudangFilmXR",
