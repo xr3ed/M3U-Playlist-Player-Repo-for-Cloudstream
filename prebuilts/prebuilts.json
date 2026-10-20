@@ -295,7 +295,7 @@
     "name": "⚽ SportsurgeXR",
     "internalName": "SportsurgeXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/SportsurgeXR.cs3",
-    "version": 18,
+    "version": 19,
     "description": "Streaming olahraga langsung (Live Sports) dari SportsurgeXR dengan poster 16:9 dinamis",
     "authors": [
       "xr3ed"
@@ -307,7 +307,9 @@
     "apiVersion": 1,
     "status": 1,
     "language": "id",
-    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 61135,
+    "fileHash": "sha256-de994fdf951a959c6346243c531284eb7fa9062a967370d2c97d74ac7ec98647"
   },
   {
     "name": "🏆 RBTV+",
