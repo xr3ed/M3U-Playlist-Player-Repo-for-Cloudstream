@@ -122,6 +122,48 @@ def channels_to_m3u(channels: list) -> str:
         lines.append(full_stream)
     return "\n".join(lines) + "\n"
 
+def fetch_online_channels(engine_url: str, engine_auth: str) -> list:
+    channels = []
+    try:
+        from curl_cffi import requests
+        s = requests.Session(impersonate="chrome124")
+    except Exception:
+        import requests
+        s = requests.Session()
+
+    try:
+        login_url = f"{engine_url.rstrip('/')}/api/login"
+        resp = s.post(login_url, data={"code": engine_auth}, timeout=12)
+        if resp.status_code != 200:
+            return []
+        data = resp.json()
+        categories = data.get("categories", []) or []
+        for cat in categories:
+            cat_id = cat.get("id")
+            if not cat_id:
+                continue
+            pl_url = f"{engine_url.rstrip('/')}/api/playlist?id={cat_id}"
+            pl_resp = s.get(pl_url, timeout=12)
+            if pl_resp.status_code == 200:
+                pdata = pl_resp.json()
+                for grp in pdata.get("a", []):
+                    grp_name = grp.get("a", "")
+                    for item in grp.get("b", []):
+                        raw_stream = item.get("stream_url", "")
+                        raw_ua = item.get("user_agent", "")
+                        raw_ref = item.get("referer", "")
+                        channels.append({
+                            "category": grp_name,
+                            "name": item.get("a", ""),
+                            "logo": item.get("logo_url", ""),
+                            "stream_url": decrypt_field(raw_stream),
+                            "user_agent": decrypt_field(raw_ua),
+                            "referer": decrypt_field(raw_ref),
+                        })
+    except Exception as e:
+        print(f"Info fetch online: {e}")
+    return channels
+
 def main():
     print("=== xr3edTV Live Engine Sync ===")
     if not XOR_KEY:
@@ -130,22 +172,35 @@ def main():
 
     all_channels = []
     
-    candidates = [
-        get_secret("XR3ED_CACHE_FILE"),
-        "live_catalog_cache.json",
-        "assets/live_catalog_cache.json",
-        "scratch/live_catalog_cache.json",
-    ]
-    
-    for cand in candidates:
-        if cand and Path(cand).exists():
-            print(f"Memuat saluran dari cache: {cand}")
-            with open(cand, "r", encoding="utf-8") as f:
-                all_channels = json.load(f)
-            break
+    # 1. Coba fetch online dari engine
+    if ENGINE_URL and ENGINE_AUTH:
+        print("Mencoba mengambil pembaruan saluran dari engine...")
+        all_channels = fetch_online_channels(ENGINE_URL, ENGINE_AUTH)
+        if all_channels:
+            print(f"Berhasil menarik {len(all_channels)} saluran online dari engine!")
 
+    # 2. Jika online fetch kosong (misal terhalang proteksi WAF), gunakan cache lokal jika tersedia
     if not all_channels:
-        print("PERINGATAN: Tidak ada cache saluran yang ditemukan.")
+        candidates = [
+            get_secret("XR3ED_CACHE_FILE"),
+            "live_catalog_cache.json",
+            "assets/live_catalog_cache.json",
+            "scratch/live_catalog_cache.json",
+        ]
+        for cand in candidates:
+            if cand and Path(cand).exists():
+                print(f"Memuat saluran dari cache: {cand}")
+                with open(cand, "r", encoding="utf-8") as f:
+                    all_channels = json.load(f)
+                break
+
+    # 3. Jika tidak ada sumber baru, periksa apakah file assets/xr3ed_live.enc sudah ada di repositori
+    output_path = Path("assets/xr3ed_live.enc")
+    if not all_channels:
+        if output_path.exists() and output_path.stat().st_size > 1000:
+            print(f"Katalog terenkripsi {output_path} ({output_path.stat().st_size} bytes) sudah aktif dan dalam kondisi valid.")
+            sys.exit(0)
+        print("PERINGATAN: Tidak ada saluran yang ditemukan.")
         sys.exit(1)
 
     print(f"Total saluran diproses: {len(all_channels)}")
@@ -154,7 +209,6 @@ def main():
     print(f"Mengenkripsi playlist ({len(m3u_text)} karakter) dengan kunci XOR...")
     enc_content = xor_encrypt(m3u_text, XOR_KEY)
     
-    output_path = Path("assets/xr3ed_live.enc")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(enc_content)

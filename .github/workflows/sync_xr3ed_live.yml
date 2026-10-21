@@ -5,6 +5,9 @@ on:
     - cron: '*/5 * * * *'   # Setiap 5 menit
   workflow_dispatch:        # Pemicu manual kapan saja
 
+permissions:
+  contents: write
+
 jobs:
   sync-live-engine:
     runs-on: ubuntu-latest
