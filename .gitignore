@@ -79,3 +79,5 @@ node_modules/
 /MyHomepage/
 assets/*_batch*/
 
+
+/scratch/

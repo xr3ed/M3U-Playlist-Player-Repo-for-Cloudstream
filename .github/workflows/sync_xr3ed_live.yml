@@ -22,11 +22,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Install dependencies
         run: |
           pip install pycryptodome requests curl_cffi
@@ -42,20 +37,14 @@ jobs:
         run: |
           python .github/scripts/sync_xr3ed_live.py
 
-      - name: Sync Kltra Dynamic Metadata
-        env:
-          XR3EDTV_XOR_KEY: ${{ secrets.XR3EDTV_XOR_KEY }}
-        run: |
-          python .github/scripts/sync_kltra_meta.py
-
       - name: Commit and Push if changed
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/xr3ed_live.enc assets/kltra_meta.enc
+          git add assets/xr3ed_live.enc
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore(live): auto-sync xr3ed live catalog and kltra meta [skip ci]"
+            git commit -m "chore(live): auto-sync xr3ed live catalog [skip ci]"
             git push
           fi
