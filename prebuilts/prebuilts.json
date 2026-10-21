@@ -1,4 +1,4 @@
-﻿[
+[
     {
         "name":  "KepalaBergetarXR",
         "internalName":  "KepalaBergetarXR",
@@ -234,7 +234,7 @@
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream"
     },
     {
-        "name":  "ðŸ“º xr3edTV",
+        "name":  "xr3edTV",
         "internalName":  "xr3edTV",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
         "version":  102,
