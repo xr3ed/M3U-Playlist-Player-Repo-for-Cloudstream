@@ -1,0 +1,47 @@
+name: Sync xr3edTV Live Engine
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # Setiap 5 menit
+  workflow_dispatch:        # Pemicu manual kapan saja
+
+jobs:
+  sync-live-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pycryptodome requests curl_cffi
+
+      - name: Sync and Encrypt Live Channels
+        env:
+          XR3ED_ENGINE_URL: ${{ secrets.XR3ED_ENGINE_URL }}
+          XR3ED_ENGINE_AUTH: ${{ secrets.XR3ED_ENGINE_AUTH }}
+          XR3ED_STREAM_PREFIX: ${{ secrets.XR3ED_STREAM_PREFIX }}
+          XR3ED_ENGINE_MAP_D: ${{ secrets.XR3ED_ENGINE_MAP_D }}
+          XR3ED_ENGINE_MAP_E: ${{ secrets.XR3ED_ENGINE_MAP_E }}
+          XR3EDTV_XOR_KEY: ${{ secrets.XR3EDTV_XOR_KEY }}
+        run: |
+          python .github/scripts/sync_xr3ed_live.py
+
+      - name: Commit and Push if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/xr3ed_live.enc
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(live): auto-sync xr3ed live catalog [skip ci]"
+            git push
+          fi
