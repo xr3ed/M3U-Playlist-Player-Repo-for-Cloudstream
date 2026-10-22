@@ -35,12 +35,12 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
 
     companion object {
         // Concurrency limiter: batasi pemuatan row beranda agar tidak memicu lonjakan CPU/RAM & OOM di Android TV
-        private val pageLoadSemaphore = Semaphore(1)
+        private val pageLoadSemaphore = Semaphore(2)
         // In-memory cache antar-row (TTL 2 menit)
         private val homePageCache = ConcurrentHashMap<String, Pair<Long, HomePageResponse>>()
         private const val CACHE_TTL_MS = 120_000L
         private const val MAX_CARDS_PER_ROW = 30
-        private const val SECTION_TIMEOUT_MS = 7_000L
+        private const val SECTION_TIMEOUT_MS = 15_000L
     }
 
     private var sectionNamesList: List<String> = emptyList()
