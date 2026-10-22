@@ -172,10 +172,10 @@
     },
     {
         "iconUrl":  "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
-        "fileHash":  "sha256-3737c397fb1db17e640cc4ad13299c1ea4432f8eda574f4f0448de116b0a75e4",
+        "fileHash":  "sha256-79352910a4ffb7caaaf931d95d6eb42b92410c6af786ae072d6cb7e6ccc7f4d8",
         "apiVersion":  1,
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize":  68829,
+        "fileSize":  72567,
         "status":  1,
         "language":  "id",
         "authors":  [
@@ -184,7 +184,7 @@
         "tvTypes":  [
                         "Live"
                     ],
-        "version":  19,
+        "version":  20,
         "internalName":  "LiveEvent",
         "description":  "Beranda Kustom Khusus Siaran Langsung (Live Events) dengan Sinkronisasi Ultima",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LiveEvent.cs3",
