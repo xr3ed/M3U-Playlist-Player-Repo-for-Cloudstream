@@ -21,6 +21,10 @@ import com.lagradost.cloudstream3.toNewSearchResponseList
 import com.lagradost.cloudstream3.utils.AppUtils
 import com.xr3ed.liveevent.LiveEventUtils.SectionInfo
 import com.lagradost.cloudstream3.CloudStreamApp
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withTimeoutOrNull
+import java.util.concurrent.ConcurrentHashMap
 
 class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
     override var name = "🔴 Live Event"
@@ -28,6 +32,16 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
     override var lang = "live"
     override val hasMainPage = true
     override val hasQuickSearch = true
+
+    companion object {
+        // Concurrency limiter: batasi pemuatan row beranda agar tidak memicu lonjakan CPU/RAM & OOM di Android TV
+        private val pageLoadSemaphore = Semaphore(1)
+        // In-memory cache antar-row (TTL 2 menit)
+        private val homePageCache = ConcurrentHashMap<String, Pair<Long, HomePageResponse>>()
+        private const val CACHE_TTL_MS = 120_000L
+        private const val MAX_CARDS_PER_ROW = 30
+        private const val SECTION_TIMEOUT_MS = 7_000L
+    }
 
     private var sectionNamesList: List<String> = emptyList()
 
@@ -81,93 +95,124 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
             throw ErrorLoadingException("Pilih kategori siaran langsung dari menu pengaturan untuk menampilkan di sini.")
         }
 
-        return try {
-            val parts = request.data.split("||")
-            val pluginName = parts[0].trim()
-            val sectionName = parts[1].trim()
-            val sectionUrl = if (parts.size >= 3) parts[2].trim() else ""
-
-            var provider = LiveEventUtils.findProvider(pluginName)
-            if (provider == null) {
-                kotlinx.coroutines.delay(400)
-                provider = LiveEventUtils.findProvider(pluginName)
+        val cacheKey = "${request.name}__${request.data}__$page"
+        val now = System.currentTimeMillis()
+        homePageCache[cacheKey]?.let { (ts, cachedResp) ->
+            if (now - ts < CACHE_TTL_MS) {
+                return cachedResp
+            } else {
+                homePageCache.remove(cacheKey)
             }
-            if (provider == null) {
-                throw ErrorLoadingException("Provider '$pluginName' tidak tersedia.")
-            }
+        }
 
-            val liveData = try {
-                provider.mainPage
-                    .find { it.name.trim().equals(sectionName.trim(), ignoreCase = true) }
-                    ?.data
-                    ?: sectionUrl
-            } catch (_: Throwable) {
-                sectionUrl
+        return pageLoadSemaphore.withPermit {
+            // Re-check cache inside permit (in case previous row populated it)
+            homePageCache[cacheKey]?.let { (ts, cachedResp) ->
+                if (System.currentTimeMillis() - ts < CACHE_TTL_MS) {
+                    return@withPermit cachedResp
+                }
             }
 
-            val isHorizontalSection = provider.mainPage
-                .find { it.name.trim().equals(sectionName.trim(), ignoreCase = true) }
-                ?.horizontalImages ?: request.horizontalImages
-
-            val response = provider.getMainPage(
-                page,
-                MainPageRequest(
-                    name = sectionName,
-                    data = liveData,
-                    horizontalImages = isHorizontalSection
-                )
-            ) ?: return null
-
-            newHomePageResponse(
-                response.items.map { list ->
-                    HomePageList(request.name, list.list, isHorizontalImages = list.isHorizontalImages || isHorizontalSection)
-                },
-                response.hasNext
-            )
-        } catch (e: Throwable) {
-            // Fallback parsing for legacy JSON format
             try {
-                val section = AppUtils.parseJson<SectionInfo>(request.data)
-                var provider = LiveEventUtils.findProvider(section.pluginName)
+                val parts = request.data.split("||")
+                val pluginName = parts[0].trim()
+                val sectionName = parts[1].trim()
+                val sectionUrl = if (parts.size >= 3) parts[2].trim() else ""
+
+                var provider = LiveEventUtils.findProvider(pluginName)
                 if (provider == null) {
                     kotlinx.coroutines.delay(400)
-                    provider = LiveEventUtils.findProvider(section.pluginName)
+                    provider = LiveEventUtils.findProvider(pluginName)
                 }
                 if (provider == null) {
-                    throw ErrorLoadingException("Provider '${section.pluginName}' tidak tersedia.")
+                    throw ErrorLoadingException("Provider '$pluginName' tidak tersedia.")
                 }
 
                 val liveData = try {
                     provider.mainPage
-                        .find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                        .find { it.name.trim().equals(sectionName.trim(), ignoreCase = true) }
                         ?.data
-                        ?: section.url
+                        ?: sectionUrl
                 } catch (_: Throwable) {
-                    section.url
+                    sectionUrl
                 }
 
                 val isHorizontalSection = provider.mainPage
-                    .find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                    .find { it.name.trim().equals(sectionName.trim(), ignoreCase = true) }
                     ?.horizontalImages ?: request.horizontalImages
 
-                val response = provider.getMainPage(
-                    page,
-                    MainPageRequest(
-                        name = section.name,
-                        data = liveData,
-                        horizontalImages = isHorizontalSection
+                val response = withTimeoutOrNull(SECTION_TIMEOUT_MS) {
+                    provider.getMainPage(
+                        page,
+                        MainPageRequest(
+                            name = sectionName,
+                            data = liveData,
+                            horizontalImages = isHorizontalSection
+                        )
                     )
-                ) ?: return null
+                } ?: return@withPermit null
 
-                newHomePageResponse(
+                val finalResponse = newHomePageResponse(
                     response.items.map { list ->
-                        HomePageList(request.name, list.list, isHorizontalImages = list.isHorizontalImages || isHorizontalSection)
+                        val limitedList = if (list.list.size > MAX_CARDS_PER_ROW) list.list.take(MAX_CARDS_PER_ROW) else list.list
+                        HomePageList(request.name, limitedList, isHorizontalImages = list.isHorizontalImages || isHorizontalSection)
                     },
                     response.hasNext
                 )
-            } catch (_: Throwable) {
-                Log.e("LiveEvent", "Error loading main page: ${e.message}")
-                null
+
+                homePageCache[cacheKey] = Pair(System.currentTimeMillis(), finalResponse)
+                finalResponse
+            } catch (e: Throwable) {
+                // Fallback parsing for legacy JSON format
+                try {
+                    val section = AppUtils.parseJson<SectionInfo>(request.data)
+                    var provider = LiveEventUtils.findProvider(section.pluginName)
+                    if (provider == null) {
+                        kotlinx.coroutines.delay(400)
+                        provider = LiveEventUtils.findProvider(section.pluginName)
+                    }
+                    if (provider == null) {
+                        throw ErrorLoadingException("Provider '${section.pluginName}' tidak tersedia.")
+                    }
+
+                    val liveData = try {
+                        provider.mainPage
+                            .find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                            ?.data
+                            ?: section.url
+                    } catch (_: Throwable) {
+                        section.url
+                    }
+
+                    val isHorizontalSection = provider.mainPage
+                        .find { it.name.trim().equals(section.name.trim(), ignoreCase = true) }
+                        ?.horizontalImages ?: request.horizontalImages
+
+                    val response = withTimeoutOrNull(SECTION_TIMEOUT_MS) {
+                        provider.getMainPage(
+                            page,
+                            MainPageRequest(
+                                name = section.name,
+                                data = liveData,
+                                horizontalImages = isHorizontalSection
+                            )
+                        )
+                    } ?: return@withPermit null
+
+                    val finalResponse = newHomePageResponse(
+                        response.items.map { list ->
+                            val limitedList = if (list.list.size > MAX_CARDS_PER_ROW) list.list.take(MAX_CARDS_PER_ROW) else list.list
+                            HomePageList(request.name, limitedList, isHorizontalImages = list.isHorizontalImages || isHorizontalSection)
+                        },
+                        response.hasNext
+                    )
+
+                    homePageCache[cacheKey] = Pair(System.currentTimeMillis(), finalResponse)
+                    finalResponse
+                } catch (_: Throwable) {
+                    Log.e("LiveEvent", "Error loading main page: ${e.message}")
+                    null
+                }
             }
         }
     }
