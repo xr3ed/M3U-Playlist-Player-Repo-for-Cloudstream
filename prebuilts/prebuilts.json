@@ -373,5 +373,29 @@
         "description":  "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
         "name":  "xr3edTV"
+    },
+    {
+        "name":  "wetvXR",
+        "internalName":  "wetvXR",
+        "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/wetvXR.cs3",
+        "version":  16,
+        "description":  "Nonton Serial Drama, Anime & Film WeTV (VIP Supported)",
+        "authors":  [
+                        "xr3ed"
+                    ],
+        "tvTypes":  [
+                        "AsianDrama",
+                        "TvSeries",
+                        "Anime",
+                        "Movie",
+                        "Cartoon"
+                    ],
+        "iconUrl":  "https://static.wetvinfo.com/wetv/favicon.ico",
+        "apiVersion":  1,
+        "status":  1,
+        "language":  "id",
+        "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+        "fileSize":  125624,
+        "fileHash":  "sha256-4d9c8e5896a3c2512f8b654f9bea2b48ba946047de357dc5ec14a37d98d1bb58"
     }
 ]
