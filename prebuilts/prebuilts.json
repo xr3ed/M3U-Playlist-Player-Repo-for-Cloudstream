@@ -356,10 +356,10 @@
     },
     {
         "iconUrl":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png",
-        "fileHash":  "sha256-f98a0d130f24df696a321c930e3b22a816b9b57367f58a175a8bd0ce41e6b9f1",
+        "fileHash":  "sha256-01b8f564b82a773f5f669ecc706f20580566ca1a10d11bc9c7eaef74d58879ea",
         "apiVersion":  1,
         "repositoryUrl":  "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize":  262475,
+        "fileSize":  266591,
         "status":  1,
         "language":  "live",
         "authors":  [
@@ -368,7 +368,7 @@
         "tvTypes":  [
                         "Live"
                     ],
-        "version":  124,
+        "version":  131,
         "internalName":  "xr3edTV",
         "description":  "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
@@ -379,7 +379,7 @@
         "internalName":  "wetvXR",
         "url":  "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/wetvXR.cs3",
         "version":  16,
-        "description":  "Nonton Serial Drama, Anime & Film WeTV (VIP Supported)",
+        "description":  "Nonton Serial Drama, Anime \u0026 Film WeTV (VIP Supported)",
         "authors":  [
                         "xr3ed"
                     ],
