@@ -5,9 +5,9 @@ rootProject.name = "xr3ed"
 val isCI = System.getenv("CI") == "true"
 val targetTasks = gradle.startParameter.taskNames.joinToString(" ")
 val disabled = if (isCI) {
-    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "GudangFilmXR", "OtakudesuXR", "SportsurgeXR", "RBTVPlus", "HaruFilmXR", "DracinAIO", "SamehadakuXR", "NontonAnimeIDXR", "xr3edFlix", "vidioXR", "wetvXR", "MyHomepage")
+    listOf<String>("idliXR", "AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "GudangFilmXR", "OtakudesuXR", "SportsurgeXR", "RBTVPlus", "HaruFilmXR", "DracinAIO", "SamehadakuXR", "NontonAnimeIDXR", "xr3edFlix", "vidioXR", "wetvXR", "primeXR", "MyHomepage")
 } else {
-    listOf<String>("AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "OtakudesuXR", "SamehadakuXR", "NontonAnimeIDXR", "xr3edFlix", "vidioXR", "wetvXR", "MyHomepage").filterNot {
+    listOf<String>("AnichinXR", "KepalaBergetarXR", "LayarKacaXR", "KlikXXiXR", "OtakudesuXR", "SamehadakuXR", "NontonAnimeIDXR", "xr3edFlix", "vidioXR", "wetvXR", "primeXR", "MyHomepage").filterNot {
         targetTasks.contains(it, ignoreCase = true)
     }
 }
