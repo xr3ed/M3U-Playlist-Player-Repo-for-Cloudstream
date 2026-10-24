@@ -17,7 +17,7 @@
         ],
         "version": 16,
         "internalName": "AnimeSailXR",
-        "description": "AnimeSail \u00e2\u20ac\u201d Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
+        "description": "AnimeSail \u2014 Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailXR.cs3",
         "name": "AnimeSailXR"
     },
@@ -79,7 +79,7 @@
         ],
         "version": 16,
         "internalName": "DubIndoXR",
-        "description": "Dubbindo \u00e2\u20ac\u201d status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
+        "description": "Dubbindo \u2014 status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
         "name": "DubIndoXR"
     },
@@ -143,7 +143,7 @@
         ],
         "version": 4,
         "internalName": "HaruFilmXR",
-        "description": "HaruFilm \u00e2\u20ac\u201d Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
+        "description": "HaruFilm \u2014 Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/HaruFilmXR.cs3",
         "name": "HaruFilmXR"
     },
@@ -330,7 +330,7 @@
         ],
         "version": 2,
         "internalName": "TestBox",
-        "description": "TestBox \u00e2\u20ac\u201c Movies, Series & TV powered by Vibox with auto-refresh guest token",
+        "description": "TestBox \u2013 Movies, Series & TV powered by Vibox with auto-refresh guest token",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/TestBox.cs3",
         "name": "TestBox"
     },
@@ -378,8 +378,8 @@
         "name": "KepalaBergetarXR",
         "internalName": "KepalaBergetarXR",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KepalaBergetarXR.cs3",
-        "version": 4,
-        "description": "Kepala Bergetar \u00e2\u20ac\u201d Tonton Drama Melayu, Telefilem & Filem Online",
+        "version": 5,
+        "description": "Kepala Bergetar \u2014 Tonton Drama Melayu, Telefilem & Filem Online",
         "authors": [
             "xr3ed"
         ],
@@ -389,8 +389,8 @@
             "Movie"
         ],
         "iconUrl": "https://kepalabergetar.cfd/wp-content/uploads/2023/08/fav.png",
-        "fileHash": "sha256-b95b058cd27f3d3f6bb18e0de87af65d5467226aa3a1581f69831e4e6720ae73",
-        "fileSize": 71111,
+        "fileHash": "sha256-a0c89ec75481369c508ae77168aa6fa0a8743719ac1f5b2c4973f0c71ac1e9b8",
+        "fileSize": 71717,
         "apiVersion": 1,
         "status": 1,
         "language": "ms",
