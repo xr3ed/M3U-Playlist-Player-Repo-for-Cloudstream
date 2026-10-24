@@ -356,10 +356,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png",
-        "fileHash": "sha256-e2d72c2608da81537ab04cd0878137b95ce657a6fc89f6eabe293c824e07f973",
+        "fileHash": "sha256-34c074231d7ea6bdbadd15c04a1fcae0163832588de4bbb185baad91c5697c8b",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 273745,
+        "fileSize": 274582,
         "status": 1,
         "language": "live",
         "authors": [
@@ -368,7 +368,7 @@
         "tvTypes": [
             "Live"
         ],
-        "version": 144,
+        "version": 145,
         "internalName": "xr3edTV",
         "description": "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
