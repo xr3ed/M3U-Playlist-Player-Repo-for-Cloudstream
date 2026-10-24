@@ -368,11 +368,13 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 135,
+    "version": 136,
     "internalName": "xr3edTV",
     "description": "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
-    "name": "xr3edTV"
+    "name": "xr3edTV",
+    "filesize": 271333,
+    "hash": "a4a17539c7950c15aa81c0b49a44d4121ead20c1412ee520c771f3297bd97baa"
   },
   {
     "name": "wetvXR",
