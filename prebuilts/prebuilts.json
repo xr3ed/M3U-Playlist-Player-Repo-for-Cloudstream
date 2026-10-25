@@ -400,7 +400,7 @@
         "name": "primeXR",
         "internalName": "primeXR",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/primeXR.cs3",
-        "version": 1,
+        "version": 3,
         "description": "Nonton Film & Serial Prime Video (Widevine DRM & VIP Supported)",
         "authors": [
             "xr3ed"
@@ -416,7 +416,7 @@
         "status": 1,
         "language": "id",
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 63257,
-        "fileHash": "sha256-6a5491834ca4757e2e43e5add5e82c36e5ad7eaf419934b818c6a5f6451f6df0"
+        "fileSize": 67974,
+        "fileHash": "sha256-0bde3d753fc100cb62d257a82a40b4f972a515bf12be62987a189edbae58725d"
     }
 ]
