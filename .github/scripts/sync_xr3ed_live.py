@@ -11,6 +11,7 @@ import re
 import json
 import base64
 import uuid
+import urllib.request
 from pathlib import Path
 from Crypto.Cipher import AES
 
@@ -43,6 +44,9 @@ STREAM_PREFIX = get_secret("XR3ED_STREAM_PREFIX")
 MAP_D = get_secret("XR3ED_ENGINE_MAP_D")
 MAP_E = get_secret("XR3ED_ENGINE_MAP_E")
 XOR_KEY = get_secret("XR3EDTV_XOR_KEY")
+XR3EV_PLAYER_URL = get_secret("XR3EV_PLAYER_URL")
+XR3EV_PASSWORD = get_secret("XR3EV_PASSWORD")
+XR3EV_SALT = get_secret("XR3EV_SALT")
 
 def generate_auth_header(code: str) -> str:
     if not code:
@@ -113,6 +117,7 @@ def channels_to_m3u(channels: list) -> str:
         stream = ch.get("stream_url", "").strip()
         ua = ch.get("user_agent", "").strip()
         ref = ch.get("referer", "").strip()
+        kodi_props = ch.get("kodi_props", {})
         
         if not stream:
             continue
@@ -122,6 +127,10 @@ def channels_to_m3u(channels: list) -> str:
             extinf += f' tvg-logo="{logo}"'
         extinf += f',{name}'
         lines.append(extinf)
+        
+        if kodi_props:
+            for pk, pv in kodi_props.items():
+                lines.append(f'#KODIPROP:{pk}={pv}')
         
         pipe_headers = []
         if ua:
@@ -137,6 +146,176 @@ def channels_to_m3u(channels: list) -> str:
             full_stream = stream
         lines.append(full_stream)
     return "\n".join(lines) + "\n"
+
+def load_existing_enc_channels(enc_path: Path, xor_key: str) -> list:
+    if not enc_path.exists() or not xor_key:
+        return []
+    try:
+        with open(enc_path, "r", encoding="utf-8") as f:
+            enc_data = f.read().strip()
+        raw = base64.b64decode(enc_data)
+        key_bytes = xor_key.encode("utf-8")
+        dec_m3u = bytes([b ^ key_bytes[i % len(key_bytes)] for i, b in enumerate(raw)]).decode("utf-8", errors="ignore")
+
+        channels = []
+        cur_info = {}
+        for line in dec_m3u.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("#EXTINF:"):
+                ch_name = ""
+                if "," in line:
+                    ch_name = line.split(",", 1)[1].strip()
+                group = "Live"
+                m_grp = re.search(r'group-title="([^"]+)"', line)
+                if m_grp:
+                    group = m_grp.group(1).strip()
+                logo = ""
+                m_logo = re.search(r'tvg-logo="([^"]+)"', line)
+                if m_logo:
+                    logo = m_logo.group(1).strip()
+                cur_info = {
+                    "category": group,
+                    "name": ch_name,
+                    "logo": logo,
+                    "user_agent": "",
+                    "referer": "",
+                    "kodi_props": {}
+                }
+            elif line.startswith("#KODIPROP:"):
+                prop = line.split(":", 1)[1].strip()
+                if "=" in prop:
+                    pk, pv = prop.split("=", 1)
+                    if "kodi_props" not in cur_info:
+                        cur_info["kodi_props"] = {}
+                    cur_info["kodi_props"][pk.strip()] = pv.strip()
+            elif line.startswith("#EXTVLCOPT:http-user-agent="):
+                cur_info["user_agent"] = line.split("=", 1)[1].strip()
+            elif line.startswith("#EXTVLCOPT:http-referrer="):
+                cur_info["referer"] = line.split("=", 1)[1].strip()
+            elif line.startswith("http://") or line.startswith("https://"):
+                if cur_info:
+                    parts = line.split("|")
+                    cur_info["stream_url"] = parts[0]
+                    for p in parts[1:]:
+                        if p.startswith("User-Agent="):
+                            cur_info["user_agent"] = p.split("=", 1)[1]
+                        elif p.startswith("Referer="):
+                            cur_info["referer"] = p.split("=", 1)[1]
+                    channels.append(cur_info)
+                    cur_info = {}
+        return channels
+    except Exception as e:
+        print(f"Info load existing enc: {e}")
+        return []
+
+def fetch_xr3ev_channels(player_url: str, pw: str, salt: str) -> list:
+    if not player_url or not pw or not salt:
+        return []
+    
+    try:
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+        from cryptography.hazmat.primitives import hashes
+    except ImportError:
+        print("Peringatan: cryptography library belum terpasang, melewati fetch XR3EV.")
+        return []
+
+    # 1. Discover active worker endpoints dynamically from player
+    worker_urls = []
+    try:
+        bitmovin_page = f"{player_url.rstrip('/')}/bitmovin"
+        req = urllib.request.Request(bitmovin_page, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            html = r.read().decode("utf-8")
+
+        chunk_paths = re.findall(r'/_next/static/chunks/[^\s"\'<>]+', html)
+        webpack_chunk = next((c for c in chunk_paths if "webpack-" in c), "")
+        chunks_to_check = list(chunk_paths)
+
+        if webpack_chunk:
+            wp_url = f"{player_url.rstrip('/')}{webpack_chunk}"
+            req_wp = urllib.request.Request(wp_url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req_wp, timeout=10) as r:
+                wp_txt = r.read().decode("utf-8")
+            m_957 = re.search(r'957:\s*"([a-f0-9]+)"', wp_txt)
+            if m_957:
+                hash_957 = m_957.group(1)
+                chunks_to_check.append(f"/_next/static/chunks/957.{hash_957}.js")
+
+        for c_path in chunks_to_check:
+            c_url = f"{player_url.rstrip('/')}{c_path}"
+            try:
+                req_c = urllib.request.Request(c_url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req_c, timeout=10) as r:
+                    c_txt = r.read().decode("utf-8")
+                found_workers = re.findall(r'https?://[a-zA-Z0-9_\.-]*(?:workers\.dev|bitmovin\.[a-zA-Z0-9_\.-]+)/?', c_txt)
+                for w in found_workers:
+                    w_clean = w.split("?")[0].rstrip("/") + "/"
+                    if w_clean not in worker_urls:
+                        worker_urls.append(w_clean)
+            except Exception:
+                continue
+    except Exception as e:
+        print(f"Info discover player worker: {e}")
+
+    if not worker_urls:
+        return []
+
+    # 2. Derive Key
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt.encode("utf-8"),
+        iterations=1000,
+    )
+    key = kdf.derive(pw.encode("utf-8"))
+    aesgcm = AESGCM(key)
+
+    # 3. Target channels: HBO suite & Cinemax
+    targets = [
+        ("hbocub", "HBO"),
+        ("hbosigcub", "HBO Signature"),
+        ("hbohitscub", "HBO Hits"),
+        ("hbofamcub", "HBO Family"),
+        ("cinemaxcub", "Cinemax"),
+    ]
+
+    extracted = []
+    for ch_id, ch_name in targets:
+        for w_url in worker_urls:
+            url = f"{w_url}?id={ch_id}&t=1"
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=7) as r:
+                    raw = r.read().decode("utf-8").strip()
+                data = json.loads(raw)
+                iv = base64.b64decode(data["iv"])
+                enc_bytes = base64.b64decode(data["data"])
+                dec_json = json.loads(aesgcm.decrypt(iv, enc_bytes, None).decode("utf-8"))
+                
+                dash_url = dec_json.get("dash", "").strip()
+                drm_key = dec_json.get("drm", "").strip()
+                
+                if dash_url and drm_key:
+                    # Normalisasi domain CDN Transvision jika DNS host relay mati
+                    dash_url = dash_url.replace("cdnjktftnt1uk913.transvision.co.id", "cdnjkt913.transvision.co.id")
+                    extracted.append({
+                        "category": "MOVIES ID",
+                        "name": ch_name,
+                        "logo": "",
+                        "stream_url": dash_url,
+                        "kodi_props": {
+                            "inputstream.adaptive.license_type": "org.w3.clearkey",
+                            "inputstream.adaptive.license_key": drm_key
+                        }
+                    })
+                    print(f"Berhasil fetch siaran aktif: {ch_name} -> {dash_url}")
+                    break
+            except Exception:
+                continue
+    return extracted
 
 def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, worker_url: str = "", worker_token: str = "") -> list:
     channels = []
@@ -223,8 +402,16 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                             "name": ch_name,
                             "logo": logo,
                             "user_agent": "",
-                            "referer": ""
+                            "referer": "",
+                            "kodi_props": {}
                         }
+                    elif line.startswith("#KODIPROP:"):
+                        prop = line.split(":", 1)[1].strip()
+                        if "=" in prop:
+                            pk, pv = prop.split("=", 1)
+                            if "kodi_props" not in cur_info:
+                                cur_info["kodi_props"] = {}
+                            cur_info["kodi_props"][pk.strip()] = pv.strip()
                     elif line.startswith("#EXTVLCOPT:http-user-agent="):
                         cur_info["user_agent"] = decrypt_field(line.split("=", 1)[1].strip())
                     elif line.startswith("#EXTVLCOPT:http-referrer="):
@@ -266,6 +453,7 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                                     "stream_url": decrypt_field(raw_stream),
                                     "user_agent": decrypt_field(raw_ua),
                                     "referer": decrypt_field(raw_ref),
+                                    "kodi_props": {}
                                 })
                 except Exception as ex:
                     print(f"Info parse playlist {cat_id} ({cat_name}): {ex}")
@@ -280,8 +468,9 @@ def main():
         sys.exit(1)
 
     all_channels = []
+    output_path = Path("assets/xr3ed_live.enc")
     
-    # 1. Coba fetch online dari worker atau engine langsung
+    # 1. Fetch online dari worker atau engine langsung
     if (WORKER_URL or ENGINE_URL) and ENGINE_AUTH:
         target_name = "Cloudflare Worker" if WORKER_URL else "Engine langsung"
         print(f"Mencoba mengambil pembaruan saluran dari {target_name}...")
@@ -289,7 +478,14 @@ def main():
         if all_channels:
             print(f"Berhasil menarik {len(all_channels)} saluran online dari {target_name}!")
 
-    # 2. Jika online fetch kosong (misal terhalang proteksi WAF), gunakan cache lokal jika tersedia
+    # 2. Jika online fetch kosong (misal terhalang proteksi WAF), muat saluran yang sudah ada di repositori
+    if not all_channels:
+        existing = load_existing_enc_channels(output_path, XOR_KEY)
+        if existing:
+            print(f"Memuat {len(existing)} saluran dasar dari {output_path}...")
+            all_channels = existing
+
+    # 3. Fallback ke file cache jika ada
     if not all_channels:
         candidates = [
             get_secret("XR3ED_CACHE_FILE"),
@@ -304,11 +500,22 @@ def main():
                     all_channels = json.load(f)
                 break
 
-    # 3. Jika tidak ada sumber baru, periksa apakah file assets/xr3ed_live.enc sudah ada di repositori
-    output_path = Path("assets/xr3ed_live.enc")
+    # 4. Fetch saluran aktif XR3EV (HBO suite & Cinemax dengan ClearKey dinamis)
+    if XR3EV_PLAYER_URL and XR3EV_PASSWORD and XR3EV_SALT:
+        print("Mengambil siaran film aktif & ClearKey DRM dari XR3EV...")
+        xr3ev_chs = fetch_xr3ev_channels(XR3EV_PLAYER_URL, XR3EV_PASSWORD, XR3EV_SALT)
+        if xr3ev_chs:
+            print(f"Berhasil menambahkan {len(xr3ev_chs)} saluran film terverifikasi dengan ClearKey DRM!")
+            # Tambahkan stream XR3EV ke dalam daftar siaran
+            seen_streams = {c.get("stream_url") for c in all_channels}
+            for x_ch in xr3ev_chs:
+                if x_ch.get("stream_url") not in seen_streams:
+                    all_channels.append(x_ch)
+                    seen_streams.add(x_ch.get("stream_url"))
+
     if not all_channels:
         if output_path.exists() and output_path.stat().st_size > 1000:
-            print(f"Katalog terenkripsi {output_path} ({output_path.stat().st_size} bytes) sudah aktif dan dalam kondisi valid.")
+            print(f"Katalog terenkripsi {output_path} sudah ada dan valid.")
             sys.exit(0)
         print("PERINGATAN: Tidak ada saluran yang ditemukan.")
         sys.exit(1)

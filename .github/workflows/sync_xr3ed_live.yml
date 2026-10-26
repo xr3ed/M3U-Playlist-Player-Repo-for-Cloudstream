@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pycryptodome requests curl_cffi bcrypt
+          pip install pycryptodome requests curl_cffi bcrypt cryptography
 
       - name: Sync and Encrypt Live Channels
         env:
@@ -37,6 +37,9 @@ jobs:
           XR3ED_ENGINE_MAP_D: ${{ secrets.XR3ED_ENGINE_MAP_D }}
           XR3ED_ENGINE_MAP_E: ${{ secrets.XR3ED_ENGINE_MAP_E }}
           XR3EDTV_XOR_KEY: ${{ secrets.XR3EDTV_XOR_KEY }}
+          XR3EV_PLAYER_URL: ${{ secrets.XR3EV_PLAYER_URL }}
+          XR3EV_PASSWORD: ${{ secrets.XR3EV_PASSWORD }}
+          XR3EV_SALT: ${{ secrets.XR3EV_SALT }}
         run: |
           python .github/scripts/sync_xr3ed_live.py
 
