@@ -105,10 +105,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/icon.png",
-    "fileHash": "sha256-45db68bf1deecacd259c2332c54703882069f9fdfe99cb019c01cade42175a10",
+    "fileHash": "sha256-f1608ccd93d26a2dc6b7fd4d4e2f894d62cca14f6b7d01190da47eec7ee5c6a2",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 93231,
+    "fileSize": 94010,
     "status": 1,
     "language": "id",
     "authors": [
@@ -119,9 +119,9 @@
       "TvSeries",
       "AsianDrama"
     ],
-    "version": 47,
+    "version": 48,
     "internalName": "GudangFilmXR",
-    "description": "GudangFilmXR provider modifikasi oleh XR3ED untuk domain aktif 154.203.167.147 dengan resolver Playsobat dan AsiaStream.",
+    "description": "GudangFilmXR provider modifikasi oleh XR3ED untuk domain aktif 154.203.167.28 dengan resolver Playsobat dan AsiaStream.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/GudangFilmXR.cs3",
     "name": "GudangFilmXR"
   },
