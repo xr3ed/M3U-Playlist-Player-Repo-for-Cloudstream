@@ -172,10 +172,10 @@
   },
   {
     "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
-    "fileHash": "sha256-c967b282e648ab31d086552ab31eaa8f1e55ecdc970bf2ff656425019b82d858",
+    "fileHash": "sha256-1f8d443ec4d1c0f98f84cc68b081c36b4eb1ac72b014825c40170edea7efb1b3",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 72579,
+    "fileSize": 75930,
     "status": 1,
     "language": "id",
     "authors": [
@@ -184,7 +184,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 21,
+    "version": 22,
     "internalName": "LiveEvent",
     "description": "Beranda Kustom Khusus Siaran Langsung (Live Events) dengan Sinkronisasi Ultima",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LiveEvent.cs3",
@@ -275,10 +275,10 @@
   },
   {
     "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
-    "fileHash": "sha256-353c07b617fa1d3491cb146d6c3cfaaaafa33a2924dd24656c62b7eeee74fb0c",
+    "fileHash": "sha256-59691d03fd2fde98dc47c8ffe4495c684d28c1027e7946ff5944ab723645444f",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 60597,
+    "fileSize": 60657,
     "status": 1,
     "language": "id",
     "authors": [
@@ -287,7 +287,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 19,
+    "version": 20,
     "internalName": "SportsurgeXR",
     "description": "Ekstensi Cloudstream untuk streaming olahraga langsung dari SportsurgeXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/SportsurgeXR.cs3",
