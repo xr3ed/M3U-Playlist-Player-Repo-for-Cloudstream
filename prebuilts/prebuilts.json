@@ -212,10 +212,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/MovieBoXR.png",
-    "fileHash": "sha256-e96c5d30fbe479c9b63ba6440d181b4ae99aec8feebfea1e25620ec35f26563c",
+    "fileHash": "sha256-8470dbfcd016df8b126c409eec2eb99b39acbf3a6ea5e7653a4975379350f15d",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 131684,
+    "fileSize": 133142,
     "status": 1,
     "language": "id",
     "authors": [
@@ -225,7 +225,7 @@
       "Movie",
       "TvSeries"
     ],
-    "version": 41,
+    "version": 42,
     "internalName": "MovieBoXR",
     "description": "Multi Language Movies and Series Provider",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
@@ -418,5 +418,26 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
     "fileSize": 65299,
     "fileHash": "sha256-5368dc7159da3b9c4030e9bb3155b6f8d94302935982d205fe0bd2728171e763"
+  },
+  {
+    "name": "xr3edFlix",
+    "internalName": "xr3edFlix",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edFlix.cs3",
+    "version": 79,
+    "description": "Ekstensi Cloudstream untuk menonton Film dan TV Series gratis dari autoembed",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "iconUrl": "https://watch-v2.autoembed.app/apple-touch-icon.png",
+    "apiVersion": 1,
+    "status": 1,
+    "language": "id",
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 219399,
+    "fileHash": "sha256-126126d415ea19ebf61cab4ffea5c28821f8dcb5deca1c61ad95e5d09fd03a63"
   }
 ]
