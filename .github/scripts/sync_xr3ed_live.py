@@ -433,6 +433,15 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                             pass
 
                     pdata = json.loads(raw_text)
+                    drm_licenses_map = {}
+                    for lic in pdata.get("drm_licenses", []) if isinstance(pdata, dict) else []:
+                        d_id = str(lic.get("drm_id", "")).strip()
+                        d_type = lic.get("drm_type", "").strip()
+                        raw_key = lic.get("drm_key", "")
+                        dec_key = decrypt_field(raw_key) if raw_key else ""
+                        if d_id and dec_key:
+                            drm_licenses_map[d_id] = (d_type, dec_key)
+
                     groups = pdata.get("a", []) if isinstance(pdata, dict) else []
                     if not groups and isinstance(pdata, list):
                         groups = pdata
@@ -445,6 +454,15 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                             raw_ref = subitem.get("referer", "") or subitem.get("ref", "")
                             ch_name = subitem.get("a", "") or subitem.get("name", "")
                             logo = subitem.get("logo_url", "") or subitem.get("logo", "")
+                            sub_drm_id = str(subitem.get("drm_id", "")).strip()
+                            kodi_props = {}
+                            if sub_drm_id and sub_drm_id in drm_licenses_map:
+                                d_type, d_key = drm_licenses_map[sub_drm_id]
+                                lic_type = "org.w3.clearkey" if "clearkey" in d_type.lower() else d_type
+                                kodi_props = {
+                                    "inputstream.adaptive.license_type": lic_type,
+                                    "inputstream.adaptive.license_key": d_key
+                                }
                             if ch_name and raw_stream:
                                 channels.append({
                                     "category": grp_name,
@@ -453,7 +471,7 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                                     "stream_url": decrypt_field(raw_stream),
                                     "user_agent": decrypt_field(raw_ua),
                                     "referer": decrypt_field(raw_ref),
-                                    "kodi_props": {}
+                                    "kodi_props": kodi_props
                                 })
                 except Exception as ex:
                     print(f"Info parse playlist {cat_id} ({cat_name}): {ex}")
@@ -478,27 +496,30 @@ def main():
         if all_channels:
             print(f"Berhasil menarik {len(all_channels)} saluran online dari {target_name}!")
 
-    # 2. Jika online fetch kosong (misal terhalang proteksi WAF), muat saluran yang sudah ada di repositori
+    # 2. Jika online fetch kosong (misal terhalang proteksi WAF), muat saluran dari cache atau file .enc yang sudah ada
+    candidates = [
+        get_secret("XR3ED_CACHE_FILE"),
+        "assets/live_catalog_cache.json",
+        "live_catalog_cache.json",
+        "scratch/live_catalog_cache.json",
+    ]
+    for cand in candidates:
+        if cand and Path(cand).exists():
+            try:
+                print(f"Memuat saluran dari cache: {cand}")
+                with open(cand, "r", encoding="utf-8") as f:
+                    cached = json.load(f)
+                    if cached and len(cached) > len(all_channels):
+                        all_channels = cached
+                        break
+            except Exception as e:
+                print(f"Info read cache {cand}: {e}")
+
     if not all_channels:
         existing = load_existing_enc_channels(output_path, XOR_KEY)
         if existing:
             print(f"Memuat {len(existing)} saluran dasar dari {output_path}...")
             all_channels = existing
-
-    # 3. Fallback ke file cache jika ada
-    if not all_channels:
-        candidates = [
-            get_secret("XR3ED_CACHE_FILE"),
-            "live_catalog_cache.json",
-            "assets/live_catalog_cache.json",
-            "scratch/live_catalog_cache.json",
-        ]
-        for cand in candidates:
-            if cand and Path(cand).exists():
-                print(f"Memuat saluran dari cache: {cand}")
-                with open(cand, "r", encoding="utf-8") as f:
-                    all_channels = json.load(f)
-                break
 
     # 4. Fetch saluran aktif XR3EV (HBO suite & Cinemax dengan ClearKey dinamis)
     if XR3EV_PLAYER_URL and XR3EV_PASSWORD and XR3EV_SALT:
