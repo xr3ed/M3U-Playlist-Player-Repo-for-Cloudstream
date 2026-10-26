@@ -169,7 +169,7 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str) -> 
         login_url = f"{engine_url.rstrip('/')}/api/login"
         resp = s.post(login_url, data={"code": engine_auth}, headers=headers, timeout=15)
         if resp.status_code != 200:
-            print(f"Peringatan: Login engine gagal (HTTP {resp.status_code})")
+            print(f"Peringatan: Login engine gagal (HTTP {resp.status_code}): {resp.text[:300]}")
             return []
             
         res_json = resp.json()
