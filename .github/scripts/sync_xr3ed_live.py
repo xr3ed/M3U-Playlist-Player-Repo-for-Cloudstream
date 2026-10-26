@@ -236,23 +236,39 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                             cur_info = {}
             else:
                 try:
-                    pdata = pl_resp.json()
-                    for grp in pdata.get("a", []):
-                        grp_name = grp.get("a", "")
-                        for subitem in grp.get("b", []):
-                            raw_stream = subitem.get("stream_url", "")
-                            raw_ua = subitem.get("user_agent", "")
-                            raw_ref = subitem.get("referer", "")
-                            channels.append({
-                                "category": grp_name,
-                                "name": subitem.get("a", ""),
-                                "logo": subitem.get("logo_url", ""),
-                                "stream_url": decrypt_field(raw_stream),
-                                "user_agent": decrypt_field(raw_ua),
-                                "referer": decrypt_field(raw_ref),
-                            })
-                except Exception:
-                    pass
+                    raw_text = pl_text.strip()
+                    if not (raw_text.startswith("{") or raw_text.startswith("[")):
+                        try:
+                            pad = (4 - len(raw_text) % 4) % 4
+                            raw_bytes = base64.b64decode(raw_text + "=" * pad)
+                            raw_text = raw_bytes.decode("utf-8", errors="ignore").strip()
+                        except Exception:
+                            pass
+
+                    pdata = json.loads(raw_text)
+                    groups = pdata.get("a", []) if isinstance(pdata, dict) else []
+                    if not groups and isinstance(pdata, list):
+                        groups = pdata
+                    for grp in groups:
+                        grp_name = grp.get("a", "") or grp.get("name", "") or cat_name
+                        subitems = grp.get("b", []) or grp.get("channels", [])
+                        for subitem in subitems:
+                            raw_stream = subitem.get("stream_url", "") or subitem.get("url", "")
+                            raw_ua = subitem.get("user_agent", "") or subitem.get("ua", "")
+                            raw_ref = subitem.get("referer", "") or subitem.get("ref", "")
+                            ch_name = subitem.get("a", "") or subitem.get("name", "")
+                            logo = subitem.get("logo_url", "") or subitem.get("logo", "")
+                            if ch_name and raw_stream:
+                                channels.append({
+                                    "category": grp_name,
+                                    "name": ch_name,
+                                    "logo": logo,
+                                    "stream_url": decrypt_field(raw_stream),
+                                    "user_agent": decrypt_field(raw_ua),
+                                    "referer": decrypt_field(raw_ref),
+                                })
+                except Exception as ex:
+                    print(f"Info parse playlist {cat_id} ({cat_name}): {ex}")
     except Exception as e:
         print(f"Info fetch online: {e}")
     return channels
