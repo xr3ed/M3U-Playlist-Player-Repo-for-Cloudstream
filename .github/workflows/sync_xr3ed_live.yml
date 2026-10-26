@@ -2,7 +2,7 @@ name: Sync xr3edTV Live Engine
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # Setiap 5 menit
+    - cron: '0 */2 * * *'   # Setiap 2 jam agar aman dari rate-limit engine
   workflow_dispatch:        # Pemicu manual kapan saja
 
 permissions:
@@ -31,6 +31,8 @@ jobs:
           XR3ED_ENGINE_URL: ${{ secrets.XR3ED_ENGINE_URL }}
           XR3ED_ENGINE_AUTH: ${{ secrets.XR3ED_ENGINE_AUTH }}
           XR3ED_DEVICE_ID: ${{ secrets.XR3ED_DEVICE_ID }}
+          XR3EDTV_WORKER_URL: ${{ secrets.XR3EDTV_WORKER_URL }}
+          XR3EDTV_WORKER_TOKEN: ${{ secrets.XR3EDTV_WORKER_TOKEN }}
           XR3ED_STREAM_PREFIX: ${{ secrets.XR3ED_STREAM_PREFIX }}
           XR3ED_ENGINE_MAP_D: ${{ secrets.XR3ED_ENGINE_MAP_D }}
           XR3ED_ENGINE_MAP_E: ${{ secrets.XR3ED_ENGINE_MAP_E }}

@@ -35,6 +35,8 @@ def get_secret(name: str) -> str:
     return val
 
 ENGINE_URL = get_secret("XR3ED_ENGINE_URL")
+WORKER_URL = get_secret("XR3EDTV_WORKER_URL")
+WORKER_TOKEN = get_secret("XR3EDTV_WORKER_TOKEN")
 ENGINE_AUTH = get_secret("XR3ED_ENGINE_AUTH")
 DEVICE_ID = get_secret("XR3ED_DEVICE_ID")
 STREAM_PREFIX = get_secret("XR3ED_STREAM_PREFIX")
@@ -136,9 +138,10 @@ def channels_to_m3u(channels: list) -> str:
         lines.append(full_stream)
     return "\n".join(lines) + "\n"
 
-def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str) -> list:
+def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, worker_url: str = "", worker_token: str = "") -> list:
     channels = []
-    if not engine_url or not engine_auth:
+    base_url = worker_url.rstrip("/") if worker_url else (engine_url.rstrip("/") if engine_url else "")
+    if not base_url or not engine_auth:
         return channels
 
     try:
@@ -161,18 +164,25 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str) -> 
         "X-Android": "34"
     }
 
+    if worker_token:
+        headers["X-Custom-Token"] = worker_token
+
     auth_hdr = generate_auth_header(engine_auth)
     if auth_hdr:
         headers["X-Authorization"] = auth_hdr
 
     try:
-        login_url = f"{engine_url.rstrip('/')}/api/login"
+        login_url = f"{base_url}/api/login"
         resp = s.post(login_url, data={"code": engine_auth}, headers=headers, timeout=15)
         if resp.status_code != 200:
             print(f"Peringatan: Login engine gagal (HTTP {resp.status_code}): {resp.text[:300]}")
             return []
             
         res_json = resp.json()
+        if isinstance(res_json, dict) and not res_json.get("statusCode", True):
+            print(f"Peringatan: Respons login ditolak: {res_json.get('message')}")
+            return []
+
         data_obj = res_json.get("data", {}) if isinstance(res_json, dict) else {}
         playlists = data_obj.get("playlist", []) if isinstance(data_obj, dict) else []
         if not playlists and isinstance(res_json, dict):
@@ -184,7 +194,7 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str) -> 
             if not cat_id:
                 continue
 
-            pl_url = f"{engine_url.rstrip('/')}/api/playlist?id={cat_id}"
+            pl_url = f"{base_url}/api/playlist?id={cat_id}"
             pl_resp = s.get(pl_url, headers=headers, timeout=15)
             if pl_resp.status_code != 200:
                 continue
@@ -255,12 +265,13 @@ def main():
 
     all_channels = []
     
-    # 1. Coba fetch online dari engine
-    if ENGINE_URL and ENGINE_AUTH:
-        print("Mencoba mengambil pembaruan saluran dari engine...")
-        all_channels = fetch_online_channels(ENGINE_URL, ENGINE_AUTH, DEVICE_ID)
+    # 1. Coba fetch online dari worker atau engine langsung
+    if (WORKER_URL or ENGINE_URL) and ENGINE_AUTH:
+        target_name = "Cloudflare Worker" if WORKER_URL else "Engine langsung"
+        print(f"Mencoba mengambil pembaruan saluran dari {target_name}...")
+        all_channels = fetch_online_channels(ENGINE_URL, ENGINE_AUTH, DEVICE_ID, WORKER_URL, WORKER_TOKEN)
         if all_channels:
-            print(f"Berhasil menarik {len(all_channels)} saluran online dari engine!")
+            print(f"Berhasil menarik {len(all_channels)} saluran online dari {target_name}!")
 
     # 2. Jika online fetch kosong (misal terhalang proteksi WAF), gunakan cache lokal jika tersedia
     if not all_channels:
