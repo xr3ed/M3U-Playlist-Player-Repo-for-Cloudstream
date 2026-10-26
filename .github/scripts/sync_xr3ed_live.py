@@ -7,8 +7,10 @@ Semua parameter, URL endpoint, dan kunci didefinisikan murni lewat GitHub Secret
 
 import os
 import sys
+import re
 import json
 import base64
+import uuid
 from pathlib import Path
 from Crypto.Cipher import AES
 
@@ -34,10 +36,22 @@ def get_secret(name: str) -> str:
 
 ENGINE_URL = get_secret("XR3ED_ENGINE_URL")
 ENGINE_AUTH = get_secret("XR3ED_ENGINE_AUTH")
+DEVICE_ID = get_secret("XR3ED_DEVICE_ID")
 STREAM_PREFIX = get_secret("XR3ED_STREAM_PREFIX")
 MAP_D = get_secret("XR3ED_ENGINE_MAP_D")
 MAP_E = get_secret("XR3ED_ENGINE_MAP_E")
 XOR_KEY = get_secret("XR3EDTV_XOR_KEY")
+
+def generate_auth_header(code: str) -> str:
+    if not code:
+        return ""
+    try:
+        import bcrypt
+        salt = bcrypt.gensalt(rounds=10, prefix=b'2a')
+        h = bcrypt.hashpw(code.encode("utf-8"), salt).decode("utf-8")
+        return f"Basic {h}"
+    except Exception:
+        return ""
 
 def decrypt_field(enc_str: str) -> str:
     if not enc_str or not isinstance(enc_str, str):
@@ -122,8 +136,11 @@ def channels_to_m3u(channels: list) -> str:
         lines.append(full_stream)
     return "\n".join(lines) + "\n"
 
-def fetch_online_channels(engine_url: str, engine_auth: str) -> list:
+def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str) -> list:
     channels = []
+    if not engine_url or not engine_auth:
+        return channels
+
     try:
         from curl_cffi import requests
         s = requests.Session(impersonate="chrome124")
@@ -131,35 +148,101 @@ def fetch_online_channels(engine_url: str, engine_auth: str) -> list:
         import requests
         s = requests.Session()
 
+    if not device_id:
+        device_id = str(uuid.uuid4())
+
+    headers = {
+        "User-Agent": "KingTV/1.3",
+        "X-Version": "335",
+        "X-Device": device_id,
+        "Accept-Charset": "UTF-8",
+        "X-Model": "Pixel 6",
+        "X-System": "Android 14",
+        "X-Android": "34"
+    }
+
+    auth_hdr = generate_auth_header(engine_auth)
+    if auth_hdr:
+        headers["X-Authorization"] = auth_hdr
+
     try:
         login_url = f"{engine_url.rstrip('/')}/api/login"
-        resp = s.post(login_url, data={"code": engine_auth}, timeout=12)
+        resp = s.post(login_url, data={"code": engine_auth}, headers=headers, timeout=15)
         if resp.status_code != 200:
+            print(f"Peringatan: Login engine gagal (HTTP {resp.status_code})")
             return []
-        data = resp.json()
-        categories = data.get("categories", []) or []
-        for cat in categories:
-            cat_id = cat.get("id")
+            
+        res_json = resp.json()
+        data_obj = res_json.get("data", {}) if isinstance(res_json, dict) else {}
+        playlists = data_obj.get("playlist", []) if isinstance(data_obj, dict) else []
+        if not playlists and isinstance(res_json, dict):
+            playlists = res_json.get("categories", []) or []
+
+        for item in playlists:
+            cat_id = item.get("sortn") or item.get("id") or item.get("code")
+            cat_name = item.get("name") or "Live"
             if not cat_id:
                 continue
+
             pl_url = f"{engine_url.rstrip('/')}/api/playlist?id={cat_id}"
-            pl_resp = s.get(pl_url, timeout=12)
-            if pl_resp.status_code == 200:
-                pdata = pl_resp.json()
-                for grp in pdata.get("a", []):
-                    grp_name = grp.get("a", "")
-                    for item in grp.get("b", []):
-                        raw_stream = item.get("stream_url", "")
-                        raw_ua = item.get("user_agent", "")
-                        raw_ref = item.get("referer", "")
-                        channels.append({
-                            "category": grp_name,
-                            "name": item.get("a", ""),
-                            "logo": item.get("logo_url", ""),
-                            "stream_url": decrypt_field(raw_stream),
-                            "user_agent": decrypt_field(raw_ua),
-                            "referer": decrypt_field(raw_ref),
-                        })
+            pl_resp = s.get(pl_url, headers=headers, timeout=15)
+            if pl_resp.status_code != 200:
+                continue
+
+            pl_text = pl_resp.text.strip()
+            if pl_text.startswith("#EXTM3U") or pl_text.startswith("#EXTINF"):
+                cur_info = {}
+                for line in pl_text.splitlines():
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if line.startswith("#EXTINF:"):
+                        ch_name = ""
+                        if "," in line:
+                            ch_name = line.split(",", 1)[1].strip()
+                        group = cat_name
+                        m_grp = re.search(r'group-title="([^"]+)"', line)
+                        if m_grp:
+                            group = m_grp.group(1).strip()
+                        logo = ""
+                        m_logo = re.search(r'tvg-logo="([^"]+)"', line)
+                        if m_logo:
+                            logo = m_logo.group(1).strip()
+                        cur_info = {
+                            "category": group,
+                            "name": ch_name,
+                            "logo": logo,
+                            "user_agent": "",
+                            "referer": ""
+                        }
+                    elif line.startswith("#EXTVLCOPT:http-user-agent="):
+                        cur_info["user_agent"] = decrypt_field(line.split("=", 1)[1].strip())
+                    elif line.startswith("#EXTVLCOPT:http-referrer="):
+                        cur_info["referer"] = decrypt_field(line.split("=", 1)[1].strip())
+                    elif line.startswith("http://") or line.startswith("https://"):
+                        if cur_info:
+                            cur_info["stream_url"] = decrypt_field(line)
+                            channels.append(cur_info)
+                            cur_info = {}
+            else:
+                try:
+                    pdata = pl_resp.json()
+                    for grp in pdata.get("a", []):
+                        grp_name = grp.get("a", "")
+                        for subitem in grp.get("b", []):
+                            raw_stream = subitem.get("stream_url", "")
+                            raw_ua = subitem.get("user_agent", "")
+                            raw_ref = subitem.get("referer", "")
+                            channels.append({
+                                "category": grp_name,
+                                "name": subitem.get("a", ""),
+                                "logo": subitem.get("logo_url", ""),
+                                "stream_url": decrypt_field(raw_stream),
+                                "user_agent": decrypt_field(raw_ua),
+                                "referer": decrypt_field(raw_ref),
+                            })
+                except Exception:
+                    pass
     except Exception as e:
         print(f"Info fetch online: {e}")
     return channels
@@ -175,7 +258,7 @@ def main():
     # 1. Coba fetch online dari engine
     if ENGINE_URL and ENGINE_AUTH:
         print("Mencoba mengambil pembaruan saluran dari engine...")
-        all_channels = fetch_online_channels(ENGINE_URL, ENGINE_AUTH)
+        all_channels = fetch_online_channels(ENGINE_URL, ENGINE_AUTH, DEVICE_ID)
         if all_channels:
             print(f"Berhasil menarik {len(all_channels)} saluran online dari engine!")
 
