@@ -515,11 +515,19 @@ def main():
             except Exception as e:
                 print(f"Info read cache {cand}: {e}")
 
+    existing = load_existing_enc_channels(output_path, XOR_KEY)
     if not all_channels:
-        existing = load_existing_enc_channels(output_path, XOR_KEY)
         if existing:
             print(f"Memuat {len(existing)} saluran dasar dari {output_path}...")
             all_channels = existing
+    else:
+        if existing:
+            print(f"Menggabungkan {len(existing)} saluran lokal terverifikasi dari {output_path}...")
+            seen_streams = {c.get("stream_url") for c in all_channels}
+            for e_ch in existing:
+                if e_ch.get("stream_url") not in seen_streams:
+                    all_channels.append(e_ch)
+                    seen_streams.add(e_ch.get("stream_url"))
 
     # 4. Fetch saluran aktif XR3EV (HBO suite & Cinemax dengan ClearKey dinamis)
     if XR3EV_PLAYER_URL and XR3EV_PASSWORD and XR3EV_SALT:
