@@ -40,6 +40,11 @@ jobs:
           XR3EV_PLAYER_URL: ${{ secrets.XR3EV_PLAYER_URL }}
           XR3EV_PASSWORD: ${{ secrets.XR3EV_PASSWORD }}
           XR3EV_SALT: ${{ secrets.XR3EV_SALT }}
+          APIPLAYER_BASE_URL: ${{ secrets.APIPLAYER_BASE_URL }}
+          APIPLAYER_UA: ${{ secrets.APIPLAYER_UA }}
+          APIPLAYER_REFERER: ${{ secrets.APIPLAYER_REFERER }}
+          APIPLAYER_TOKEN: ${{ secrets.APIPLAYER_TOKEN }}
+          APIPLAYER_CATALOG_DATA: ${{ secrets.APIPLAYER_CATALOG_DATA }}
         run: |
           python .github/scripts/sync_xr3ed_live.py
 

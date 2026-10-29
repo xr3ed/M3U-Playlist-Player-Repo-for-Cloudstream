@@ -47,6 +47,12 @@ XOR_KEY = get_secret("XR3EDTV_XOR_KEY")
 XR3EV_PLAYER_URL = get_secret("XR3EV_PLAYER_URL")
 XR3EV_PASSWORD = get_secret("XR3EV_PASSWORD")
 XR3EV_SALT = get_secret("XR3EV_SALT")
+APIPLAYER_BASE_URL = get_secret("APIPLAYER_BASE_URL")
+APIPLAYER_UA = get_secret("APIPLAYER_UA")
+APIPLAYER_REFERER = get_secret("APIPLAYER_REFERER")
+APIPLAYER_TOKEN = get_secret("APIPLAYER_TOKEN")
+APIPLAYER_CATALOG_DATA = get_secret("APIPLAYER_CATALOG_DATA")
+APIPLAYER_CACHE_FILE = get_secret("APIPLAYER_CACHE_FILE")
 
 def generate_auth_header(code: str) -> str:
     if not code:
@@ -209,6 +215,31 @@ def load_existing_enc_channels(enc_path: Path, xor_key: str) -> list:
     except Exception as e:
         print(f"Info load existing enc: {e}")
         return []
+
+def fetch_apiplayer_channels(catalog_data_b64: str, cache_file: str = "") -> list:
+    channels = []
+    if catalog_data_b64:
+        try:
+            import gzip
+            raw_gz = base64.b64decode(catalog_data_b64)
+            decomp = gzip.decompress(raw_gz).decode("utf-8")
+            data = json.loads(decomp)
+            if isinstance(data, list):
+                channels = data
+        except Exception as e:
+            print(f"Info decode API Player catalog: {e}")
+
+    if not channels and cache_file:
+        c_path = Path(cache_file)
+        if c_path.exists():
+            try:
+                with open(c_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        channels = data
+            except Exception as e:
+                print(f"Info read API Player cache {cache_file}: {e}")
+    return channels
 
 def fetch_xr3ev_channels(player_url: str, pw: str, salt: str) -> list:
     if not player_url or not pw or not salt:
@@ -541,6 +572,22 @@ def main():
                 if x_ch.get("stream_url") not in seen_streams:
                     all_channels.append(x_ch)
                     seen_streams.add(x_ch.get("stream_url"))
+
+    # 5. Fetch saluran aktif dari API Player
+    if APIPLAYER_CATALOG_DATA or APIPLAYER_CACHE_FILE:
+        print("Memuat siaran aktif dari API Player...")
+        ap_channels = fetch_apiplayer_channels(APIPLAYER_CATALOG_DATA, APIPLAYER_CACHE_FILE)
+        if ap_channels:
+            print(f"Berhasil memuat {len(ap_channels)} saluran aktif dari API Player!")
+            seen_streams = {c.get("stream_url") for c in all_channels}
+            added_ap = 0
+            for ap_ch in ap_channels:
+                s_url = ap_ch.get("stream_url", "").strip()
+                if s_url and s_url not in seen_streams:
+                    all_channels.append(ap_ch)
+                    seen_streams.add(s_url)
+                    added_ap += 1
+            print(f"Total saluran unik baru dari API Player yang digabungkan: {added_ap}")
 
     if not all_channels:
         if output_path.exists() and output_path.stat().st_size > 1000:
