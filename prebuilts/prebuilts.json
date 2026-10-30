@@ -212,10 +212,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/icon/MovieBoXR.png",
-    "fileHash": "sha256-8470dbfcd016df8b126c409eec2eb99b39acbf3a6ea5e7653a4975379350f15d",
+    "fileHash": "sha256-ee6c4fb0e2a9bc05e52e057c68d5153b1d84f8828dd16571ef9aa00202e9a424",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 133142,
+    "fileSize": 133603,
     "status": 1,
     "language": "id",
     "authors": [
@@ -225,7 +225,7 @@
       "Movie",
       "TvSeries"
     ],
-    "version": 42,
+    "version": 43,
     "internalName": "MovieBoXR",
     "description": "Multi Language Movies and Series Provider",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/MovieBoXR.cs3",
