@@ -42,7 +42,7 @@ class LiveEvent(val plugin: LiveEventPlugin) : MainAPI() {
         private val homePageCache = ConcurrentHashMap<String, Pair<Long, HomePageResponse>>()
         private const val CACHE_TTL_MS = 120_000L
         private const val MAX_CARDS_PER_ROW = 30
-        private const val SECTION_TIMEOUT_MS = 15_000L
+        private const val SECTION_TIMEOUT_MS = 25_000L
     }
 
     private var sectionNamesList: List<String> = emptyList()

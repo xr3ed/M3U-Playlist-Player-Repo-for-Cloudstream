@@ -172,10 +172,10 @@
   },
   {
     "iconUrl": "https://cdn.jsdelivr.net/gh/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream@main/live_icon.png",
-    "fileHash": "sha256-1f8d443ec4d1c0f98f84cc68b081c36b4eb1ac72b014825c40170edea7efb1b3",
+    "fileHash": "sha256-1bd04233f6d33b15c2f32a66be469fbdf4603df30feeda198ba5aac6ed08d0d8",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 75930,
+    "fileSize": 75929,
     "status": 1,
     "language": "id",
     "authors": [
@@ -184,7 +184,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 22,
+    "version": 23,
     "internalName": "LiveEvent",
     "description": "Beranda Kustom Khusus Siaran Langsung (Live Events) dengan Sinkronisasi Ultima",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LiveEvent.cs3",
@@ -356,10 +356,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png",
-    "fileHash": "sha256-170dee07435f4a519631171c7677d39683de17920aca65661597dbc984647d80",
+    "fileHash": "sha256-a6daf2435614f720efa0bf3b590dc0fe1de758bc43f5e8e73f68951f4e89e885",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 280733,
+    "fileSize": 280178,
     "status": 1,
     "language": "live",
     "authors": [
@@ -368,7 +368,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 151,
+    "version": 155,
     "internalName": "xr3edTV",
     "description": "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
