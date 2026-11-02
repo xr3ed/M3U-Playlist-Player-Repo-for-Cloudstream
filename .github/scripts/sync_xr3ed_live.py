@@ -410,7 +410,7 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
                 continue
 
             pl_text = pl_resp.text.strip()
-            if pl_text.startswith("#EXTM3U") or pl_text.startswith("#EXTINF"):
+            if "#EXTINF" in pl_text or pl_text.startswith("#EXTM3U"):
                 cur_info = {}
                 for line in pl_text.splitlines():
                     line = line.strip()
@@ -528,34 +528,40 @@ def main():
             print(f"Berhasil menarik {len(all_channels)} saluran online dari {target_name}!")
 
     # 2. Jika online fetch kosong (misal terhalang proteksi WAF), muat saluran dari cache atau file .enc yang sudah ada
-    candidates = [
-        get_secret("XR3ED_CACHE_FILE"),
-        "assets/live_catalog_cache.json",
-        "live_catalog_cache.json",
-        "scratch/live_catalog_cache.json",
-    ]
-    for cand in candidates:
-        if cand and Path(cand).exists():
-            try:
-                print(f"Memuat saluran dari cache: {cand}")
-                with open(cand, "r", encoding="utf-8") as f:
-                    cached = json.load(f)
-                    if cached and len(cached) > len(all_channels):
-                        all_channels = cached
-                        break
-            except Exception as e:
-                print(f"Info read cache {cand}: {e}")
-
-    existing = load_existing_enc_channels(output_path, XOR_KEY)
     if not all_channels:
+        candidates = [
+            get_secret("XR3ED_CACHE_FILE"),
+            "assets/live_catalog_cache.json",
+            "live_catalog_cache.json",
+            "scratch/live_catalog_cache.json",
+        ]
+        for cand in candidates:
+            if cand and Path(cand).exists():
+                try:
+                    print(f"Memuat saluran dari cache: {cand}")
+                    with open(cand, "r", encoding="utf-8") as f:
+                        cached = json.load(f)
+                        if cached:
+                            all_channels = cached
+                            break
+                except Exception as e:
+                    print(f"Info read cache {cand}: {e}")
+
+        existing = load_existing_enc_channels(output_path, XOR_KEY)
         if existing:
             print(f"Memuat {len(existing)} saluran dasar dari {output_path}...")
             all_channels = existing
     else:
+        existing = load_existing_enc_channels(output_path, XOR_KEY)
         if existing:
-            print(f"Menggabungkan {len(existing)} saluran lokal terverifikasi dari {output_path}...")
+            print(f"Menggabungkan saluran 24/7 lokal dari {output_path}...")
             seen_streams = {c.get("stream_url") for c in all_channels}
             for e_ch in existing:
+                cat = (e_ch.get("category") or "").lower()
+                name = (e_ch.get("name") or "").lower()
+                # Jangan gabungkan ulang live events lama yang sudah kadaluarsa
+                if any(x in cat for x in ["event", "live event", "upcoming"]) or " vs " in name or "[live]" in name or "[upcoming]" in name:
+                    continue
                 if e_ch.get("stream_url") not in seen_streams:
                     all_channels.append(e_ch)
                     seen_streams.add(e_ch.get("stream_url"))
