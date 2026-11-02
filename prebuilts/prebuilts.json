@@ -17,7 +17,7 @@
     ],
     "version": 16,
     "internalName": "AnimeSailXR",
-    "description": "AnimeSail \u2014 Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
+    "description": "AnimeSail — Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailXR.cs3",
     "name": "AnimeSailXR"
   },
@@ -79,7 +79,7 @@
     ],
     "version": 16,
     "internalName": "DubIndoXR",
-    "description": "Dubbindo \u2014 status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
+    "description": "Dubbindo — status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
     "name": "DubIndoXR"
   },
@@ -143,16 +143,16 @@
     ],
     "version": 4,
     "internalName": "HaruFilmXR",
-    "description": "HaruFilm \u2014 Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
+    "description": "HaruFilm — Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/HaruFilmXR.cs3",
     "name": "HaruFilmXR"
   },
   {
     "iconUrl": "https://www.google.com/s2/favicons?domain=z2.idlixku.com&sz=%size%",
-    "fileHash": "sha256-c23b7c8a278d03dc1dc7a7f82b58931c9d8397ef1964b1fda00866d952ed4315",
+    "fileHash": "sha256-f2fe746533edb7031ffbab52f003b0204354cbcc4e5df6146f9a79d2304c0c8e",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 93598,
+    "fileSize": 113043,
     "status": 1,
     "language": "id",
     "authors": [
@@ -164,7 +164,7 @@
       "Anime",
       "AsianDrama"
     ],
-    "version": 55,
+    "version": 56,
     "internalName": "idliXR",
     "description": "Idlix provider with active-domain API routing, detail URL normalization, provider session lifecycle, and session redeem playback flow.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/idliXR.cs3",
@@ -330,7 +330,7 @@
     ],
     "version": 2,
     "internalName": "TestBox",
-    "description": "TestBox \u2013 Movies, Series & TV powered by Vibox with auto-refresh guest token",
+    "description": "TestBox – Movies, Series & TV powered by Vibox with auto-refresh guest token",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/TestBox.cs3",
     "name": "TestBox"
   },
@@ -379,7 +379,7 @@
     "internalName": "KepalaBergetarXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KepalaBergetarXR.cs3",
     "version": 5,
-    "description": "Kepala Bergetar \u2014 Tonton Drama Melayu, Telefilem & Filem Online",
+    "description": "Kepala Bergetar — Tonton Drama Melayu, Telefilem & Filem Online",
     "authors": [
       "xr3ed"
     ],
@@ -445,7 +445,7 @@
     "internalName": "LayarKacaXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LayarKacaXR.cs3",
     "version": 16,
-    "description": "LayarKaca \u2014 provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
+    "description": "LayarKaca — provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
     "authors": [
       "xr3ed"
     ],
@@ -528,7 +528,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 85037,
-    "fileHash": "sha256-9ef26673728c1d90003796c740bef670ceaa6b62b3936843ec017857695d2e7f"
+    "fileSize": 126614,
+    "fileHash": "sha256-cf1d418c0831a65caa01ac98b2461337f0a23f242028036b8fed622528326f25"
   }
 ]
