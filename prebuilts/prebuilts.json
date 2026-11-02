@@ -490,7 +490,7 @@
     "name": "vidioXR",
     "internalName": "vidioXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/vidioXR.cs3",
-    "version": 88,
+    "version": 89,
     "description": "Nonton Film, Sinetron & Series Vidio (TV & Mobile Platinum VIP Auto-Synced)",
     "authors": [
       "xr3ed"
@@ -506,7 +506,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 189296,
-    "fileHash": "sha256-9f9acf717f18379145bd6c3d90aeb54f28e26f54c0a5a9fe00a4dbb189a1af39"
+    "fileSize": 190144,
+    "fileHash": "sha256-d11a1b54084e8501a4bb1c280edae1a9e7ffddf79eceddb1a56fcb0bd28eae05"
   }
 ]
