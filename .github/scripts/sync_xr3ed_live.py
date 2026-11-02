@@ -393,6 +393,13 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
             print(f"Peringatan: Respons login ditolak: {res_json.get('message')}")
             return []
 
+        # Ekstrak cookie token untuk request playlist berikutnya
+        raw_cookie = resp.headers.get("set-cookie") or resp.headers.get("Set-Cookie", "")
+        if raw_cookie:
+            m_tok = re.search(r'(token=[^;]+)', raw_cookie)
+            if m_tok:
+                headers["Cookie"] = m_tok.group(1)
+
         data_obj = res_json.get("data", {}) if isinstance(res_json, dict) else {}
         playlists = data_obj.get("playlist", []) if isinstance(data_obj, dict) else []
         if not playlists and isinstance(res_json, dict):
