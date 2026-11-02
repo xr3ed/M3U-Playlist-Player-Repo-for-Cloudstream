@@ -513,7 +513,7 @@
     "name": "visionXR",
     "internalName": "visionXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/visionXR.cs3",
-    "version": 1,
+    "version": 3,
     "description": "Nonton TV MNC Group, Olahraga & VOD Vision+",
     "authors": [
       "xr3ed"
@@ -528,7 +528,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 127883,
-    "fileHash": "sha256-d01af996d1c1bb31551f397456b04d42379d5d402625361bb6aa07fdfb17d505"
+    "fileSize": 134934,
+    "fileHash": "sha256-2ce79ad4528e1a1f3da9ea6edbf6b53a8628b06a2eddd2c30e910cca8f82e0f2"
   }
 ]
