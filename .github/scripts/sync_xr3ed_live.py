@@ -40,6 +40,8 @@ WORKER_URL = get_secret("XR3EDTV_WORKER_URL")
 WORKER_TOKEN = get_secret("XR3EDTV_WORKER_TOKEN")
 ENGINE_AUTH = get_secret("XR3ED_ENGINE_AUTH")
 DEVICE_ID = get_secret("XR3ED_DEVICE_ID")
+ENGINE_SESSION = get_secret("XR3ED_ENGINE_SESSION")
+SESSION_FILE = Path(".engine_session")
 STREAM_PREFIX = get_secret("XR3ED_STREAM_PREFIX")
 MAP_D = get_secret("XR3ED_ENGINE_MAP_D")
 MAP_E = get_secret("XR3ED_ENGINE_MAP_E")
@@ -348,6 +350,150 @@ def fetch_xr3ev_channels(player_url: str, pw: str, salt: str) -> list:
                 continue
     return extracted
 
+
+def load_cached_session() -> tuple[str, list]:
+    if ENGINE_SESSION:
+        try:
+            data = json.loads(ENGINE_SESSION)
+            if isinstance(data, dict):
+                return data.get("token", ""), data.get("playlists", [])
+        except Exception:
+            if ENGINE_SESSION.startswith("token="):
+                return ENGINE_SESSION.split("=", 1)[1].strip(), []
+            return ENGINE_SESSION.strip(), []
+
+    if SESSION_FILE.exists():
+        try:
+            raw = SESSION_FILE.read_text(encoding="utf-8").strip()
+            data = json.loads(raw)
+            if isinstance(data, dict):
+                return data.get("token", ""), data.get("playlists", [])
+            return raw, []
+        except Exception:
+            pass
+    return "", []
+
+def save_cached_session(token: str, playlists: list):
+    if not token:
+        return
+    try:
+        data = {"token": token, "playlists": playlists}
+        SESSION_FILE.write_text(json.dumps(data), encoding="utf-8")
+    except Exception as e:
+        print(f"Info save session: {e}")
+
+def fetch_playlist_items(s, base_url: str, playlists: list, headers: dict) -> list:
+    channels = []
+    for item in playlists:
+        cat_id = item.get("sortn") or item.get("id") or item.get("code")
+        cat_name = item.get("name") or "Live"
+        if not cat_id:
+            continue
+
+        pl_url = f"{base_url}/api/playlist?id={cat_id}"
+        pl_resp = s.get(pl_url, headers=headers, timeout=15)
+        if pl_resp.status_code != 200:
+            continue
+
+        pl_text = pl_resp.text.strip()
+        if "#EXTINF" in pl_text or pl_text.startswith("#EXTM3U"):
+            cur_info = {}
+            for line in pl_text.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith("#EXTINF:"):
+                    ch_name = ""
+                    if "," in line:
+                        ch_name = line.split(",", 1)[1].strip()
+                    group = cat_name
+                    m_grp = re.search(r'group-title="([^"]+)"', line)
+                    if m_grp:
+                        group = m_grp.group(1).strip()
+                    logo = ""
+                    m_logo = re.search(r'tvg-logo="([^"]+)"', line)
+                    if m_logo:
+                        logo = m_logo.group(1).strip()
+                    cur_info = {
+                        "category": group,
+                        "name": ch_name,
+                        "logo": logo,
+                        "user_agent": "",
+                        "referer": "",
+                        "kodi_props": {}
+                    }
+                elif line.startswith("#KODIPROP:"):
+                    prop = line.split(":", 1)[1].strip()
+                    if "=" in prop:
+                        pk, pv = prop.split("=", 1)
+                        if "kodi_props" not in cur_info:
+                            cur_info["kodi_props"] = {}
+                        cur_info["kodi_props"][pk.strip()] = pv.strip()
+                elif line.startswith("#EXTVLCOPT:http-user-agent="):
+                    cur_info["user_agent"] = decrypt_field(line.split("=", 1)[1].strip())
+                elif line.startswith("#EXTVLCOPT:http-referrer="):
+                    cur_info["referer"] = decrypt_field(line.split("=", 1)[1].strip())
+                elif line.startswith("http://") or line.startswith("https://"):
+                    if cur_info:
+                        cur_info["stream_url"] = decrypt_field(line)
+                        channels.append(cur_info)
+                        cur_info = {}
+        else:
+            try:
+                raw_text = pl_text.strip()
+                if not (raw_text.startswith("{") or raw_text.startswith("[")):
+                    try:
+                        pad = (4 - len(raw_text) % 4) % 4
+                        raw_bytes = base64.b64decode(raw_text + "=" * pad)
+                        raw_text = raw_bytes.decode("utf-8", errors="ignore").strip()
+                    except Exception:
+                        pass
+
+                pdata = json.loads(raw_text)
+                drm_licenses_map = {}
+                for lic in pdata.get("drm_licenses", []) if isinstance(pdata, dict) else []:
+                    d_id = str(lic.get("drm_id", "")).strip()
+                    d_type = lic.get("drm_type", "").strip()
+                    raw_key = lic.get("drm_key", "")
+                    dec_key = decrypt_field(raw_key) if raw_key else ""
+                    if d_id and dec_key:
+                        drm_licenses_map[d_id] = (d_type, dec_key)
+
+                groups = pdata.get("a", []) if isinstance(pdata, dict) else []
+                if not groups and isinstance(pdata, list):
+                    groups = pdata
+                for grp in groups:
+                    grp_name = grp.get("a", "") or grp.get("name", "") or cat_name
+                    subitems = grp.get("b", []) or grp.get("channels", [])
+                    for subitem in subitems:
+                        raw_stream = subitem.get("stream_url", "") or subitem.get("url", "")
+                        raw_ua = subitem.get("user_agent", "") or subitem.get("ua", "")
+                        raw_ref = subitem.get("referer", "") or subitem.get("ref", "")
+                        ch_name = subitem.get("a", "") or subitem.get("name", "")
+                        logo = subitem.get("logo_url", "") or subitem.get("logo", "")
+                        sub_drm_id = str(subitem.get("drm_id", "")).strip()
+                        kodi_props = {}
+                        if sub_drm_id and sub_drm_id in drm_licenses_map:
+                            d_type, d_key = drm_licenses_map[sub_drm_id]
+                            lic_type = "org.w3.clearkey" if "clearkey" in d_type.lower() else d_type
+                            kodi_props = {
+                                "inputstream.adaptive.license_type": lic_type,
+                                "inputstream.adaptive.license_key": d_key
+                            }
+                        if ch_name and raw_stream:
+                            channels.append({
+                                "category": grp_name,
+                                "name": ch_name,
+                                "logo": logo,
+                                "stream_url": decrypt_field(raw_stream),
+                                "user_agent": decrypt_field(raw_ua),
+                                "referer": decrypt_field(raw_ref),
+                                "kodi_props": kodi_props
+                            })
+            except Exception as ex:
+                print(f"Info parse playlist {cat_id} ({cat_name}): {ex}")
+    return channels
+
 def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, worker_url: str = "", worker_token: str = "") -> list:
     channels = []
     base_url = worker_url.rstrip("/") if worker_url else (engine_url.rstrip("/") if engine_url else "")
@@ -381,6 +527,34 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
     if auth_hdr:
         headers["X-Authorization"] = auth_hdr
 
+    default_playlists = [
+        {"code": "live", "name": "TV Lokal", "sortn": 1},
+        {"code": "sport", "name": "Sports 1", "sortn": 2},
+        {"code": "sport2", "name": "Sports 2", "sortn": 3},
+        {"code": "event", "name": "Live Events", "sortn": 4},
+        {"code": "event2", "name": "Live Events 2", "sortn": 5},
+        {"code": "event3", "name": "Live Events 3", "sortn": 6},
+        {"code": "tv", "name": "INTERNATIONAL", "sortn": 10}
+    ]
+
+    # 1. Coba gunakan session token yang sudah tersimpan agar bebas dari rate-limit /api/login
+    cached_token, cached_playlists = load_cached_session()
+    if cached_token:
+        headers["Cookie"] = f"token={cached_token}"
+        try:
+            test_resp = s.get(f"{base_url}/api/playlist?id=1", headers=headers, timeout=10)
+            if test_resp.status_code == 200 and ("#EXTINF" in test_resp.text or "group-title" in test_resp.text):
+                print("Session token aktif valid! Melewati login engine (bebas rate-limit).")
+                active_playlists = cached_playlists or default_playlists
+                chs = fetch_playlist_items(s, base_url, active_playlists, headers)
+                if chs:
+                    return chs
+            else:
+                print("Session token kedaluwarsa atau belum valid, memperbarui sesi lewat login...")
+        except Exception as e:
+            print(f"Info verifikasi session token: {e}")
+
+    # 2. Login hanya jika session belum ada atau kedaluwarsa
     try:
         login_url = f"{base_url}/api/login"
         resp = s.post(login_url, data={"code": engine_auth}, headers=headers, timeout=15)
@@ -393,129 +567,29 @@ def fetch_online_channels(engine_url: str, engine_auth: str, device_id: str, wor
             print(f"Peringatan: Respons login ditolak: {res_json.get('message')}")
             return []
 
-        # Ekstrak cookie token untuk request playlist berikutnya
+        # Ekstrak token sesi dari Set-Cookie
+        new_token = ""
         raw_cookie = resp.headers.get("set-cookie") or resp.headers.get("Set-Cookie", "")
         if raw_cookie:
-            m_tok = re.search(r'(token=[^;]+)', raw_cookie)
+            m_tok = re.search(r'token=([^;]+)', raw_cookie)
             if m_tok:
-                headers["Cookie"] = m_tok.group(1)
+                new_token = m_tok.group(1).strip()
+                headers["Cookie"] = f"token={new_token}"
 
         data_obj = res_json.get("data", {}) if isinstance(res_json, dict) else {}
         playlists = data_obj.get("playlist", []) if isinstance(data_obj, dict) else []
         if not playlists and isinstance(res_json, dict):
             playlists = res_json.get("categories", []) or []
+        if not playlists:
+            playlists = default_playlists
 
-        for item in playlists:
-            cat_id = item.get("sortn") or item.get("id") or item.get("code")
-            cat_name = item.get("name") or "Live"
-            if not cat_id:
-                continue
+        if new_token:
+            save_cached_session(new_token, playlists)
 
-            pl_url = f"{base_url}/api/playlist?id={cat_id}"
-            pl_resp = s.get(pl_url, headers=headers, timeout=15)
-            if pl_resp.status_code != 200:
-                continue
-
-            pl_text = pl_resp.text.strip()
-            if "#EXTINF" in pl_text or pl_text.startswith("#EXTM3U"):
-                cur_info = {}
-                for line in pl_text.splitlines():
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if line.startswith("#EXTINF:"):
-                        ch_name = ""
-                        if "," in line:
-                            ch_name = line.split(",", 1)[1].strip()
-                        group = cat_name
-                        m_grp = re.search(r'group-title="([^"]+)"', line)
-                        if m_grp:
-                            group = m_grp.group(1).strip()
-                        logo = ""
-                        m_logo = re.search(r'tvg-logo="([^"]+)"', line)
-                        if m_logo:
-                            logo = m_logo.group(1).strip()
-                        cur_info = {
-                            "category": group,
-                            "name": ch_name,
-                            "logo": logo,
-                            "user_agent": "",
-                            "referer": "",
-                            "kodi_props": {}
-                        }
-                    elif line.startswith("#KODIPROP:"):
-                        prop = line.split(":", 1)[1].strip()
-                        if "=" in prop:
-                            pk, pv = prop.split("=", 1)
-                            if "kodi_props" not in cur_info:
-                                cur_info["kodi_props"] = {}
-                            cur_info["kodi_props"][pk.strip()] = pv.strip()
-                    elif line.startswith("#EXTVLCOPT:http-user-agent="):
-                        cur_info["user_agent"] = decrypt_field(line.split("=", 1)[1].strip())
-                    elif line.startswith("#EXTVLCOPT:http-referrer="):
-                        cur_info["referer"] = decrypt_field(line.split("=", 1)[1].strip())
-                    elif line.startswith("http://") or line.startswith("https://"):
-                        if cur_info:
-                            cur_info["stream_url"] = decrypt_field(line)
-                            channels.append(cur_info)
-                            cur_info = {}
-            else:
-                try:
-                    raw_text = pl_text.strip()
-                    if not (raw_text.startswith("{") or raw_text.startswith("[")):
-                        try:
-                            pad = (4 - len(raw_text) % 4) % 4
-                            raw_bytes = base64.b64decode(raw_text + "=" * pad)
-                            raw_text = raw_bytes.decode("utf-8", errors="ignore").strip()
-                        except Exception:
-                            pass
-
-                    pdata = json.loads(raw_text)
-                    drm_licenses_map = {}
-                    for lic in pdata.get("drm_licenses", []) if isinstance(pdata, dict) else []:
-                        d_id = str(lic.get("drm_id", "")).strip()
-                        d_type = lic.get("drm_type", "").strip()
-                        raw_key = lic.get("drm_key", "")
-                        dec_key = decrypt_field(raw_key) if raw_key else ""
-                        if d_id and dec_key:
-                            drm_licenses_map[d_id] = (d_type, dec_key)
-
-                    groups = pdata.get("a", []) if isinstance(pdata, dict) else []
-                    if not groups and isinstance(pdata, list):
-                        groups = pdata
-                    for grp in groups:
-                        grp_name = grp.get("a", "") or grp.get("name", "") or cat_name
-                        subitems = grp.get("b", []) or grp.get("channels", [])
-                        for subitem in subitems:
-                            raw_stream = subitem.get("stream_url", "") or subitem.get("url", "")
-                            raw_ua = subitem.get("user_agent", "") or subitem.get("ua", "")
-                            raw_ref = subitem.get("referer", "") or subitem.get("ref", "")
-                            ch_name = subitem.get("a", "") or subitem.get("name", "")
-                            logo = subitem.get("logo_url", "") or subitem.get("logo", "")
-                            sub_drm_id = str(subitem.get("drm_id", "")).strip()
-                            kodi_props = {}
-                            if sub_drm_id and sub_drm_id in drm_licenses_map:
-                                d_type, d_key = drm_licenses_map[sub_drm_id]
-                                lic_type = "org.w3.clearkey" if "clearkey" in d_type.lower() else d_type
-                                kodi_props = {
-                                    "inputstream.adaptive.license_type": lic_type,
-                                    "inputstream.adaptive.license_key": d_key
-                                }
-                            if ch_name and raw_stream:
-                                channels.append({
-                                    "category": grp_name,
-                                    "name": ch_name,
-                                    "logo": logo,
-                                    "stream_url": decrypt_field(raw_stream),
-                                    "user_agent": decrypt_field(raw_ua),
-                                    "referer": decrypt_field(raw_ref),
-                                    "kodi_props": kodi_props
-                                })
-                except Exception as ex:
-                    print(f"Info parse playlist {cat_id} ({cat_name}): {ex}")
+        return fetch_playlist_items(s, base_url, playlists, headers)
     except Exception as e:
         print(f"Info fetch online: {e}")
-    return channels
+        return []
 
 def main():
     print("=== xr3edTV Live Engine Sync ===")

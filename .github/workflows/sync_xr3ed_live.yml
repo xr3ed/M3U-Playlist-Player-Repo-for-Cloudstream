@@ -2,7 +2,7 @@ name: Sync xr3edTV Live Engine
 
 on:
   schedule:
-    - cron: '0 */2 * * *'   # Setiap 2 jam agar aman dari rate-limit engine
+    - cron: '0 */2 * * *'   # Setiap 2 jam aman berkat cache sesi token
   workflow_dispatch:        # Pemicu manual kapan saja
 
 permissions:
@@ -26,11 +26,20 @@ jobs:
         run: |
           pip install pycryptodome requests curl_cffi bcrypt cryptography
 
+      - name: Restore Engine Session Cache
+        uses: actions/cache@v4
+        with:
+          path: .engine_session
+          key: engine-session-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            engine-session-${{ runner.os }}-
+
       - name: Sync and Encrypt Live Channels
         env:
           XR3ED_ENGINE_URL: ${{ secrets.XR3ED_ENGINE_URL }}
           XR3ED_ENGINE_AUTH: ${{ secrets.XR3ED_ENGINE_AUTH }}
           XR3ED_DEVICE_ID: ${{ secrets.XR3ED_DEVICE_ID }}
+          XR3ED_ENGINE_SESSION: ${{ secrets.XR3ED_ENGINE_SESSION }}
           XR3EDTV_WORKER_URL: ${{ secrets.XR3EDTV_WORKER_URL }}
           XR3EDTV_WORKER_TOKEN: ${{ secrets.XR3EDTV_WORKER_TOKEN }}
           XR3ED_STREAM_PREFIX: ${{ secrets.XR3ED_STREAM_PREFIX }}

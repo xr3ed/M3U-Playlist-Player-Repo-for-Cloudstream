@@ -83,3 +83,6 @@ assets/*_batch*/
 
 
 /scratch/
+
+.engine_session
+
