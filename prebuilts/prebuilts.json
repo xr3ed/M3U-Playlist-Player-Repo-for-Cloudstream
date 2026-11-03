@@ -149,10 +149,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=z2.idlixku.com&sz=%size%",
-        "fileHash": "sha256-19b1507a553239aa62e4afdd5cea8463a7864ad05dbfdc3dd89b3a4b9b4e5303",
+        "fileHash": "sha256-aa68d47bf2e649ee1b1204d31dff245a9d5d21ea8dd873ab784f3e22544ca288",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-        "fileSize": 110964,
+        "fileSize": 111005,
         "status": 1,
         "language": "id",
         "authors": [
@@ -164,7 +164,7 @@
             "Anime",
             "AsianDrama"
         ],
-        "version": 62,
+        "version": 63,
         "internalName": "idliXR",
         "description": "Idlix provider with active-domain API routing, detail URL normalization, provider session lifecycle, and session redeem playback flow.",
         "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/idliXR.cs3",
