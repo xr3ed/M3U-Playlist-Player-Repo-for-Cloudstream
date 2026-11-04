@@ -17,7 +17,7 @@
     ],
     "version": 16,
     "internalName": "AnimeSailXR",
-    "description": "AnimeSail â€” Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
+    "description": "AnimeSail \u00e2\u20ac\u201d Streaming Anime, Donghua Subtitle Indonesia (Improved WIP)",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnimeSailXR.cs3",
     "name": "AnimeSailXR"
   },
@@ -79,7 +79,7 @@
     ],
     "version": 16,
     "internalName": "DubIndoXR",
-    "description": "Dubbindo â€” status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
+    "description": "Dubbindo \u00e2\u20ac\u201d status terbatas: provider masih dapat memuat sebagian link, tetapi banyak konten di website sumber sedang processing/mati, poster kosong, atau media tidak dapat diputar.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DubIndoXR.cs3",
     "name": "DubIndoXR"
   },
@@ -143,7 +143,7 @@
     ],
     "version": 4,
     "internalName": "HaruFilmXR",
-    "description": "HaruFilm â€” Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
+    "description": "HaruFilm \u00e2\u20ac\u201d Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/HaruFilmXR.cs3",
     "name": "HaruFilmXR"
   },
@@ -330,7 +330,7 @@
     ],
     "version": 2,
     "internalName": "TestBox",
-    "description": "TestBox â€“ Movies, Series & TV powered by Vibox with auto-refresh guest token",
+    "description": "TestBox \u00e2\u20ac\u201c Movies, Series & TV powered by Vibox with auto-refresh guest token",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/TestBox.cs3",
     "name": "TestBox"
   },
@@ -356,10 +356,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/main/live_icon.png",
-    "fileHash": "sha256-2e06511c9b8b74c6411d3f29e4ca5e2a0dc4f4df9c809036d52e84a73f868354",
+    "fileHash": "sha256-cf9fb7c194ae0f59412fbf6acaf7d3a1039ffaf8b9ef4b0c9c9134da59e5b5a3",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 282030,
+    "fileSize": 282823,
     "status": 1,
     "language": "live",
     "authors": [
@@ -368,7 +368,7 @@
     "tvTypes": [
       "Live"
     ],
-    "version": 161,
+    "version": 162,
     "internalName": "xr3edTV",
     "description": "Siaran Langsung Olahraga Realtime (Live Sports) dan Saluran TV 24/7 Nasional maupun Mancanegara",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/xr3edTV.cs3",
@@ -379,7 +379,7 @@
     "internalName": "KepalaBergetarXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/KepalaBergetarXR.cs3",
     "version": 5,
-    "description": "Kepala Bergetar â€” Tonton Drama Melayu, Telefilem & Filem Online",
+    "description": "Kepala Bergetar \u00e2\u20ac\u201d Tonton Drama Melayu, Telefilem & Filem Online",
     "authors": [
       "xr3ed"
     ],
@@ -445,7 +445,7 @@
     "internalName": "LayarKacaXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/LayarKacaXR.cs3",
     "version": 16,
-    "description": "LayarKaca â€” provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
+    "description": "LayarKaca \u00e2\u20ac\u201d provider film dan series subtitle Indonesia dengan kategori LK21/Nontondrama lengkap serta parser API/player yang diperkuat.",
     "authors": [
       "xr3ed"
     ],
