@@ -530,5 +530,27 @@
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
     "fileSize": 154293,
     "fileHash": "sha256-0922cc32034bf97a64ca2b0dd6166ebd4613d1ff51d129406ad579f47f976ad4"
+  },
+  {
+    "name": "#Anime NontonAnimeIDXR",
+    "internalName": "NontonAnimeIDXR",
+    "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/NontonAnimeIDXR.cs3",
+    "version": 44,
+    "description": "NontonAnimeID — Streaming Anime Subtitle Indonesia (#Anime NontonAnimeIDXR)",
+    "authors": [
+      "xr3ed"
+    ],
+    "tvTypes": [
+      "Anime",
+      "AnimeMovie",
+      "OVA"
+    ],
+    "iconUrl": "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://s13.nontonanimeid.boats&size=%size%",
+    "apiVersion": 1,
+    "status": 1,
+    "language": "id",
+    "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
+    "fileSize": 162342,
+    "fileHash": "sha256-c404ceb475c802df984718de70199f909f698024d90636d63da45d3a8e07381f"
   }
 ]
