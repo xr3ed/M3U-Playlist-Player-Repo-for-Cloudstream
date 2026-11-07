@@ -22,7 +22,7 @@
     "name": "AnimeSailXR"
   },
   {
-    "fileHash": "sha256-a50254cad53d58232483d68043a81c0b6cba98f8f3e21382ee8338e32fed5cea",
+    "fileHash": "sha256-28ee7e7a179fa615d5745066917e2f3bac293ed13b379d959cd007f091a25609",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
     "fileSize": 88596,
@@ -34,17 +34,17 @@
     "tvTypes": [
       "TvSeries"
     ],
-    "version": 31,
+    "version": 32,
     "internalName": "DracinAIO",
     "description": "Ekstensi Cloudstream untuk menonton drama pendek dari berbagai provider",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAIO.cs3",
     "name": "DracinAIO"
   },
   {
-    "fileHash": "sha256-c8023e85e9385ce5114543b062ea510cdf43c30b05c12ba2c0701cafadd22339",
+    "fileHash": "sha256-69dbcdca73dce391eadb8e7e5c88b4d7cbeb6233b6afd83dcc5d5a5d2a533597",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 96073,
+    "fileSize": 96134,
     "status": 1,
     "language": "id",
     "authors": [
@@ -53,7 +53,7 @@
     "tvTypes": [
       "TvSeries"
     ],
-    "version": 88,
+    "version": 89,
     "internalName": "DracinAioV2",
     "description": "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
