@@ -127,10 +127,10 @@
   },
   {
     "iconUrl": "https://harufilm.eu.cc/images/apple-touch-icon.png",
-    "fileHash": "sha256-3841801b8c9b685f38c46da1e8e8d3223acc7de9a49f5b264f5ce879f900e2b0",
+    "fileHash": "sha256-69da7a312a9428e6a7c730d4f771b607ad23bbf3381a75476a3f1e11c197ae2b",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 98648,
+    "fileSize": 104370,
     "status": 1,
     "language": "id",
     "authors": [
@@ -141,7 +141,7 @@
       "TvSeries",
       "Anime"
     ],
-    "version": 6,
+    "version": 7,
     "internalName": "HaruFilmXR",
     "description": "HaruFilm \u00e2\u20ac\u201d Streaming Film, Series, Anime, dan Dokumenter Subtitle Indonesia.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/HaruFilmXR.cs3",
