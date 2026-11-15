@@ -41,10 +41,10 @@
     "name": "DracinAIO"
   },
   {
-    "fileHash": "sha256-a4e208129e4dcb279017c0ce15063e72cf0128233eb0e51ff8a950faf8115d9f",
+    "fileHash": "sha256-e41ec59c8a515cdd9a2d82b9c9aff0482484fbd7f880836461fcf54422d75da0",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 96852,
+    "fileSize": 96910,
     "status": 1,
     "language": "id",
     "authors": [
@@ -53,7 +53,7 @@
     "tvTypes": [
       "TvSeries"
     ],
-    "version": 90,
+    "version": 91,
     "internalName": "DracinAioV2",
     "description": "Ekstensi DracinAio V2 - #Dracin All in One [Backup]",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/DracinAioV2.cs3",
