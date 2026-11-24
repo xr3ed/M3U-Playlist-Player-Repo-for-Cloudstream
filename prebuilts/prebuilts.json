@@ -148,11 +148,11 @@
     "name": "HaruFilmXR"
   },
   {
-    "iconUrl": "https://www.google.com/s2/favicons?domain=z2.idlixku.com&sz=%size%",
-    "fileHash": "sha256-033355bb3814496afa5bed656501793008dfae1a3e25af9d84b9bc580ebe6745",
+    "iconUrl": "https://www.google.com/s2/favicons?domain=z3.idlixku.com&sz=%size%",
+    "fileHash": "sha256-244b0a1993a311ce894f226c26b13e8960941c28f5497a7c100ec0fefc1af3ab",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 116376,
+    "fileSize": 120223,
     "status": 1,
     "language": "id",
     "authors": [
@@ -164,7 +164,7 @@
       "Anime",
       "AsianDrama"
     ],
-    "version": 66,
+    "version": 67,
     "internalName": "idliXR",
     "description": "Idlix provider with active-domain API routing, detail URL normalization, provider session lifecycle, and session redeem playback flow.",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/idliXR.cs3",
