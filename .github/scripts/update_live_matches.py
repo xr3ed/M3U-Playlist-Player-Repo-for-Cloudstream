@@ -164,7 +164,7 @@ def get_api_host():
         try:
             resp = requests.get(domain, timeout=15, allow_redirects=True,
                                headers={"User-Agent": RBTV_USER_AGENT})
-            js_urls = list(set(re.findall(r"https://statics1\.[a-zA-Z0-9.-]+\.cfd/statics/[a-f0-9]+\.js", resp.text)))
+            js_urls = list(set(re.findall(r"https://statics1\.[a-zA-Z0-9.-]+/statics/[a-f0-9]+\.js", resp.text)))
             for js_url in js_urls:
                 try:
                     js = requests.get(js_url, timeout=8, headers={"User-Agent": RBTV_USER_AGENT}).text
