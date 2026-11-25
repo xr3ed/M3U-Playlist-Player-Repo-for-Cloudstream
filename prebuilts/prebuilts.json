@@ -557,7 +557,7 @@
     "name": "#Donghua AnichinXR",
     "internalName": "AnichinXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/AnichinXR.cs3",
-    "version": 83,
+    "version": 84,
     "description": "Anichin Moe modifikasi oleh XR3ED",
     "authors": [
       "sad25kag",
@@ -573,7 +573,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 146863,
-    "fileHash": "sha256-655a4ba7f028faadcc24c79c456945e27cb4943b5e174c09dec11826621c4652"
+    "fileSize": 147358,
+    "fileHash": "sha256-a8b0e80c56c9299702faae6c4153a4cd862371600f340ab5bfa2e78ecff20746"
   }
 ]
