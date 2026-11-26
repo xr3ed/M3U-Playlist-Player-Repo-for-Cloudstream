@@ -580,7 +580,7 @@
     "name": "#Anime SamehadakuXR",
     "internalName": "SamehadakuXR",
     "url": "https://raw.githubusercontent.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream/builds/SamehadakuXR.cs3",
-    "version": 43,
+    "version": 44,
     "description": "Samehadaku \u2014 Streaming & Download Anime Subtitle Indonesia (#Anime SamehadakuXR)",
     "authors": [
       "xr3ed"
@@ -595,7 +595,7 @@
     "status": 1,
     "language": "id",
     "repositoryUrl": "https://github.com/xr3ed/M3U-Playlist-Player-Repo-for-Cloudstream",
-    "fileSize": 116871,
-    "fileHash": "sha256-c6e5d1c71bd2241cd450053c0f53860707e5b59d2e7520ca28683b3e8c167278"
+    "fileSize": 117026,
+    "fileHash": "sha256-2ce7eef37bd4cec2540d71932d81a0ca2846cfa887450ae027bdb368388e36cf"
   }
 ]
